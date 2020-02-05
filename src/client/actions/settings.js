@@ -24,6 +24,7 @@ import {
   CHANGE_DELETED_TICKETS_PAGE,
   BACKUP_NOW,
   RESTORE_DELETED_TICKET,
+  PERM_DELETE_TICKET,
   UPDATE_PERMISSIONS,
   CREATE_ROLE,
   DELETE_ROLE
@@ -48,6 +49,7 @@ export const fetchBackups = createAction(FETCH_BACKUPS.ACTION)
 export const backupNow = createAction(BACKUP_NOW.ACTION)
 export const fetchDeletedTickets = createAction(FETCH_DELETED_TICKETS.ACTION)
 export const restoreDeletedTicket = createAction(RESTORE_DELETED_TICKET.ACTION)
+export const permDeleteTicket = createAction(PERM_DELETE_TICKET.ACTION)
 export const changeDeletedTicketsPage = createAction(CHANGE_DELETED_TICKETS_PAGE.ACTION, pageIndex => ({
   pageIndex
 }))

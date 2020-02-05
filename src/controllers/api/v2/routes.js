@@ -37,6 +37,7 @@ module.exports = function (middleware, router, controllers) {
   router.put('/api/v2/tickets/batch', apiv2Auth, apiv2.tickets.batchUpdate)
   router.put('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.update)
   router.delete('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.delete)
+  router.delete('/api/v2/tickets/deleted/:id', apiv2Auth, isAdmin, apiv2.tickets.permDelete)
 
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)

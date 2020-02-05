@@ -198,4 +198,16 @@ ticketsV2.delete = function (req, res) {
   })
 }
 
+ticketsV2.permDelete = function (req, res) {
+  var id = req.params.id
+  if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+
+  Ticket.deleteOne({ _id: id }, function (err, success) {
+    if (err) return apiUtils.sendApiError(res, 400, err.message)
+    if (!success) return apiUtils.sendApiError(res, 400, 'Unable to delete ticket')
+
+    return apiUtils.sendApiSuccess(res, { deleted: true })
+  })
+}
+
 module.exports = ticketsV2

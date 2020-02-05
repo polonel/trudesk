@@ -23,6 +23,7 @@ import {
   FETCH_MONGODB_TOOLS,
   FETCH_SETTINGS,
   RESTORE_DELETED_TICKET,
+  PERM_DELETE_TICKET,
   UPDATE_MULTIPLE_SETTINGS,
   UPDATE_SETTING
 } from 'actions/types'
@@ -138,6 +139,21 @@ const settingsReducer = handleActions(
       return {
         ...state,
         deletedTickets: state.allDeletedTickets.slice(pageIndex * 15, (pageIndex + 1) * 15)
+      }
+    },
+
+    [PERM_DELETE_TICKET.SUCCESS]: (state, action) => {
+      const deletedIdx = state.deletedTickets.findIndex(i => {
+        return i.get('_id') === action.payload._id
+      })
+      const allDeletedIdx = state.allDeletedTickets.findIndex(i => {
+        return i.get('_id') === action.payload._id
+      })
+
+      return {
+        ...state,
+        allDeletedTickets: state.allDeletedTickets.splice(allDeletedIdx, 1),
+        deletedTickets: state.deletedTickets.splice(deletedIdx, 1)
       }
     }
   },

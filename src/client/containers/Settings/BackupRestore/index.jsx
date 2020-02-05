@@ -21,6 +21,7 @@ import {
   backupNow,
   fetchDeletedTickets,
   restoreDeletedTicket,
+  permDeleteTicket,
   changeDeletedTicketsPage
 } from 'actions/settings'
 import Log from '../../../logger'
@@ -214,6 +215,12 @@ class BackupRestoreSettingsContainer extends React.Component {
     this.props.restoreDeletedTicket({ _id: ticket.get('_id') })
   }
 
+  onDeleteTicketClicked (e, ticket) {
+    if (!ticket) return
+
+    this.props.permDeleteTicket({ _id: ticket.get('_id') })
+  }
+
   render () {
     const { active } = this.props
 
@@ -374,7 +381,7 @@ class BackupRestoreSettingsContainer extends React.Component {
             </SettingItem>
           </div>
         )}
-        <SettingItem title={'Restore Deleted Tickets'} subtitle={'Tickets marked as deleted are shown below.'}>
+        <SettingItem title={'Deleted Tickets'} subtitle={'Tickets marked as deleted are shown below.'}>
           {this.props.settings.deletedTickets.size < 1 && (
             <Zone>
               <ZoneBox>
@@ -413,6 +420,13 @@ class BackupRestoreSettingsContainer extends React.Component {
                         <td className='uk-text-right valign-middle'>
                           <ButtonGroup>
                             <Button
+                              text={'Delete'}
+                              style={'danger'}
+                              small={true}
+                              waves={true}
+                              onClick={e => this.onDeleteTicketClicked(e, ticket)}
+                            />
+                            <Button
                               text={'Restore'}
                               small={true}
                               waves={true}
@@ -442,6 +456,7 @@ BackupRestoreSettingsContainer.propTypes = {
   changeDeletedTicketsPage: PropTypes.func.isRequired,
   backupNow: PropTypes.func.isRequired,
   restoreDeletedTicket: PropTypes.func.isRequired,
+  permDeleteTicket: PropTypes.func.isRequired,
   settings: PropTypes.object.isRequired
 }
 
@@ -449,7 +464,12 @@ const mapStateToProps = state => ({
   settings: state.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchBackups, fetchMongoDBTools, backupNow, fetchDeletedTickets, restoreDeletedTicket, changeDeletedTicketsPage }
-)(BackupRestoreSettingsContainer)
+export default connect(mapStateToProps, {
+  fetchBackups,
+  fetchMongoDBTools,
+  backupNow,
+  fetchDeletedTickets,
+  restoreDeletedTicket,
+  permDeleteTicket,
+  changeDeletedTicketsPage
+})(BackupRestoreSettingsContainer)

@@ -27,6 +27,7 @@ import {
   FETCH_SETTINGS,
   HIDE_MODAL,
   RESTORE_DELETED_TICKET,
+  PERM_DELETE_TICKET,
   UPDATE_COLORSCHEME,
   UPDATE_MULTIPLE_SETTINGS,
   UPDATE_PERMISSIONS,
@@ -154,6 +155,22 @@ function * restoreDeletedTicket ({ payload }) {
   }
 }
 
+function * permDeleteTicket ({ payload }) {
+  try {
+    const response = yield call(api.settings.permDeleteTicket, payload)
+    yield put({ type: PERM_DELETE_TICKET.SUCCESS, response, payload })
+    helpers.UI.showSnackbar('Ticket Deleted')
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: PERM_DELETE_TICKET.ERROR, error })
+  }
+}
+
 function * updateRoleOrder ({ payload }) {
   try {
     const response = yield call(api.settings.updateRoleOrder, payload)
@@ -215,6 +232,7 @@ export default function * settingsWatcher () {
   yield takeLatest(BACKUP_NOW.ACTION, backupNow)
   yield takeLatest(FETCH_DELETED_TICKETS.ACTION, fetchDeletedTickets)
   yield takeLatest(RESTORE_DELETED_TICKET.ACTION, restoreDeletedTicket)
+  yield takeLatest(PERM_DELETE_TICKET.ACTION, permDeleteTicket)
   yield takeLatest(UPDATE_ROLE_ORDER.ACTION, updateRoleOrder)
   yield takeLatest(UPDATE_PERMISSIONS.ACTION, updatePermissions)
   yield takeLatest(CREATE_ROLE.ACTION, createRole)

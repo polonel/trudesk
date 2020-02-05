@@ -282,6 +282,11 @@ api.settings.restoreDeletedTicket = ({ _id }) => {
     return res.data
   })
 }
+api.settings.permDeleteTicket = ({ _id }) => {
+  return axios.delete(`/api/v2/tickets/deleted/${_id}`).then(res => {
+    return res.data
+  })
+}
 api.settings.updateRoleOrder = ({ roleOrder }) => {
   return axios
     .put('/api/v1/settings/updateroleorder', {
