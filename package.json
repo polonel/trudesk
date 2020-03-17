@@ -61,7 +61,7 @@
     "marked": "0.6.1",
     "matchdep": "2.0.0",
     "memoize-one": "5.0.0",
-    "mkdirp": "0.5.1",
+    "mkdirp": "1.0.0",
     "mobx": "5.9.0",
     "mobx-react": "5.4.3",
     "moment": "2.23.0",
