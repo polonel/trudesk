@@ -34,7 +34,7 @@
     "clone": "2.1.2",
     "clsx": "1.0.4",
     "connect-flash": "0.1.1",
-    "connect-mongo": "2.0.3",
+    "connect-mongo": "3.0.0",
     "cookie": "0.3.1",
     "cookie-parser": "1.4.3",
     "csv": "3.1.0",
