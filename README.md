@@ -37,7 +37,7 @@ Password: password
 Take it for a spin on Ubuntu 16.04 with a one liner - <br />`curl -L -s https://files.trudesk.io/install/install_ubuntu.sh | sudo bash`
 
 ### Documentation
-Online documentation: [https://docs.trudesk.io/docs](http://www.trudesk.io/docs)
+Online documentation: [https://docs.trudesk.io/docs](https://docs.trudesk.io/docs)
 
 ### Contributing
 If you like what you see here, and want to help support the work being done, you could:
