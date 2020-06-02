@@ -13,7 +13,7 @@
 <a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
 <a href="http://trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
-<sub>© 2014-2019, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
+<sub>© 2014-2020, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
 </p>
 <br />
 
