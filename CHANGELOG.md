@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/polonel/trudesk/compare/v1.1.2...v1.1.3) (2020-02-05)
+
+
+### Bug Fixes
+
+* **messages:** [#308](https://github.com/polonel/trudesk/issues/308) incorrect time displayed ([2f1b8d6](https://github.com/polonel/trudesk/commit/2f1b8d6))
+
 ## [1.1.2](https://github.com/polonel/trudesk/compare/v1.1.1...v1.1.2) (2020-01-15)
 
 
