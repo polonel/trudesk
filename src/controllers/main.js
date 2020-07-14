@@ -338,7 +338,7 @@ mainController.forgotPass = function (req, res) {
           }
 
           var subject = '[Trudesk] Password Reset Request'
-          if (template) subject = global.HandleBars.compile(template.subject)(data)
+          if (template) subject = global.Handlebars.compile(template.subject)(data)
 
           email
             .render('password-reset', data)
