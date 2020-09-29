@@ -97,7 +97,7 @@
     "redux-saga-thunk": "0.7.3",
     "request": "2.88.0",
     "rimraf": "2.6.3",
-    "sanitize-html": "1.20.0",
+    "sanitize-html": "2.0.0",
     "script-loader": "0.7.2",
     "semver": "5.6.0",
     "serve-favicon": "2.5.0",
