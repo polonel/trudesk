@@ -57,7 +57,7 @@
     "jsonwebtoken": "8.4.0",
     "ldapjs": "1.0.2",
     "lodash": "4.17.11",
-    "mailparser": "2.4.3",
+    "mailparser": "3.0.1",
     "marked": "0.6.1",
     "matchdep": "2.0.0",
     "memoize-one": "5.0.0",
