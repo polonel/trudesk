@@ -25,7 +25,7 @@
     "ansi_up": "3.0.0",
     "archiver": "3.0.0",
     "async": "2.6.1",
-    "axios": "0.18.0",
+    "axios": "0.21.1",
     "bcrypt": "3.0.6",
     "body-parser": "1.18.3",
     "busboy": "0.2.14",
