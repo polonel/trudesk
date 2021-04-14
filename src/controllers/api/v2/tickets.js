@@ -210,4 +210,37 @@ ticketsV2.permDelete = function (req, res) {
   })
 }
 
+ticketsV2.transferToThirdParty = function (req, res) {
+  var uid = req.params.uid
+  if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+
+  Ticket.getTicketByUid(uid, function (err, ticket) {
+    if (err) return apiUtils.sendApiError(res, 400, err.message)
+    if (!ticket) return apiUtils.sendApiError(res, 404, 'Ticket not found')
+
+    var request = require('axios')
+    var nconf = require('nconf')
+    var thirdParty = nconf.get('thirdParty')
+    var url = thirdParty.url + '/api/v2/tickets'
+
+    var ticketObj = {
+      subject: ticket.subject,
+      description: ticket.issue,
+      email: ticket.owner.email,
+      status: 2,
+      priority: 2
+    }
+
+    request
+      .post(url, ticketObj, { auth: { username: thirdParty.apikey, password: '1' } })
+      .then(function (response) {
+        return apiUtils.sendApiSuccess(res)
+      })
+      .catch(function (err) {
+        console.log(err)
+        return apiUtils.sendApiError(res, err.response.status, err.response.data.message)
+      })
+  })
+}
+
 module.exports = ticketsV2

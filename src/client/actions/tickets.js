@@ -28,7 +28,8 @@ import {
   UNLOAD_TICKETS,
   TICKET_UPDATED,
   DELETE_TICKET,
-  TICKET_EVENT
+  TICKET_EVENT,
+  TRANSFER_TO_THIRDPARTY
 } from 'actions/types'
 
 export const fetchTickets = createAction(FETCH_TICKETS.ACTION)
@@ -56,3 +57,4 @@ export const deletePriority = createAction(DELETE_PRIORITY.ACTION, ({ id, newPri
 export const getTagsWithPage = createAction(GET_TAGS_WITH_PAGE.ACTION, ({ limit, page }) => ({ limit, page }))
 export const tagsUpdateCurrentPage = createAction(TAGS_UPDATE_CURRENT_PAGE.ACTION, currentPage => ({ currentPage }))
 export const createTag = createAction(CREATE_TAG.ACTION, ({ name, currentPage }) => ({ name, currentPage }))
+export const transferToThirdParty = createAction(TRANSFER_TO_THIRDPARTY.ACTION, ({ uid }) => ({ uid }))

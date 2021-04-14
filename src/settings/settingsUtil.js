@@ -14,6 +14,7 @@
 
 var _ = require('lodash')
 var async = require('async')
+var nconf = require('nconf')
 var jsStringEscape = require('js-string-escape')
 var settingSchema = require('../models/setting')
 var ticketTypeSchema = require('../models/tickettype')
@@ -51,6 +52,7 @@ util.getSettings = function (callback) {
     }
 
     s.emailBeta = parseSetting(settings, 'beta:email', false)
+    s.hasThirdParty = !nconf.get('thirdParty') ? false : nconf.get('thirdParty').enable
 
     s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk')
     s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
