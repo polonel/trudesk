@@ -99,15 +99,15 @@ workflows:
             ignore:
               - develop
               - master
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only: develop
-    jobs:
-      - build_docker_next
+  #nightly:
+  #  triggers:
+  #    - schedule:
+  #        cron: "0 0 * * *"
+  #        filters:
+  #          branches:
+  #            only: develop
+  #  jobs:
+  #    - build_docker_next
   develop:
     jobs:
     - build_develop:
