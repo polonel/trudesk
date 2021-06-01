@@ -620,7 +620,16 @@ apiUsers.deleteUser = function (req, res) {
         })
       },
       function (hasTickets, hasConversations, user, cb) {
-        if (hasTickets || hasConversations) {
+        var ticketSchema = require('../../../models/ticket')
+        ticketSchema.find({ assignee: user._id }, function (err, tickets) {
+          if (err) return cb(err)
+
+          var isAssignee = _.size(tickets) > 0
+          return cb(null, hasTickets, hasConversations, isAssignee, user)
+        })
+      },
+      function (hasTickets, hasConversations, isAssignee, user, cb) {
+        if (hasTickets || hasConversations || isAssignee) {
           // Disable if the user has tickets or conversations
           user.softDelete(function (err) {
             if (err) return cb(err)
