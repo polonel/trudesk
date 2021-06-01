@@ -1,3 +1,12 @@
+## [1.1.4](https://github.com/polonel/trudesk/compare/v1.1.3...v1.1.4) (2021-06-01)
+
+
+### Bug Fixes
+
+* **accounts:** check if agent is assignee before deleting agent. [#408](https://github.com/polonel/trudesk/issues/408) ([81fd6ea](https://github.com/polonel/trudesk/commit/81fd6ea))
+* **build:** stop nightly build ([fefb8de](https://github.com/polonel/trudesk/commit/fefb8de))
+* **tickets:** third party ([c954ba0](https://github.com/polonel/trudesk/commit/c954ba0))
+
 ## [1.1.3](https://github.com/polonel/trudesk/compare/v1.1.2...v1.1.3) (2020-02-05)
 
 
