@@ -203,7 +203,8 @@ function launchServer (db) {
               TD_MONGODB_PORT: process.env.TD_MONGODB_PORT,
               TD_MONGODB_USERNAME: process.env.TD_MONGODB_USERNAME,
               TD_MONGODB_PASSWORD: process.env.TD_MONGODB_PASSWORD,
-              TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE
+              TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE,
+              TD_MONGODB_URI: process.env.TD_MONGODB_URI
             }
 
             cache.env = envDocker

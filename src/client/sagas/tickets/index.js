@@ -32,7 +32,8 @@ import {
   UNLOAD_TICKETS,
   TICKET_UPDATED,
   DELETE_TICKET,
-  TICKET_EVENT
+  TICKET_EVENT,
+  TRANSFER_TO_THIRDPARTY
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
@@ -204,6 +205,22 @@ function * createTag ({ payload }) {
   }
 }
 
+function * transferToThirdParty ({ payload }) {
+  try {
+    const response = yield call(api.tickets.transferToThirdParty, payload)
+    yield put({ type: TRANSFER_TO_THIRDPARTY.SUCCESS, response })
+    helpers.UI.showSnackbar(`Ticket Transferred Successfully`, false)
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: TRANSFER_TO_THIRDPARTY.ERROR, error })
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(FETCH_TICKETS.ACTION, fetchTickets)
   yield takeLatest(CREATE_TICKET.ACTION, createTicket)
@@ -218,4 +235,5 @@ export default function * watcher () {
   yield takeLatest(DELETE_PRIORITY.ACTION, deletePriority)
   yield takeLatest(GET_TAGS_WITH_PAGE.ACTION, getTagsWithPage)
   yield takeLatest(CREATE_TAG.ACTION, createTag)
+  yield takeLatest(TRANSFER_TO_THIRDPARTY.ACTION, transferToThirdParty)
 }

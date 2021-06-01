@@ -129,6 +129,12 @@ api.tickets.createTag = ({ name }) => {
   })
 }
 
+api.tickets.transferToThirdParty = ({ uid }) => {
+  return axios.post(`/api/v2/tickets/transfer/${uid}`).then(res => {
+    return res.data
+  })
+}
+
 api.accounts = {}
 api.accounts.create = payload => {
   return axios.post('/api/v2/accounts', payload).then(res => {

@@ -357,6 +357,16 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
+        var settingsUtil = require('../../settings/settingsUtil')
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.hasThirdParty = res.data.settings.hasThirdParty
+
+          return callback()
+        })
+      },
+      function (callback) {
         viewController.getPluginsInfo(request, function (err, data) {
           if (err) return callback(err)
 

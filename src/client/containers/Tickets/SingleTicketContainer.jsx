@@ -19,6 +19,7 @@ import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
 
+import { transferToThirdParty } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { showModal } from 'actions/common'
 
@@ -202,6 +203,11 @@ class SingleTicketContainer extends React.Component {
       })
   }
 
+  transferToThirdParty (e) {
+    socket.ui.sendUpdateTicketStatus(this.ticket._id, 3)
+    this.props.transferToThirdParty({ uid: this.ticket.uid })
+  }
+
   @computed
   get notesTagged () {
     this.ticket.notes.forEach(i => (i.isNote = true))
@@ -336,7 +342,10 @@ class SingleTicketContainer extends React.Component {
                                     type.priorities.findIndex(p => p._id === this.ticket.priority._id) !== -1
 
                                   if (!hasPriority) {
-                                    socket.ui.setTicketPriority(this.ticket._id, type.priorities.find(() => true))
+                                    socket.ui.setTicketPriority(
+                                      this.ticket._id,
+                                      type.priorities.find(() => true)
+                                    )
                                     showPriorityConfirm()
                                   }
 
@@ -493,6 +502,20 @@ class SingleTicketContainer extends React.Component {
               {/* Right Side */}
               <div className='page-message nopadding' style={{ marginLeft: 360 }}>
                 <div className='page-title-right noshadow'>
+                  {this.props.common.hasThirdParty && (
+                    <div className='page-top-comments uk-float-right'>
+                      <a
+                        role='button'
+                        className='btn md-btn-primary no-ajaxy'
+                        onClick={e => {
+                          e.preventDefault()
+                          this.transferToThirdParty(e)
+                        }}
+                      >
+                        Transfer to ThirdParty
+                      </a>
+                    </div>
+                  )}
                   <div className='page-top-comments uk-float-right'>
                     <a
                       role='button'
@@ -755,7 +778,8 @@ SingleTicketContainer.propTypes = {
   groupsState: PropTypes.object.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
-  showModal: PropTypes.func.isRequired
+  showModal: PropTypes.func.isRequired,
+  transferToThirdParty: PropTypes.func
 }
 
 const mapStateToProps = state => ({
@@ -764,7 +788,6 @@ const mapStateToProps = state => ({
   groupsState: state.groupsState
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchGroups, unloadGroups, showModal }
-)(SingleTicketContainer)
+export default connect(mapStateToProps, { fetchGroups, unloadGroups, showModal, transferToThirdParty })(
+  SingleTicketContainer
+)
