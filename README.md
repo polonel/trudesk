@@ -6,14 +6,13 @@
 <a href="https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9"><img src="https://img.shields.io/codacy/grade/7b3acb53c33b4a40bb32da109bbdd1a9/develop.svg?style=flat-square" /></a>
 <a href="https://standarsjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square" /></a>
 <img src="https://img.shields.io/circleci/token/ad7d2d066a75685a15c8e2fd08bd75e53b18fbb7/project/github/polonel/trudesk/develop.svg?style=flat-square" />
-<a href="http://hits.dwyl.io/polonel/trudesk"><img src="http://hits.dwyl.io/polonel/trudesk.svg" /></a>
 <a href="https://forum.trudesk.io"><img src="https://img.shields.io/discourse/https/forum.trudesk.io/topics.svg?style=flat-square" /></a>
 <a title="Crowdin" target="_blank" href="https://crowdin.com/project/trudesk"><img src="https://d322cqt584bo4o.cloudfront.net/trudesk/localized.svg?style=flat-square"></a>
 <a href="https://github.com/polonel/trudesk/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-APACHE%202-green.svg?style=flat-square" /></a>
 <a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
-<a href="http://trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
+<a href="http://docs.trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
-<sub>© 2014-2019, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
+<sub>© 2014-2021, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
 </p>
 <br />
 
@@ -56,7 +55,7 @@ Trudesk is tested with confidence using [BrowserStack](https://browserstack.com)
 
 ### License
 
-    Copyright 2014-2020 Trudesk, Inc.
+    Copyright 2014-2021 Trudesk, Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
