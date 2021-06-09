@@ -32,7 +32,7 @@ class Table extends React.Component {
             <tr>{headers}</tr>
           </thead>
         )}
-        {useBody && <tbody className={'scrollable full-height'}>{children}</tbody>}
+        {useBody && <tbody className={'scrollable full-height c91-fix'}>{children}</tbody>}
         {!useBody && children}
       </table>
     )
