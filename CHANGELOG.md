@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/polonel/trudesk/compare/v1.1.4...v1.1.5) (2021-06-09)
+
+
+### Bug Fixes
+
+* **tickets:** view rending incorrectly on latest version of Chrome ([d574948](https://github.com/polonel/trudesk/commit/d574948))
+
 ## [1.1.4](https://github.com/polonel/trudesk/compare/v1.1.3...v1.1.4) (2021-06-01)
 
 
