@@ -113,7 +113,7 @@ class DepartmentsContainer extends React.Component {
                 </th>
               </tr>
             </thead>
-            <tbody className={'scrollable full-height'}>
+            <tbody className={'c91-fix scrollable full-height'}>
               {this.props.departments &&
                 this.props.departments.map(department => {
                   const teams = department.get('teams')
@@ -215,7 +215,4 @@ const mapStateToProps = state => ({
   departments: state.departmentsState.departments
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchDepartments, deleteDepartment, showModal }
-)(DepartmentsContainer)
+export default connect(mapStateToProps, { fetchDepartments, deleteDepartment, showModal })(DepartmentsContainer)
