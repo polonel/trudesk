@@ -23,6 +23,7 @@ var prioritySchema = require('../models/ticketpriority')
 var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
 var permissions = require('../permissions')
+var xss = require('xss')
 
 var events = {}
 
@@ -332,7 +333,7 @@ events.onSetCommentText = function (socket) {
 
     comment = sanitizeHtml(comment).trim()
 
-    var markedComment = marked(comment)
+    var markedComment = xss(marked(comment))
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return winston.error(err)
@@ -384,7 +385,7 @@ events.onSetNoteText = function (socket) {
     marked.setOptions({
       breaks: true
     })
-    var markedNote = marked(note)
+    var markedNote = xss(marked(note))
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return winston.error(err)

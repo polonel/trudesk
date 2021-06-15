@@ -442,7 +442,7 @@ apiTickets.create = function (req, res) {
   var tIssue = ticket.issue
   tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
   tIssue = sanitizeHtml(tIssue).trim()
-  ticket.issue = marked(tIssue)
+  ticket.issue = xss(marked(tIssue))
   ticket.history = [HistoryItem]
   ticket.subscribers = [req.user._id]
 
@@ -603,8 +603,8 @@ apiTickets.createPublicTicket = function (req, res) {
             group: group._id,
             type: ticketType._id,
             priority: _.first(ticketType.priorities)._id, // TODO: change when priority order is complete!
-            subject: sanitizeHtml(postData.ticket.subject).trim(),
-            issue: sanitizeHtml(postData.ticket.issue).trim(),
+            subject: xss(sanitizeHtml(postData.ticket.subject).trim()),
+            issue: xss(sanitizeHtml(postData.ticket.issue).trim()),
             history: [HistoryItem],
             subscribers: [savedUser._id]
           })
@@ -614,6 +614,7 @@ apiTickets.createPublicTicket = function (req, res) {
           tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
           tIssue = sanitizeHtml(tIssue).trim()
           ticket.issue = marked(tIssue)
+          ticket.issue = xss(ticket.issue)
 
           ticket.save(function (err, t) {
             if (err) return next(err)
@@ -912,7 +913,7 @@ apiTickets.postComment = function (req, res) {
     var Comment = {
       owner: owner,
       date: new Date(),
-      comment: marked(comment)
+      comment: xss(marked(comment))
     }
 
     t.updated = Date.now()
@@ -984,7 +985,7 @@ apiTickets.postInternalNote = function (req, res) {
     var Note = {
       owner: payload.owner || req.user._id,
       date: new Date(),
-      note: marked(payload.note)
+      note: xss(marked(payload.note))
     }
 
     ticket.updated = Date.now()

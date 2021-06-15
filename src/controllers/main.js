@@ -18,6 +18,7 @@ var path = require('path')
 var passport = require('passport')
 var winston = require('winston')
 var pkg = require('../../package')
+var xss = require('xss')
 
 var mainController = {}
 
@@ -77,7 +78,7 @@ mainController.about = function (req, res) {
     if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {
       content.data.privacyPolicy = 'No Privacy Policy has been set.'
     } else {
-      content.data.privacyPolicy = marked(privacyPolicy.value)
+      content.data.privacyPolicy = xss(marked(privacyPolicy.value))
     }
 
     return res.render('about', content)

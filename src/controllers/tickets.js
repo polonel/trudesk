@@ -17,7 +17,7 @@ var winston = require('winston')
 var groupSchema = require('../models/group')
 var departmentSchema = require('../models/department')
 var permissions = require('../permissions')
-
+var xss = require('xss')
 /**
  * @since 1.0
  * @author Chris Brame <polonel@gmail.com>
@@ -57,7 +57,7 @@ ticketsController.pubNewIssue = function (req, res) {
         if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {
           content.data.privacyPolicy = 'No Privacy Policy has been set.'
         } else {
-          content.data.privacyPolicy = marked(privacyPolicy.value)
+          content.data.privacyPolicy = xss(marked(privacyPolicy.value))
         }
 
         return res.render('pub_createTicket', content)
