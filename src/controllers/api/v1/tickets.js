@@ -18,6 +18,7 @@ var moment = require('moment-timezone')
 var winston = require('winston')
 var permissions = require('../../../permissions')
 var emitter = require('../../../emitter')
+var xss = require('xss')
 var sanitizeHtml = require('sanitize-html')
 
 var apiTickets = {}
@@ -537,10 +538,12 @@ apiTickets.createPublicTicket = function (req, res) {
           pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
         })
 
+        var sanitizedFullname = xss(postData.user.fullname)
+
         user = new UserSchema({
           username: postData.user.email,
           password: plainTextPass,
-          fullname: postData.user.fullname,
+          fullname: sanitizedFullname,
           email: postData.user.email,
           accessToken: chance.hash(),
           role: roleDefault.value
