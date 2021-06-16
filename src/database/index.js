@@ -64,7 +64,8 @@ var options = {
   keepAlive: 1,
   connectTimeoutMS: 30000,
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useUnifiedTopology: true
 }
 
 module.exports.init = function (callback, connectionString, opts) {
