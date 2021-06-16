@@ -531,6 +531,34 @@ ticketsController.uploadImageMDE = function (req, res) {
     }
 
     var ext = path.extname(filename)
+    var allowedExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.jpe',
+      '.jif',
+      '.jfif',
+      '.jfi',
+      '.png',
+      '.gif',
+      '.webp',
+      '.tiff',
+      '.tif',
+      '.bmp',
+      '.dib',
+      '.heif',
+      '.heic',
+      '.svg',
+      '.svgz'
+    ]
+
+    if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
 
     var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
     // var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
