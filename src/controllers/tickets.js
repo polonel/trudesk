@@ -637,7 +637,7 @@ ticketsController.uploadAttachment = function (req, res) {
 
     if (
       mimetype.indexOf('image/') === -1 &&
-      mimetype.indexOf('text/') === -1 &&
+      mimetype.indexOf('text/plain') === -1 &&
       mimetype.indexOf('audio/mpeg') === -1 &&
       mimetype.indexOf('audio/mp3') === -1 &&
       mimetype.indexOf('audio/wav') === -1 &&
@@ -659,6 +659,18 @@ ticketsController.uploadAttachment = function (req, res) {
 
     var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
     var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
+
+    var ext = path.extname(sanitizedFilename)
+    var badExts = ['.html', '.htm', '.js']
+
+    if (badExts.includes(ext)) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
 
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
