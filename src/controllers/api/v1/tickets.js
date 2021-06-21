@@ -422,56 +422,68 @@ apiTickets.create = function (req, res) {
     postData.tags = [postData.tags]
   }
 
-  var HistoryItem = {
-    action: 'ticket:created',
-    description: 'Ticket was created.',
-    owner: req.user._id
-  }
+  async.waterfall(
+    [
+      function (done) {
+        var UserSchema = require('../../../models/user')
+        UserSchema.findOne({ _id: req.user._id }, done)
+      },
+      function (user, done) {
+        if (user.deleted) return done({ status: 400, error: 'Invalid User' })
 
-  var TicketSchema = require('../../../models/ticket')
-  var ticket = new TicketSchema(postData)
-  if (!_.isUndefined(postData.owner)) {
-    ticket.owner = postData.owner
-  } else {
-    ticket.owner = req.user._id
-  }
+        var HistoryItem = {
+          action: 'ticket:created',
+          description: 'Ticket was created.',
+          owner: req.user._id
+        }
 
-  ticket.subject = sanitizeHtml(ticket.subject).trim()
+        var TicketSchema = require('../../../models/ticket')
+        var ticket = new TicketSchema(postData)
+        if (!_.isUndefined(postData.owner)) {
+          ticket.owner = postData.owner
+        } else {
+          ticket.owner = req.user._id
+        }
 
-  var marked = require('marked')
-  var tIssue = ticket.issue
-  tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
-  tIssue = sanitizeHtml(tIssue).trim()
-  ticket.issue = xss(marked(tIssue))
-  ticket.history = [HistoryItem]
-  ticket.subscribers = [req.user._id]
+        ticket.subject = sanitizeHtml(ticket.subject).trim()
 
-  ticket.save(function (err, t) {
-    if (err) {
-      response.success = false
-      response.error = err
-      winston.debug(response)
-      return res.status(400).json(response)
-    }
+        var marked = require('marked')
+        var tIssue = ticket.issue
+        tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+        tIssue = sanitizeHtml(tIssue).trim()
+        ticket.issue = xss(marked(tIssue))
+        ticket.history = [HistoryItem]
+        ticket.subscribers = [user._id]
 
-    t.populate('group owner priority', function (err, tt) {
+        ticket.save(function (err, t) {
+          if (err) return done({ status: 400, error: err })
+
+          t.populate('group owner priority', function (err, tt) {
+            if (err) return done({ status: 400, error: err })
+
+            emitter.emit('ticket:created', {
+              hostname: req.headers.host,
+              socketId: socketId,
+              ticket: tt
+            })
+
+            response.ticket = tt
+          })
+        })
+      }
+    ],
+    function (err) {
       if (err) {
         response.success = false
-        response.error = err
-        winston.debug(response)
-        return res.status(400).json(response)
+        response.error = err.error
+        return res.status(err.status).json(response)
       }
 
-      emitter.emit('ticket:created', {
-        hostname: req.headers.host,
-        socketId: socketId,
-        ticket: tt
-      })
+      response.success = true
 
-      response.ticket = tt
-      res.json(response)
-    })
-  })
+      return res.json(response)
+    }
+  )
 }
 
 /**

@@ -650,7 +650,7 @@ ticketsController.uploadAttachment = function (req, res) {
       mimetype.indexOf('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') === -1
     ) {
       error = {
-        status: 500,
+        status: 400,
         message: 'Invalid File Type'
       }
 
