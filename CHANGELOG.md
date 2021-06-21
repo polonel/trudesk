@@ -1,3 +1,15 @@
+## [1.1.6](https://github.com/polonel/trudesk/compare/v1.1.5...v1.1.6) (2021-06-21)
+
+
+### Bug Fixes
+
+* **renderer:** view rendering incorrectly (departments) ([18f9eca](https://github.com/polonel/trudesk/commit/18f9eca))
+* **security:** security fix 1 [#413](https://github.com/polonel/trudesk/issues/413) ([c3c3b29](https://github.com/polonel/trudesk/commit/c3c3b29))
+* **security:** security fix 2 [#413](https://github.com/polonel/trudesk/issues/413) ([58c90d8](https://github.com/polonel/trudesk/commit/58c90d8))
+* **tickets:** security fix 11 [#413](https://github.com/polonel/trudesk/issues/413) ([17c2eb7](https://github.com/polonel/trudesk/commit/17c2eb7))
+* **tickets:** security fix 4 [#413](https://github.com/polonel/trudesk/issues/413) ([caaec12](https://github.com/polonel/trudesk/commit/caaec12))
+* **uploads:** security fix ([25c5ae4](https://github.com/polonel/trudesk/commit/25c5ae4))
+
 ## [1.1.5](https://github.com/polonel/trudesk/compare/v1.1.4...v1.1.5) (2021-06-09)
 
 
