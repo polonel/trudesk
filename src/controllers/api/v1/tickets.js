@@ -18,6 +18,7 @@ var moment = require('moment-timezone')
 var winston = require('winston')
 var permissions = require('../../../permissions')
 var emitter = require('../../../emitter')
+var xss = require('xss')
 var sanitizeHtml = require('sanitize-html')
 
 var apiTickets = {}
@@ -421,56 +422,68 @@ apiTickets.create = function (req, res) {
     postData.tags = [postData.tags]
   }
 
-  var HistoryItem = {
-    action: 'ticket:created',
-    description: 'Ticket was created.',
-    owner: req.user._id
-  }
+  async.waterfall(
+    [
+      function (done) {
+        var UserSchema = require('../../../models/user')
+        UserSchema.findOne({ _id: req.user._id }, done)
+      },
+      function (user, done) {
+        if (user.deleted) return done({ status: 400, error: 'Invalid User' })
 
-  var TicketSchema = require('../../../models/ticket')
-  var ticket = new TicketSchema(postData)
-  if (!_.isUndefined(postData.owner)) {
-    ticket.owner = postData.owner
-  } else {
-    ticket.owner = req.user._id
-  }
+        var HistoryItem = {
+          action: 'ticket:created',
+          description: 'Ticket was created.',
+          owner: req.user._id
+        }
 
-  ticket.subject = sanitizeHtml(ticket.subject).trim()
+        var TicketSchema = require('../../../models/ticket')
+        var ticket = new TicketSchema(postData)
+        if (!_.isUndefined(postData.owner)) {
+          ticket.owner = postData.owner
+        } else {
+          ticket.owner = req.user._id
+        }
 
-  var marked = require('marked')
-  var tIssue = ticket.issue
-  tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
-  tIssue = sanitizeHtml(tIssue).trim()
-  ticket.issue = marked(tIssue)
-  ticket.history = [HistoryItem]
-  ticket.subscribers = [req.user._id]
+        ticket.subject = sanitizeHtml(ticket.subject).trim()
 
-  ticket.save(function (err, t) {
-    if (err) {
-      response.success = false
-      response.error = err
-      winston.debug(response)
-      return res.status(400).json(response)
-    }
+        var marked = require('marked')
+        var tIssue = ticket.issue
+        tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+        tIssue = sanitizeHtml(tIssue).trim()
+        ticket.issue = xss(marked(tIssue))
+        ticket.history = [HistoryItem]
+        ticket.subscribers = [user._id]
 
-    t.populate('group owner priority', function (err, tt) {
+        ticket.save(function (err, t) {
+          if (err) return done({ status: 400, error: err })
+
+          t.populate('group owner priority', function (err, tt) {
+            if (err) return done({ status: 400, error: err })
+
+            emitter.emit('ticket:created', {
+              hostname: req.headers.host,
+              socketId: socketId,
+              ticket: tt
+            })
+
+            response.ticket = tt
+          })
+        })
+      }
+    ],
+    function (err) {
       if (err) {
         response.success = false
-        response.error = err
-        winston.debug(response)
-        return res.status(400).json(response)
+        response.error = err.error
+        return res.status(err.status).json(response)
       }
 
-      emitter.emit('ticket:created', {
-        hostname: req.headers.host,
-        socketId: socketId,
-        ticket: tt
-      })
+      response.success = true
 
-      response.ticket = tt
-      res.json(response)
-    })
-  })
+      return res.json(response)
+    }
+  )
 }
 
 /**
@@ -537,10 +550,12 @@ apiTickets.createPublicTicket = function (req, res) {
           pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
         })
 
+        var sanitizedFullname = xss(postData.user.fullname)
+
         user = new UserSchema({
           username: postData.user.email,
           password: plainTextPass,
-          fullname: postData.user.fullname,
+          fullname: sanitizedFullname,
           email: postData.user.email,
           accessToken: chance.hash(),
           role: roleDefault.value
@@ -600,8 +615,8 @@ apiTickets.createPublicTicket = function (req, res) {
             group: group._id,
             type: ticketType._id,
             priority: _.first(ticketType.priorities)._id, // TODO: change when priority order is complete!
-            subject: sanitizeHtml(postData.ticket.subject).trim(),
-            issue: sanitizeHtml(postData.ticket.issue).trim(),
+            subject: xss(sanitizeHtml(postData.ticket.subject).trim()),
+            issue: xss(sanitizeHtml(postData.ticket.issue).trim()),
             history: [HistoryItem],
             subscribers: [savedUser._id]
           })
@@ -611,6 +626,7 @@ apiTickets.createPublicTicket = function (req, res) {
           tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
           tIssue = sanitizeHtml(tIssue).trim()
           ticket.issue = marked(tIssue)
+          ticket.issue = xss(ticket.issue)
 
           ticket.save(function (err, t) {
             if (err) return next(err)
@@ -909,7 +925,7 @@ apiTickets.postComment = function (req, res) {
     var Comment = {
       owner: owner,
       date: new Date(),
-      comment: marked(comment)
+      comment: xss(marked(comment))
     }
 
     t.updated = Date.now()
@@ -981,7 +997,7 @@ apiTickets.postInternalNote = function (req, res) {
     var Note = {
       owner: payload.owner || req.user._id,
       date: new Date(),
-      note: marked(payload.note)
+      note: xss(marked(payload.note))
     }
 
     ticket.updated = Date.now()

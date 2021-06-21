@@ -17,7 +17,7 @@ var winston = require('winston')
 var groupSchema = require('../models/group')
 var departmentSchema = require('../models/department')
 var permissions = require('../permissions')
-
+var xss = require('xss')
 /**
  * @since 1.0
  * @author Chris Brame <polonel@gmail.com>
@@ -57,7 +57,7 @@ ticketsController.pubNewIssue = function (req, res) {
         if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {
           content.data.privacyPolicy = 'No Privacy Policy has been set.'
         } else {
-          content.data.privacyPolicy = marked(privacyPolicy.value)
+          content.data.privacyPolicy = xss(marked(privacyPolicy.value))
         }
 
         return res.render('pub_createTicket', content)
@@ -531,6 +531,34 @@ ticketsController.uploadImageMDE = function (req, res) {
     }
 
     var ext = path.extname(filename)
+    var allowedExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.jpe',
+      '.jif',
+      '.jfif',
+      '.jfi',
+      '.png',
+      '.gif',
+      '.webp',
+      '.tiff',
+      '.tif',
+      '.bmp',
+      '.dib',
+      '.heif',
+      '.heic',
+      '.svg',
+      '.svgz'
+    ]
+
+    if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
 
     var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
     // var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
@@ -609,7 +637,7 @@ ticketsController.uploadAttachment = function (req, res) {
 
     if (
       mimetype.indexOf('image/') === -1 &&
-      mimetype.indexOf('text/') === -1 &&
+      mimetype.indexOf('text/plain') === -1 &&
       mimetype.indexOf('audio/mpeg') === -1 &&
       mimetype.indexOf('audio/mp3') === -1 &&
       mimetype.indexOf('audio/wav') === -1 &&
@@ -622,7 +650,7 @@ ticketsController.uploadAttachment = function (req, res) {
       mimetype.indexOf('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') === -1
     ) {
       error = {
-        status: 500,
+        status: 400,
         message: 'Invalid File Type'
       }
 
@@ -631,6 +659,18 @@ ticketsController.uploadAttachment = function (req, res) {
 
     var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
     var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
+
+    var ext = path.extname(sanitizedFilename)
+    var badExts = ['.html', '.htm', '.js']
+
+    if (badExts.includes(ext)) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
 
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 

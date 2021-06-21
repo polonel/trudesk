@@ -16,7 +16,9 @@ var path = require('path')
 var async = require('async')
 var express = require('express')
 var mongoose = require('mongoose')
-var HandleBars = require('handlebars').create()
+var APC = require('@handlebars/allow-prototype-access')
+var HandleBars = require('handlebars')
+var insecureHandlebars = APC.allowInsecurePrototypeAccess(HandleBars)
 var hbs = require('express-hbs')
 var hbsHelpers = require('../helpers/hbs/helpers')
 var winston = require('winston')
@@ -38,7 +40,7 @@ module.exports = function (app, db, callback) {
   app.engine(
     'hbs',
     hbs.express4({
-      handlebars: HandleBars,
+      handlebars: insecureHandlebars,
       defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
       partialsDir: [path.join(__dirname, '../views/partials/'), path.join(__dirname, '../views/subviews/reports')]
     })

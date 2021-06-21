@@ -25,7 +25,7 @@ commands:
 jobs:
   build_general:
     docker:
-    - image: circleci/node:10-stretch
+    - image: circleci/node:12-stretch
     - image: circleci/mongo:3.6
     working_directory: ~/trudesk
     steps:
@@ -53,7 +53,7 @@ jobs:
             docker push polonel/trudesk:next
   build_develop:
     docker:
-    - image: circleci/node:10-stretch
+    - image: circleci/node:12-stretch
     - image: circleci/mongo:3.6
     working_directory: ~/trudesk
     steps:
@@ -70,7 +70,7 @@ jobs:
         command: yarn run codacy
   build_production:
     docker:
-    - image: circleci/node:10-stretch
+    - image: circleci/node:12-stretch
     - image: circleci/mongo:3.6
     working_directory: ~/trudesk
     steps:

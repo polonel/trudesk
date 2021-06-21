@@ -19,6 +19,7 @@ var _ = require('lodash')
 var moment = require('moment')
 var sanitizeHtml = require('sanitize-html')
 // var redisCache          = require('../cache/rediscache');
+var xss = require('xss')
 
 // Needed - For Population
 var groupSchema = require('./group')
@@ -439,7 +440,7 @@ ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
   var self = this
   issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
   issue = sanitizeHtml(issue).trim()
-  self.issue = marked(issue)
+  self.issue = xss(marked(issue))
 
   var historyItem = {
     action: 'ticket:update:issue',
