@@ -288,7 +288,9 @@ accountsController.uploadCSV = function (req, res) {
   })
 
   var object = {}
-  var parser = csv()
+
+  var parser = csv.parse()
+
   busboy.on('file', function (fieldname, file) {
     object.csv = []
 
@@ -309,11 +311,13 @@ accountsController.uploadCSV = function (req, res) {
   })
 
   parser
-    .on('readable', function () {
-      var data
-      while ((data = parser.read()) !== null) {
-        object.csv.push(data)
-      }
+    .on('data', function (row) {
+      object.csv.push(row)
+      // var data
+      // while ((data = parser.read()) !== null) {
+      //   console.log(data)
+      //   object.csv.push(data)
+      // }
     })
     .on('end', function () {
       if (object.csv.length < 1) {
@@ -325,7 +329,7 @@ accountsController.uploadCSV = function (req, res) {
         return i.toLowerCase() === 'username'
       })
       var fullnameIdx = _.findIndex(titleRow, function (i) {
-        return i.toLowerCase() === 'fullname'
+        return i.toLowerCase() === 'name'
       })
       var emailIdx = _.findIndex(titleRow, function (i) {
         return i.toLowerCase() === 'email'
@@ -334,7 +338,7 @@ accountsController.uploadCSV = function (req, res) {
         return i.toLowerCase() === 'title'
       })
       var roleIdx = _.findIndex(titleRow, function (i) {
-        return i.toLowerCase() === 'role'
+        return i.toLowerCase() === 'roleid'
       })
 
       object.csv.splice(0, 1)
