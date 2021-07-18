@@ -468,6 +468,7 @@ apiTickets.create = function (req, res) {
             })
 
             response.ticket = tt
+            res.json(response)
           })
         })
       }
