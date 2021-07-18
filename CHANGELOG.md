@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/polonel/trudesk/compare/v1.1.6...v1.1.7) (2021-07-15)
+
+
+### Bug Fixes
+
+* **import:** importing users with csv [#418](https://github.com/polonel/trudesk/issues/418) ([d2cab62](https://github.com/polonel/trudesk/commit/d2cab62))
+
 ## [1.1.6](https://github.com/polonel/trudesk/compare/v1.1.5...v1.1.6) (2021-06-21)
 
 
