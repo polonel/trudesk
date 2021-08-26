@@ -88,7 +88,8 @@ mailCheck.init = function (settings) {
     password: MAILERCHECK_PASS,
     host: MAILERCHECK_HOST,
     port: MAILERCHECK_PORT,
-    tls: MAILERCHECK_TLS
+    tls: MAILERCHECK_TLS,
+    tlsOptions: { rejectUnauthorized: false}
   })
 
   mailCheck.fetchMailOptions = {
