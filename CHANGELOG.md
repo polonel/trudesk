@@ -1,3 +1,10 @@
+## [1.1.8](https://github.com/polonel/trudesk/compare/v1.1.7...v1.1.8) (2021-07-25)
+
+
+### Bug Fixes
+
+* **tickets:** creation has no response [#423](https://github.com/polonel/trudesk/issues/423) by alsemany ([dcfde5f](https://github.com/polonel/trudesk/commit/dcfde5f))
+
 ## [1.1.7](https://github.com/polonel/trudesk/compare/v1.1.6...v1.1.7) (2021-07-15)
 
 
