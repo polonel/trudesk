@@ -54,7 +54,7 @@ installController.elastictest = function (req, res) {
 
 installController.mongotest = function (req, res) {
   var data = req.body
-  var dbPassword = encodeURIComponent(data.password)
+  var dbPassword = encodeURI(data.password)
   var CONNECTION_URI =
     'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
 
@@ -150,7 +150,7 @@ installController.install = function (req, res) {
     fullname: data['account[fullname]']
   }
 
-  var dbPassword = encodeURIComponent(password)
+  var dbPassword = encodeURI(password)
   var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
   if (port === '---') conuri = 'mongodb+srv://' + username + ':' + dbPassword + '@' + host + '/' + database
 
