@@ -19,7 +19,6 @@ import { updateSetting, updateMultipleSettings } from 'actions/settings'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
-import EnableSwitch from 'components/Settings/EnableSwitch'
 
 import helpers from 'lib/helpers'
 import axios from 'axios'

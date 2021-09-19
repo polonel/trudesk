@@ -360,6 +360,8 @@ function mainRoutes (router, middleware, controllers) {
   )
 
   router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function (req, res) {
+    if (process.env.DISABLE_RESTART) return res.json({ success: true })
+
     var pm2 = require('pm2')
     pm2.connect(function (err) {
       if (err) {
@@ -398,6 +400,7 @@ function mainRoutes (router, middleware, controllers) {
     })
 
     router.get('/debug/restart', function (req, res) {
+      if (process.env.DISABLE_RESTART) return res.send('RESTART DISABLED')
       var pm2 = require('pm2')
       pm2.connect(function (err) {
         if (err) {

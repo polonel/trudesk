@@ -24,8 +24,8 @@ winston.add(winston.transports.Console, {
   level: global.env === 'production' ? 'info' : 'verbose'
 })
 ;(function () {
-  var ELATICSEARCH_URI = process.env.ELATICSEARCH_URI
-  if (!ELATICSEARCH_URI) return process.send({ error: { message: 'Invalid connection uri' } })
+  var ELASTICSEARCH_URI = process.env.ELASTICSEARCH_URI
+  if (!ELASTICSEARCH_URI) return process.send({ error: { message: 'Invalid connection uri' } })
 
   elasticsearch.testConnection(function (err) {
     if (err) {
