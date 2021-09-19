@@ -317,6 +317,13 @@ function mainRoutes (router, middleware, controllers) {
     middleware.loadCommonData,
     controllers.settings.backupSettings
   )
+  router.get(
+    '/settings/server',
+    middleware.redirectToLogin,
+    middleware.isAdmin,
+    middleware.loadCommonData,
+    controllers.settings.serverSettings
+  )
   router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal)
   router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs)
 

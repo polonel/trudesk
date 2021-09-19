@@ -28,6 +28,7 @@ import MailerSettingsContainer from './Mailer'
 import ElasticsearchSettingsContainer from './Elasticsearch'
 import TPSSettingsContainer from './TPS'
 import BackupRestoreSettingsContainer from './BackupRestore'
+import ServerSettingsController from './Server'
 import LegalSettingsContainer from 'containers/Settings/Legal'
 
 import helpers from 'lib/helpers'
@@ -138,6 +139,13 @@ class SettingsContainer extends React.Component {
                 }}
               />
               <MenuItem
+                title='Server'
+                active={this.state.activeCategory === 'settings-server'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'server')
+                }}
+              />
+              <MenuItem
                 title='Legal'
                 active={this.state.activeCategory === 'settings-legal'}
                 onClick={e => {
@@ -162,6 +170,7 @@ class SettingsContainer extends React.Component {
               <ElasticsearchSettingsContainer active={this.state.activeCategory === 'settings-elasticsearch'} />
               <TPSSettingsContainer active={this.state.activeCategory === 'settings-tps'} />
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
+              <ServerSettingsController active={this.state.activeCategory === 'settings-server'} />
               <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />
             </div>
           </div>
@@ -180,7 +189,4 @@ const mapStateToProps = state => ({
   sidebar: state.sidebar
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchSettings }
-)(SettingsContainer)
+export default connect(mapStateToProps, { fetchSettings })(SettingsContainer)

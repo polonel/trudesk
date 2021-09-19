@@ -289,7 +289,7 @@ class Mailer_MailerCheck extends React.Component {
               <div className='uk-float-right'>
                 <EnableSwitch
                   label={'Enable'}
-                  stateName={'mailerCheckCreateAccount'}
+                  stateName={'mailerCheckSelfSign'}
                   checked={this.state.mailerCheckSelfSign}
                   onChange={e => this.onCheckboxChanged(e, 'mailerCheckSelfSign')}
                   disabled={!this.getSetting('mailerCheckEnabled')}

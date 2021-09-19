@@ -179,7 +179,7 @@ function buildGrants (obj) {
 
 module.exports = {
   register: register,
-  flustRoles: register,
+  flushRoles: register,
   canThis: canThis,
   hasHierarchyEnabled: hasHierarchyEnabled,
   parseRoleHierarchy: parseRoleHierarchy,

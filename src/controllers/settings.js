@@ -140,6 +140,12 @@ settingsController.backupSettings = function (req, res) {
   renderView(res, content)
 }
 
+settingsController.serverSettings = function (req, res) {
+  var content = initViewContent('server', req)
+
+  renderView(res, content)
+}
+
 settingsController.legal = function (req, res) {
   if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings')
 

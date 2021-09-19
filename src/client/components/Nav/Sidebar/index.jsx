@@ -303,6 +303,12 @@ class Sidebar extends React.Component {
                 active={activeSubItem === 'settings-backup'}
               />
               <SubmenuItem
+                text='Server'
+                icon='dns'
+                href='/settings/server'
+                active={activeSubItem === 'settings-server'}
+              />
+              <SubmenuItem
                 text='Legal'
                 icon='gavel'
                 href='/settings/legal'
@@ -342,7 +348,4 @@ const mapStateToProps = state => ({
   sessionUser: state.shared.sessionUser
 })
 
-export default connect(
-  mapStateToProps,
-  { updateNavChange }
-)(Sidebar)
+export default connect(mapStateToProps, { updateNavChange })(Sidebar)
