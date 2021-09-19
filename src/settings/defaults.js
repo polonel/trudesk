@@ -593,7 +593,7 @@ function mailTemplates (callback) {
 function elasticSearchConfToDB (callback) {
   var nconf = require('nconf')
   var elasticsearch = {
-    enable: nconf.get('elasticsearch:enable'),
+    enable: nconf.get('elasticsearch:enable') || false,
     host: nconf.get('elasticsearch:host'),
     port: nconf.get('elasticsearch:port')
   }
@@ -606,7 +606,7 @@ function elasticSearchConfToDB (callback) {
         nconf.save(done)
       },
       function (done) {
-        if (!elasticsearch.enable) return done()
+        // if (!elasticsearch.enable) return done()
         SettingsSchema.getSettingByName('es:enable', function (err, setting) {
           if (err) return done(err)
           if (!setting) {
@@ -617,11 +617,11 @@ function elasticSearchConfToDB (callback) {
               },
               done
             )
-          }
+          } else done()
         })
       },
       function (done) {
-        if (!elasticsearch.host) return done()
+        if (!elasticsearch.host) elasticsearch.host = 'localhost'
         SettingsSchema.getSettingByName('es:host', function (err, setting) {
           if (err) return done(err)
           if (!setting) {
@@ -632,7 +632,7 @@ function elasticSearchConfToDB (callback) {
               },
               done
             )
-          }
+          } else done()
         })
       },
       function (done) {
@@ -647,7 +647,7 @@ function elasticSearchConfToDB (callback) {
               },
               done
             )
-          }
+          } else done()
         })
       }
     ],

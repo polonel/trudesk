@@ -247,6 +247,7 @@ ES.init = function (callback) {
     var settings = s.data.settings
 
     var ENABLED = settings.elasticSearchConfigured.value
+
     if (!ENABLED) {
       if (_.isFunction(callback)) return callback()
 

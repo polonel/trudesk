@@ -122,7 +122,10 @@ class ElasticsearchSettingsContainer extends React.Component {
   onFormSubmit (e) {
     e.preventDefault()
 
-    const payload = [{ name: 'es:host', value: this.state.host }, { name: 'es:port', value: this.state.port }]
+    const payload = [
+      { name: 'es:host', value: this.state.host },
+      { name: 'es:port', value: this.state.port }
+    ]
 
     this.props.updateMultipleSettings(payload)
   }
@@ -310,7 +313,4 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting, updateMultipleSettings }
-)(ElasticsearchSettingsContainer)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings })(ElasticsearchSettingsContainer)

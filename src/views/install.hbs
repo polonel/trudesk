@@ -539,6 +539,7 @@
                 var $connectBtn = $(this);
                 $connectBtn.prop('disabled', true).text('Trying to connect...');
                 var elasticFormData = $('form#elasticConnection').serializeObject();
+                
                 $.ajax({
                     method: 'POST',
                     url: '/install/elastictest',

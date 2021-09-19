@@ -12,155 +12,173 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history', 'angularjs/services'], function(angular, _, $, helpers, socketClient, Uikit) {
-     return angular.module('trudesk.controllers.settingsElasticSearch', ['trudesk.services.settings'])
-         .controller('settingsElasticSearchCtrl', function(SettingsService, $scope, $http, $timeout, $document, $log) {
+define([
+  'angular',
+  'underscore',
+  'jquery',
+  'modules/helpers',
+  'modules/socket',
+  'uikit',
+  'history',
+  'angularjs/services'
+], function (angular, _, $, helpers, socketClient, Uikit) {
+  return angular
+    .module('trudesk.controllers.settingsElasticSearch', ['trudesk.services.settings'])
+    .controller('settingsElasticSearchCtrl', function (SettingsService, $scope, $http, $timeout, $document, $log) {
+      // Local Functions
+      function toggleAnimation (forceState, state) {
+        var animateItems = $('.setting-item-wrap.animate-in')
+        var docElemStyle = $document[0].documentElement.style
+        var transitionProp = angular.isString(docElemStyle.transition) ? 'transition' : 'WebkitTransition'
 
-             // Local Functions
-             function toggleAnimation(forceState, state) {
-                 var animateItems = $('.setting-item-wrap.animate-in');
-                 var docElemStyle = $document[0].documentElement.style;
-                 var transitionProp = angular.isString(docElemStyle.transition) ? 'transition' : 'WebkitTransition';
+        for (var i = 0; i < animateItems.length; i++) {
+          var item = animateItems[i]
+          item.style[transitionProp + 'Delay'] = i * 50 + 'ms'
+          if (forceState) {
+            if (state) item.classList.add('is-in')
+            else item.classList.remove('is-in')
+          } else item.classList.toggle('is-in')
+        }
+      }
 
-                 for (var i = 0; i < animateItems.length; i++) {
-                     var item = animateItems[i];
-                     item.style[ transitionProp + 'Delay' ] = ( i * 50 ) + 'ms';
-                     if (forceState) {
-                         if (state)
-                             item.classList.add('is-in');
-                         else
-                             item.classList.remove('is-in');
-                     } else
-                         item.classList.toggle('is-in');
-                 }
-             }
+      function getStatus () {
+        if (!SettingsService.getSettings().elasticSearchConfigured.value) {
+          $scope.esStatus = 'Not Configured'
+          $scope.indexCount = '0'
+          $scope.inSyncText = 'Not Configured'
+          return false
+        }
 
-             function getStatus() {
-                 console.log(SettingsService.getSettings().elasticSearchConfigured.value);
-                 if (!SettingsService.getSettings().elasticSearchConfigured.value) {
-                     $scope.esStatus = 'Not Configured';
-                     $scope.indexCount = '0';
-                     $scope.inSyncText = 'Not Configured';
-                     return false;
-                 }
+        // Get Elastic Search Status
+        $http.get('/api/v1/admin/elasticsearch/status').then(
+          function success (response) {
+            $scope.esStatus = response.data.status.esStatus
+            $scope.esStatusClass = 'none'
+            if ($scope.esStatus.toLowerCase() === 'connected') $scope.esStatusClass = 'success'
+            if ($scope.esStatus.toLowerCase() === 'error') $scope.esStatusClass = 'danger'
 
-                 // Get Elastic Search Status
-                 $http.get('/api/v1/admin/elasticsearch/status')
-                     .then(function success(response) {
-                         $scope.esStatus = response.data.status.esStatus;
-                         $scope.esStatusClass = 'none';
-                         if ($scope.esStatus.toLowerCase() === 'connected')
-                             $scope.esStatusClass = 'success';
-                         if ($scope.esStatus.toLowerCase() === 'error')
-                             $scope.esStatusClass = 'danger';
+            $scope.indexCount = response.data.status.indexCount
+            $scope.indexCountFormatted = $scope.indexCount.toLocaleString()
 
-                         $scope.indexCount = response.data.status.indexCount;
-                         $scope.indexCountFormatted = $scope.indexCount.toLocaleString();
+            if (response.data.status.inSync) {
+              $scope.inSyncText = 'In Sync'
+              $scope.inSyncClass = 'bg-success'
+            } else {
+              $scope.inSyncText = 'Out of Sync'
+              $scope.inSyncClass = 'bg-warning'
+            }
 
-                         if (response.data.status.inSync) {
-                             $scope.inSyncText = 'In Sync';
-                             $scope.inSyncClass = 'bg-success';
-                         } else {
-                             $scope.inSyncText = 'Out of Sync';
-                             $scope.inSyncClass = 'bg-warning';
-                         }
+            // Refresh on Rebuild every 5s
+            if ($scope.esStatus.toLowerCase() === 'rebuilding...') {
+              $timeout(getStatus, 5000)
+              $('#es-rebuild-btn').attr('disabled', true)
+            }
+          },
+          function error (err) {
+            $log.error(err)
+            $scope.esStatus = 'Error'
+            $scope.esStatusClass = 'danger'
+            $scope.inSyncText = 'Unknown'
+            if (err.data.error.message) helpers.UI.showSnackbar('Error: ' + err.data.error.message, true)
+            else if (err.data.error.msg)
+              helpers.UI.showSnackbar('Error: An unknown error occurred. Check Console.', true)
+            else helpers.UI.showSnackbar('Error: ' + err.data.error, true)
+          }
+        )
+      }
 
-                        // Refresh on Rebuild every 5s
-                        if ($scope.esStatus.toLowerCase() === 'rebuilding...') {
-                            $timeout(getStatus, 5000);
-                            $('#es-rebuild-btn').attr('disabled', true);
-                        }
-                     }, function error(err) {
-                         $log.error(err);
-                         $scope.esStatus = 'Error';
-                         $scope.esStatusClass = 'danger';
-                         $scope.inSyncText = 'Unknown';
-                         if (err.data.error.message)
-                             helpers.UI.showSnackbar('Error: ' + err.data.error.message, true);
-                         else if (err.data.error.msg)
-                             helpers.UI.showSnackbar('Error: An unknown error occurred. Check Console.', true);
-                         else
-                             helpers.UI.showSnackbar('Error: ' + err.data.error, true);
-                     });
-             }
+      // Scope
 
-             // Scope
+      // Vars
+      $scope.esStatus = 'Please Wait...'
+      $scope.indexCount = 0
+      $scope.indexCountFormatted = 0
+      $scope.inSyncText = 'Please Wait...'
 
-             // Vars
-             $scope.esStatus = 'Please Wait...';
-             $scope.indexCount = 0;
-             $scope.indexCountFormatted = 0;
-             $scope.inSyncText = 'Please Wait...';
+      $scope.init = function () {
+        // Animate if enabled
+        if ($scope.elasticSearchEnable) toggleAnimation(true, true)
 
-             $scope.init = function() {
-                // Animate if enabled
-                if ($scope.elasticSearchEnable)
-                    toggleAnimation(true, true);
+        getStatus()
+      }
 
-                getStatus();
-             };
+      $scope.elasticSearchEnableChange = function () {
+        toggleAnimation(true, $scope.elasticSearchEnable)
 
-             $scope.elasticSearchEnableChange = function() {
-                 toggleAnimation(true, $scope.elasticSearchEnable);
+        $http
+          .put(
+            '/api/v1/settings',
+            {
+              name: 'es:enable',
+              value: $scope.elasticSearchEnable
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          .then(
+            function successCallback () {},
+            function errorCallback (err) {
+              helpers.UI.showSnackbar('Error: ' + err, true)
+            }
+          )
+      }
 
-                 $http.put('/api/v1/settings', {
-                     name: 'es:enable',
-                     value: $scope.elasticSearchEnable
-                 }, {
-                     headers: {
-                         'Content-Type': 'application/json'
-                     }
-                 }).then(function successCallback() {
+      $scope.esServerFormSubmit = function ($event) {
+        $event.preventDefault()
 
-                 }, function errorCallback(err) {
-                     helpers.UI.showSnackbar('Error: ' + err, true);
-                 });
-             };
+        $http
+          .put(
+            '/api/v1/settings',
+            [{ name: 'es:host', value: $scope.esServer }, { name: 'es:port', value: $scope.esPort }],
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          .then(
+            function successCallback () {
+              SettingsService.getSettings().elasticSearchConfigured.value = true
+              SettingsService.getSettings().elasticSearchHost.value = $scope.esServer
+              SettingsService.getSettings().elasticSearchPort.value = $scope.esPort
+              helpers.UI.showSnackbar('Settings Saved', false)
+            },
+            function errorCallback (err) {
+              helpers.UI.showSnackbar('Error: ' + err, true)
+            }
+          )
+      }
 
-             $scope.esServerFormSubmit = function($event) {
-                 $event.preventDefault();
+      $scope.rebuildIndexClicked = function ($event) {
+        $event.preventDefault()
 
-                 $http.put('/api/v1/settings', [
-                     { name: 'es:host', value: $scope.esServer },
-                     { name: 'es:port', value: $scope.esPort }
-                     ], {
-                     headers: {
-                         'Content-Type': 'application/json'
-                     }
-                 }).then(function successCallback() {
-                     SettingsService.getSettings().elasticSearchConfigured.value = true;
-                     SettingsService.getSettings().elasticSearchHost.value = $scope.esServer;
-                     SettingsService.getSettings().elasticSearchPort.value = $scope.esPort;
-                     helpers.UI.showSnackbar('Settings Saved', false);
-                 }, function errorCallback(err) {
-                     helpers.UI.showSnackbar('Error: ' + err, true);
-                 });
-             };
-
-             $scope.rebuildIndexClicked = function($event) {
-                $event.preventDefault();
-
-                 Uikit.modal.confirm('Are you sure you want to rebuild the index?', function() {
-                     $http.get(
-                         '/api/v1/admin/elasticsearch/rebuild'
-                     )
-                         .success(function() {
-                             $scope.esStatus = 'Rebuilding...';
-                             $scope.esStatusClass = 'text-warning';
-                             helpers.UI.showSnackbar('Rebuilding Index...', false);
-                             $($event.currentTarget).attr('disabled', true);
-                             $timeout(function() {
-                                 getStatus();
-                             }, 3000);
-                         })
-                         .error(function(err) {
-                             $log.error('[trudesk:settings:es:RebuildIndex] - Error: ' + err.error);
-                             helpers.UI.showSnackbar('Error: An unknown error occurred. Check Console.', true);
-                         });
-                 }, {
-                     labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
-                 });
-             };
-
-         });
-    });
+        Uikit.modal.confirm(
+          'Are you sure you want to rebuild the index?',
+          function () {
+            $http
+              .get('/api/v1/admin/elasticsearch/rebuild')
+              .success(function () {
+                $scope.esStatus = 'Rebuilding...'
+                $scope.esStatusClass = 'text-warning'
+                helpers.UI.showSnackbar('Rebuilding Index...', false)
+                $($event.currentTarget).attr('disabled', true)
+                $timeout(function () {
+                  getStatus()
+                }, 3000)
+              })
+              .error(function (err) {
+                $log.error('[trudesk:settings:es:RebuildIndex] - Error: ' + err.error)
+                helpers.UI.showSnackbar('Error: An unknown error occurred. Check Console.', true)
+              })
+          },
+          {
+            labels: { Ok: 'Yes', Cancel: 'No' },
+            confirmButtonClass: 'md-btn-danger'
+          }
+        )
+      }
+    })
+})

@@ -44,7 +44,8 @@ winston.add(winston.transports.Console, {
     keepAlive: 0,
     auto_reconnect: false,
     connectTimeoutMS: 5000,
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   }
   database.init(
     function (e, db) {

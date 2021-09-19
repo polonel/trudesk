@@ -138,6 +138,8 @@ installController.install = function (req, res) {
 
   // ElasticSearch
   var eEnabled = data['elastic[enable]']
+  if (typeof eEnabled === 'string') eEnabled = eEnabled.toLowerCase() === 'true'
+
   var eHost = data['elastic[host]']
   var ePort = data['elastic[port]']
 
@@ -172,14 +174,14 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
-        if (!eEnabled) return next()
+        // if (!eEnabled) return next()
         async.parallel(
           [
             function (done) {
               SettingsSchema.create(
                 {
                   name: 'es:enable',
-                  value: true
+                  value: eEnabled
                 },
                 done
               )
