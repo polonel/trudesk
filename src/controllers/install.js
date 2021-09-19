@@ -38,7 +38,7 @@ installController.elastictest = function (req, res) {
   var CONNECTION_URI = data.host + ':' + data.port
 
   var child = require('child_process').fork(path.join(__dirname, '../../src/install/elasticsearchtest'), {
-    env: { FORK: 1, NODE_ENV: global.env, ELATICSEARCH_URI: CONNECTION_URI }
+    env: { FORK: 1, NODE_ENV: global.env, ELASTICSEARCH_URI: CONNECTION_URI }
   })
   global.forks.push({ name: 'elastictest', fork: child })
 
