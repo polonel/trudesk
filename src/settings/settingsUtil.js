@@ -95,6 +95,7 @@ util.getSettings = function (callback) {
     s.mailerCheckPort = parseSetting(settings, 'mailer:check:port', 143)
     s.mailerCheckUsername = parseSetting(settings, 'mailer:check:username', '')
     s.mailerCheckPassword = parseSetting(settings, 'mailer:check:password', '')
+    s.mailerCheckSelfSign = parseSetting(settings, 'mailer:check:selfsign', false)
     s.mailerCheckTicketType = parseSetting(settings, 'mailer:check:ticketype', '')
     s.mailerCheckTicketPriority = parseSetting(settings, 'mailer:check:ticketpriority', '')
     s.mailerCheckCreateAccount = parseSetting(settings, 'mailer:check:createaccount', false)

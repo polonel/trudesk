@@ -35,6 +35,7 @@ class Mailer_MailerCheck extends React.Component {
       mailerCheckPort: '',
       mailerCheckUsername: '',
       mailerCheckPassword: '',
+      mailerCheckSelfSign: '',
       mailerCheckPolling: '',
       mailerCheckCreateAccount: '',
       mailerCheckDeleteMessage: '',
@@ -65,6 +66,8 @@ class Mailer_MailerCheck extends React.Component {
         stateObj.mailerCheckUsername = nextProps.settings.getIn(['settings', 'mailerCheckUsername', 'value']) || ''
       if (!state.mailerCheckPassword)
         stateObj.mailerCheckPassword = nextProps.settings.getIn(['settings', 'mailerCheckPassword', 'value']) || ''
+      if (state.mailerCheckSelfSign === '')
+        stateObj.mailerCheckSelfSign = nextProps.settings.getIn(['settings', 'mailerCheckSelfSign', 'value']) || ''
       if (state.mailerCheckPolling === '')
         stateObj.mailerCheckPolling =
           parseInt(nextProps.settings.getIn(['settings', 'mailerCheckPolling', 'value'])) / 60000 || ''
@@ -124,6 +127,7 @@ class Mailer_MailerCheck extends React.Component {
       { name: 'mailer:check:port', value: this.state.mailerCheckPort },
       { name: 'mailer:check:username', value: this.state.mailerCheckUsername },
       { name: 'mailer:check:password', value: this.state.mailerCheckPassword },
+      { name: 'mailer:check:selfsign', value: this.state.mailerCheckSelfSign },
       { name: 'mailer:check:ticketype', value: this.state.mailerCheckTicketType },
       { name: 'mailer:check:ticketpriority', value: this.state.mailerCheckTicketPriority },
       { name: 'mailer:check:createaccount', value: this.state.mailerCheckCreateAccount },
@@ -269,6 +273,29 @@ class Mailer_MailerCheck extends React.Component {
                 onChange={e => this.onInputValueChanged(e, 'mailerCheckPassword')}
                 disabled={!this.getSetting('mailerCheckEnabled')}
               />
+            </div>
+            <div className='uk-clearfix uk-margin-medium-bottom'>
+              <div className='uk-float-left'>
+                <h6 style={{ padding: 0, margin: '5px 0 0 0', fontSize: '16px', lineHeight: '14px' }}>
+                  Allow Self Signed Certificate
+                </h6>
+                <h5
+                  style={{ padding: '0 0 10px 0', margin: '2px 0 0 0', fontSize: '12px' }}
+                  className={'uk-text-muted'}
+                >
+                  Allow less secure self signed certificates when checking mailbox.
+                </h5>
+              </div>
+              <div className='uk-float-right'>
+                <EnableSwitch
+                  label={'Enable'}
+                  stateName={'mailerCheckCreateAccount'}
+                  checked={this.state.mailerCheckSelfSign}
+                  onChange={e => this.onCheckboxChanged(e, 'mailerCheckSelfSign')}
+                  disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+              </div>
+              <hr style={{ float: 'left', marginTop: '10px' }} />
             </div>
             <div className='uk-clearfix uk-margin-medium-bottom'>
               <div className='uk-float-left'>

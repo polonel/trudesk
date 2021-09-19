@@ -46,6 +46,9 @@ mailCheck.init = function (settings) {
   s.mailerCheckPassword = _.find(settings, function (x) {
     return x.name === 'mailer:check:password'
   })
+  s.mailerCheckSelfSign = _.find(settings, function (x) {
+    return x.name === 'mailer:check:selfsign'
+  })
   s.mailerCheckPolling = _.find(settings, function (x) {
     return x.name === 'mailer:check:polling'
   })
@@ -67,6 +70,7 @@ mailCheck.init = function (settings) {
   s.mailerCheckPort = s.mailerCheckPort === undefined ? { value: 143 } : s.mailerCheckPort
   s.mailerCheckUsername = s.mailerCheckUsername === undefined ? { value: '' } : s.mailerCheckUsername
   s.mailerCheckPassword = s.mailerCheckPassword === undefined ? { value: '' } : s.mailerCheckPassword
+  s.mailerCheckSelfSign = s.mailerCheckSelfSign === undefined ? { value: false } : s.mailerCheckSelfSign
   s.mailerCheckPolling = s.mailerCheckPolling === undefined ? { value: 600000 } : s.mailerCheckPolling // 10 min
   s.mailerCheckTicketType = s.mailerCheckTicketType === undefined ? { value: 'Issue' } : s.mailerCheckTicketType
   s.mailerCheckTicketPriority = s.mailerCheckTicketPriority === undefined ? { value: '' } : s.mailerCheckTicketPriority
@@ -79,16 +83,21 @@ mailCheck.init = function (settings) {
   var MAILERCHECK_PASS = s.mailerCheckPassword.value
   var MAILERCHECK_PORT = s.mailerCheckPort.value
   var MAILERCHECK_TLS = s.mailerCheckPort.value === '993'
+  var MAILERCHECK_SELFSIGN = s.mailerCheckSelfSign.value
   var POLLING_INTERVAL = s.mailerCheckPolling.value
 
   if (!MAILERCHECK_ENABLED) return true
+
+  var tlsOptions = {}
+  if (MAILERCHECK_SELFSIGN) tlsOptions = { rejectUnauthorized: false }
 
   mailCheck.Imap = new Imap({
     user: MAILERCHECK_USER,
     password: MAILERCHECK_PASS,
     host: MAILERCHECK_HOST,
     port: MAILERCHECK_PORT,
-    tls: MAILERCHECK_TLS
+    tls: MAILERCHECK_TLS,
+    tlsOptions: tlsOptions
   })
 
   mailCheck.fetchMailOptions = {
