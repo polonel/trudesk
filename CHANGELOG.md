@@ -1,3 +1,14 @@
+## [1.1.9](https://github.com/polonel/trudesk/compare/v1.1.8...v1.1.9) (2021-09-19)
+
+
+### Bug Fixes
+
+* **about:** links in about page ([2425d7e](https://github.com/polonel/trudesk/commit/2425d7e))
+* **db:** EncodeURI PR [#437](https://github.com/polonel/trudesk/issues/437) by [@vijaye-statsig](https://github.com/vijaye-statsig) ([bb9ea9b](https://github.com/polonel/trudesk/commit/bb9ea9b))
+* **install:** default setting for skipping elastic search ([88df9b0](https://github.com/polonel/trudesk/commit/88df9b0))
+* **install:** typo in elastic search preventing connection ([3678292](https://github.com/polonel/trudesk/commit/3678292))
+* **mailcheck:** added option for less secure certs in mailcheck ([0e6fd69](https://github.com/polonel/trudesk/commit/0e6fd69)), closes [PR#434](https://github.com/PR/issues/434)
+
 ## [1.1.8](https://github.com/polonel/trudesk/compare/v1.1.7...v1.1.8) (2021-07-25)
 
 
