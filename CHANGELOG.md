@@ -1,3 +1,10 @@
+## [1.1.10](https://github.com/polonel/trudesk/compare/v1.1.9...v1.1.10) (2021-09-19)
+
+
+### Bug Fixes
+
+* **elasticsearch:** typo in env var ([77191dc](https://github.com/polonel/trudesk/commit/77191dc))
+
 ## [1.1.9](https://github.com/polonel/trudesk/compare/v1.1.8...v1.1.9) (2021-09-19)
 
 
