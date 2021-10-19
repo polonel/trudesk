@@ -112,7 +112,7 @@
     "util": "0.11.1",
     "velocity-react": "1.4.1",
     "winston": "2.4.4",
-    "xss": "1.0.9"
+    "xss": "1.0.10"
   },
   "devDependencies": {
     "@babel/core": "7.2.2",
