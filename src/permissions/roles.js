@@ -15,7 +15,7 @@
 /* eslint-disable node/exports-style,node/exports-style */
 
 /*
- Permissions for Trudesk. Define Roles / Groups.
+ Permissions. Define Roles / Groups.
  --- group:action action action
 
  *                              = all permissions for grp

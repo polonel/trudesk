@@ -162,7 +162,7 @@ class PermissionBody extends React.Component {
         <form onSubmit={e => this.onSubmit(e)}>
           <SettingItem
             title={'Admin'}
-            tooltip={'Role is considered an admin. Enabling management of the trudesk instance.'}
+            tooltip={'Role is considered an admin. Enabling management of the instance.'}
             subtitle={'Is this role defined as an admin role?'}
             component={
               <EnableSwitch

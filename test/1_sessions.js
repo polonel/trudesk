@@ -39,7 +39,7 @@ describe('sessions', function () {
     agent.get('http://localhost:3111/').end(function (err, res) {
       expect(err).to.not.exist
       expect(res.status).to.equal(200)
-      expect(res.text).to.include('<title>Trudesk &middot; Dashboard</title>')
+      expect(res.text).to.include('<title>Helpdesk &middot; Dashboard</title>')
 
       done()
     })
@@ -49,7 +49,7 @@ describe('sessions', function () {
     unauthAgent.get('http://localhost:3111/tickets').end(function (err, res) {
       expect(err).to.not.exist
       expect(res.status).to.equal(200)
-      expect(res.text).to.include('<title>Trudesk &middot; Login</title>')
+      expect(res.text).to.include('<title>Helpdesk &middot; Login</title>')
 
       done()
     })
@@ -59,7 +59,7 @@ describe('sessions', function () {
     unauthAgent.get('http://localhost:3111/install').end(function (err, res) {
       expect(err).to.not.exist
       expect(res.status).to.equal(200)
-      expect(res.text).to.include('<title>Trudesk &middot; Login</title>')
+      expect(res.text).to.include('<title>Helpdesk &middot; Login</title>')
 
       done()
     })
@@ -75,7 +75,7 @@ describe('sessions', function () {
     })
   })
 
-  it('should return Trudesk Version', function (done) {
+  it('should return Version', function (done) {
     agent.get('http://localhost:3111/api/v1/version').end(function (err, res) {
       expect(err).to.not.exist
       expect(res.status).to.equal(200)

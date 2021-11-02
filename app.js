@@ -10,7 +10,7 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Updated:    5/17/19 7:26 PM
- *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
+ *  Copyright (c) 2014-2019 All rights reserved.
  */
 
 var async = require('async')
@@ -63,15 +63,8 @@ winston.err = function (err) {
 }
 
 if (!process.env.FORK) {
-  winston.info('    .                              .o8                     oooo')
-  winston.info('  .o8                             "888                     `888')
-  winston.info('.o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo')
-  winston.info('  888   `888""8P `888  `888  d88\' `888  d88\' `88b d88(  "8  888 .8P\'')
-  winston.info('  888    888      888   888  888   888  888ooo888 `"Y88b.   888888.')
-  winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.')
-  winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o')
   winston.info('==========================================================================')
-  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2021 Chris Brame')
+  winston.info('Helpdesk v' + pkg.version + ' Copyright (C) 2014-2021')
   winston.info('')
   winston.info('Running in: ' + global.env)
   winston.info('Server Time: ' + new Date())
@@ -97,7 +90,7 @@ configExists = fs.existsSync(configFile)
 function launchInstallServer () {
   var ws = require('./src/webserver')
   ws.installServer(function () {
-    return winston.info('Trudesk Install Server Running...')
+    return winston.info('Install Server Running...')
   })
 }
 
@@ -223,7 +216,7 @@ function launchServer (db) {
         if (err) throw new Error(err)
 
         ws.listen(function () {
-          winston.info('trudesk Ready')
+          winston.info('Helpdesk Ready')
         })
       }
     )

@@ -303,7 +303,7 @@ debugController.populatedatabase = function (req, res) {
     'UPS for State Server will not remain powered up',
     'UPS issue for SBOE Server',
     'UPS not working after brown out',
-    'UPS problem at Unity System/Password problem with Trudesk',
+    'UPS problem at Unity System/Password problem',
     'WiFi adapter replacement',
     'Windows PC Internet',
     'Windows Recovery Error on PC',
@@ -509,7 +509,7 @@ debugController.sendmail = function (req, res) {
     .then(function (html) {
       var mailOptions = {
         to: to,
-        subject: 'Trudesk Test Email [Debugger]',
+        subject: 'Test Email [Debugger]',
         html: html,
         generateTextFromHTML: true
       }

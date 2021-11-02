@@ -119,7 +119,7 @@ viewController.getData = function (request, cb) {
           if (!err && setting && setting.value) {
             viewdata.siteTitle = setting.value
           } else {
-            viewdata.siteTitle = 'Trudesk'
+            viewdata.siteTitle = 'Helpdesk'
           }
 
           return callback()

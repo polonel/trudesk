@@ -138,23 +138,7 @@ class TopbarContainer extends React.Component {
     const { viewdata, sessionUser } = this.props
     return (
       <div>
-        {/*{sessionUser && sessionUser.role.isAdmin && (*/}
-        {/*  <div className={clsx('info-banner', this.showInfoBanner ? '' : 'hide')}>*/}
-        {/*    <div className={'close'} onClick={() => this.closeInfo()} />*/}
-        {/*    <p>*/}
-        {/*      You're invited to sign up for Trudesk Cloud Beta, our free-to-use cloud-hosted platform.*/}
-        {/*      <a*/}
-        {/*        href='https://trudesk.io'*/}
-        {/*        className={'md-btn md-btn-wave md-btn-small md-btn-success text-white'}*/}
-        {/*        style={{ marginLeft: 15 }}*/}
-        {/*        target={'_blank'}*/}
-        {/*        onClick={() => this.closeInfo()}*/}
-        {/*      >*/}
-        {/*        Apply Now*/}
-        {/*      </a>*/}
-        {/*    </p>*/}
-        {/*  </div>*/}
-        {/*)}*/}
+        
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
         <div className={'uk-grid top-nav'}>
           <div className='uk-width-1-1'>

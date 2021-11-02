@@ -26,7 +26,7 @@ var ES = {}
 ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
 
 function checkConnection (callback) {
-  if (!ES.esclient) return callback('Elasticsearch client not initialized. Restart Trudesk!')
+  if (!ES.esclient) return callback('Elasticsearch client not initialized. Restart Service!')
 
   ES.esclient.ping(
     {

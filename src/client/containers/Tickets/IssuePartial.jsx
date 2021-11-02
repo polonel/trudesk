@@ -8,7 +8,7 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Updated:    6/24/19 5:32 PM
- *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
+ *  Copyright (c) 2014-2019 All rights reserved.
  */
 
 import React, { Fragment } from 'react'

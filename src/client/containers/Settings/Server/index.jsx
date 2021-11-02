@@ -84,7 +84,7 @@ class ServerSettingsController extends React.Component {
       <div className={active ? 'active' : 'hide'}>
         <SettingItem
           title={'Restart Server'}
-          subtitle={'Restart the Trudesk Instance. '}
+          subtitle={'Restart the Instance. '}
           component={
             <Button
               text={'Restart'}

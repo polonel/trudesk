@@ -13,7 +13,7 @@
 **Anything else we need to know?**:
 
 **Environment**:
-- Trudesk Version:
+- Version:
 - OS (e.g. from /etc/os-release):
 - Node.JS Version:
 - MongoDB Version:

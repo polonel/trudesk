@@ -88,8 +88,8 @@ class TPSSettingsContainer extends React.Component {
           title={'TPS'}
           subtitle={
             <div>
-              Trudesk Push Service authentication for mobile push notifications.
-              <a href='http://push.trudesk.io/signup' rel='noopener noreferrer' target='_blank'>
+              Push Service authentication for mobile push notifications.
+              <a href='#' rel='noopener noreferrer' target='_blank'>
                 Get API Key
               </a>
             </div>

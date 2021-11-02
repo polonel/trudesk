@@ -107,7 +107,7 @@ class GeneralSettings extends React.Component {
           title='Site Title'
           subtitle={
             <div>
-              Title of site. Used as page title. <i>default: Trudesk</i>
+              Title of site. Used as page title. <i>default: Helpdesk</i>
             </div>
           }
           component={SiteTitle}

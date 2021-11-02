@@ -8,7 +8,7 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Updated:    1/15/20, 1:23 AM
- *  Copyright (c) 2014-2020 Trudesk, Inc. All rights reserved.
+ *  Copyright (c) 2014-2020 All rights reserved.
  */
 var mailCheck = require('../../../mailer/mailCheck')
 var apiUtils = require('../apiUtils')
