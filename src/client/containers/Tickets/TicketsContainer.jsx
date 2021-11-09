@@ -361,7 +361,8 @@ class TicketsContainer extends React.Component {
                   }
                 }
 
-                const done = () => {
+                const getSubject = () => {
+                  const title = ticket.get('subject')
                   const a = ticket.get('assignee')
                   const s = ticket.get('subscribers')
                   console.log("1--->",a);
@@ -369,12 +370,8 @@ class TicketsContainer extends React.Component {
                   console.log("3--->",ticket);
                   console.log("4--->",s.findIndex(i => i._id === a._id));
 
-                  return a && a._id && s && s.findIndex(i => i._id === a._id) < 0
-                }
-
-                const getSubject = () => {
-                  const title = ticket.get('subject')
-                  return done() ? "<strike>" + title + "</strike>" : title
+                  const done = a && a._id && s && s.findIndex(i => i._id === a._id) < 0
+                  return done ? "<strike>" + title + "</strike>" : title
                 }
 
                 const assignee = () => {
