@@ -365,12 +365,12 @@ class TicketsContainer extends React.Component {
                   const title = ticket.get('subject')
                   const a = ticket.get('assignee')
                   const s = ticket.get('subscribers')
-                  console.log("1--->",a, "--->", a._id);
-                  console.log("2--->",s, "------>", s.findIndex(i => i._id === a._id));
+                  console.log("1--->",a, "--->", a.get("_id"));
+                  console.log("2--->",s, "------>", s.findIndex(i => i.get("_id") === a.get("_id")));
 
-                  s.forEach(i => console.log("3--->", i._id));
+                  s.forEach(i => console.log("3--->", i.get("_id")));
 
-                  const done = a && a._id && s && s.findIndex(i => i._id === a._id) < 0
+                  const done = a && a.get("_id") && s && s.findIndex(i => i.get("_id") === a.get("_id")) < 0
                   return done ? "<strike>" + title + "</strike>" : title
                 }
 
