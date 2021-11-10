@@ -362,10 +362,6 @@ class TicketsContainer extends React.Component {
                   }
                 }
 
-                const done = () => {
-                  return ticket.get('warn')===true;
-                }
-
                 const assignee = () => {
                   const a = ticket.get('assignee')
                   return !a ? '--' : a.get('fullname')
@@ -428,7 +424,7 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
-                    <TableCell className={'vam nbb'}>{done() && (<span style={{color: 'white'}} className='uk-badge uk-badge-warning uk-badge-small'>?</span>)} {ticket.get('subject')}</TableCell>
+                    <TableCell className={'vam nbb'}>{ticket.get('subject')}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
