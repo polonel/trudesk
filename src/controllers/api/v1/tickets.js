@@ -1836,10 +1836,9 @@ apiTickets.subscribe = function (req, res) {
       ],
       function () {
         
-        ticket.ticket.warn = data.subscribe === false;
+        ticket.warn = data.subscribe === false;
 
         console.log("--->", ticket);
-        console.log("--->", ticket.ticket);
 
         ticket.save(function (err, ticket) {
           if (err) return res.status(400).json({ error: err })
