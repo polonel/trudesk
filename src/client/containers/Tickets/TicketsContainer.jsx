@@ -364,11 +364,6 @@ class TicketsContainer extends React.Component {
                 const done = () => {
                   const a = ticket.get('assignee')
                   const s = ticket.get('subscribers')
-
-                  console.log(a, "--->", a.get("_id"),"--->",s, "->", s.findIndex(i => i.get("_id") === a.get("_id")))
-                 
-                  s.forEach(i => console.log(i.get("_id")))
-
                   return (!a || !s ) ? false : s.findIndex(i => i.get("_id") === a.get("_id")) < 0
                 }
 
