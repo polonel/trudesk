@@ -362,7 +362,7 @@ class TicketsContainer extends React.Component {
                   }
                 }
 
-                const warning = () => {
+                const isWarning = () => {
                   return ticket.get('warn');
                 }
 
@@ -428,7 +428,7 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
-                    <TableCell className={'vam nbb'}>{warning() && (<span style={{color: 'white'}} className='uk-badge uk-badge-warning uk-badge-small'>?</span>)} {ticket.get('subject')}</TableCell>
+                    <TableCell className={'vam nbb'}>{isWarning() && (<span style={{color: 'white'}} className='uk-badge uk-badge-warning uk-badge-small'>?</span>)} {ticket.get('subject')}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
