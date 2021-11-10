@@ -361,17 +361,11 @@ class TicketsContainer extends React.Component {
                   }
                 }
 
-                const getSubject = () => {
-                  const title = ticket.get('subject')
+                const done = () => {
                   const a = ticket.get('assignee')
                   const s = ticket.get('subscribers')
-                  console.log("1--->",a, "--->", a.get("_id"));
-                  console.log("2--->",s, "------>", s.findIndex(i => i.get("_id") === a.get("_id")));
-
-                  s.forEach(i => console.log("3--->", i.get("_id")));
-
-                  const done = a && a.get("_id") && s && s.findIndex(i => i.get("_id") === a.get("_id")) < 0
-                  return done ? "<strike>" + title + "</strike>" : title
+                  
+                  return (!a || !s ) ? false : s.findIndex(i => i.get("_id") === a.get("_id")) < 0
                 }
 
                 const assignee = () => {
@@ -436,7 +430,7 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
-                    <TableCell className={'vam nbb'}>{getSubject()}</TableCell>
+                    <TableCell className={'vam nbb'}>{done && (<span className='uk-badge uk-badge-small'>?</span>)} {ticket.get('subject')}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
