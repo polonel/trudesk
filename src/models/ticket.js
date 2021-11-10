@@ -85,6 +85,7 @@ var ticketSchema = mongoose.Schema({
   date: { type: Date, default: Date.now, required: true, index: true },
   updated: { type: Date },
   deleted: { type: Boolean, default: false, required: true, index: true },
+  warn: { type: Boolean, default: false },
   type: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
