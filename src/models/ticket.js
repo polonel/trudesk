@@ -639,8 +639,6 @@ ticketSchema.methods.addSubscriber = function (userId, callback) {
     self.subscribers.push(userId)
   }
 
-  self.warn = false;
-
   return callback(null, self)
 }
 
@@ -656,8 +654,6 @@ ticketSchema.methods.removeSubscriber = function (userId, callback) {
   self.subscribers = _.reject(self.subscribers, function (i) {
     return i._id.toString() === userId.toString()
   })
-
-  self.warn = true;
 
   return callback(null, self)
 }
