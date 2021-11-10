@@ -363,7 +363,7 @@ class TicketsContainer extends React.Component {
                 }
 
                 const done = () => {
-                  return ticket.get('warn');
+                  return ticket.get('warn')===true;
                 }
 
                 const assignee = () => {
