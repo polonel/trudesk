@@ -516,7 +516,7 @@ function checkPriorities (callback) {
   )
 }
 
-function addedDefaultPrioritesToTicketTypes (callback) {
+function addedDefaultPrioritiesToTicketTypes (callback) {
   async.waterfall(
     [
       function (next) {
@@ -700,7 +700,7 @@ settingsDefaults.init = function (callback) {
         return ticketPriorityDefaults(done)
       },
       function (done) {
-        return addedDefaultPrioritesToTicketTypes(done)
+        return addedDefaultPrioritiesToTicketTypes(done)
       },
       function (done) {
         return checkPriorities(done)

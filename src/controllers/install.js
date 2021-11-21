@@ -181,7 +181,7 @@ installController.install = function (req, res) {
               SettingsSchema.create(
                 {
                   name: 'es:enable',
-                  value: eEnabled
+                  value: typeof eEnabled === 'undefined' ? false : eEnabled
                 },
                 done
               )
