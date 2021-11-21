@@ -1,3 +1,10 @@
+## [1.1.11](https://github.com/polonel/trudesk/compare/v1.1.10...v1.1.11) (2021-11-21)
+
+
+### Bug Fixes
+
+* **install:** error with fresh database ([517e3ab](https://github.com/polonel/trudesk/commit/517e3ab))
+
 ## [1.1.10](https://github.com/polonel/trudesk/compare/v1.1.9...v1.1.10) (2021-09-19)
 
 
