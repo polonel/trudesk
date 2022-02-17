@@ -16,7 +16,7 @@ var _ = require('lodash')
 var fs = require('fs-extra')
 var path = require('path')
 var async = require('async')
-var winston = require('winston')
+var winston = require('../logger')
 var moment = require('moment-timezone')
 
 var SettingsSchema = require('../models/setting')
@@ -195,8 +195,8 @@ function downloadWin32MongoDBTools (callback) {
   var http = require('http')
   var os = require('os')
   var semver = require('semver')
-  var dbVersion = require('../database').db.version || '3.6.9'
-  var fileVersion = semver(dbVersion).major + '.' + semver(dbVersion).minor
+  var dbVersion = require('../database').db.version || '5.0.6'
+  var fileVersion = semver.major(dbVersion) + '.' + semver.minor(dbVersion)
 
   if (os.platform() === 'win32') {
     winston.debug('MongoDB version ' + fileVersion + ' detected.')

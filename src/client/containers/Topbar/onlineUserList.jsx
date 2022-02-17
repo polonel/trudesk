@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import { observer } from 'mobx-react'
-import { observable, entries } from 'mobx'
+import { observable, entries, makeObservable, configure } from 'mobx'
 import { isUndefined } from 'lodash'
 
 import OffCanvas from 'components/OffCanvas'
@@ -30,6 +30,8 @@ class OnlineUserListPartial extends React.Component {
 
   constructor (props) {
     super(props)
+    configure({ enforceActions: "never"})
+    makeObservable(this)
 
     this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this)
   }

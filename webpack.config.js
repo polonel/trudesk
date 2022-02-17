@@ -22,7 +22,7 @@ module.exports = {
       'underscore'
     ],
     'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js'),
-    truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire')
+    truRequire: 'expose-loader?exposes=truRequire!' + path.resolve(__dirname, './src/public/js/truRequire')
   },
   output: {
     filename: '[name].js',
@@ -32,6 +32,7 @@ module.exports = {
   resolve: {
     modules: [path.resolve(__dirname, 'src/public/js/'), 'node_modules'],
     alias: {
+      truRequire: 'truRequire',
       // client side
       handlebars: 'vendor/handlebars/handlebars',
       jquery: 'vendor/jquery/jquery',
@@ -111,8 +112,8 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /angular\.min\.js/, use: 'exports-loader?angular' },
-      { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' },
+      { test: /angular\.min\.js/, loader: 'exports-loader', options: { type: 'commonjs', exports: 'single angular' } },
+      { test: /uikit_combined\.min\.js/, loader: 'exports-loader', options: { type: 'commonjs', exports: 'single UIkit'} },
       {
         test: /\.sass$/,
         exclude: path.resolve(__dirname, 'node_modules'),
@@ -148,6 +149,8 @@ module.exports = {
     ]
   },
   optimization: {
+    chunkIds: 'total-size',
+    moduleIds: 'size',
     minimizer: [
       new TerserPlugin({
         parallel: true,
@@ -189,8 +192,7 @@ module.exports = {
       'window.moment': 'moment',
       setImmediate: 'async'
     }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/}),
     new MiniCssExtractPlugin({
       filename: 'app.min.css'
     })

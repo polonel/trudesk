@@ -14,7 +14,7 @@
 
 var nconf = require('nconf')
 var mongoose = require('mongoose')
-var winston = require('winston')
+var winston = require('../logger')
 
 var db = {}
 var mongoConnectionUri = {
@@ -62,10 +62,7 @@ if (process.env.TD_MONGODB_URI) CONNECTION_URI = process.env.TD_MONGODB_URI
 
 var options = {
   keepAlive: 1,
-  connectTimeoutMS: 30000,
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true
+  connectTimeoutMS: 30000
 }
 
 module.exports.init = function (callback, connectionString, opts) {
@@ -80,7 +77,6 @@ module.exports.init = function (callback, connectionString, opts) {
   global.CONNECTION_URI = CONNECTION_URI
 
   mongoose.Promise = global.Promise
-  mongoose.set('useFindAndModify', false)
   mongoose
     .connect(CONNECTION_URI, options)
     .then(function () {

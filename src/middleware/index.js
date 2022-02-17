@@ -21,12 +21,12 @@ var HandleBars = require('handlebars')
 var insecureHandlebars = APC.allowInsecurePrototypeAccess(HandleBars)
 var hbs = require('express-hbs')
 var hbsHelpers = require('../helpers/hbs/helpers')
-var winston = require('winston')
+var winston = require('../logger')
 var flash = require('connect-flash')
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
-var MongoStore = require('connect-mongo')(session)
+var MongoStore = require('connect-mongo')
 var passportConfig = require('../passport')()
 
 var middleware = {}
@@ -73,8 +73,8 @@ module.exports = function (app, db, callback) {
   async.waterfall(
     [
       function (next) {
-        var sessionStore = new MongoStore({
-          mongooseConnection: db.connection,
+        var sessionStore = MongoStore.create({
+          client: db.connection.getClient(),
           autoReconnect: true
         })
         app.use(

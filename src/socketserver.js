@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var winston = require('winston')
+var winston = require('./logger')
 var async = require('async')
 var passportSocketIo = require('passport.socketio')
 var cookieparser = require('cookie-parser')
@@ -89,7 +89,7 @@ var socketServer = function (ws) {
     )
   })
 
-  io.set('transports', ['polling', 'websocket'])
+  //io.set('transports', ['polling', 'websocket'])
 
   io.sockets.on('connection', function (socket) {
     // Register Submodules

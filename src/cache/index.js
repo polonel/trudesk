@@ -17,7 +17,7 @@ var async = require('async')
 var path = require('path')
 var nconf = require('nconf')
 var _ = require('lodash')
-var winston = require('winston')
+var winston = require('../logger')
 var moment = require('moment-timezone')
 
 var truCache = {}
@@ -25,26 +25,26 @@ var cache
 
 global.env = process.env.NODE_ENV || 'production'
 
-winston.setLevels(winston.config.cli.levels)
-winston.remove(winston.transports.Console)
-winston.add(winston.transports.Console, {
-  colorize: true,
-  timestamp: function () {
-    var date = new Date()
-    return (
-      date.getMonth() +
-      1 +
-      '/' +
-      date.getDate() +
-      ' ' +
-      date.toTimeString().substr(0, 8) +
-      ' [Child:Cache:' +
-      process.pid +
-      ']'
-    )
-  },
-  level: global.env === 'production' ? 'info' : 'verbose'
-})
+// winston.setLevels(winston.config.cli.levels)
+// winston.remove(winston.transports.Console)
+// winston.add(winston.transports.Console, {
+//   colorize: true,
+//   timestamp: function () {
+//     var date = new Date()
+//     return (
+//       date.getMonth() +
+//       1 +
+//       '/' +
+//       date.getDate() +
+//       ' ' +
+//       date.toTimeString().substr(0, 8) +
+//       ' [Child:Cache:' +
+//       process.pid +
+//       ']'
+//     )
+//   },
+//   level: global.env === 'production' ? 'info' : 'verbose'
+// })
 
 function loadConfig () {
   nconf.file({

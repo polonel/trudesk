@@ -13,7 +13,7 @@
  */
 var _ = require('lodash')
 var async = require('async')
-var winston = require('winston')
+var winston = require('../logger')
 var utils = require('../helpers/utils')
 var userSchema = require('../models/user')
 

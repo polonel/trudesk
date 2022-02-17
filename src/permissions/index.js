@@ -13,7 +13,7 @@
  */
 
 var _ = require('lodash')
-var winston = require('winston')
+var winston = require('../logger')
 var roleSchema = require('../models/role')
 var roleOrder = require('../models/roleorder')
 

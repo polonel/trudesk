@@ -16,7 +16,7 @@
 var async = require('async')
 var path = require('path')
 var fs = require('fs')
-var winston = require('winston')
+var winston = require('./src/logger')
 var nconf = require('nconf')
 var Chance = require('chance')
 var chance = new Chance()
@@ -32,35 +32,35 @@ nconf.argv().env()
 global.env = process.env.NODE_ENV || 'development'
 // global.env = process.env.NODE_ENV || 'production';
 
-winston.setLevels(winston.config.cli.levels)
-winston.remove(winston.transports.Console)
-winston.add(winston.transports.Console, {
-  colorize: true,
-  timestamp: function () {
-    var date = new Date()
-    return (
-      date.getMonth() +
-      1 +
-      '/' +
-      date.getDate() +
-      ' ' +
-      date.toTimeString().substr(0, 8) +
-      ' [' +
-      global.process.pid +
-      ']'
-    )
-  },
-  level: global.env === 'production' ? 'info' : 'verbose'
-})
+//winston.setLevels(winston.config.cli.levels)
+// winston.remove(winston.transports.Console)
+// winston.add(winston.transports.Console, {
+//   colorize: true,
+//   timestamp: function () {
+//     var date = new Date()
+//     return (
+//       date.getMonth() +
+//       1 +
+//       '/' +
+//       date.getDate() +
+//       ' ' +
+//       date.toTimeString().substr(0, 8) +
+//       ' [' +
+//       global.process.pid +
+//       ']'
+//     )
+//   },
+//   level: global.env === 'production' ? 'info' : 'verbose'
+// })
 
-winston.add(winston.transports.File, {
-  filename: 'logs/error.log',
-  level: 'error'
-})
+// winston.add(winston.transports.File, {
+//   filename: 'logs/error.log',
+//   level: 'error'
+// })
 
-winston.err = function (err) {
-  winston.error(err.stack)
-}
+// winston.err = function (err) {
+//   winston.error(err.stack)
+// }
 
 if (!process.env.FORK) {
   winston.info('    .                              .o8                     oooo')
@@ -71,7 +71,7 @@ if (!process.env.FORK) {
   winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.')
   winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o')
   winston.info('==========================================================================')
-  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2021 Chris Brame')
+  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2022 Chris Brame')
   winston.info('')
   winston.info('Running in: ' + global.env)
   winston.info('Server Time: ' + new Date())
