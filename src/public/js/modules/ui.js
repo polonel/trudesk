@@ -99,8 +99,8 @@ define('modules/ui', [
   }
 
   socketUi.onReconnect = function () {
-    socket.removeAllListeners('reconnect')
-    socket.on('reconnect', function () {
+    socket.io.removeAllListeners('reconnect')
+    socket.io.on('reconnect', function () {
       helpers.UI.hideDisconnectedOverlay()
     })
   }
@@ -111,8 +111,8 @@ define('modules/ui', [
       helpers.UI.showDisconnectedOverlay()
     })
 
-    socket.removeAllListeners('reconnect_attempt')
-    socket.on('reconnect_attempt', function () {
+    socket.io.removeAllListeners('reconnect_attempt')
+    socket.io.on('reconnect_attempt', function () {
       helpers.UI.showDisconnectedOverlay()
     })
 
