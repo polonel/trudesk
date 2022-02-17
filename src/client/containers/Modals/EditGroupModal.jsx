@@ -15,7 +15,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
@@ -32,6 +32,12 @@ import SpinLoader from 'components/SpinLoader'
 @observer
 class EditGroupModal extends React.Component {
   @observable name = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
+
   componentDidMount () {
     this.props.fetchAccounts({ type: 'customers', limit: -1 })
     this.name = this.props.group.name
@@ -142,7 +148,4 @@ const mapStateToProps = state => ({
   accountsLoading: state.accountsState.loading
 })
 
-export default connect(
-  mapStateToProps,
-  { updateGroup, fetchAccounts, unloadAccounts }
-)(EditGroupModal)
+export default connect(mapStateToProps, { updateGroup, fetchAccounts, unloadAccounts })(EditGroupModal)

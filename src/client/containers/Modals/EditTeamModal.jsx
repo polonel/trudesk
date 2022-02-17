@@ -14,7 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { connect } from 'react-redux'
 
@@ -32,6 +32,11 @@ import SpinLoader from 'components/SpinLoader'
 @observer
 class EditTeamModal extends React.Component {
   @observable name = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.props.fetchAccounts({ type: 'all', limit: -1 })
@@ -132,7 +137,4 @@ const mapStateToProps = state => ({
   accountsLoading: state.accountsState.loading
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchAccounts, unloadAccounts, saveEditTeam }
-)(EditTeamModal)
+export default connect(mapStateToProps, { fetchAccounts, unloadAccounts, saveEditTeam })(EditTeamModal)

@@ -15,7 +15,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { connect } from 'react-redux'
 
 import { createRole } from 'actions/settings'
@@ -26,6 +26,11 @@ import BaseModal from './BaseModal'
 @observer
 class CreateRoleModal extends React.Component {
   @observable name = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   onNameChange (e) {
     this.name = e.target.value
@@ -78,7 +83,4 @@ CreateRoleModal.propTypes = {
   createRole: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { createRole }
-)(CreateRoleModal)
+export default connect(null, { createRole })(CreateRoleModal)

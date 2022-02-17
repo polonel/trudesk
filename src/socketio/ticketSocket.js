@@ -333,7 +333,7 @@ events.onSetCommentText = function (socket) {
 
     comment = sanitizeHtml(comment).trim()
 
-    var markedComment = xss(marked(comment))
+    var markedComment = xss(marked.parse(comment))
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return winston.error(err)
@@ -385,7 +385,7 @@ events.onSetNoteText = function (socket) {
     marked.setOptions({
       breaks: true
     })
-    var markedNote = xss(marked(note))
+    var markedNote = xss(marked.parse(note))
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return winston.error(err)

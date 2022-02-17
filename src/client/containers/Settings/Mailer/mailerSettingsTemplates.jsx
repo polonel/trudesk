@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting } from 'actions/settings'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import Log from '../../../logger'
 import axios from 'axios'
 
@@ -84,6 +84,11 @@ templateBody.propTypes = {
 class MailerSettings_Templates extends React.Component {
   @observable betaEnabled = false
   @observable templates = []
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     helpers.UI.inputs()
@@ -199,7 +204,4 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting }
-)(MailerSettings_Templates)
+export default connect(mapStateToProps, { updateSetting })(MailerSettings_Templates)

@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import axios from 'axios'
 import Log from '../../logger'
 
@@ -31,6 +31,11 @@ import socket from 'lib/socket'
 @observer
 class ViewAllNotificationsModal extends React.Component {
   @observable notifications = []
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     helpers.hideAllpDropDowns()
@@ -111,7 +116,4 @@ ViewAllNotificationsModal.propTypes = {
   hideModal: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { hideModal }
-)(ViewAllNotificationsModal)
+export default connect(null, { hideModal })(ViewAllNotificationsModal)

@@ -14,7 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import { without, uniq } from 'lodash'
@@ -35,6 +35,11 @@ class PermissionGroupPartial extends React.Component {
   @observable special = []
 
   @observable roleSpecials = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.all = this.props.grants.all || ''

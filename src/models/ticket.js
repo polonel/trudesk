@@ -442,7 +442,7 @@ ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
   var self = this
   issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
   issue = sanitizeHtml(issue).trim()
-  self.issue = xss(marked(issue))
+  self.issue = xss(marked.parse(issue))
 
   var historyItem = {
     action: 'ticket:update:issue',

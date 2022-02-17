@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { isEqual } from 'lodash'
 import { updatePermissions } from 'actions/settings'
 import { showModal } from 'actions/common'
@@ -54,6 +54,11 @@ class PermissionBody extends React.Component {
   @observable departmentGrants = defaultGrants()
   @observable reportGrants = defaultGrants()
   @observable noticeGrants = defaultGrants()
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.isAdmin = this.props.role.get('isAdmin') || false
@@ -103,7 +108,10 @@ class PermissionBody extends React.Component {
   }
 
   static mapTicketSpecials () {
-    return [{ title: 'Notes', perm: 'notes' }, { title: 'Manage Public Tickets', perm: 'public' }]
+    return [
+      { title: 'Notes', perm: 'notes' },
+      { title: 'Manage Public Tickets', perm: 'public' }
+    ]
   }
 
   static mapAccountSpecials () {
@@ -111,7 +119,10 @@ class PermissionBody extends React.Component {
   }
 
   static mapNoticeSpecials () {
-    return [{ title: 'Activate', perm: 'activate' }, { title: 'Deactivate', perm: 'deactivate' }]
+    return [
+      { title: 'Activate', perm: 'activate' },
+      { title: 'Deactivate', perm: 'deactivate' }
+    ]
   }
 
   onSubmit (e) {
@@ -296,7 +307,4 @@ PermissionBody.propTypes = {
   showModal: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { updatePermissions, showModal }
-)(PermissionBody)
+export default connect(null, { updatePermissions, showModal })(PermissionBody)

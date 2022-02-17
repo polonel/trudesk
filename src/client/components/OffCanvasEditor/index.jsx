@@ -13,7 +13,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
@@ -31,6 +31,7 @@ class OffCanvasEditor extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.primaryClick = this.primaryClick.bind(this)
   }

@@ -17,7 +17,7 @@ import clsx from 'clsx'
 
 import socket from 'lib/socket'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { observable, makeObservable } from 'mobx'
 
 const statusToName = status => {
   switch (status) {
@@ -35,8 +35,10 @@ const statusToName = status => {
 @observer
 class StatusSelector extends React.Component {
   @observable status = null
+
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.status = this.props.status
 

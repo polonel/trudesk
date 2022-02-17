@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import { showModal } from 'actions/common'
 import { fetchAccounts, deleteAccount, enableAccount, unloadAccounts } from 'actions/accounts'
@@ -44,6 +44,7 @@ class AccountsContainer extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.getUsersWithPage = this.getUsersWithPage.bind(this)
   }
@@ -304,7 +305,6 @@ const mapStateToProps = state => ({
   common: state.common
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchAccounts, deleteAccount, enableAccount, unloadAccounts, showModal }
-)(AccountsContainer)
+export default connect(mapStateToProps, { fetchAccounts, deleteAccount, enableAccount, unloadAccounts, showModal })(
+  AccountsContainer
+)

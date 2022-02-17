@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { size } from 'lodash'
 import clsx from 'clsx'
 
@@ -49,6 +49,8 @@ class TopbarContainer extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
+
     this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this)
     this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this)
 

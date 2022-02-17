@@ -15,7 +15,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
@@ -31,6 +31,11 @@ import $ from 'jquery'
 @observer
 class CreateGroupModal extends React.Component {
   @observable name = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.props.fetchAccounts({ type: 'customers' })
@@ -115,7 +120,4 @@ const mapStateToProps = state => ({
   accounts: state.accountsState.accounts
 })
 
-export default connect(
-  mapStateToProps,
-  { createGroup, fetchAccounts, unloadAccounts }
-)(CreateGroupModal)
+export default connect(mapStateToProps, { createGroup, fetchAccounts, unloadAccounts })(CreateGroupModal)

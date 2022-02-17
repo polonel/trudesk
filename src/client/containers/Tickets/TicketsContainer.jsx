@@ -15,7 +15,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { each, without, uniq } from 'lodash'
 
 import Log from '../../logger'
@@ -50,6 +50,7 @@ class TicketsContainer extends React.Component {
   selectedTickets = []
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
@@ -102,6 +103,7 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketUpdated (data) {
+    console.log(data)
     this.props.ticketUpdated(data)
   }
 
@@ -479,7 +481,12 @@ const mapStateToProps = state => ({
   common: state.common
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated, fetchSearchResults, showModal }
-)(TicketsContainer)
+export default connect(mapStateToProps, {
+  fetchTickets,
+  deleteTicket,
+  ticketEvent,
+  unloadTickets,
+  ticketUpdated,
+  fetchSearchResults,
+  showModal
+})(TicketsContainer)

@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable, when } from 'mobx'
+import { makeObservable, observable, when } from 'mobx'
 import { head, orderBy } from 'lodash'
 import axios from 'axios'
 import Log from '../../logger'
@@ -46,6 +46,7 @@ class CreateTicketModal extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
   }
 
   componentDidMount () {
@@ -189,9 +190,7 @@ class CreateTicketModal extends React.Component {
               className={'md-input'}
               data-validation='length'
               data-validation-length={`min${viewdata.ticketSettings.minSubject}`}
-              data-validation-error-msg={`Please enter a valid Subject. Subject must contain at least ${
-                viewdata.ticketSettings.minSubject
-              } characters.`}
+              data-validation-error-msg={`Please enter a valid Subject. Subject must contain at least ${viewdata.ticketSettings.minSubject} characters.`}
             />
           </div>
           <div className='uk-margin-medium-bottom'>
@@ -333,7 +332,4 @@ const mapStateToProps = state => ({
   accounts: state.accountsState.accountsCreateTicket
 })
 
-export default connect(
-  mapStateToProps,
-  { createTicket, fetchGroups, fetchAccountsCreateTicket }
-)(CreateTicketModal)
+export default connect(mapStateToProps, { createTicket, fetchGroups, fetchAccountsCreateTicket })(CreateTicketModal)

@@ -14,7 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { connect } from 'react-redux'
 
@@ -31,6 +31,11 @@ import MultiSelect from 'components/MultiSelect'
 @observer
 class CreateTeamModal extends React.Component {
   @observable name = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.props.fetchAccounts({ limit: -1 })
@@ -118,7 +123,4 @@ const mapStateToProps = state => ({
   accounts: state.accountsState.accounts
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchAccounts, unloadAccounts, createTeam }
-)(CreateTeamModal)
+export default connect(mapStateToProps, { fetchAccounts, unloadAccounts, createTeam })(CreateTeamModal)

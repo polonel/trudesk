@@ -18,33 +18,12 @@ var path = require('path')
 var spawn = require('child_process').spawn
 var archiver = require('archiver')
 var database = require('../database')
-var winston = require('winston')
+var winston = require('../logger')
 var moment = require('moment')
 
 global.env = process.env.NODE_ENV || 'production'
 
 var CONNECTION_URI = null
-
-winston.setLevels(winston.config.cli.levels)
-winston.remove(winston.transports.Console)
-winston.add(winston.transports.Console, {
-  colorize: true,
-  timestamp: function () {
-    var date = new Date()
-    return (
-      date.getMonth() +
-      1 +
-      '/' +
-      date.getDate() +
-      ' ' +
-      date.toTimeString().substr(0, 8) +
-      ' [Child:Backup:' +
-      process.pid +
-      ']'
-    )
-  },
-  level: global.env === 'production' ? 'info' : 'verbose'
-})
 
 function createZip (callback) {
   var filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
@@ -148,9 +127,7 @@ function runBackup (callback) {
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
   var options = {
     keepAlive: 0,
-    auto_reconnect: false,
-    connectTimeoutMS: 5000,
-    useNewUrlParser: true
+    connectTimeoutMS: 5000
   }
   database.init(
     function (e, db) {

@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import axios from 'axios'
 import Log from '../../logger'
 
@@ -43,6 +43,11 @@ class EditAccountModal extends React.Component {
 
   selectedRole = ''
   @observable isAgentRole = false
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.name = this.props.user.fullname
@@ -364,16 +369,13 @@ const mapStateToProps = state => ({
   roles: state.shared.roles
 })
 
-export default connect(
-  mapStateToProps,
-  {
-    saveEditAccount,
-    fetchGroups,
-    unloadGroups,
-    fetchTeams,
-    unloadTeams,
-    fetchDepartments,
-    unloadDepartments,
-    fetchRoles
-  }
-)(EditAccountModal)
+export default connect(mapStateToProps, {
+  saveEditAccount,
+  fetchGroups,
+  unloadGroups,
+  fetchTeams,
+  unloadTeams,
+  fetchDepartments,
+  unloadDepartments,
+  fetchRoles
+})(EditAccountModal)

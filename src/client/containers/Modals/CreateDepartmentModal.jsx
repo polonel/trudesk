@@ -14,7 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { connect } from 'react-redux'
 
@@ -34,6 +34,12 @@ class CreateDepartmentModal extends React.Component {
   @observable name = ''
   @observable allGroups = false
   @observable publicGroups = false
+
+  constructor (props) {
+    super(props)
+
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.props.fetchTeams()
@@ -191,7 +197,6 @@ const mapStateToProps = state => ({
   groups: state.groupsState.groups
 })
 
-export default connect(
-  mapStateToProps,
-  { createDepartment, fetchTeams, unloadTeams, fetchGroups, unloadGroups }
-)(CreateDepartmentModal)
+export default connect(mapStateToProps, { createDepartment, fetchTeams, unloadTeams, fetchGroups, unloadGroups })(
+  CreateDepartmentModal
+)

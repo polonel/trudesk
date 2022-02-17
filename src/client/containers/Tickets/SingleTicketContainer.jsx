@@ -14,7 +14,7 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { observable, computed } from 'mobx'
+import { observable, computed, makeObservable } from 'mobx'
 import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
@@ -75,6 +75,7 @@ class SingleTicketContainer extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this)
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this)

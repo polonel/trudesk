@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { updateSetting, updateMultipleSettings } from 'actions/settings'
 
 import Button from 'components/Button'
@@ -39,6 +39,7 @@ class ElasticsearchSettingsContainer extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.state = {
       host: false,

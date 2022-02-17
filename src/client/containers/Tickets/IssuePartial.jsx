@@ -14,7 +14,7 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import clsx from 'clsx'
 
 import Avatar from 'components/Avatar/Avatar'
@@ -41,6 +41,7 @@ class IssuePartial extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.ticketId = this.props.ticketId
     this.status = this.props.status

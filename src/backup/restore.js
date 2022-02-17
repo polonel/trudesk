@@ -20,33 +20,12 @@ var os = require('os')
 var async = require('async')
 var AdmZip = require('adm-zip')
 var database = require('../database')
-var winston = require('winston')
+var winston = require('../logger')
 
 global.env = process.env.NODE_ENV || 'production'
 
 var CONNECTION_URI = null
 var databaseName = null
-
-winston.setLevels(winston.config.cli.levels)
-winston.remove(winston.transports.Console)
-winston.add(winston.transports.Console, {
-  colorize: true,
-  timestamp: function () {
-    var date = new Date()
-    return (
-      date.getMonth() +
-      1 +
-      '/' +
-      date.getDate() +
-      ' ' +
-      date.toTimeString().substr(0, 8) +
-      ' [Child:Backup:' +
-      process.pid +
-      ']'
-    )
-  },
-  level: global.env === 'production' ? 'info' : 'verbose'
-})
 
 function cleanup (callback) {
   var rimraf = require('rimraf')
@@ -156,9 +135,7 @@ function runRestore (file, callback) {
 
   var options = {
     keepAlive: 0,
-    auto_reconnect: false,
-    connectTimeoutMS: 5000,
-    useNewUrlParser: true
+    connectTimeoutMS: 5000
   }
   database.init(
     function (e, db) {

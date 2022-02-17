@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import { createAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
@@ -41,6 +41,11 @@ class CreateAccountModal extends React.Component {
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     this.props.fetchGroups({ type: 'all' })
@@ -300,7 +305,11 @@ const mapStateToProps = state => ({
   teams: state.teamsState.teams
 })
 
-export default connect(
-  mapStateToProps,
-  { createAccount, fetchGroups, unloadGroups, fetchTeams, unloadTeams, fetchRoles }
-)(CreateAccountModal)
+export default connect(mapStateToProps, {
+  createAccount,
+  fetchGroups,
+  unloadGroups,
+  fetchTeams,
+  unloadTeams,
+  fetchRoles
+})(CreateAccountModal)

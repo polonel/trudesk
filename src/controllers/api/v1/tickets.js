@@ -451,7 +451,7 @@ apiTickets.create = function (req, res) {
         var tIssue = ticket.issue
         tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
         tIssue = sanitizeHtml(tIssue).trim()
-        ticket.issue = xss(marked(tIssue))
+        ticket.issue = xss(marked.parse(tIssue))
         ticket.history = [HistoryItem]
         ticket.subscribers = [user._id]
 
@@ -626,7 +626,7 @@ apiTickets.createPublicTicket = function (req, res) {
           var tIssue = ticket.issue
           tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
           tIssue = sanitizeHtml(tIssue).trim()
-          ticket.issue = marked(tIssue)
+          ticket.issue = marked.parse(tIssue)
           ticket.issue = xss(ticket.issue)
 
           ticket.save(function (err, t) {
@@ -998,7 +998,7 @@ apiTickets.postInternalNote = function (req, res) {
     var Note = {
       owner: payload.owner || req.user._id,
       date: new Date(),
-      note: xss(marked(payload.note))
+      note: xss(marked.parse(payload.note))
     }
 
     ticket.updated = Date.now()

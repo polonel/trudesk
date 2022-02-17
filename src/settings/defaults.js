@@ -205,11 +205,11 @@ function downloadWin32MongoDBTools (callback) {
     fs.ensureDirSync(savePath)
     if (
       !fs.existsSync(path.join(savePath, 'mongodump.exe')) ||
-      !fs.existsSync(path.join(savePath, 'mongorestore.exe')) ||
-      !fs.existsSync(path.join(savePath, 'libeay32.dll')) ||
-      !fs.existsSync(path.join(savePath, 'ssleay32.dll'))
+      !fs.existsSync(path.join(savePath, 'mongorestore.exe'))
+      // !fs.existsSync(path.join(savePath, 'libeay32.dll')) ||
+      // !fs.existsSync(path.join(savePath, 'ssleay32.dll'))
     ) {
-      winston.debug('Windows platform detected. Downloading MongoDB Tools')
+      winston.debug('Windows platform detected. Downloading MongoDB Tools [' + filename + ']')
       fs.emptyDirSync(savePath)
       var unzipper = require('unzipper')
       var file = fs.createWriteStream(path.join(savePath, filename))

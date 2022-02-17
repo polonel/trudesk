@@ -78,7 +78,7 @@ mainController.about = function (req, res) {
     if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {
       content.data.privacyPolicy = 'No Privacy Policy has been set.'
     } else {
-      content.data.privacyPolicy = xss(marked(privacyPolicy.value))
+      content.data.privacyPolicy = xss(marked.parse(privacyPolicy.value))
     }
 
     return res.render('about', content)

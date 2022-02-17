@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import PDropdown from 'components/PDropdown'
 
@@ -30,6 +30,7 @@ class NotificationsDropdownPartial extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this)
   }

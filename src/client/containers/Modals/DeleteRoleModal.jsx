@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import { deleteRole } from 'actions/settings'
 
@@ -27,6 +27,11 @@ import SingleSelect from 'components/SingleSelect'
 @observer
 class DeleteRoleModal extends React.Component {
   @observable selectedRole = ''
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   onSelectChanged (e) {
     this.selectedRole = e.target.value
@@ -102,7 +107,4 @@ const mapStateToProps = state => ({
   shared: state.shared
 })
 
-export default connect(
-  mapStateToProps,
-  { deleteRole }
-)(DeleteRoleModal)
+export default connect(mapStateToProps, { deleteRole })(DeleteRoleModal)

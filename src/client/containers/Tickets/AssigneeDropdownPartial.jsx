@@ -14,7 +14,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import Avatar from 'components/Avatar/Avatar'
 import PDropDown from 'components/PDropdown'
@@ -28,6 +28,7 @@ class AssigneeDropdownPartial extends React.Component {
 
   constructor (props) {
     super(props)
+    makeObservable(this)
 
     this.onUpdateAssigneeList = this.onUpdateAssigneeList.bind(this)
   }

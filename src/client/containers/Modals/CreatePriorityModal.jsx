@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { createPriority } from 'actions/tickets'
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
@@ -30,6 +30,11 @@ class CreatePriorityModal extends React.Component {
   @observable name = ''
   @observable overdueIn = 2880
   @observable htmlColor = '#29B995'
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+  }
 
   componentDidMount () {
     helpers.UI.inputs()
@@ -110,7 +115,4 @@ CreatePriorityModal.propTypes = {
   createPriority: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { createPriority }
-)(CreatePriorityModal)
+export default connect(null, { createPriority })(CreatePriorityModal)
