@@ -143,37 +143,40 @@ ticketSchema.pre('save', function (next) {
   })
 })
 
-ticketSchema.post('save', function (doc, next) {
+ticketSchema.post('save', async function (doc, next) {
   if (!this.wasNew) {
     var emitter = require('../emitter')
-    doc
-      .populate(
-        'owner assignee comments.owner notes.owner subscribers history.owner',
-        '_id username fullname email role image title'
-      )
-      .populate('type tags')
-      .populate({
-        path: 'group',
-        model: groupSchema,
-        populate: [
-          {
-            path: 'members',
-            model: userSchema,
-            select: '-__v -accessToken -tOTPKey'
-          },
-          {
-            path: 'sendMailTo',
-            model: userSchema,
-            select: '-__v -accessToken -tOTPKey'
-          }
-        ]
-      })
-      .execPopulate(function (err, savedTicket) {
-        if (err) return winston.warn(err)
-        emitter.emit('ticket:updated', savedTicket)
+    try {
+      var savedTicket = await doc.populate([
+        {
+          path: 'owner assignee comments.owner notes.owner subscribers history.owner',
+          select: '_id username fullname email role image title'
+        },
+        { path: 'type tags' },
+        {
+          path: 'group',
+          model: groupSchema,
+          populate: [
+            {
+              path: 'members',
+              model: userSchema,
+              select: '-__v -accessToken -tOTPKey'
+            },
+            {
+              path: 'sendMailTo',
+              model: userSchema,
+              select: '-__v -accessToken -tOTPKey'
+            }
+          ]
+        }
+      ])
 
-        return next()
-      })
+      emitter.emit('ticket:updated', savedTicket)
+    } catch (err) {
+      winston.warn('WARNING: ' + err)
+    }
+
+    return next()
   } else {
     return next()
   }
@@ -363,8 +366,7 @@ ticketSchema.methods.setTicketPriority = function (ownerId, priority, callback) 
   self.history.push(historyItem)
 
   self
-    .populate('priority')
-    .execPopulate()
+    .populate(['priority'])
     .then(function (updatedSelf) {
       return callback(null, updatedSelf)
     })

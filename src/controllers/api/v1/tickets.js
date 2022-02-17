@@ -926,7 +926,7 @@ apiTickets.postComment = function (req, res) {
     var Comment = {
       owner: owner,
       date: new Date(),
-      comment: xss(marked(comment))
+      comment: xss(marked.parse(comment))
     }
 
     t.updated = Date.now()
