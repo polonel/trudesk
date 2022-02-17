@@ -1,14 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* globals server socketServer */
 var expect = require('chai').expect
-var winston = require('winston')
+var winston = require('../src/logger')
 var async = require('async')
 var mongoose = require('mongoose')
 var path = require('path')
 var _ = require('lodash')
 
-winston.setLevels(winston.config.cli.levels)
-winston.remove(winston.transports.Console)
 var database, db
 var CONNECTION_URI = 'mongodb://localhost:27017/polonel_trudesk31908899'
 
