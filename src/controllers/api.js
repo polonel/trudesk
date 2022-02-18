@@ -49,6 +49,7 @@ apiController.v2.tickets = require('./api/v2/tickets')
 apiController.v2.groups = require('./api/v2/groups')
 apiController.v2.teams = require('./api/v2/teams')
 apiController.v2.departments = require('./api/v2/departments')
+apiController.v2.notices = require('./api/v2/notices')
 apiController.v2.elasticsearch = require('./api/v2/elasticsearch')
 apiController.v2.mailer = require('./api/v2/mailer')
 

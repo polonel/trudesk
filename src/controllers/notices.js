@@ -42,14 +42,9 @@ noticesController.get = function (req, res) {
   content.data = {}
   content.data.user = req.user
   content.data.common = req.viewdata
-  content.data.notices = []
+  content.data.notices = {}
 
-  noticeSchema.getNotices(function (err, notices) {
-    if (err) return handleError(res, err)
-    content.data.notices = notices
-
-    res.render('notices', content)
-  })
+  return res.render('notices', content)
 }
 
 noticesController.create = function (req, res) {

@@ -242,6 +242,8 @@ define('modules/ajaxify', [
               window.react.dom.unmountComponentAtNode(document.getElementById('teams-container'))
             if (document.getElementById('departments-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('departments-container'))
+            if (document.getElementById('notices-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('notices-container'))
 
             // if (document.getElementById('modal-wrapper'))
             //   window.react.dom.unmountComponentAtNode(document.getElementById('modal-wrapper'))

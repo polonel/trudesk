@@ -8,6 +8,21 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/14/19 12:06 AM
- *  Copyright (c) 2014-2019. All rights reserved.
+ *  Updated:    2/17/22 8:25 PM
+ *  Copyright (c) 2014-2022. All rights reserved.
  */
+
+var apiUtils = require('../apiUtils')
+var Notice = require('../../../models/notice')
+
+var apiNotices = {}
+
+apiNotices.get = function (req, res) {
+  Notice.find({}, function (err, notices) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    return apiUtils.sendApiSuccess(res, { notices: notices })
+  })
+}
+
+module.exports = apiNotices

@@ -25,6 +25,7 @@ import accountsState from './accountsReducer'
 import groupsState from './groupsReducer'
 import teamsState from './teamsReducer'
 import departmentsState from './departmentsReducer'
+import noticesState from './noticesReducer'
 import searchState from './searchReducer'
 
 // const IndexReducer = (state = {}, action) => {
@@ -54,6 +55,7 @@ const IndexReducer = combineReducers({
   groupsState,
   teamsState,
   departmentsState,
+  noticesState,
   settings,
   tagsSettings
 })

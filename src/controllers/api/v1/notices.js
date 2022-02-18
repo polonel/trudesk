@@ -14,7 +14,7 @@
 
 var _ = require('lodash')
 
-var winston = require('winston')
+var winston = require('../../../logger')
 
 var NoticeSchema = require('../../../models/notice')
 

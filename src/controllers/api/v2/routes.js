@@ -60,6 +60,9 @@ module.exports = function (middleware, router, controllers) {
 
   router.get('/api/v2/departments/test', middleware.api, apiv2.departments.test)
 
+  // Notices
+  router.get('/api/v2/notices', apiv2Auth, apiv2.notices.get)
+
   // ElasticSearch
   router.get('/api/v2/es/search', middleware.api, apiv2.elasticsearch.search)
   router.get('/api/v2/es/rebuild', apiv2Auth, isAdmin, apiv2.elasticsearch.rebuild)

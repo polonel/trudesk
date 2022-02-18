@@ -240,7 +240,7 @@ class Sidebar extends React.Component {
         {sessionUser && Helpers.canUser('notices:view') && (
           <SidebarItem
             text='Notices'
-            icon='warning'
+            icon='campaign'
             href='/notices'
             class='navNotices'
             active={activeItem === 'notices'}

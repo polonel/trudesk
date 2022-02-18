@@ -20,6 +20,7 @@ import AccountSaga from './accounts'
 import GroupSaga from './groups'
 import TeamSaga from './teams'
 import DepartmentSaga from './departments'
+import NoticeSage from './notices'
 import SearchSaga from './search'
 
 export default function * IndexSagas () {
@@ -31,6 +32,7 @@ export default function * IndexSagas () {
     GroupSaga(),
     TeamSaga(),
     DepartmentSaga(),
+    NoticeSage(),
     SearchSaga()
   ])
 }

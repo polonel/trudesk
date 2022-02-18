@@ -1,31 +1,10 @@
 var async = require('async')
 var elasticsearch = require('elasticsearch')
-var winston = require('winston')
+var winston = require('../logger')
 var moment = require('moment-timezone')
 var database = require('../database')
 
 global.env = process.env.NODE_ENV || 'production'
-
-winston.setLevels(winston.config.cli.levels)
-winston.remove(winston.transports.Console)
-winston.add(winston.transports.Console, {
-  colorize: true,
-  timestamp: function () {
-    var date = new Date()
-    return (
-      date.getMonth() +
-      1 +
-      '/' +
-      date.getDate() +
-      ' ' +
-      date.toTimeString().substr(0, 8) +
-      ' [Child:ElasticSearch:' +
-      process.pid +
-      ']'
-    )
-  },
-  level: global.env === 'production' ? 'info' : 'verbose'
-})
 
 var ES = {}
 ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'

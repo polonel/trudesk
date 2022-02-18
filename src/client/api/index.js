@@ -244,6 +244,13 @@ api.departments.delete = ({ _id }) => {
   })
 }
 
+api.notices = {}
+api.notices.get = () => {
+  return axios.get('/api/v2/notices').then(res => {
+    return res.data
+  })
+}
+
 api.search = {}
 api.search.search = ({ limit, term }) => {
   const l = limit || 25

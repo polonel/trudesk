@@ -15,8 +15,7 @@
 var _ = require('lodash')
 var async = require('async')
 var Imap = require('imap')
-var winston = require('winston')
-// var marked      = require('marked');
+var winston = require('../logger')
 var simpleParser = require('mailparser').simpleParser
 var cheerio = require('cheerio')
 

@@ -23,6 +23,7 @@ import AccountsContainer from 'containers/Accounts'
 import GroupsContainer from 'containers/Groups'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
+import NoticeContainer from 'containers/Notice/NoticeContainer'
 
 export default function (store) {
   if (document.getElementById('tickets-container')) {
@@ -92,6 +93,16 @@ export default function (store) {
     )
 
     ReactDOM.render(TeamsContainerWithProvider, document.getElementById('departments-container'))
+  }
+
+  if (document.getElementById('notices-container')) {
+    const NoticeContainerWithProvider = (
+      <Provider store={store}>
+        <NoticeContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(NoticeContainerWithProvider, document.getElementById('notices-container'))
   }
 
   if (document.getElementById('settings-container')) {

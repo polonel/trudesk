@@ -22,6 +22,8 @@ class TableRow extends React.Component {
     let style = this.props.style
     if (clickable) {
       style = this.props.style ? Object.assign(this.props.style, clickableStyle) : clickableStyle
+    } else {
+      style = this.props.style ? Object.assign(this.props.style, { cursor: 'default' }) : { cursor: 'default' }
     }
     return (
       <tr className={this.props.className} style={style} onClick={this.props.onClick}>

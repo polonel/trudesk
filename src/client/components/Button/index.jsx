@@ -37,6 +37,7 @@ class Button extends React.Component {
       flat,
       style,
       text,
+      icon,
       onClick,
       waves,
       disabled,
@@ -48,7 +49,7 @@ class Button extends React.Component {
       (small ? ' md-btn-small ' : '') +
       (flat ? ' md-btn-flat ' : '') +
       (waves ? ' md-btn-wave ' : '') +
-      (style && (style && flat) ? ' md-btn-flat-' + style : style ? ' md-btn-' + style : '') +
+      (style && style && flat ? ' md-btn-flat-' + style : style ? ' md-btn-' + style : '') +
       (disabled ? ' disabled ' : '') +
       ' ' +
       extraClass
@@ -57,6 +58,7 @@ class Button extends React.Component {
       if (renderStyleOverride) merge(renderStyleOverride, { maxHeight: '27px' })
       else renderStyleOverride = { maxHeight: '27px' }
       if (hasDropdown) merge(renderStyleOverride, { paddingRight: '12px' })
+      if (icon) merge(renderStyleOverride, { padding: '0 10px' })
     }
     return (
       <button
@@ -67,7 +69,12 @@ class Button extends React.Component {
         style={renderStyleOverride}
         ref={r => (this.button = r)}
       >
-        <div className={'uk-float-left uk-width-1-1 uk-text-center'}> {text}</div>
+        {icon && (
+          <i className={'material-icons'} style={{ fontSize: '18px', margin: '5px 0' }}>
+            {icon}
+          </i>
+        )}
+        {text && <div className={'uk-float-left uk-width-1-1 uk-text-center'}> {text}</div>}
         {hasDropdown && (
           <i className={'material-icons'} style={{ fontSize: '18px', margin: '5px 0 0 5px' }}>
             
@@ -80,7 +87,8 @@ class Button extends React.Component {
 
 Button.propTypes = {
   type: PropTypes.string,
-  text: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  icon: PropTypes.string,
   flat: PropTypes.bool,
   style: PropTypes.string,
   styleOverride: PropTypes.object,
