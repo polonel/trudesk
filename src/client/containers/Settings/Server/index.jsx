@@ -23,10 +23,19 @@ import SettingItem from 'components/Settings/SettingItem'
 import helpers from 'lib/helpers'
 import axios from 'axios'
 import Log from '../../../logger'
+import EnableSwitch from 'components/Settings/EnableSwitch'
+import { observer } from 'mobx-react'
+import { makeObservable, observable } from 'mobx'
+import UIKit from 'uikit'
 
+@observer
 class ServerSettingsController extends React.Component {
+  @observable maintenanceModeEnabled = false
+
   constructor (props) {
     super(props)
+
+    makeObservable(this)
 
     this.state = {
       restarting: false
@@ -39,22 +48,13 @@ class ServerSettingsController extends React.Component {
     // helpers.UI.inputs()
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps) {
     // helpers.UI.reRenderInputs()
+    if (prevProps.settings !== this.props.settings) {
+      if (this.maintenanceModeEnabled !== this.getSetting('maintenanceMode'))
+        this.maintenanceModeEnabled = this.getSetting('maintenanceMode')
+    }
   }
-
-  // static getDerivedStateFromProps (nextProps, state) {
-  //   if (nextProps.settings) {
-  //     let stateObj = { ...state }
-  //     if (!state.tpsUsername)
-  //       stateObj.tpsUsername = nextProps.settings.getIn(['settings', 'tpsUsername', 'value']) || ''
-  //     if (!state.tpsApiKey) stateObj.tpsApiKey = nextProps.settings.getIn(['settings', 'tpsApiKey', 'value']) || ''
-  //
-  //     return stateObj
-  //   }
-  //
-  //   return null
-  // }
 
   restartServer () {
     this.setState({ restarting: true })
@@ -78,6 +78,43 @@ class ServerSettingsController extends React.Component {
       : ''
   }
 
+  onMaintenanceModeChange (e) {
+    const self = this
+    const val = e.target.checked
+
+    if (val === true) {
+      UIKit.modal.confirm(
+        `<h2>Are you sure?</h2>
+        <p style="font-size: 15px;">
+            <span class="uk-text-danger" style="font-size: 15px;">This will force logout every user and prevent non-administrators from logging in.</span> 
+        </p>
+        `,
+        () => {
+          this.props
+            .updateSetting({
+              name: 'maintenanceMode:enable',
+              value: val,
+              stateName: 'maintenanceMode',
+              noSnackbar: true
+            })
+            .then(() => {
+              self.maintenanceModeEnabled = val
+            })
+        },
+        {
+          labels: { Ok: 'Yes', Cancel: 'No' },
+          confirmButtonClass: 'md-btn-danger'
+        }
+      )
+    } else {
+      this.props
+        .updateSetting({ name: 'maintenanceMode:enable', value: val, stateName: 'maintenanceMode', noSnackbar: true })
+        .then(() => {
+          self.maintenanceModeEnabled = val
+        })
+    }
+  }
+
   render () {
     const { active } = this.props
     return (
@@ -94,6 +131,18 @@ class ServerSettingsController extends React.Component {
               extraClass={'right mt-8 mr-5'}
               onClick={this.restartServer}
               disabled={this.state.restarting}
+            />
+          }
+        />
+        <SettingItem
+          title={'Maintenance Mode'}
+          subtitle={'Only Administrators are allowed to login.'}
+          component={
+            <EnableSwitch
+              stateName={'maintenanceMode'}
+              label={'Enable'}
+              checked={this.maintenanceModeEnabled}
+              onChange={e => this.onMaintenanceModeChange(e)}
             />
           }
         />

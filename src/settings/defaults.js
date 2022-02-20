@@ -674,6 +674,23 @@ function installationID (callback) {
   })
 }
 
+function maintenanceModeDefault (callback) {
+  SettingsSchema.getSettingByName('maintenanceMode:enable', function (err, setting) {
+    if (err) return callback(err)
+    if (!setting) {
+      SettingsSchema.create(
+        {
+          name: 'maintenanceMode:enable',
+          value: false
+        },
+        callback
+      )
+    } else {
+      return callback()
+    }
+  })
+}
+
 settingsDefaults.init = function (callback) {
   winston.debug('Checking Default Settings...')
   async.series(
@@ -713,6 +730,9 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         return elasticSearchConfToDB(done)
+      },
+      function (done) {
+        return maintenanceModeDefault(done)
       },
       function (done) {
         return installationID(done)

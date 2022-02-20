@@ -96,6 +96,24 @@ module.exports = function (app, db, callback) {
 
         // CORS
         app.use(allowCrossDomain)
+
+        // Maintenance Mode
+        app.use(function (req, res, next) {
+          var settings = require('../settings/settingsUtil')
+          settings.getSettings(function (err, setting) {
+            if (err) return winston.warn(err)
+            var maintenanceMode = setting.data.settings.maintenanceMode
+
+            if (req.user) {
+              if (maintenanceMode.value === true && !req.user.role.isAdmin) {
+                return res.render('maintenance', { layout: false })
+              }
+            }
+
+            return next()
+          })
+        })
+
         // Mobile
         app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')))
 

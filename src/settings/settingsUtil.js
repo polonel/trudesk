@@ -123,6 +123,8 @@ util.getSettings = function (callback) {
     s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '')
     s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)
 
+    s.maintenanceMode = parseSetting(settings, 'maintenanceMode:enable', false)
+
     async.parallel(
       [
         function (done) {

@@ -27,13 +27,6 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/install', function (req, res) {
     return res.redirect('/')
   })
-  router.get(
-    '/dashboard',
-    middleware.redirectToLogin,
-    middleware.redirectIfUser,
-    middleware.loadCommonData,
-    controllers.main.dashboard
-  )
 
   router.get('/login', function (req, res) {
     return res.redirect('/')
@@ -80,6 +73,19 @@ function mainRoutes (router, middleware, controllers) {
       }
     })
   })
+
+  // Maintenance
+  router.get('/maintenance', function (req, res) {
+    return res.redirect('/')
+  })
+
+  router.get(
+    '/dashboard',
+    middleware.redirectToLogin,
+    middleware.redirectIfUser,
+    middleware.loadCommonData,
+    controllers.main.dashboard
+  )
 
   // Tickets
   router.get(
@@ -449,8 +455,8 @@ function handleErrors (err, req, res) {
   var status = err.status || 500
   res.status(err.status)
 
-  if (status === 404) {
-    res.render('404', { layout: false })
+  if (status === 500) {
+    res.render('500', { layout: false })
     return
   }
 
