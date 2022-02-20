@@ -16,10 +16,10 @@ var utils = require('../helpers/utils')
 var path = require('path')
 var AnsiUp = require('ansi_up')
 var ansiUp = new AnsiUp.default()
-var fileTailer = require('file-tail')
+var Tail = require('tail').Tail
 var fs = require('fs-extra')
 
-var logFile = path.join(__dirname, '../../logs/output.log')
+var logFile = path.join(__dirname, '../../logs/error.log')
 
 var events = {}
 
@@ -32,9 +32,13 @@ events.onLogsFetch = function (socket) {
   socket.on('logs:fetch', function () {
     fs.exists(logFile, function (exists) {
       if (exists) {
-        var ft = fileTailer.startTailing(logFile)
-        ft.on('line', function (line) {
-          utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(line))
+        var contents = fs.readFileSync(logFile, 'utf8')
+        utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(contents))
+
+        var tail = new Tail(logFile)
+
+        tail.on('line', function (data) {
+          utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(data))
         })
       } else {
         utils.sendToSelf(socket, 'logs:data', '\r\nInvalid Log File...\r\n')
