@@ -34,7 +34,7 @@ eval("/* provided dependency */ var __webpack_provided_window_dot_jQuery = __web
   \*********************************************/
 /***/ ((module, exports, __webpack_require__) => {
 
-eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*\r\n *       .                             .o8                     oooo\r\n *    .o8                             \"888                     `888\r\n *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo\r\n *    888   `888\"\"8P `888  `888  d88' `888  d88' `88b d88(  \"8  888 .8P'\r\n *    888    888      888   888  888   888  888ooo888 `\"Y88b.   888888.\r\n *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.\r\n *    \"888\" d888b     `V88V\"V8P' `Y8bod88P\" `Y8bod8P' 8\"\"888P' o888o o888o\r\n *  ========================================================================\r\n *  Author:     Chris Brame\r\n *  Updated:    1/20/19 4:43 PM\r\n *  Copyright (c) 2014-2019. All rights reserved.\r\n */\r\n\r\n!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! jquery */ 0), __webpack_require__(/*! angular */ 7), __webpack_require__(/*! angularjs/services/session */ 233), __webpack_require__(/*! angularjs/services/settingsService */ 772)], __WEBPACK_AMD_DEFINE_RESULT__ = (function (\r\n  $,\r\n  angular\r\n) {\r\n  return angular.module('trudesk.services', ['trudesk.services.session', 'trudesk.services.settings'])\r\n}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),\n\t\t__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))\r\n\n\n//# sourceURL=webpack://trudesk/./src/public/js/angularjs/services.js?");
+eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*\r\n *       .                             .o8                     oooo\r\n *    .o8                             \"888                     `888\r\n *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo\r\n *    888   `888\"\"8P `888  `888  d88' `888  d88' `88b d88(  \"8  888 .8P'\r\n *    888    888      888   888  888   888  888ooo888 `\"Y88b.   888888.\r\n *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.\r\n *    \"888\" d888b     `V88V\"V8P' `Y8bod88P\" `Y8bod8P' 8\"\"888P' o888o o888o\r\n *  ========================================================================\r\n *  Author:     Chris Brame\r\n *  Updated:    1/20/19 4:43 PM\r\n *  Copyright (c) 2014-2019. All rights reserved.\r\n */\r\n\r\n!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! jquery */ 0), __webpack_require__(/*! angular */ 7), __webpack_require__(/*! angularjs/services/session */ 233), __webpack_require__(/*! angularjs/services/settingsService */ 773)], __WEBPACK_AMD_DEFINE_RESULT__ = (function (\r\n  $,\r\n  angular\r\n) {\r\n  return angular.module('trudesk.services', ['trudesk.services.session', 'trudesk.services.settings'])\r\n}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),\n\t\t__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))\r\n\n\n//# sourceURL=webpack://trudesk/./src/public/js/angularjs/services.js?");
 
 /***/ }),
 
@@ -48,7 +48,7 @@ eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*\r\n *  
 
 /***/ }),
 
-/***/ 772:
+/***/ 773:
 /*!*************************************************************!*\
   !*** ./src/public/js/angularjs/services/settingsService.js ***!
   \*************************************************************/

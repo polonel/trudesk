@@ -77,7 +77,8 @@ class TicketsContainer extends React.Component {
       duration: 800,
       autoPlay: false,
       easing: 'steps(1)',
-      loop: true
+      loop: true,
+      backgroundColor: 'blue'
     })
 
     this.timeline.add({

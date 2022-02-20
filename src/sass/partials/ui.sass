@@ -289,6 +289,14 @@ label.md-label
     &:hover
       color: #fff
       background: $accent_color
+  &.hover-primary
+    &:hover
+      color: #fff
+      background: $accent_blue
+  &.hover-danger
+    &:hover
+      color: #fff
+      background: $accent_danger
 
 .md-color-white
   color: white !important
@@ -810,3 +818,25 @@ textarea.review-list
   img
     height: 34px
     width: 34px
+
+// Color Picker
+.picker
+  position: relative
+
+.swatch
+  width: 28px
+  height: 28px
+  border-radius: 8px
+  border: 3px solid #fff
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.1)
+  cursor: pointer
+
+.popover
+  position: absolute
+  z-index: 999
+  top: calc(100% + 2px)
+  left: 0
+  border-radius: 9px
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15)
+
+// END - Color Picker

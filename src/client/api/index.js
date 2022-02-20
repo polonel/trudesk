@@ -251,6 +251,18 @@ api.notices.get = () => {
   })
 }
 
+api.notices.update = payload => {
+  return axios.put(`/api/v2/notices/${payload._id}`, payload).then(res => {
+    return res.data
+  })
+}
+
+api.notices.delete = ({ _id }) => {
+  return axios.delete(`/api/v2/notices/${_id}`).then(res => {
+    return res.data
+  })
+}
+
 api.search = {}
 api.search.search = ({ limit, term }) => {
   const l = limit || 25

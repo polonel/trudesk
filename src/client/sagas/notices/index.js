@@ -13,7 +13,7 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects'
-import { FETCH_NOTICES, UNLOAD_NOTICES } from 'actions/types'
+import { FETCH_NOTICES, UPDATE_NOTICE, DELETE_NOTICE, UNLOAD_NOTICES, HIDE_MODAL } from 'actions/types'
 
 import api from '../../api'
 import Log from '../../logger'
@@ -31,6 +31,37 @@ function * fetchNotices ({ payload }) {
   }
 }
 
+function * updateNotice ({ payload }) {
+  try {
+    const response = yield call(api.notices.update, payload)
+    yield put({ type: UPDATE_NOTICE.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: UPDATE_NOTICE.ERROR, error })
+  }
+}
+
+function * deleteNotice ({ payload }) {
+  try {
+    const response = yield call(api.notices.delete, payload)
+    yield put({ type: DELETE_NOTICE.SUCCESS, payload, response })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: DELETE_NOTICE.ERROR, error })
+  }
+}
+
 function * unloadThunk ({ payload, meta }) {
   try {
     yield put({ type: UNLOAD_NOTICES.SUCCESS, payload, meta })
@@ -41,5 +72,7 @@ function * unloadThunk ({ payload, meta }) {
 
 export default function * watch () {
   yield takeLatest(FETCH_NOTICES.ACTION, fetchNotices)
+  yield takeLatest(UPDATE_NOTICE.ACTION, updateNotice)
+  yield takeLatest(DELETE_NOTICE.ACTION, deleteNotice)
   yield takeLatest(UNLOAD_NOTICES.ACTION, unloadThunk)
 }

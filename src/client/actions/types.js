@@ -79,6 +79,9 @@ export const UNLOAD_DEPARTMENTS = defineAction('UNLOAD_DEPARTMENTS', [SUCCESS])
 
 // Notices
 export const FETCH_NOTICES = defineAction('FETCH_NOTICES', [PENDING, SUCCESS, ERROR])
+export const CREATE_NOTICE = defineAction('CREATE_NOTICE', [SUCCESS, PENDING, ERROR])
+export const UPDATE_NOTICE = defineAction('UPDATE_NOTICE', [SUCCESS, PENDING, ERROR])
+export const DELETE_NOTICE = defineAction('DELETE_NOTICE', [PENDING, SUCCESS, ERROR])
 export const UNLOAD_NOTICES = defineAction('UNLOAD_NOTICES', [SUCCESS])
 
 // Search

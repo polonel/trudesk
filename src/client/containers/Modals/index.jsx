@@ -38,6 +38,7 @@ import CreateTeamModal from './CreateTeamModal'
 import EditTeamModal from './EditTeamModal'
 import CreateDepartmentModal from './CreateDepartmentModal'
 import EditDepartmentModal from './EditDepartmentModal'
+import EditNoticeModal from 'containers/Modals/EditNoticeModal'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -60,7 +61,8 @@ const MODAL_COMPONENTS = {
   CREATE_TEAM: CreateTeamModal,
   EDIT_TEAM: EditTeamModal,
   CREATE_DEPARTMENT: CreateDepartmentModal,
-  EDIT_DEPARTMENT: EditDepartmentModal
+  EDIT_DEPARTMENT: EditDepartmentModal,
+  EDIT_NOTICE: EditNoticeModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {
