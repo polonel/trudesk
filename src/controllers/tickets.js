@@ -347,7 +347,6 @@ ticketsController.print = function (req, res) {
                 return g._id
               })
 
-              console.log(gIds)
               if (_.some(gIds, ticket.group._id)) {
                 if (!permissions.canThis(user.role, 'tickets:notes')) {
                   ticket.notes = []
