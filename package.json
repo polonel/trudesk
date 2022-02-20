@@ -1,6 +1,6 @@
 {
   "name": "trudesk",
-  "version": "1.1.11",
+  "version": "1.2-tango",
   "private": true,
   "engines": {
     "node": ">=9.10.0"
@@ -16,7 +16,7 @@
     "codacy": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --recursive -R spec && cat ./coverage/lcov.info | cross-env CODACY_PROJECT_TOKEN=65070aca43cc4fba96eaabd4033c9528 codacy-coverage && rm -rf ./coverage",
     "webpackwatch": "webpack --config webpack.config.js --watch",
     "webpackdev": "webpack --config webpack.config.js",
-    "webpackdist": "rimraf public/js/* && webpack --env.production -p --config webpack.config.js",
+    "webpackdist": "rimraf public/js/* && webpack --env production --node-env production --config webpack.config.js",
     "snyk-protect": "snyk protect"
   },
   "dependencies": {

@@ -113,7 +113,11 @@ module.exports = {
   module: {
     rules: [
       { test: /angular\.min\.js/, loader: 'exports-loader', options: { type: 'commonjs', exports: 'single angular' } },
-      { test: /uikit_combined\.min\.js/, loader: 'exports-loader', options: { type: 'commonjs', exports: 'single UIkit'} },
+      {
+        test: /uikit_combined\.min\.js/,
+        loader: 'exports-loader',
+        options: { type: 'commonjs', exports: 'single UIkit' }
+      },
       {
         test: /\.sass$/,
         exclude: path.resolve(__dirname, 'node_modules'),
@@ -155,9 +159,11 @@ module.exports = {
       new TerserPlugin({
         parallel: true,
         terserOptions: {
+          format: { comments: false },
           ecma: 6,
           mangle: false
-        }
+        },
+        extractComments: false
       })
     ],
     splitChunks: {
@@ -192,7 +198,7 @@ module.exports = {
       'window.moment': 'moment',
       setImmediate: 'async'
     }),
-    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/}),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/ }),
     new MiniCssExtractPlugin({
       filename: 'app.min.css'
     })
