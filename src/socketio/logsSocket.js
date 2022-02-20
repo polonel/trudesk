@@ -19,7 +19,7 @@ var ansiUp = new AnsiUp.default()
 var fileTailer = require('file-tail')
 var fs = require('fs-extra')
 
-var logFile = path.join(__dirname, '../logs/output.log')
+var logFile = path.join(__dirname, '../../logs/output.log')
 
 var events = {}
 
@@ -30,14 +30,16 @@ function register (socket) {
 function eventLoop () {}
 events.onLogsFetch = function (socket) {
   socket.on('logs:fetch', function () {
-    if (!fs.existsSync(logFile)) {
-      utils.sendToSelf(socket, 'logs:data', 'Invalid Log File...')
-    } else {
-      var ft = fileTailer.startTailing(logFile)
-      ft.on('line', function (line) {
-        utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(line))
-      })
-    }
+    fs.exists(logFile, function (exists) {
+      if (exists) {
+        var ft = fileTailer.startTailing(logFile)
+        ft.on('line', function (line) {
+          utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(line))
+        })
+      } else {
+        utils.sendToSelf(socket, 'logs:data', '\r\nInvalid Log File...\r\n')
+      }
+    })
   })
 }
 
