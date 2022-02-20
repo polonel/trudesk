@@ -19,37 +19,48 @@ import { connect } from 'react-redux'
 import helpers from 'lib/helpers'
 
 import { updateSetting } from 'actions/settings'
+import { observer } from 'mobx-react'
+import { makeObservable, observable } from 'mobx'
 
+@observer
 class InputWithSave extends React.Component {
+  @observable value = ''
+
   constructor (props) {
     super(props)
-    this.state = {
-      value: this.props.value
-    }
+
+    makeObservable(this)
   }
 
   componentDidMount () {
+    this.value = this.props.initialValue ? this.props.initialValue : ''
     helpers.UI.inputs()
   }
 
-  static getDerivedStateFromProps (nextProps, state) {
-    if (!state.value) {
-      return {
-        value: nextProps.value
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (typeof this.props.initialValue !== 'undefined') {
+      if (prevProps.initialValue !== this.props.initialValue) {
+        this.value = this.props.initialValue
       }
     }
-
-    return null
   }
 
+  // static getDerivedStateFromProps (nextProps, state) {
+  //   if (!state.value) {
+  //     return {
+  //       value: nextProps.value
+  //     }
+  //   }
+  //
+  //   return null
+  // }
+
   onSaveClicked () {
-    this.props.updateSetting({ name: this.props.settingName, value: this.state.value, stateName: this.props.stateName })
+    this.props.updateSetting({ name: this.props.settingName, value: this.value, stateName: this.props.stateName })
   }
 
   updateValue (evt) {
-    this.setState({
-      value: evt.target.value
-    })
+    this.value = evt.target.value
   }
 
   render () {
@@ -63,7 +74,7 @@ class InputWithSave extends React.Component {
             id={this.props.stateName}
             className='md-input md-input-width-medium'
             type='text'
-            value={this.state.value}
+            value={this.value}
             onChange={evt => this.updateValue(evt)}
           />
         </div>
@@ -82,11 +93,9 @@ InputWithSave.propTypes = {
   settingName: PropTypes.string.isRequired,
   stateName: PropTypes.string.isRequired,
   saveLabel: PropTypes.string,
+  initialValue: PropTypes.string,
   value: PropTypes.string,
   width: PropTypes.string
 }
 
-export default connect(
-  null,
-  { updateSetting }
-)(InputWithSave)
+export default connect(null, { updateSetting })(InputWithSave)

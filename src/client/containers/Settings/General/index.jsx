@@ -70,11 +70,15 @@ class GeneralSettings extends React.Component {
     const { active } = this.props
 
     const SiteTitle = (
-      <InputWithSave stateName='siteTitle' settingName='gen:sitetitle' value={this.getSettingsValue('siteTitle')} />
+      <InputWithSave
+        stateName='siteTitle'
+        settingName='gen:sitetitle'
+        initialValue={this.getSettingsValue('siteTitle')}
+      />
     )
 
     const SiteUrl = (
-      <InputWithSave stateName='siteUrl' settingName='gen:siteurl' value={this.getSettingsValue('siteUrl')} />
+      <InputWithSave stateName='siteUrl' settingName='gen:siteurl' initialValue={this.getSettingsValue('siteUrl')} />
     )
 
     const Timezone = (
@@ -144,7 +148,7 @@ class GeneralSettings extends React.Component {
                   <InputWithSave
                     stateName='timeFormat'
                     settingName='gen:timeFormat'
-                    value={this.getSettingsValue('timeFormat')}
+                    initialValue={this.getSettingsValue('timeFormat')}
                     width={'60%'}
                   />
                 }
@@ -158,7 +162,7 @@ class GeneralSettings extends React.Component {
                   <InputWithSave
                     stateName='shortDateFormat'
                     settingName='gen:shortDateFormat'
-                    value={this.getSettingsValue('shortDateFormat')}
+                    initialValue={this.getSettingsValue('shortDateFormat')}
                     width={'60%'}
                   />
                 }
@@ -172,7 +176,7 @@ class GeneralSettings extends React.Component {
                   <InputWithSave
                     stateName='longDateFormat'
                     settingName='gen:longDateFormat'
-                    value={this.getSettingsValue('longDateFormat')}
+                    initialValue={this.getSettingsValue('longDateFormat')}
                     width={'60%'}
                   />
                 }
@@ -202,7 +206,4 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting }
-)(GeneralSettings)
+export default connect(mapStateToProps, { updateSetting })(GeneralSettings)
