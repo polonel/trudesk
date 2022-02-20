@@ -170,7 +170,7 @@ class EditAccountModal extends React.Component {
     if (!user.groups) user.groups = []
 
     return (
-      <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
+      <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} options={{ bgclose: false }}>
         <div className='user-heading' style={{ minHeight: '130px', background: '#1976d2', padding: '24px' }}>
           <div className='uk-width-1-1'>
             <div style={{ width: '82px', height: '82px', float: 'left', marginRight: '24px', position: 'relative' }}>
