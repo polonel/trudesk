@@ -8,7 +8,7 @@ var path = require('path')
 var _ = require('lodash')
 
 var database, db
-var CONNECTION_URI = 'mongodb://localhost:27017/polonel_trudesk31908899'
+var CONNECTION_URI = 'mongodb://192.168.4.243:27017/polonel_trudesk31908899'
 
 // Global Setup for tests
 before(function (done) {

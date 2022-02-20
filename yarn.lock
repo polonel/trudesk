@@ -4033,11 +4033,6 @@ commander@^8.3.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
   integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
 
-commander@~2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.1.0.tgz#d121bbae860d9992a3d517ba96f56588e47c6781"
-  integrity sha1-0SG7roYNmZKj1Re6lvVliOR8Z4E=
-
 commander@~2.17.1:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
@@ -6094,19 +6089,6 @@ file-entry-cache@^6.0.0, file-entry-cache@^6.0.1:
   integrity sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==
   dependencies:
     flat-cache "^3.0.4"
-
-file-size-watcher@~0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/file-size-watcher/-/file-size-watcher-0.2.1.tgz#067ab60296a9fe4c6db8226616014d0f7a6fcb0f"
-  integrity sha1-Bnq2Apap/kxtuCJmFgFND3pvyw8=
-
-file-tail@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/file-tail/-/file-tail-0.3.0.tgz#588b30a2fdff1275ae98c8319a88960f0aa650ab"
-  integrity sha1-WIswov3/EnWumMgxmoiWDwqmUKs=
-  dependencies:
-    commander "~2.1.0"
-    file-size-watcher "~0.2.0"
 
 file-uri-to-path@2:
   version "2.0.0"
@@ -13875,6 +13857,11 @@ table@^6.0.4:
     slice-ansi "^4.0.0"
     string-width "^4.2.3"
     strip-ansi "^6.0.1"
+
+tail@2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/tail/-/tail-2.2.4.tgz#90dd4c5a174a3fa39dcb65a1df1950a4a0093a41"
+  integrity sha512-PX8klSxW1u3SdgDrDeewh5GNE+hkJ4h02JvHfV6YrHqWOVJ88nUdSQqtsUf/gWhgZlPAws3fiZ+F1f8euspcuQ==
 
 tapable@^0.1.8:
   version "0.1.10"
