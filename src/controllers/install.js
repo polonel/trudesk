@@ -15,7 +15,7 @@
 var async = require('async')
 var path = require('path')
 var _ = require('lodash')
-var winston = require('winston')
+var winston = require('../logger')
 var pkg = require('../../package')
 var Chance = require('chance')
 
