@@ -152,7 +152,7 @@ installController.install = function (req, res) {
     fullname: data['account[fullname]']
   }
 
-  var dbPassword = encodeURI(password)
+  var dbPassword = encodeURIComponent(password)
   var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
   if (port === '---') conuri = 'mongodb+srv://' + username + ':' + dbPassword + '@' + host + '/' + database
 
