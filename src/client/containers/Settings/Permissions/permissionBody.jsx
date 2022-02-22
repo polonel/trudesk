@@ -109,6 +109,7 @@ class PermissionBody extends React.Component {
 
   static mapTicketSpecials () {
     return [
+      { title: 'Print', perm: 'print' },
       { title: 'Notes', perm: 'notes' },
       { title: 'Manage Public Tickets', perm: 'public' }
     ]

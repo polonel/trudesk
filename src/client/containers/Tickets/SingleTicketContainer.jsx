@@ -548,17 +548,19 @@ class SingleTicketContainer extends React.Component {
                   </div>
                   <div className='pagination uk-float-right' style={{ marginRight: 5 }}>
                     <ul className='button-group'>
-                      <li className='pagination'>
-                        <a
-                          href={`/tickets/print/${this.ticket.uid}`}
-                          className='btn no-ajaxy'
-                          style={{ borderRadius: 3, marginRight: 5 }}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          <i className='material-icons'>&#xE8AD;</i>
-                        </a>
-                      </li>
+                      {helpers.canUser('tickets:print') && (
+                        <li className='pagination'>
+                          <a
+                            href={`/tickets/print/${this.ticket.uid}`}
+                            className='btn no-ajaxy'
+                            style={{ borderRadius: 3, marginRight: 5 }}
+                            rel='noopener noreferrer'
+                            target='_blank'
+                          >
+                            <i className='material-icons'>&#xE8AD;</i>
+                          </a>
+                        </li>
+                      )}
                     </ul>
                   </div>
                 </div>
