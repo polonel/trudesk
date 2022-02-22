@@ -306,6 +306,29 @@ ticketsController.processor = function (req, res) {
   return res.render(processor.renderpage, content)
 }
 
+ticketsController.pdf = function (req, res) {
+  var TicketPDFGenerator = require('../pdf/ticketGenerator')
+  var uid = null
+  try {
+    uid = parseInt(req.params.uid)
+  } catch (e) {
+    winston.warn(e)
+    return res.status(404).send('Invalid Ticket UID')
+  }
+
+  ticketSchema.getTicketByUid(uid, function (err, ticket) {
+    if (err) return handleError(res, err)
+
+    var ticketGenerator = new TicketPDFGenerator(ticket)
+
+    ticketGenerator.generate(function (err, obj) {
+      if (err) return res.redirect('/tickets')
+
+      return res.writeHead(200, obj.headers).end(obj.data)
+    })
+  })
+}
+
 /**
  * Print Ticket View
  * @param {object} req Express Request
