@@ -304,18 +304,11 @@ class Sidebar extends React.Component {
                     href='/settings/mailer'
                     active={activeSubItem === 'settings-mailer'}
                   />
-                  {/*<SubmenuItem text="Notifications" icon="" href="/settings/notifications" active={activeSubItem === 'settings-notifications'} />*/}
                   <SubmenuItem
                     href={'/settings/elasticsearch'}
                     text={'Elasticsearch'}
                     icon={'search'}
                     active={activeSubItem === 'settings-elasticsearch'}
-                  />
-                  <SubmenuItem
-                    text='Push Service'
-                    icon='mobile_friendly'
-                    href='/settings/tps'
-                    active={activeSubItem === 'settings-tps'}
                   />
                   <SubmenuItem
                     text='Backup/Restore'

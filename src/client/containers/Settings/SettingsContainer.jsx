@@ -26,7 +26,7 @@ import PermissionsSettingsContainer from './Permissions'
 import TicketsSettings from './Tickets'
 import MailerSettingsContainer from './Mailer'
 import ElasticsearchSettingsContainer from './Elasticsearch'
-import TPSSettingsContainer from './TPS'
+// import TPSSettingsContainer from './TPS'
 import BackupRestoreSettingsContainer from './BackupRestore'
 import ServerSettingsController from './Server'
 import LegalSettingsContainer from 'containers/Settings/Legal'
@@ -125,13 +125,6 @@ class SettingsContainer extends React.Component {
                 }}
               />
               <MenuItem
-                title='Push Service'
-                active={this.state.activeCategory === 'settings-tps'}
-                onClick={e => {
-                  this.onMenuItemClick(e, 'tps')
-                }}
-              />
-              <MenuItem
                 title='Backup/Restore'
                 active={this.state.activeCategory === 'settings-backup'}
                 onClick={e => {
@@ -168,7 +161,6 @@ class SettingsContainer extends React.Component {
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
               <MailerSettingsContainer active={this.state.activeCategory === 'settings-mailer'} />
               <ElasticsearchSettingsContainer active={this.state.activeCategory === 'settings-elasticsearch'} />
-              <TPSSettingsContainer active={this.state.activeCategory === 'settings-tps'} />
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
               <ServerSettingsController active={this.state.activeCategory === 'settings-server'} />
               <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />
