@@ -177,8 +177,8 @@ class TicketPDFGenerator {
         var item = history[i]
         doc
           .fontSize(10)
-          .text('Action by: ' + item.owner.fullname)
-          .text('Date: ' + moment(item.date).format('MM-DD-YYYY HH:mm:ss'))
+          .text('Action by: ..... ' + item.owner.fullname)
+          .text('Date: ............ ' + moment(item.date).format('MM-DD-YYYY HH:mm:ss'))
           .moveDown()
           .text(item.description)
 
@@ -193,6 +193,7 @@ class TicketPDFGenerator {
   }
 
   generate (callback) {
+    var filename = 'Ticket#' + this.ticket.uid + '.pdf'
     var theOutput = new PDFDocument({ bufferPages: true })
     var buffers = []
     var obj = {}
@@ -202,7 +203,7 @@ class TicketPDFGenerator {
       obj.headers = {
         'Content-Length': Buffer.byteLength(pdfData),
         'Content-Type': 'application/pdf',
-        'Content-disposition': 'attachment;filename=test.pdf'
+        'Content-disposition': 'attachment;filename=' + filename
       }
       obj.data = pdfData
 
