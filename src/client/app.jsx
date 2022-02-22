@@ -61,7 +61,7 @@ const sidebarWithProvider = (
   </Provider>
 )
 
-ReactDOM.render(sidebarWithProvider, document.getElementById('side-nav'))
+ReactDOM.render(sidebarWithProvider, document.getElementById('sidebar'))
 
 if (document.getElementById('modal-wrapper')) {
   const RootModal = (
