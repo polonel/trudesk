@@ -194,14 +194,14 @@ class TopbarContainer extends React.Component {
                           className='no-ajaxy uk-vertical-align'
                           onClick={e => TopbarContainer.onConversationsClicked(e)}
                         >
-                          <i className='material-icons'>sms</i>
+                          <i className='material-icons'>question_answer</i>
                         </a>
                       </PDropdownTrigger>
                     </li>
                     <li className='top-bar-icon'>
                       <PDropdownTrigger target={'notifications'}>
                         <a title={'Notifications'} className={'no-ajaxy uk-vertical-align'}>
-                          <i className='material-icons'>&#xE88E;</i>
+                          <i className='material-icons'>notifications</i>
                           <span
                             className={'alert uk-border-circle label ' + (this.notificationCount < 1 ? 'hide' : '')}
                           >
@@ -213,7 +213,7 @@ class TopbarContainer extends React.Component {
                     <li className='top-bar-icon'>
                       <OffCanvasTrigger target={'online-user-list'}>
                         <a title={'Online Users'} className='no-ajaxy'>
-                          <i className='material-icons'>perm_contact_calendar</i>
+                          <i className='material-icons'>people_alt</i>
                           <span
                             className={
                               'online-user-count alert uk-border-circle label ' +
