@@ -1,7 +1,6 @@
 exclude_paths:
   - mobile/**
   - logs/**
-  - apidoc_template/**
   - docs/**
   - src/public/css/**
   - src/public/css/**/*
@@ -9,4 +8,6 @@ exclude_paths:
   - src/public/js/plugins/**/*
   - src/public/js/vendor/**
   - src/public/js/vendor/**/*
+  - public/**
+  - public/**/*
   - test/**/*
