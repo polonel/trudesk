@@ -56,6 +56,9 @@ const fetchTicket = parent => {
       // }, 3000)
     })
     .catch(error => {
+      if (error.response.status === 403) {
+        History.pushState(null, null, '/tickets')
+      }
       Log.error(error)
     })
 }

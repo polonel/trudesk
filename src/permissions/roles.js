@@ -75,7 +75,7 @@ var roles = {
     id: 'user',
     name: 'User',
     description: 'User',
-    allowedAction: ['ticket:create editSelf attachment print', 'comment:create editSelf']
+    allowedAction: ['ticket:create editSelf attachment print viewall', 'comment:create editSelf']
   }
 }
 

@@ -111,7 +111,8 @@ class PermissionBody extends React.Component {
     return [
       { title: 'Print', perm: 'print' },
       { title: 'Notes', perm: 'notes' },
-      { title: 'Manage Public Tickets', perm: 'public' }
+      { title: 'Manage Public Tickets', perm: 'public' },
+      { title: 'Can View All Tickets in Assigned Groups', perm: 'viewall' }
     ]
   }
 

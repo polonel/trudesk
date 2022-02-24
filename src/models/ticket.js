@@ -914,6 +914,8 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
     }
   }
 
+  if (!_.isUndefined(object.owner) && !_.isNull(object.owner)) q.where('owner', object.owner)
+
   if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user)
   if (!_.isUndefined(object.unassigned) && !_.isNull(object.unassigned)) q.where({ assignee: { $exists: false } })
 
@@ -969,6 +971,8 @@ ticketSchema.statics.getCountWithObject = function (grpId, object, callback) {
   if (!_.isUndefined(object.unassigned) && object.unassigned === true) {
     q.where({ assignee: { $exists: false } })
   }
+
+  if (!_.isUndefined(object.owner) && !_.isNull(object.owner)) q.where('owner', object.owner)
 
   return q.lean().exec(callback)
 }

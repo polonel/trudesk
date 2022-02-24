@@ -200,13 +200,7 @@ function mainRoutes (router, middleware, controllers) {
     controllers.tickets.getUnassigned,
     controllers.tickets.processor
   )
-  router.get(
-    '/tickets/print/:uid',
-    middleware.canUser('tickets:print'),
-    middleware.redirectToLogin,
-    middleware.loadCommonData,
-    controllers.tickets.print
-  )
+  router.get('/tickets/print/:uid', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print)
   router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single)
   // router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
   router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment)

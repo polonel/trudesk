@@ -13,7 +13,7 @@ var ticketSchema = require('../models/ticket')
 var async = require('async')
 var path = require('path')
 var _ = require('lodash')
-var winston = require('winston')
+var winston = require('../logger')
 var groupSchema = require('../models/group')
 var departmentSchema = require('../models/department')
 var permissions = require('../permissions')
@@ -387,7 +387,12 @@ ticketsController.print = function (req, res) {
         },
         function (next) {
           if (hasAccess) return next()
-          if (!_.some(ticket.group.members, user._id)) {
+
+          var members = ticket.group.members.map(function (m) {
+            return m._id.toString()
+          })
+
+          if (!members.includes(user._id.toString())) {
             if (ticket.group.public && hasPublic) {
               // Blank to bypass
             } else {
@@ -405,7 +410,9 @@ ticketsController.print = function (req, res) {
       function (err) {
         if (err) {
           if (err === 'UNAUTHORIZED_GROUP_ACCESS')
-            winston.warn('User access ticket outside of group - UserId: ' + user._id)
+            winston.warn(
+              'User tried to access ticket outside of group - UserId: ' + user._id + ' (' + user.username + ')'
+            )
 
           return res.redirect('/tickets')
         }
@@ -489,10 +496,10 @@ ticketsController.single = function (req, res) {
         function (userGroups, next) {
           var hasPublic = permissions.canThis(user.role, 'tickets:public')
           var groupIds = userGroups.map(function (g) {
-            return g._id
+            return g._id.toString()
           })
 
-          if (!_.some(groupIds, ticket.group._id)) {
+          if (!groupIds.includes(ticket.group._id.toString())) {
             if (ticket.group.public && hasPublic) {
               // Blank to bypass
             } else {

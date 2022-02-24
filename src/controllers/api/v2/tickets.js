@@ -19,6 +19,7 @@ var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
 var Group = require('../../../models/group')
 var Department = require('../../../models/department')
+var permissions = require('../../../permissions')
 
 var ticketsV2 = {}
 
@@ -100,6 +101,8 @@ ticketsV2.get = function (req, res) {
             break
         }
 
+        if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
+
         Ticket.getTicketsWithObject(mappedGroups, queryObject, function (err, tickets) {
           if (err) return next(err)
           return next(null, mappedGroups, tickets)
@@ -137,7 +140,35 @@ ticketsV2.single = function (req, res) {
   Ticket.getTicketByUid(uid, function (err, ticket) {
     if (err) return apiUtils.sendApiError(res, 500, err)
 
-    return apiUtils.sendApiSuccess(res, { ticket: ticket })
+    if (req.user.role.isAdmin || req.user.role.isAgent) {
+      Department.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
+        if (err) return apiUtils.sendApiError(res, 500, err)
+
+        var groups = dbGroups.map(function (g) {
+          return g._id.toString()
+        })
+
+        if (groups.includes(ticket.group._id.toString())) {
+          return apiUtils.sendApiSuccess(res, { ticket: ticket })
+        } else {
+          return apiUtils.sendApiError(res, 403, 'Forbidden')
+        }
+      })
+    } else {
+      Group.getAllGroupsOfUser(req.user._id, function (err, userGroups) {
+        if (err) return apiUtils.sendApiError(res, 500, err)
+
+        var groupIds = userGroups.map(function (m) {
+          return m._id.toString()
+        })
+
+        if (groupIds.includes(ticket.group._id.toString())) {
+          return apiUtils.sendApiSuccess(res, { ticket: ticket })
+        } else {
+          return apiUtils.sendApiError(res, 403, 'Forbidden')
+        }
+      })
+    }
   })
 }
 
