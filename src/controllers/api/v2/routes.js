@@ -14,12 +14,12 @@
 
 module.exports = function (middleware, router, controllers) {
   // Shorten Vars
-  var apiv2Auth = middleware.apiv2
-  var apiv2 = controllers.api.v2
-  var isAdmin = middleware.isAdmin
-  var isAgent = middleware.isAgent
-  var isAgentOrAdmin = middleware.isAgentOrAdmin
-  var canUser = middleware.canUser
+  const apiv2Auth = middleware.apiv2
+  const apiv2 = controllers.api.v2
+  const isAdmin = middleware.isAdmin
+  const isAgent = middleware.isAgent
+  const isAgentOrAdmin = middleware.isAgentOrAdmin
+  const canUser = middleware.canUser
 
   // Common
   router.post('/api/v2/login', controllers.api.v2.common.login)
@@ -57,8 +57,6 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/departments', apiv2Auth, apiv2.departments.create)
   router.put('/api/v2/departments/:id', apiv2Auth, apiv2.departments.update)
   router.delete('/api/v2/departments/:id', apiv2Auth, apiv2.departments.delete)
-
-  router.get('/api/v2/departments/test', middleware.api, apiv2.departments.test)
 
   // Notices
   router.get('/api/v2/notices', apiv2Auth, apiv2.notices.get)

@@ -2,8 +2,9 @@
   "plugins": ["import", "prettier", "standard"],
   "extends": ["standard", "prettier"],
   "root": true,
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "ecmaVersion": 2015
+    "ecmaVersion": 6
   },
   "env": {
     "browser": true,

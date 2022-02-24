@@ -12,44 +12,45 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var User = require('../../../models/user')
-var apiUtils = require('../apiUtils')
+const User = require('../../../models/user')
+const apiUtils = require('../apiUtils')
 
-var commonV2 = {}
+const commonV2 = {}
 
-commonV2.login = function (req, res) {
-  var username = req.body.username
-  var password = req.body.password
+commonV2.login = async (req, res) => {
+  const username = req.body.username
+  const password = req.body.password
 
   if (!username || !password) return apiUtils.sendApiError_InvalidPostData(res)
 
-  User.getUserByUsername(username, function (err, user) {
-    if (err) return apiUtils.sendApiError(res, 401, err.message)
+  try {
+    const user = await User.getUserByUsername(username)
     if (!user) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
 
-    if (!User.validate(password, user.password))
-      return res.status(401).json({ success: false, error: 'Invalid Username/Password' })
+    if (!User.validate(password, user.password)) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
 
-    apiUtils.generateJWTToken(user, function (err, tokens) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-      return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
-    })
-  })
+    const tokens = await apiUtils.generateJWTToken(user)
+
+    return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
-commonV2.token = function (req, res) {
-  var refreshToken = req.body.refreshToken
+commonV2.token = async (req, res) => {
+  const refreshToken = req.body.refreshToken
   if (!refreshToken) return apiUtils.sendApiError_InvalidPostData(res)
 
-  User.getUserByAccessToken(refreshToken, function (err, user) {
-    if (err || !user) return apiUtils.sendApiError(res, 401)
+  try {
+    const user = await User.getUserByAccessToken(refreshToken)
+    if (!user) return apiUtils.sendApiError(res, 401)
 
-    apiUtils.generateJWTToken(user, function (err, tokens) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-      return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
-    })
-  })
+    const tokens = await apiUtils.generateJWTToken(user)
+
+    return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
 module.exports = commonV2

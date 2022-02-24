@@ -12,103 +12,71 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var Department = require('../../../models/department')
-var apiUtils = require('../apiUtils')
+const Department = require('../../../models/department')
+const apiUtils = require('../apiUtils')
 
-var apiDepartments = {}
+const apiDepartments = {}
 
-apiDepartments.get = function (req, res) {
-  Department.find({}, function (err, departments) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+apiDepartments.get = async (req, res) => {
+  try {
+    const departments = await Department.find({})
 
-    return apiUtils.sendApiSuccess(res, { departments: departments })
-  })
+    return apiUtils.sendApiSuccess(res, { departments })
+  } catch (err) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
-apiDepartments.create = function (req, res) {
-  var postData = req.body
+apiDepartments.create = async (req, res) => {
+  const postData = req.body
   if (!postData) return apiUtils.sendApiError_InvalidPostData(res)
-  
+
   if (!postData.teams) postData.teams = []
   if (!postData.groups) postData.groups = []
 
-  Department.create(postData, function (err, createdDepartment) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    const createdDepartment = await Department.create(postData)
     if (!createdDepartment) return apiUtils.sendApiError(res, 500, 'Unable to create department')
 
-    createdDepartment.populate('teams groups', function (err, populatedDepartment) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
+    const populatedDepartment = await createdDepartment.populate('teams groups')
 
-      return apiUtils.sendApiSuccess(res, { department: populatedDepartment })
-    })
-  })
+    return apiUtils.sendApiSuccess(res, { department: populatedDepartment })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
-apiDepartments.test = function (req, res) {
-  Department.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-    return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
-  })
-}
-
-apiDepartments.update = function (req, res) {
-  var putData = req.body
-  var id = req.params.id
+apiDepartments.update = async (req, res) => {
+  const putData = req.body
+  const id = req.params.id
   if (!putData || !id) return apiUtils.sendApiError_InvalidPostData(res)
 
   if (!putData.teams) putData.teams = []
   if (!putData.groups) putData.groups = []
   if (putData.allGroups) putData.groups = []
 
-  Department.findOneAndUpdate({ _id: id }, putData, { new: true }, function (err, department) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    let department = await Department.findOneAndUpdate(({ _id: id }, putData, { new: true }))
+    department = await department.populate('teams groups')
 
-    department.populate('teams groups', function (err, department) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res, { department: department })
-    })
-  })
-
-  // Department.findOne({ _id: id }, function (err, d) {
-  //   if (err) return apiUtils.sendApiError(res, 500, err.message)
-  //
-  //   var department = d.
-  //
-  //   if (putData.name) department.name = putData.name
-  //   if (putData.teams) department.teams = putData.teams
-  //   if (putData.allGroups) department.allGroups = putData.allGroups
-  //   if (!department.allGroups) {
-  //     if (putData.groups) department.groups = putData.groups
-  //   } else {
-  //     department.groups = []
-  //   }
-  //
-  //   console.log(department)
-  //
-  //   department.save(function (err, department) {
-  //     if (err) return apiUtils.sendApiError(res, 500, err.message)
-  //
-  //     department.populate('teams groups', function (err, department) {
-  //       if (err) return apiUtils.sendApiError(res, 500, err.message)
-  //
-  //       return apiUtils.sendApiSuccess(res, { department: department })
-  //     })
-  //   })
-  // })
+    return apiUtils.sendApiSuccess(res, { department })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
-apiDepartments.delete = function (req, res) {
-  var id = req.params.id
+apiDepartments.delete = async (req, res) => {
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Department.deleteOne({ _id: id }, function (err, success) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    const success = await Department.deleteOne({ _id: id })
     if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete department')
 
     return apiUtils.sendApiSuccess(res)
-  })
+  } catch (err) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
 module.exports = apiDepartments

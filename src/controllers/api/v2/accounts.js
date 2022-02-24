@@ -12,23 +12,23 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var Chance = require('chance')
-var apiUtil = require('../apiUtils')
-var User = require('../../../models/user')
-var Group = require('../../../models/group')
-var Team = require('../../../models/team')
-var Department = require('../../../models/department')
+const _ = require('lodash')
+const async = require('async')
+const Chance = require('chance')
+const apiUtil = require('../apiUtils')
+const User = require('../../../models/user')
+const Group = require('../../../models/group')
+const Team = require('../../../models/team')
+const Department = require('../../../models/department')
 
-var accountsApi = {}
+const accountsApi = {}
 
 accountsApi.create = function (req, res) {
-  var postData = req.body
+  const postData = req.body
   if (!postData) return apiUtil.sendApiError_InvalidPostData(res)
 
-  var savedId = null
-  var chance = new Chance()
+  let savedId = null
+  const chance = new Chance()
   async.series(
     {
       user: function (next) {
@@ -101,7 +101,7 @@ accountsApi.create = function (req, res) {
     function (err, results) {
       if (err) return apiUtil.sendApiError(res, 500, err.message)
 
-      var user = results.user.toJSON()
+      const user = results.user.toJSON()
       user.groups = results.groups.map(function (g) {
         return { _id: g._id, name: g.name }
       })
@@ -122,12 +122,12 @@ accountsApi.create = function (req, res) {
 }
 
 accountsApi.get = function (req, res) {
-  var query = req.query
-  var type = query.type || 'customers'
-  var limit = query.limit ? Number(query.limit) : 25
-  var page = query.page ? Number(query.page) : 0
+  const query = req.query
+  const type = query.type || 'customers'
+  const limit = query.limit ? Number(query.limit) : 25
+  const page = query.page ? Number(query.page) : 0
 
-  var obj = {
+  const obj = {
     limit: limit === -1 ? 999999 : limit,
     page: page,
     showDeleted: query.showDeleted && query.showDeleted === 'true'
@@ -145,14 +145,14 @@ accountsApi.get = function (req, res) {
       User.getCustomers(obj, function (err, accounts) {
         if (err) return apiUtil.sendApiError(res, 500, err.message)
 
-        var resAccounts = []
+        const resAccounts = []
 
         async.eachSeries(
           accounts,
           function (account, next) {
             Group.getAllGroupsOfUser(account._id, function (err, groups) {
               if (err) return next(err)
-              var a = account.toObject()
+              const a = account.toObject()
               a.groups = groups.map(function (group) {
                 return { name: group.name, _id: group._id }
               })
@@ -172,11 +172,11 @@ accountsApi.get = function (req, res) {
       User.getAgents(obj, function (err, accounts) {
         if (err) return apiUtil.sendApiError(res, 500, err.message)
 
-        var resAccounts = []
+        const resAccounts = []
         async.eachSeries(
           accounts,
           function (account, next) {
-            var a = account.toObject()
+            const a = account.toObject()
             Department.getUserDepartments(account._id, function (err, departments) {
               if (err) return next(err)
 

@@ -1,7 +1,10 @@
 {
   "presets": ["@babel/react", "@babel/env"],
   "plugins": [
-    ["@babel/plugin-proposal-decorators", {}], 
+    ["@babel/plugin-proposal-decorators", {
+      "loose": true,
+      "decoratorsBeforeExport": true
+    }],
     ["@babel/plugin-proposal-class-properties", { "loose": false }], 
     ["@babel/plugin-proposal-private-methods", { "loose": true }],
     ["@babel/plugin-proposal-private-property-in-object", { "loose": true }]

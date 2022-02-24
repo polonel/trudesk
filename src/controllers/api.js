@@ -13,17 +13,17 @@
  */
 
 // Sub APIs
-var apiTicketsV1 = require('./api/v1/tickets')
-var apiTagsV1 = require('./api/v1/tags')
-var apiNoticesV1 = require('./api/v1/notices')
-var apiUsersV1 = require('./api/v1/users')
-var apiMessagesV1 = require('./api/v1/messages')
-var apiGroupsV1 = require('./api/v1/groups')
-var apiReportsV1 = require('./api/v1/reports')
-var apiSettingsV1 = require('./api/v1/settings')
-var apiPluginsV1 = require('./api/v1/plugins')
+const apiTicketsV1 = require('./api/v1/tickets')
+const apiTagsV1 = require('./api/v1/tags')
+const apiNoticesV1 = require('./api/v1/notices')
+const apiUsersV1 = require('./api/v1/users')
+const apiMessagesV1 = require('./api/v1/messages')
+const apiGroupsV1 = require('./api/v1/groups')
+const apiReportsV1 = require('./api/v1/reports')
+const apiSettingsV1 = require('./api/v1/settings')
+const apiPluginsV1 = require('./api/v1/plugins')
 
-var apiController = {}
+const apiController = {}
 
 apiController.index = function (req, res) {
   return res.json({ supported: ['v1', 'v2'] })
