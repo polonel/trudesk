@@ -1,6 +1,6 @@
 {
   "plugins": ["angular", "standard", "import"],
-  "extends": ["angular", "standard", "prettier", "prettier/standard"],
+  "extends": ["angular", "standard", "prettier"],
   "env": {
     "browser": true,
     "node": true

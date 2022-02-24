@@ -460,11 +460,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
   function loadChatMessages (chatBox, messageArray) {
     var to = chatBox.attr('data-chat-userid')
 
-    var chatMessage
-
-    var chatMessageList
-
-    var scroller
+    var chatMessage, chatMessageList, scroller
 
     messageArray.reverse()
 

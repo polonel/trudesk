@@ -64,14 +64,6 @@ define([
     self.bindNewMessageSubmit()
     self.jsPreventDefault()
 
-    // self.UI.expandSidebar();
-    // self.UI.tooltipSidebar();
-
-    // self.UI.initSidebar()
-    // self.UI.bindExpand()
-    // self.UI.setupSidebarTether()
-    // self.UI.bindAccordion()
-
     self.UI.fabToolbar()
     self.UI.fabSheet()
     self.UI.inputs()
@@ -84,6 +76,7 @@ define([
     self.UI.onlineUserSearch()
 
     var layout = self.onWindowResize()
+
     // Initial Call to Load Layout
     layout()
     $(window).resize(layout)

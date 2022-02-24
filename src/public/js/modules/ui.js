@@ -28,7 +28,6 @@ define('modules/ui', [
   var socket
 
   socketUi.init = function (sock) {
-    // loggedInAccount = window.trudeskSessionService.getUser();
     socketUi.socket = socket = sock
 
     this.flushRoles()
@@ -41,7 +40,7 @@ define('modules/ui', [
     this.onProfileImageUpdate()
 
     // Logs
-    this.updateServerLogs(socket)
+    // this.updateServerLogs(socket)
 
     // Backup / Restore
     this.onShowRestoreOverlay()

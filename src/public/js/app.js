@@ -42,8 +42,6 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
         require(['angularjs/main'], function () {
           // Static Bootstraps
           angular.bootstrap($('.top-bar'), ['trudesk'])
-          // angular.bootstrap($('#ticketFilterModal'), ['trudesk'])
-          // angular.bootstrap($('#ticketCreateModal'), ['trudesk'])
 
           // Dynamic Bootstrap
           angular.bootstrap($('#page-content'), ['trudesk'])
