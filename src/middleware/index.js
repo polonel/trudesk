@@ -12,24 +12,24 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var path = require('path')
-var async = require('async')
-var express = require('express')
-var mongoose = require('mongoose')
-var APC = require('@handlebars/allow-prototype-access')
-var HandleBars = require('handlebars')
-var insecureHandlebars = APC.allowInsecurePrototypeAccess(HandleBars)
-var hbs = require('express-hbs')
-var hbsHelpers = require('../helpers/hbs/helpers')
-var winston = require('../logger')
-var flash = require('connect-flash')
-var bodyParser = require('body-parser')
-var cookieParser = require('cookie-parser')
-var session = require('express-session')
-var MongoStore = require('connect-mongo')
-var passportConfig = require('../passport')()
+const path = require('path')
+const async = require('async')
+const express = require('express')
+const mongoose = require('mongoose')
+const APC = require('@handlebars/allow-prototype-access')
+const HandleBars = require('handlebars')
+const insecureHandlebars = APC.allowInsecurePrototypeAccess(HandleBars)
+const hbs = require('express-hbs')
+const hbsHelpers = require('../helpers/hbs/helpers')
+const winston = require('../logger')
+const flash = require('connect-flash')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
+const MongoStore = require('connect-mongo')
+const passportConfig = require('../passport')()
 
-var middleware = {}
+let middleware = {}
 
 module.exports = function (app, db, callback) {
   middleware = require('./middleware')(app)
@@ -54,26 +54,29 @@ module.exports = function (app, db, callback) {
   app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
+  app.use(express.static(path.join(__dirname, '../../public')))
+
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
-      var err = new Error('MongoDb Error')
+      const err = new Error('MongoDb Connection Error')
       err.status = 503
-      return next(err)
+
+      return res.render('503', { layout: false })
     }
 
     return next()
   })
 
-  var cookie = {
+  const cookie = {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year
   }
 
-  var sessionSecret = 'trudesk$123#SessionKeY!2387'
+  const sessionSecret = 'trudesk$123#SessionKeY!2387'
   async.waterfall(
     [
       function (next) {
-        var sessionStore = MongoStore.create({
+        const sessionStore = MongoStore.create({
           client: db.connection.getClient(),
           autoReconnect: true
         })
@@ -126,8 +129,6 @@ module.exports = function (app, db, callback) {
           middleware.isAdmin,
           express.static(path.join(__dirname, '../../backups'))
         )
-
-        app.use(express.static(path.join(__dirname, '../../public')))
 
         // Uncomment to enable plugins
         return next(null, store)
