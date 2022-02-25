@@ -84,7 +84,6 @@ ES.setupHooks = () => {
     try {
       await ES.esclient.delete({
         index: ES.indexName,
-        type: 'doc',
         id: _id.toString(),
         refresh: 'true'
       })
@@ -100,6 +99,7 @@ ES.setupHooks = () => {
       const ticket = await ticketSchema.getTicketById(data._id.toString())
 
       const cleanedTicket = {
+        type: 'ticket',
         uid: ticket.uid,
         subject: ticket.subject,
         issue: ticket.issue,
@@ -118,14 +118,13 @@ ES.setupHooks = () => {
           name: ticket.priority.name,
           htmlColor: ticket.priority.htmlColor
         },
-        type: { _id: ticket.type._id, name: ticket.type.name },
+        ticketType: { _id: ticket.type._id, name: ticket.type.name },
         status: ticket.status,
         tags: ticket.tags
       }
 
       await ES.esclient.index({
         index: ES.indexName,
-        type: 'doc',
         id: ticket._id.toString(),
         refresh: 'true',
         body: cleanedTicket
@@ -136,15 +135,16 @@ ES.setupHooks = () => {
     }
   })
 
-  emitter.on('ticket:created', function (data) {
+  emitter.on('ticket:created', data => {
     ticketSchema.getTicketById(data.ticket._id, function (err, ticket) {
       if (err) {
         winston.warn('Elasticsearch Error: ' + err)
         return false
       }
 
-      var _id = ticket._id.toString()
-      var cleanedTicket = {
+      const _id = ticket._id.toString()
+      const cleanedTicket = {
+        type: 'ticket',
         uid: ticket.uid,
         subject: ticket.subject,
         issue: ticket.issue,
@@ -167,7 +167,7 @@ ES.setupHooks = () => {
           name: ticket.priority.name,
           htmlColor: ticket.priority.htmlColor
         },
-        type: { _id: ticket.type._id, name: ticket.type.name },
+        typeTicket: { _id: ticket.type._id, name: ticket.type.name },
         status: ticket.status,
         tags: ticket.tags
       }
@@ -175,7 +175,6 @@ ES.setupHooks = () => {
       ES.esclient.index(
         {
           index: ES.indexName,
-          type: 'doc',
           id: _id,
           body: cleanedTicket
         },
