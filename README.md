@@ -38,7 +38,7 @@ Take it for a spin on Ubuntu 20.04 with a one liner - <br />`curl -L -s https://
 #### Requirements
 - NodeJS 16+
 - MongoDB 5.0+
-- Elasticsearch 7 (optional to enable search)
+- Elasticsearch 8 (optional to enable search)
 
 ### Documentation
 Online documentation: [https://docs.trudesk.io/docs](https://docs.trudesk.io/docs) (outdated)

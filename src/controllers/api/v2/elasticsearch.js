@@ -12,54 +12,96 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var es = require('../../../elasticsearch')
-var ticketSchema = require('../../../models/ticket')
-var groupSchema = require('../../../models/group')
+const _ = require('lodash')
+const async = require('async')
+const winston = require('../../../logger')
+const es = require('../../../elasticsearch')
+const ticketSchema = require('../../../models/ticket')
+const groupSchema = require('../../../models/group')
 
-var apiElasticSearch = {}
-var apiUtil = require('../apiUtils')
+const apiElasticSearch = {}
+const apiUtil = require('../apiUtils')
 
-apiElasticSearch.rebuild = function (req, res) {
+apiElasticSearch.rebuild = (req, res) => {
   es.rebuildIndex()
 
-  return res.json({ success: true })
+  return apiUtil.sendApiSuccess(res)
 }
 
-apiElasticSearch.status = function (req, res) {
-  var response = {}
+apiElasticSearch.status = async (req, res) => {
+  const response = {}
 
-  async.parallel(
-    [
-      function (done) {
-        return es.checkConnection(done)
-      },
-      function (done) {
-        es.getIndexCount(function (err, data) {
-          if (err) return done(err)
-          response.indexCount = !_.isUndefined(data.count) ? data.count : 0
-          return done()
-        })
-      },
-      function (done) {
-        ticketSchema.getCount(function (err, count) {
-          if (err) return done(err)
-          response.dbCount = count
-          return done()
-        })
-      }
-    ],
-    function (err) {
-      if (err) return res.status(500).json({ success: false, error: err })
+  try {
+    const getIndexCountData = () =>
+      new Promise((resolve, reject) => {
+        ;(async () => {
+          try {
+            const data = await es.getIndexCount()
+            const indexCount = !_.isUndefined(data.count) ? data.count : 0
 
-      response.esStatus = global.esStatus
-      response.isRebuilding = global.esRebuilding === true
-      response.inSync = response.dbCount === response.indexCount
+            resolve(indexCount)
+          } catch (e) {
+            reject(e)
+          }
+        })()
+      })
 
-      res.json({ success: true, status: response })
-    }
-  )
+    const getDBCount = () =>
+      new Promise((resolve, reject) => {
+        ;(async () => {
+          try {
+            const ticketCount = await ticketSchema.getCount()
+            resolve(ticketCount)
+          } catch (e) {
+            reject(e)
+          }
+        })()
+      })
+
+    const [__, indexCount, ticketCount] = await Promise.all([es.checkConnection(), getIndexCountData(), getDBCount()])
+    response.indexCount = indexCount
+    response.dbCount = ticketCount
+    response.esStatus = global.esStatus
+    response.isRebuilding = global.esRebuilding === true
+    response.inSync = response.dbCount === response.indexCount
+
+    return apiUtil.sendApiSuccess(res, { status: response })
+  } catch (e) {
+    if (process.env.NODE_ENV === 'development') winston.warn(e.message)
+
+    return apiUtil.sendApiError(res, 500, e.message)
+  }
+
+  // async.parallel(
+  //   [
+  //     function (done) {
+  //       return es.checkConnection(done)
+  //     },
+  //     function (done) {
+  //       es.getIndexCount(function (err, data) {
+  //         if (err) return done(err)
+  //         response.indexCount = !_.isUndefined(data.count) ? data.count : 0
+  //         return done()
+  //       })
+  //     },
+  //     function (done) {
+  //       ticketSchema.getCount(function (err, count) {
+  //         if (err) return done(err)
+  //         response.dbCount = count
+  //         return done()
+  //       })
+  //     }
+  //   ],
+  //   function (err) {
+  //     if (err) return res.status(500).json({ success: false, error: err })
+  //
+  //     response.esStatus = global.esStatus
+  //     response.isRebuilding = global.esRebuilding === true
+  //     response.inSync = response.dbCount === response.indexCount
+  //
+  //     res.json({ success: true, status: response })
+  //   }
+  // )
 }
 
 apiElasticSearch.search = function (req, res) {

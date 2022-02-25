@@ -20,6 +20,7 @@
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "8.0.0",
     "@handlebars/allow-prototype-access": "1.0.5",
     "adm-zip": "0.5.9",
     "animejs": "3.0.1",
@@ -41,7 +42,6 @@
     "csv": "6.0.5",
     "debug": "4.3.3",
     "dive": "0.5.0",
-    "elasticsearch": "16.7.2",
     "email-templates": "8.0.8",
     "express": "4.17.3",
     "express-hbs": "2.4.0",

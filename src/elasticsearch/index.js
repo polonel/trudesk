@@ -12,74 +12,94 @@
 
  **/
 
-var _ = require('lodash')
-var path = require('path')
-var async = require('async')
-var nconf = require('nconf')
-var winston = require('../logger')
-var elasticsearch = require('elasticsearch')
-var emitter = require('../emitter')
-var moment = require('moment-timezone')
-var settingUtil = require('../settings/settingsUtil')
+const _ = require('lodash')
+const path = require('path')
+const nconf = require('nconf')
+const winston = require('../logger')
+const elasticsearch = require('@elastic/elasticsearch')
+const ESErrors = require('@elastic/elasticsearch').errors
+const emitter = require('../emitter')
+const moment = require('moment-timezone')
+const settingUtil = require('../settings/settingsUtil')
 
-var ES = {}
+const ES = {}
 ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
 
-function checkConnection (callback) {
-  if (!ES.esclient) return callback('Elasticsearch client not initialized. Restart Trudesk!')
+const checkConnection = callback => {
+  const errorText = 'Elasticsearch client not initialized. Restart Trudesk!'
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        if (!ES.esclient) {
+          if (typeof callback === 'function') callback(errorText)
 
-  ES.esclient.ping(
-    {
-      requestTimeout: 10000
-    },
-    function (err) {
-      if (err) return callback('Could not connect to Elasticsearch: ' + ES.host)
+          return reject(errorText)
+        }
 
-      return callback()
-    }
-  )
-}
+        await ES.esclient.ping()
 
-ES.testConnection = function (callback) {
-  if (process.env.ELASTICSEARCH_URI) ES.host = process.env.ELASTICSEARCH_URI
-  else ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port')
+        if (typeof callback === 'function') callback()
 
-  ES.esclient = new elasticsearch.Client({
-    host: ES.host
+        return resolve()
+      } catch (e) {
+        if (typeof callback === 'function') callback(errorText)
+
+        return reject(errorText)
+      }
+    })()
   })
-
-  checkConnection(callback)
 }
 
-ES.setupHooks = function () {
-  var ticketSchema = require('../models/ticket')
+ES.testConnection = async callback => {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        if (process.env.ELASTICSEARCH_URI) ES.host = process.env.ELASTICSEARCH_URI
+        else ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port')
 
-  emitter.on('ticket:deleted', function (_id) {
+        ES.esclient = new elasticsearch.Client({
+          node: ES.host
+        })
+
+        await checkConnection()
+
+        if (typeof callback === 'function') callback()
+
+        return resolve()
+      } catch (e) {
+        if (typeof callback === 'function') callback(e)
+
+        return reject(e)
+      }
+    })()
+  })
+}
+
+ES.setupHooks = () => {
+  const ticketSchema = require('../models/ticket')
+
+  emitter.on('ticket:deleted', async _id => {
     if (_.isUndefined(_id)) return false
 
-    ES.esclient.delete(
-      {
+    try {
+      await ES.esclient.delete({
         index: ES.indexName,
         type: 'doc',
         id: _id.toString(),
         refresh: 'true'
-      },
-      function (err) {
-        if (err) winston.warn('Elasticsearch Error: ' + err)
-      }
-    )
+      })
+    } catch (e) {
+      winston.warn('Elasticsearch Error: ' + e)
+    }
   })
 
-  emitter.on('ticket:updated', function (data) {
+  emitter.on('ticket:updated', async data => {
     if (_.isUndefined(data._id)) return
 
-    ticketSchema.getTicketById(data._id.toString(), function (err, ticket) {
-      if (err) {
-        winston.warn('Elasticsearch Error: ' + err)
-        return false
-      }
+    try {
+      const ticket = await ticketSchema.getTicketById(data._id.toString())
 
-      var cleanedTicket = {
+      const cleanedTicket = {
         uid: ticket.uid,
         subject: ticket.subject,
         issue: ticket.issue,
@@ -103,19 +123,17 @@ ES.setupHooks = function () {
         tags: ticket.tags
       }
 
-      ES.esclient.index(
-        {
-          index: ES.indexName,
-          type: 'doc',
-          id: ticket._id.toString(),
-          refresh: 'true',
-          body: cleanedTicket
-        },
-        function (err) {
-          if (err) winston.warn('Elasticsearch Error: ' + err)
-        }
-      )
-    })
+      await ES.esclient.index({
+        index: ES.indexName,
+        type: 'doc',
+        id: ticket._id.toString(),
+        refresh: 'true',
+        body: cleanedTicket
+      })
+    } catch (e) {
+      winston.warn('Elasticsearch Error: ' + e)
+      return false
+    }
   })
 
   emitter.on('ticket:created', function (data) {
@@ -169,39 +187,36 @@ ES.setupHooks = function () {
   })
 }
 
-ES.buildClient = function (host) {
-  if (ES.esclient) {
-    ES.esclient.close()
-  }
+ES.buildClient = host => {
+  if (ES.esclient) ES.esclient.close()
+
   ES.esclient = new elasticsearch.Client({
-    host: host,
+    node: host,
     pingTimeout: 10000,
     maxRetries: 5
   })
 }
 
-ES.rebuildIndex = function () {
+ES.rebuildIndex = async () => {
   if (global.esRebuilding) {
     winston.warn('Index Rebuild attempted while already rebuilding!')
     return
   }
-  settingUtil.getSettings(function (err, settings) {
-    if (err) {
-      winston.warn(err)
-      return false
-    }
+  try {
+    const settings = await settingUtil.getSettings()
+
     if (!settings.data.settings.elasticSearchConfigured.value) return false
 
-    var s = settings.data.settings
+    const s = settings.data.settings
 
-    var ELASTICSEARCH_URI = s.elasticSearchHost.value + ':' + s.elasticSearchPort.value
+    const ELASTICSEARCH_URI = s.elasticSearchHost.value + ':' + s.elasticSearchPort.value
 
     ES.buildClient(ELASTICSEARCH_URI)
 
     global.esStatus = 'Rebuilding...'
 
-    var fork = require('child_process').fork
-    var esFork = fork(path.join(__dirname, 'rebuildIndexChild.js'), {
+    const fork = require('child_process').fork
+    const esFork = fork(path.join(__dirname, 'rebuildIndexChild.js'), {
       env: {
         FORK: 1,
         NODE_ENV: global.env,
@@ -226,30 +241,40 @@ ES.rebuildIndex = function () {
         return i.name !== 'elasticsearchRebuild'
       })
     })
+  } catch (e) {
+    winston.error(e)
+    return false
+  }
+}
+
+ES.getIndexCount = async callback => {
+  return new Promise((resolve, reject) => {
+    if (_.isUndefined(ES.esclient)) {
+      const error = 'Elasticsearch has not initialized'
+
+      if (typeof callback === 'function') callback(error)
+
+      return reject(error)
+    }
+
+    const count = ES.esclient.count({ index: ES.indexName })
+    if (typeof callback === 'function') callback(null, count)
+
+    return resolve(count)
   })
 }
 
-ES.getIndexCount = function (callback) {
-  if (_.isUndefined(ES.esclient)) return callback('Elasticsearch has not initialized')
+ES.init = async callback => {
+  try {
+    global.esStatus = 'Not Configured'
+    global.esRebuilding = false
 
-  ES.esclient.count(
-    {
-      index: ES.indexName
-    },
-    callback
-  )
-}
-
-ES.init = function (callback) {
-  global.esStatus = 'Not Configured'
-  global.esRebuilding = false
-  settingUtil.getSettings(function (err, s) {
-    var settings = s.data.settings
-
-    var ENABLED = settings.elasticSearchConfigured.value
+    const s = await settingUtil.getSettings()
+    const settings = s.data.settings
+    const ENABLED = settings.elasticSearchConfigured.value
 
     if (!ENABLED) {
-      if (_.isFunction(callback)) return callback()
+      if (typeof callback === 'function') return callback()
 
       return false
     }
@@ -265,39 +290,30 @@ ES.init = function (callback) {
 
     ES.buildClient(ES.host)
 
-    async.series(
-      [
-        function (next) {
-          checkConnection(function (err) {
-            if (err) return next(err)
+    await checkConnection()
 
-            winston.info('Elasticsearch Running... Connected.')
-            global.esStatus = 'Connected'
-            return next()
-          })
-        }
-      ],
-      function (err) {
-        if (err) global.esStatus = 'Error'
+    winston.info('Elasticsearch Running... Connected.')
+    global.esStatus = 'Connected'
 
-        if (_.isFunction(callback)) return callback(err)
-      }
-    )
-  })
+    if (typeof callback === 'function') callback()
+  } catch (e) {
+    global.esStatus = 'Error'
+    if (typeof callback === 'function') callback(e)
+  }
 }
 
-ES.checkConnection = function (callback) {
-  // global.esStatus = 'Please Wait...'
-  return checkConnection(function (err) {
-    if (err) {
-      global.esStatus = 'Error'
-      winston.warn(err)
-      return callback()
-    }
+ES.checkConnection = async callback => {
+  try {
+    await checkConnection()
 
     global.esStatus = 'Connected'
-    return callback()
-  })
+
+    if (typeof callback === 'function') return callback()
+  } catch (e) {
+    global.esStatus = 'Error'
+    winston.warn(e)
+    if (typeof callback === 'function') return callback()
+  }
 }
 
 module.exports = ES
