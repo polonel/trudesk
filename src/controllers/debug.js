@@ -15,7 +15,7 @@
 var _ = require('lodash')
 var async = require('async')
 var path = require('path')
-var winston = require('winston')
+var winston = require('../logger')
 
 var debugController = {}
 
@@ -468,7 +468,7 @@ debugController.sendmail = function (req, res) {
   var mailer = require('../mailer')
   var templateSchema = require('../models/template')
   var Email = require('email-templates')
-  // var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+  var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
   var to = req.query.email
   if (to === undefined) {
@@ -476,22 +476,30 @@ debugController.sendmail = function (req, res) {
   }
 
   var email = new Email({
-    render: function (view, locals) {
-      return new Promise(function (resolve, reject) {
-        if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
-        templateSchema.findOne({ name: view }, function (err, template) {
-          if (err) return reject(err)
-          if (!template) return reject(new Error('Invalid Template'))
-          var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
-          console.log(html)
-          email.juiceResources(html).then(resolve)
-        })
-      })
+    views: {
+      root: templateDir,
+      options: {
+        extension: 'handlebars'
+      }
     }
+    // This is to test the new email templates (beta feature)
+    // render: function (view, locals) {
+    //   return new Promise(function (resolve, reject) {
+    //     if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+    //     templateSchema.findOne({ name: view }, function (err, template) {
+    //       if (err) return reject(err)
+    //       if (!template) return reject(new Error('Invalid Template'))
+    //       var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+    //       console.log(html)
+    //       email.juiceResources(html).then(resolve)
+    //     })
+    //   })
+    // }
   })
 
   var ticket = {
     uid: 100001,
+    issue: 'This is the test issue',
     comments: [
       {
         date: new Date(),
@@ -505,11 +513,11 @@ debugController.sendmail = function (req, res) {
   }
 
   email
-    .render('ticket-updated', { base_url: global.TRUDESK_BASEURL, ticket: ticket })
+    .render('ticket-comment-added', { base_url: global.TRUDESK_BASEURL, ticket: ticket, comment: ticket.comments[0] })
     .then(function (html) {
       var mailOptions = {
         to: to,
-        subject: 'Trudesk Test Email [Debugger]',
+        subject: 'Trudesk Test Email #' + ticket.uid + ' [Debugger]',
         html: html,
         generateTextFromHTML: true
       }
@@ -521,8 +529,8 @@ debugController.sendmail = function (req, res) {
       })
     })
     .catch(function (err) {
-      winston.warn(err)
-      res.status(400).send(err)
+      console.log(err)
+      res.status(400).json({ error: err })
     })
 }
 

@@ -154,6 +154,8 @@ var notifications = require('../notifications') // Load Push Events
                         if (err) return c(err)
                         if (!template) return c()
 
+                        ticket = ticket.toJSON()
+
                         var context = { base_url: baseUrl, ticket: ticket }
 
                         email
@@ -503,6 +505,8 @@ var notifications = require('../notifications') // Load Push Events
                 ticket.populate('comments.owner', function (err, ticket) {
                   if (err) winston.warn(err)
                   if (err) return c()
+
+                  ticket = ticket.toJSON()
 
                   email
                     .render('ticket-comment-added', {

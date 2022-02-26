@@ -202,6 +202,8 @@ mainController.forgotL2Auth = function (req, res) {
         }
       })
 
+      savedUser = savedUser.toJSON()
+
       var data = {
         base_url: req.protocol + '://' + req.get('host'),
         user: savedUser
@@ -276,6 +278,8 @@ mainController.forgotPass = function (req, res) {
       var templateSchema = require('../models/template')
 
       var email = null
+
+      savedUser = savedUser.toJSON()
 
       var data = {
         base_url: req.protocol + '://' + req.get('host'),
@@ -412,6 +416,8 @@ mainController.resetl2auth = function (req, res) {
           }
         })
 
+        updated = updated.toJSON()
+
         email
           .render('l2auth-cleared', user)
           .then(function (html) {
@@ -490,6 +496,8 @@ mainController.resetPass = function (req, res) {
             }
           }
         })
+
+        updated = updated.toJSON()
 
         var data = {
           password: gPass,
