@@ -336,6 +336,11 @@ api.settings.deleteRole = ({ _id, newRoleId }) => {
     return res.data
   })
 }
+api.settings.buildSass = () => {
+  return axios.get(`/api/v1/settings/buildsass`).then(res => {
+    return res.data
+  })
+}
 
 api.common = {}
 api.common.fetchRoles = () => {

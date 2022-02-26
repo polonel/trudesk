@@ -16,7 +16,6 @@ var async = require('async')
 var _ = require('lodash')
 var winston = require('winston')
 var moment = require('moment')
-var permissions = require('../../permissions')
 var settingSchema = require('../../models/setting')
 
 var viewController = {}
