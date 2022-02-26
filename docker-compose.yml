@@ -1,4 +1,4 @@
-version: '3'
+version: '2.1'
 services:
   trudesk:
     image: polonel/trudesk:1
@@ -25,7 +25,16 @@ services:
     restart: always
     environment:
       - xpack.security.enabled=false
-      - xpack.security.http.ssl=false
+      - xpack.security.http.ssl.enabled=false
+      - node.name=estrudesk01
+      - cluster.initial_master_nodes=estrudesk01
+      - discovery.seed_hosts=estrudesk01
+      - bootstrap.memory_lock=true
+    mem_limit: 1073741824
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - "9200:9200"
       - "9300:9300"
