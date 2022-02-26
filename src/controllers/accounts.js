@@ -14,9 +14,8 @@
 
 var async = require('async')
 var _ = require('lodash')
-var winston = require('winston')
+var winston = require('../logger')
 var userSchema = require('../models/user')
-var groupSchema = require('../models/group')
 var permissions = require('../permissions')
 var emitter = require('../emitter')
 var xss = require('xss')
@@ -164,7 +163,7 @@ accountsController.profile = function (req, res) {
   }
 
   var content = {}
-  content.title = 'Profile'
+  content.title = 'Profile 1'
   content.nav = 'profile'
 
   content.data = {}
@@ -460,7 +459,7 @@ accountsController.uploadImage = function (req, res) {
   var fs = require('fs')
   var path = require('path')
   var Busboy = require('busboy')
-  var busboy = new Busboy({
+  var busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -476,7 +475,9 @@ accountsController.uploadImage = function (req, res) {
     if (fieldname === 'username') object.username = val
   })
 
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,

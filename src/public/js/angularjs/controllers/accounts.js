@@ -13,54 +13,60 @@
  */
 
 define(['angular', 'underscore', 'jquery'], function (angular, _, $) {
-  return angular.module('trudesk.controllers.accounts', []).controller('accountsCtrl', function ($scope, $timeout) {
-    $scope.selectAccountsImport = function (event, type) {
-      if ($(event.currentTarget).hasClass('card-disabled')) {
-        return false
+  return angular
+    .module('trudesk.controllers.accounts', [])
+    .controller('accountsCtrl', function ($scope, $timeout, $document) {
+      $scope.selectAccountsImport = function (event, type) {
+        if ($(event.currentTarget).hasClass('card-disabled')) {
+          return false
+        }
+
+        switch (type) {
+          case 'csv':
+            $('#csv_wizard_card').removeClass('uk-hidden')
+            $('#json-import-selector').addClass('card-disabled')
+            $('#ldap-import-selector').addClass('card-disabled')
+            break
+          case 'json':
+            $('#json_wizard_card').removeClass('uk-hidden')
+            $('#csv-import-selector').addClass('card-disabled')
+            $('#ldap-import-selector').addClass('card-disabled')
+            break
+          case 'ldap':
+            $('#ldap_wizard_card').removeClass('uk-hidden')
+            $('#csv-import-selector').addClass('card-disabled')
+            $('#json-import-selector').addClass('card-disabled')
+        }
       }
 
-      switch (type) {
-        case 'csv':
-          $('#csv_wizard_card').removeClass('uk-hidden')
-          $('#json-import-selector').addClass('card-disabled')
-          $('#ldap-import-selector').addClass('card-disabled')
-          break
-        case 'json':
-          $('#json_wizard_card').removeClass('uk-hidden')
-          $('#csv-import-selector').addClass('card-disabled')
-          $('#ldap-import-selector').addClass('card-disabled')
-          break
-        case 'ldap':
-          $('#ldap_wizard_card').removeClass('uk-hidden')
-          $('#csv-import-selector').addClass('card-disabled')
-          $('#json-import-selector').addClass('card-disabled')
+      $scope.resetWizardSelection = function () {
+        $('#csv_wizard_card').addClass('uk-hidden')
+        $('#json_wizard_card').addClass('uk-hidden')
+        $('#ldap_wizard_card').addClass('uk-hidden')
+
+        $('#csv-import-selector').removeClass('card-disabled')
+        $('#json-import-selector').removeClass('card-disabled')
+        $('#ldap-import-selector').removeClass('card-disabled')
       }
-    }
 
-    $scope.resetWizardSelection = function () {
-      $('#csv_wizard_card').addClass('uk-hidden')
-      $('#json_wizard_card').addClass('uk-hidden')
-      $('#ldap_wizard_card').addClass('uk-hidden')
-
-      $('#csv-import-selector').removeClass('card-disabled')
-      $('#json-import-selector').removeClass('card-disabled')
-      $('#ldap-import-selector').removeClass('card-disabled')
-    }
-
-    $scope.accountEditPic = function () {
-      throttledAccountPicClick()
-    }
-
-    function throttledAccountPicClick () {
-      $timeout(function () {
+      $scope.accountEditPic = function () {
+        // throttledAccountPicClick()
         var $profileImageInput = $('#profileImageInput')
-        $profileImageInput.on('click', function (event) {
-          // This function is a firefox hack to stop it from spawning 100000 file dialogs
-          event.stopPropagation()
+        $scope.$apply(function () {
+          $profileImageInput.trigger('click')
         })
+      }
 
-        $profileImageInput.trigger('click')
-      }, 0)
-    }
-  })
+      function throttledAccountPicClick () {
+        $timeout(function () {
+          var $profileImageInput = $('#profileImageInput')
+          $profileImageInput.on('click', function (event) {
+            // This function is a firefox hack to stop it from spawning 100000 file dialogs
+            event.stopPropagation()
+          })
+
+          $profileImageInput.trigger('click')
+        }, 0)
+      }
+    })
 })
