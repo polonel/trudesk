@@ -552,10 +552,10 @@ mainController.l2authget = function (req, res) {
 }
 
 mainController.uploadFavicon = function (req, res) {
-  var fs = require('fs')
-  var settingUtil = require('../settings/settingsUtil')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const fs = require('fs')
+  const settingUtil = require('../settings/settingsUtil')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
     headers: req.headers,
     limit: {
       file: 1,
@@ -563,9 +563,13 @@ mainController.uploadFavicon = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+  const object = {}
+  let error
+
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
@@ -575,7 +579,7 @@ mainController.uploadFavicon = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/assets')
+    const savePath = path.join(__dirname, '../../public/uploads/assets')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
     object.filePath = path.join(savePath, 'favicon' + path.extname(filename))
@@ -621,10 +625,10 @@ mainController.uploadFavicon = function (req, res) {
 }
 
 mainController.uploadLogo = function (req, res) {
-  var fs = require('fs')
-  var settingUtil = require('../settings/settingsUtil')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const fs = require('fs')
+  const settingUtil = require('../settings/settingsUtil')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -632,10 +636,12 @@ mainController.uploadLogo = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
@@ -645,7 +651,7 @@ mainController.uploadLogo = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/assets')
+    const savePath = path.join(__dirname, '../../public/uploads/assets')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
     object.filePath = path.join(savePath, 'topLogo' + path.extname(filename))
@@ -691,10 +697,10 @@ mainController.uploadLogo = function (req, res) {
 }
 
 mainController.uploadPageLogo = function (req, res) {
-  var fs = require('fs')
-  var settingUtil = require('../settings/settingsUtil')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const fs = require('fs')
+  const settingUtil = require('../settings/settingsUtil')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -702,10 +708,13 @@ mainController.uploadPageLogo = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
@@ -715,7 +724,7 @@ mainController.uploadPageLogo = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/assets')
+    const savePath = path.join(__dirname, '../../public/uploads/assets')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
     object.filePath = path.join(savePath, 'pageLogo' + path.extname(filename))
