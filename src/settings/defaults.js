@@ -12,18 +12,18 @@
 
  **/
 
-var _ = require('lodash')
-var fs = require('fs-extra')
-var path = require('path')
-var async = require('async')
-var winston = require('../logger')
-var moment = require('moment-timezone')
+const _ = require('lodash')
+const fs = require('fs-extra')
+const path = require('path')
+const async = require('async')
+const winston = require('../logger')
+const moment = require('moment-timezone')
 
-var SettingsSchema = require('../models/setting')
-var PrioritySchema = require('../models/ticketpriority')
+const SettingsSchema = require('../models/setting')
+const PrioritySchema = require('../models/ticketpriority')
 
-var settingsDefaults = {}
-var roleDefaults = {}
+const settingsDefaults = {}
+const roleDefaults = {}
 
 roleDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
 roleDefaults.supportGrants = [
@@ -54,7 +54,7 @@ roleDefaults.adminGrants = [
 settingsDefaults.roleDefaults = roleDefaults
 
 function rolesDefault (callback) {
-  var roleSchema = require('../models/role')
+  const roleSchema = require('../models/role')
 
   async.series(
     [
@@ -147,8 +147,6 @@ function rolesDefault (callback) {
     ],
     function (err) {
       if (err) throw err
-
-      roleDefaults = null
 
       return callback()
     }
@@ -591,8 +589,8 @@ function mailTemplates (callback) {
 }
 
 function elasticSearchConfToDB (callback) {
-  var nconf = require('nconf')
-  var elasticsearch = {
+  const nconf = require('nconf')
+  const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
     host: nconf.get('elasticsearch:host'),
     port: nconf.get('elasticsearch:port')
@@ -656,8 +654,8 @@ function elasticSearchConfToDB (callback) {
 }
 
 function installationID (callback) {
-  var Chance = require('chance')
-  var chance = new Chance()
+  const Chance = require('chance')
+  const chance = new Chance()
   SettingsSchema.getSettingByName('gen:installid', function (err, setting) {
     if (err) return callback(err)
     if (!setting) {

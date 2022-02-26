@@ -80,7 +80,7 @@ class Sidebar extends React.Component {
     return (
       <div
         className={'sidebar nopadding'}
-        style={{ overflowX: 'hidden', top: this.props.notice ? '105px' : '75px' }}
+        style={{ overflowX: 'hidden', top: this.props.notice ? '95px' : '65px' }}
         data-scroll-opacitymax='0.1'
       >
         <div id={'side-nav-container'} style={{ minHeight: 'calc(100% - 50px)' }}>

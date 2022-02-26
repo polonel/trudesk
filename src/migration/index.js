@@ -144,9 +144,9 @@ function migrateUserRoles (callback) {
 }
 
 function createAdminTeamDepartment (callback) {
-  var Team = require('../models/team')
-  var Department = require('../models/department')
-  var Account = require('../models/user')
+  const Team = require('../models/team')
+  const Department = require('../models/department')
+  const Account = require('../models/user')
 
   async.waterfall(
     [
@@ -154,8 +154,8 @@ function createAdminTeamDepartment (callback) {
         Account.getAdmins({}, next)
       },
       function (admins, next) {
-        var adminsIds = admins.map(function (admin) {
-          return admin._id
+        const adminsIds = admins.map(admin => {
+          return admin._id.toString()
         })
 
         Team.create(

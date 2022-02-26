@@ -230,7 +230,7 @@ class TopbarContainer extends React.Component {
                     </li>
 
                     <li className='profile-area profile-name'>
-                      <span>{viewdata.loggedInAccount.fullname}</span>
+                      <span style={{ fontSize: 16 }}>{viewdata.loggedInAccount.fullname}</span>
                       <div className='uk-position-relative uk-display-inline-block'>
                         <DropdownTrigger pos={'bottom-right'}>
                           <a
@@ -238,7 +238,7 @@ class TopbarContainer extends React.Component {
                             title={viewdata.loggedInAccount.fullname}
                             className={'profile-pic no-ajaxy uk-vertical-align-middle'}
                           >
-                            <Avatar image={viewdata.loggedInAccount.image} showOnlineBubble={false} />
+                            <Avatar image={viewdata.loggedInAccount.image} showOnlineBubble={false} size={35} />
                           </a>
                           <Dropdown small={true}>
                             <DropdownHeader text={viewdata.loggedInAccount.fullname} />
