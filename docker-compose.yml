@@ -14,11 +14,23 @@ services:
       TD_MONGODB_SERVER: mongo
       TD_MONGODB_DATABASE: trudesk
   mongo:
-    image: mongo:3.6
+    image: mongo:5.0-focal
     restart: always
     ports:
       - "27017:27017"
     volumes:
       - mongo:/var/lib/mongo
+  elasticsearch:
+    image: elasticsearch:8.0.0
+    restart: always
+    environment:
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
 volumes:
   mongo:
+  elasticsearch:
