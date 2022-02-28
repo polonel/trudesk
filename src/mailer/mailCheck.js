@@ -12,20 +12,20 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var Imap = require('imap')
-var winston = require('../logger')
-var simpleParser = require('mailparser').simpleParser
-var cheerio = require('cheerio')
+const _ = require('lodash')
+const async = require('async')
+const Imap = require('imap')
+const winston = require('../logger')
+const simpleParser = require('mailparser').simpleParser
+const cheerio = require('cheerio')
 
-var emitter = require('../emitter')
-var userSchema = require('../models/user')
-var groupSchema = require('../models/group')
-var ticketTypeSchema = require('../models/tickettype')
-var Ticket = require('../models/ticket')
+const emitter = require('../emitter')
+const userSchema = require('../models/user')
+const groupSchema = require('../models/group')
+const ticketTypeSchema = require('../models/tickettype')
+const Ticket = require('../models/ticket')
 
-var mailCheck = {}
+const mailCheck = {}
 mailCheck.inbox = []
 
 mailCheck.init = function (settings) {
@@ -76,18 +76,18 @@ mailCheck.init = function (settings) {
   s.mailerCheckCreateAccount = s.mailerCheckCreateAccount === undefined ? { value: false } : s.mailerCheckCreateAccount
   s.mailerCheckDeleteMessage = s.mailerCheckDeleteMessage === undefined ? { value: false } : s.mailerCheckDeleteMessage
 
-  var MAILERCHECK_ENABLED = s.mailerCheckEnabled.value
-  var MAILERCHECK_HOST = s.mailerCheckHost.value
-  var MAILERCHECK_USER = s.mailerCheckUsername.value
-  var MAILERCHECK_PASS = s.mailerCheckPassword.value
-  var MAILERCHECK_PORT = s.mailerCheckPort.value
-  var MAILERCHECK_TLS = s.mailerCheckPort.value === '993'
-  var MAILERCHECK_SELFSIGN = s.mailerCheckSelfSign.value
-  var POLLING_INTERVAL = s.mailerCheckPolling.value
+  const MAILERCHECK_ENABLED = s.mailerCheckEnabled.value
+  const MAILERCHECK_HOST = s.mailerCheckHost.value
+  const MAILERCHECK_USER = s.mailerCheckUsername.value
+  const MAILERCHECK_PASS = s.mailerCheckPassword.value
+  const MAILERCHECK_PORT = s.mailerCheckPort.value
+  const MAILERCHECK_TLS = s.mailerCheckPort.value === '993'
+  const MAILERCHECK_SELFSIGN = s.mailerCheckSelfSign.value
+  const POLLING_INTERVAL = s.mailerCheckPolling.value
 
   if (!MAILERCHECK_ENABLED) return true
 
-  var tlsOptions = {}
+  let tlsOptions = {}
   if (MAILERCHECK_SELFSIGN) tlsOptions = { rejectUnauthorized: false }
 
   mailCheck.Imap = new Imap({
@@ -128,7 +128,7 @@ mailCheck.refetch = function () {
 
 function bindImapError () {
   mailCheck.Imap.on('error', function (err) {
-    winston.debug(err)
+    winston.error(err)
   })
 }
 
