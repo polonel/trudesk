@@ -1,6 +1,6 @@
 <h1 align="center">
 <a href="http://trudesk.io"><img src="http://trudesk.io/TD_Black.png" width="500" /></a>
-<br />Self-Hosted
+<br />Community Edition
 </h1>
 <p align="center">
 <a href="https://app.codacy.com/gh/polonel/trudesk/dashboard"><img alt="Codacy grade" src="https://img.shields.io/codacy/grade/3228c30aa1d14530ba25a04948985079?style=flat-square"></a>
@@ -17,7 +17,7 @@
 <br />
 
 ### Open Source Help Desk - Simply Organized.
-Quickly resolve issues & task with an easy-to-use solution. Built with one goal in mind, to keep work loads organized and simple. **This is the source for Trudesk Self-Hosted**, the community edition of Trudesk. **For the more comprehensive, cloud-hosted version, please see Trudesk Cloud at <a href="http://trudesk.io">Trudesk.io</a>.**
+Quickly resolve issues & task with an easy-to-use solution. Built with one goal in mind, to keep work loads organized and simple. **This is the source for Trudesk Community Edition**, the community edition of Trudesk. **For the more comprehensive, cloud-hosted version, please see Trudesk Cloud at <a href="http://trudesk.io">Trudesk.io</a>.**
 
 <p align="center">
     <img src="https://files.trudesk.io/hero-td-right.png" />
