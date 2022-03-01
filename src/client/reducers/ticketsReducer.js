@@ -128,8 +128,10 @@ const reducer = handleActions(
 
     [DELETE_TICKET.SUCCESS]: (state, action) => {
       const idx = state.tickets.findIndex(ticket => {
-        return ticket.get('_id') === action.payload.id
+        return ticket.get('_id').toString() === action.payload.id.toString()
       })
+
+      if (idx === -1) return { ...state }
 
       return {
         ...state,
@@ -150,8 +152,10 @@ const reducer = handleActions(
         case 'deleted': {
           const id = action.payload.data
           const idx = state.tickets.findIndex(ticket => {
-            return ticket.get('_id') === id
+            return ticket.get('_id').toString() === id.toString()
           })
+          if (idx === -1) return { ...state }
+
           return {
             ...state,
             tickets: state.tickets.delete(idx)
