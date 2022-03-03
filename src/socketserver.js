@@ -12,30 +12,30 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var winston = require('./logger')
-var async = require('async')
-var passportSocketIo = require('passport.socketio')
-var cookieparser = require('cookie-parser')
-var nconf = require('nconf')
+const winston = require('./logger')
+const async = require('async')
+const passportSocketIo = require('passport.socketio')
+const cookieparser = require('cookie-parser')
+const nconf = require('nconf')
 
 // Submodules
-var ticketSocket = require('./socketio/ticketSocket')
-var chatSocket = require('./socketio/chatSocket')
-var notificationSocket = require('./socketio/notificationSocket')
-var noticeSocket = require('./socketio/noticeSocket')
-var accountsImportSocket = require('./socketio/accountImportSocket')
-var backupRestoreSocket = require('./socketio/backupRestoreSocket')
-var logsSocket = require('./socketio/logsSocket')
+const ticketSocket = require('./socketio/ticketSocket')
+const chatSocket = require('./socketio/chatSocket')
+const notificationSocket = require('./socketio/notificationSocket')
+const noticeSocket = require('./socketio/noticeSocket')
+const accountsImportSocket = require('./socketio/accountImportSocket')
+const backupRestoreSocket = require('./socketio/backupRestoreSocket')
+const logsSocket = require('./socketio/logsSocket')
 
-var socketServer = function (ws) {
+const socketServer = function (ws) {
   'use strict'
 
-  var socketConfig = {
+  const socketConfig = {
     pingTimeout: nconf.get('socket:pingTimeout') ? nconf.get('socket:pingTimeout') : 15000,
     pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 30000
   }
 
-  var io = require('socket.io')(ws.server, {
+  const io = require('socket.io')(ws.server, {
     pingTimeout: socketConfig.pingTimeout,
     pingInterval: socketConfig.pingInterval
   })
@@ -49,8 +49,8 @@ var socketServer = function (ws) {
             return next(null, data)
           }
 
-          var userSchema = require('./models/user')
-          userSchema.getUserByAccessToken(data.request._query.token, function (err, user) {
+          const userSchema = require('./models/user')
+          userSchema.getUserByAccessToken(data.request._query.token, (err, user) => {
             if (!err && user) {
               winston.debug('Authenticated socket ' + data.id + ' - ' + user.username)
               data.request.user = user
@@ -89,9 +89,9 @@ var socketServer = function (ws) {
     )
   })
 
-  //io.set('transports', ['polling', 'websocket'])
+  // io.set('transports', ['polling', 'websocket'])
 
-  io.sockets.on('connection', function (socket) {
+  io.sockets.on('connection', socket => {
     // Register Submodules
     ticketSocket.register(socket)
     chatSocket.register(socket)
@@ -108,14 +108,14 @@ var socketServer = function (ws) {
   global.socketServer = {
     eventLoop: {
       _loop: 0,
-      start: function () {
-        global.socketServer.eventLoop._loop = setInterval(function () {
+      start: () => {
+        global.socketServer.eventLoop._loop = setInterval(() => {
           // The main socket event loop.
           notificationSocket.eventLoop()
           chatSocket.eventLoop()
         }, 5000)
       },
-      stop: function () {
+      stop: () => {
         clearInterval(global.socketServer.eventLoop._loop)
       }
     }

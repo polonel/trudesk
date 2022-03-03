@@ -17,10 +17,8 @@ define([
   'underscore',
 
   'angularjs/controllers/common',
-  'angularjs/controllers/accounts',
   'angularjs/controllers/profile',
   'angularjs/controllers/messages',
-  'angularjs/controllers/notices',
   'angularjs/controllers/plugins',
   'angularjs/controllers/reports',
   'angularjs/controllers/editor'
@@ -28,10 +26,8 @@ define([
   return angular
     .module('trudesk.controllers', [
       'trudesk.controllers.common',
-      'trudesk.controllers.accounts',
       'trudesk.controllers.profile',
       'trudesk.controllers.messages',
-      'trudesk.controllers.notices',
       'trudesk.controllers.plugins',
       'trudesk.controllers.reports',
       'trudesk.controllers.editor'

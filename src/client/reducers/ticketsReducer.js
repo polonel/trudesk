@@ -98,32 +98,16 @@ const reducer = handleActions(
       }
     },
 
-    [FETCH_TICKETS.ERROR]: (state, action) => {
+    [FETCH_TICKETS.ERROR]: state => {
       return {
         ...state,
         loading: false
       }
     },
 
-    [CREATE_TICKET.SUCCESS]: (state, action) => {
-      return { ...state }
+    [CREATE_TICKET.SUCCESS]: state => {
       // This is handle with a socket.io event...
-      // const ticket = action.response.ticket
-      // const inView = hasInView(
-      //   state.viewType,
-      //   ticket.status,
-      //   ticket.assignee ? ticket.assignee._id : undefined,
-      //   action.sessionUser._id
-      // )
-      //
-      // if (!inView) return { ...state }
-      //
-      // const withTicket = state.tickets.insert(0, fromJS(ticket))
-      //
-      // return {
-      //   ...state,
-      //   tickets: withTicket
-      // }
+      return { ...state }
     },
 
     [DELETE_TICKET.SUCCESS]: (state, action) => {

@@ -163,7 +163,7 @@ accountsController.profile = function (req, res) {
   }
 
   var content = {}
-  content.title = 'Profile 1'
+  content.title = 'Profile'
   content.nav = 'profile'
 
   content.data = {}

@@ -12,20 +12,20 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var nconf = require('nconf')
+const _ = require('lodash')
+const nconf = require('nconf')
   .argv()
   .env()
-var async = require('async')
-var express = require('express')
-var WebServer = express()
-var winston = require('./logger')
-var middleware = require('./middleware')
-var routes = require('./routes')
-var server = require('http').createServer(WebServer)
-var port = nconf.get('port') || 8118
 
-;(function (app) {
+const express = require('express')
+const WebServer = express()
+const winston = require('./logger')
+const middleware = require('./middleware')
+const routes = require('./routes')
+const server = require('http').createServer(WebServer)
+let port = nconf.get('port') || 8118
+
+;(app => {
   'use strict'
 
   // Load Events
@@ -33,29 +33,20 @@ var port = nconf.get('port') || 8118
 
   module.exports.server = server
   module.exports.app = app
-  module.exports.init = function (db, callback, p) {
+  module.exports.init = async (db, callback, p) => {
     if (p !== undefined) port = p
-    async.parallel(
-      [
-        function (done) {
-          middleware(app, db, function (middleware, store) {
-            module.exports.sessionStore = store
-            routes(app, middleware)
+    middleware(app, db, function (middleware, store) {
+      module.exports.sessionStore = store
+      routes(app, middleware)
 
-            return done()
-          })
-        }
-      ],
-      function () {
-        return callback()
-      }
-    )
+      if (typeof callback === 'function') callback()
+    })
   }
 
-  module.exports.listen = function (callback, p) {
+  module.exports.listen = (callback, p) => {
     if (!_.isUndefined(p)) port = p
 
-    server.on('error', function (err) {
+    server.on('error', err => {
       if (err.code === 'EADDRINUSE') {
         winston.error('Address in use, exiting...')
         server.close()
@@ -65,7 +56,7 @@ var port = nconf.get('port') || 8118
       }
     })
 
-    server.listen(port, '0.0.0.0', function () {
+    server.listen(port, '0.0.0.0', () => {
       winston.info('TruDesk is now listening on port: ' + port)
 
       if (_.isFunction(callback)) return callback()
@@ -73,15 +64,15 @@ var port = nconf.get('port') || 8118
   }
 
   module.exports.installServer = function (callback) {
-    var router = express.Router()
-    var controllers = require('./controllers/index.js')
-    var path = require('path')
-    var hbs = require('express-hbs')
-    var hbsHelpers = require('./helpers/hbs/helpers')
-    var bodyParser = require('body-parser')
-    var favicon = require('serve-favicon')
-    var pkg = require('../package.json')
-    var routeMiddleware = require('./middleware/middleware')(app)
+    const router = express.Router()
+    const controllers = require('./controllers/index.js')
+    const path = require('path')
+    const hbs = require('express-hbs')
+    const hbsHelpers = require('./helpers/hbs/helpers')
+    const bodyParser = require('body-parser')
+    const favicon = require('serve-favicon')
+    const pkg = require('../package.json')
+    const routeMiddleware = require('./middleware/middleware')(app)
 
     app.set('views', path.join(__dirname, './views/'))
     app.engine(
@@ -101,10 +92,10 @@ var port = nconf.get('port') || 8118
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
 
-    router.get('/healthz', function (req, res) {
+    router.get('/healthz', (req, res) => {
       res.status(200).send('OK')
     })
-    router.get('/version', function (req, res) {
+    router.get('/version', (req, res) => {
       return res.json({ version: pkg.version })
     })
 
@@ -117,20 +108,20 @@ var port = nconf.get('port') || 8118
 
     app.use('/', router)
 
-    app.use(function (req, res) {
+    app.use((req, res) => {
       return res.redirect('/install')
     })
 
     require('socket.io')(server)
 
-    require('./sass/buildsass').buildDefault(function (err) {
+    require('./sass/buildsass').buildDefault(err => {
       if (err) {
         winston.error(err)
         return callback(err)
       }
 
       if (!server.listening) {
-        server.listen(port, '0.0.0.0', function () {
+        server.listen(port, '0.0.0.0', () => {
           return callback()
         })
       } else {
