@@ -277,25 +277,25 @@ function processUsers (addedUserArray, updatedUserArray, item, callback) {
 }
 
 accountsController.uploadCSV = function (req, res) {
-  var csv = require('fast-csv')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const csv = require('fast-csv')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1
     }
   })
 
-  var object = {}
+  const object = {}
 
-  var parser = csv.parse()
+  const parser = csv.parse()
 
-  busboy.on('file', function (fieldname, file) {
+  busboy.on('file', function (name, file, info) {
     object.csv = []
 
     file
       .on('readable', function () {
-        var data
+        let data
         while ((data = file.read()) !== null) {
           parser.write(data)
         }
@@ -312,32 +312,27 @@ accountsController.uploadCSV = function (req, res) {
   parser
     .on('data', function (row) {
       object.csv.push(row)
-      // var data
-      // while ((data = parser.read()) !== null) {
-      //   console.log(data)
-      //   object.csv.push(data)
-      // }
     })
     .on('end', function () {
       if (object.csv.length < 1) {
         return res.json({ success: false, error: 'Invalid CSV. No title Row.' })
       }
 
-      var titleRow = object.csv[0]
-      var usernameIdx = _.findIndex(titleRow, function (i) {
+      const titleRow = object.csv[0]
+      const usernameIdx = _.findIndex(titleRow, function (i) {
         return i.toLowerCase() === 'username'
       })
-      var fullnameIdx = _.findIndex(titleRow, function (i) {
+      const fullnameIdx = _.findIndex(titleRow, function (i) {
         return i.toLowerCase() === 'name'
       })
-      var emailIdx = _.findIndex(titleRow, function (i) {
+      const emailIdx = _.findIndex(titleRow, function (i) {
         return i.toLowerCase() === 'email'
       })
-      var titleIdx = _.findIndex(titleRow, function (i) {
+      const titleIdx = _.findIndex(titleRow, function (i) {
         return i.toLowerCase() === 'title'
       })
-      var roleIdx = _.findIndex(titleRow, function (i) {
-        return i.toLowerCase() === 'roleid'
+      const roleIdx = _.findIndex(titleRow, function (i) {
+        return i.toLowerCase() === 'role'
       })
 
       object.csv.splice(0, 1)
@@ -353,8 +348,8 @@ accountsController.uploadCSV = function (req, res) {
         )
       })
 
-      var addedUsers = []
-      var updatedUsers = []
+      const addedUsers = []
+      const updatedUsers = []
 
       async.each(
         object.csv,

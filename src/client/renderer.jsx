@@ -20,6 +20,7 @@ import TicketsContainer from 'containers/Tickets/TicketsContainer'
 import SingleTicketContainer from 'containers/Tickets/SingleTicketContainer'
 import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
+import AccountsImportContainer from 'containers/Accounts/AccountsImport'
 import GroupsContainer from 'containers/Groups'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
@@ -63,6 +64,16 @@ export default function (store) {
     )
 
     ReactDOM.render(AccountsContainerWithProvider, document.getElementById('accounts-container'))
+  }
+
+  if (document.getElementById('accounts-import-container')) {
+    const AccountsImportContainerWithProvider = (
+      <Provider store={store}>
+        <AccountsImportContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(AccountsImportContainerWithProvider, document.getElementById('accounts-import-container'))
   }
 
   if (document.getElementById('groups-container')) {

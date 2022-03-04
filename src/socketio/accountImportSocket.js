@@ -11,14 +11,15 @@
  *  Updated:    1/20/19 4:43 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
-var _ = require('lodash')
-var async = require('async')
-var winston = require('winston')
-var utils = require('../helpers/utils')
-var UserSchema = require('../models/user')
-var permissions = require('../permissions')
+const _ = require('lodash')
+const async = require('async')
+const winston = require('../logger')
+const utils = require('../helpers/utils')
+const UserSchema = require('../models/user')
+const Role = require('../models/role')
+const permissions = require('../permissions')
 
-var events = {}
+const events = {}
 
 function register (socket) {
   events.onImportCSV(socket)
@@ -28,9 +29,9 @@ function register (socket) {
 
 function eventLoop () {}
 
-events.onImportCSV = function (socket) {
-  socket.on('$trudesk:accounts:import:csv', function (data) {
-    var authUser = socket.request.user
+events.onImportCSV = async socket => {
+  socket.on('$trudesk:accounts:import:csv', async data => {
+    const authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {
       // Send Error Socket Emit
       winston.warn('[$trudesk:accounts:import:csv] - Error: Invalid permissions.')
@@ -40,114 +41,89 @@ events.onImportCSV = function (socket) {
       return
     }
 
-    var addedUsers = data.addedUsers
-    var updatedUsers = data.updatedUsers
+    const addedUsers = data.addedUsers
+    const updatedUsers = data.updatedUsers
 
-    var completedCount = 0
-    async.series(
-      [
-        function (next) {
-          async.eachSeries(
-            addedUsers,
-            function (cu, done) {
-              var data = {
-                type: 'csv',
-                totalCount: addedUsers.length + updatedUsers.length,
-                completedCount: completedCount,
-                item: {
-                  username: cu.username,
-                  state: 1
-                }
-              }
+    let completedCount = 0
 
-              utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+    for (const addedUser of addedUsers) {
+      const data = {
+        type: 'csv',
+        totalCount: addedUsers.length + updatedUsers.length,
+        completedCount,
+        item: { username: addedUser.username, state: 1 }
+      }
 
-              var user = new UserSchema({
-                username: cu.username,
-                fullname: cu.fullname,
-                email: cu.email,
-                password: 'Password1!'
-              })
+      utils.sendToSelf(socket, '$trudesk:Accounts:import:onStatusChange', data)
 
-              if (!_.isUndefined(cu.role)) {
-                user.role = cu.role
-              } else {
-                user.role = 'user'
-              }
+      const user = new UserSchema({
+        username: addedUser.username,
+        fullname: addedUser.fullname,
+        email: addedUser.email,
+        title: addedUser.title ? addedUser.title : null,
+        password: 'Password1!'
+      })
 
-              if (!_.isUndefined(cu.title)) {
-                user.title = cu.title
-              }
+      const normalizedRole = addedUser.role ? addedUser.role : 'user'
 
-              user.save(function (err) {
-                if (err) {
-                  winston.warn(err)
-                  data.item.state = 3
-                  utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
-                } else {
-                  completedCount++
-                  // Send update
-                  data.completedCount = completedCount
-                  data.item.state = 2 // Completed
-                  setTimeout(function () {
-                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+      try {
+        const role = await Role.findOne({ normalized: normalizedRole })
+        if (!role) throw new Error('Invalid Role')
 
-                    done()
-                  }, 150)
-                }
-              })
-            },
-            function () {
-              return next()
-            }
-          )
-        },
-        function (next) {
-          _.each(updatedUsers, function (uu) {
-            var data = {
-              type: 'csv',
-              totalCount: addedUsers.length + updatedUsers.length,
-              completedCount: completedCount,
-              item: {
-                username: uu.username,
-                state: 1 // Starting
-              }
-            }
-            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
-            UserSchema.getUserByUsername(uu.username, function (err, user) {
-              if (err) {
-                console.log(err)
-              } else {
-                user.fullname = uu.fullname
-                user.title = uu.title
-                user.email = uu.email
-                if (!_.isUndefined(uu.role)) {
-                  user.role = uu.role
-                }
+        user.role = role._id
 
-                user.save(function (err) {
-                  if (err) {
-                    console.log(err)
-                    data.item.state = 3
-                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
-                  } else {
-                    completedCount++
-                    data.item.state = 2
-                    data.completedCount = completedCount
-                    setTimeout(function () {
-                      utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
-                    }, 150)
-                  }
-                })
-              }
-            })
-          })
+        await user.save()
+        completedCount++
 
-          return next()
+        data.item.state = 2 // Completed
+        setTimeout(() => {
+          utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+        }, 150)
+      } catch (err) {
+        winston.warn(err)
+        data.item.state = 3
+        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+      }
+    }
+
+    for (const updatedUser of updatedUsers) {
+      const data = {
+        type: 'csv',
+        totalCount: addedUsers.length + updatedUsers.length,
+        completedCount,
+        item: {
+          username: updatedUser.username,
+          state: 1
         }
-      ],
-      function () {}
-    )
+      }
+
+      utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+
+      try {
+        const user = await UserSchema.getUserByUsername(updatedUser.username)
+        user.fullname = updatedUser.fullname
+        user.title = updatedUser.title
+        user.email = updatedUser.email
+
+        if (updatedUser.role) {
+          const role = await Role.findOne({ normalized: updatedUser.role })
+          if (!role) throw new Error('Invalid Role')
+          user.role = role._id
+        }
+
+        await user.save()
+        completedCount++
+        data.item.state = 2
+        data.completedCount = completedCount
+        setTimeout(function () {
+          utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+        }, 150)
+      } catch (err) {
+        winston.warn(err)
+        data.item.state = 3
+        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
+      }
+    }
   })
 }
 
@@ -276,7 +252,7 @@ events.onImportJSON = function (socket) {
 
 events.onImportLDAP = function (socket) {
   socket.on('$trudesk:accounts:import:ldap', function (data) {
-    var authUser = socket.request.user
+    const authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {
       // Send Error Socket Emit
       winston.warn('[$trudesk:accounts:import:ldap] - Error: Invalid permissions.')
@@ -286,10 +262,10 @@ events.onImportLDAP = function (socket) {
       return
     }
 
-    var addedUsers = data.addedUsers
-    var updatedUsers = data.updatedUsers
-    var defaultUserRole = null
-    var completedCount = 0
+    const addedUsers = data.addedUsers
+    const updatedUsers = data.updatedUsers
+    let defaultUserRole = null
+    let completedCount = 0
 
     async.series(
       [
