@@ -205,7 +205,7 @@ class AppearanceSettings extends React.Component {
           title='Page Logo'
           subtitle={
             <div>
-              Upload logo to display within page views. <i>Note: Used on login page (515px x 125px)</i>
+              Upload logo to display within page views. <i>Note: Used on login page (min-width: 400px)</i>
             </div>
           }
           component={
@@ -390,7 +390,6 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting, updateMultipleSettings, updateColorScheme }
-)(AppearanceSettings)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, updateColorScheme })(
+  AppearanceSettings
+)
