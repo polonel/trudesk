@@ -15,6 +15,7 @@
 var mongoose = require('mongoose')
 var mongooseLeanVirtuals = require('mongoose-lean-virtuals')
 var _ = require('lodash')
+var utils = require('../helpers/utils')
 
 var COLLECTION = 'roles'
 
@@ -51,8 +52,8 @@ roleSchema.virtual('isAgent').get(function () {
 roleSchema.plugin(mongooseLeanVirtuals)
 
 roleSchema.pre('save', function (next) {
-  this.name = this.name.trim()
-  this.normalized = this.name.toLowerCase().trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
+  this.normalized = utils.sanitizeFieldPlainText(this.name.toLowerCase().trim())
 
   return next()
 })

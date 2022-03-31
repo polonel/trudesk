@@ -13,6 +13,7 @@
  */
 
 var mongoose = require('mongoose')
+var utils = require('../helpers/utils')
 
 var attachmentSchema = mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
@@ -23,7 +24,7 @@ var attachmentSchema = mongoose.Schema({
 })
 
 attachmentSchema.pre('save', function (next) {
-  this.name = this.name.trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
 
   return next()
 })

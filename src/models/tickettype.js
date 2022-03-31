@@ -14,6 +14,7 @@
 
 var _ = require('lodash')
 var mongoose = require('mongoose')
+var utils = require('../helpers/utils')
 
 var COLLECTION = 'tickettypes'
 
@@ -43,7 +44,7 @@ ticketTypeSchema.pre('find', autoPopulatePriorities)
 ticketTypeSchema.pre('findOne', autoPopulatePriorities)
 
 ticketTypeSchema.pre('save', function (next) {
-  this.name = this.name.trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
 
   return next()
 })

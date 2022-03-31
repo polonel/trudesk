@@ -18,6 +18,7 @@ var winston = require('winston')
 var bcrypt = require('bcrypt')
 var _ = require('lodash')
 var Chance = require('chance')
+const utils = require('../helpers/utils')
 
 // Required for linkage
 require('./role')
@@ -89,10 +90,11 @@ userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
 userSchema.pre('save', function (next) {
   var user = this
 
-  user.username = user.username.toLowerCase().trim()
-  user.email = user.email.trim()
-  if (user.fullname) user.fullname = user.fullname.trim()
-  if (user.title) user.title = user.title.trim()
+  user.username = utils.sanitizeFieldPlainText(user.username.toLowerCase().trim())
+  user.email = utils.sanitizeFieldPlainText(user.email.trim())
+
+  if (user.fullname) user.fullname = utils.sanitizeFieldPlainText(user.fullname.trim())
+  if (user.title) user.title = utils.sanitizeFieldPlainText(user.title.trim())
 
   if (!user.isModified('password')) {
     return next()

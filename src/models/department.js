@@ -15,6 +15,7 @@
 var _ = require('lodash')
 var async = require('async')
 var mongoose = require('mongoose')
+var utils = require('../helpers/utils')
 
 // Refs
 require('./group')
@@ -35,8 +36,8 @@ var departmentSchema = mongoose.Schema({
 departmentSchema.plugin(require('mongoose-autopopulate'))
 
 departmentSchema.pre('save', function (next) {
-  this.name = this.name.trim()
-  this.normalized = this.name.trim().toLowerCase()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
+  this.normalized = utils.sanitizeFieldPlainText(this.name.trim().toLowerCase())
 
   return next()
 })

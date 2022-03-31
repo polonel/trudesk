@@ -12,7 +12,17 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
+const _ = require('lodash')
+const xss = require('xss')
+
+module.exports.sanitizeFieldPlainText = function (text) {
+  const t = xss(text, {
+    whileList: {},
+    stripIgnoreTag: true,
+    stripIgnoreTagBody: ['script']
+  })
+  return t
+}
 
 module.exports.sendToSelf = function (socket, method, data) {
   socket.emit(method, data)

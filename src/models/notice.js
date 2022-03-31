@@ -10,6 +10,7 @@
  */
 
 var mongoose = require('mongoose')
+var utils = require('../helpers/utils')
 
 var COLLECTION = 'notices'
 
@@ -41,7 +42,8 @@ var noticeSchema = mongoose.Schema({
 })
 
 noticeSchema.pre('save', function (next) {
-  this.name = this.name.trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
+  this.message = utils.sanitizeFieldPlainText(this.message.trim())
 
   return next()
 })

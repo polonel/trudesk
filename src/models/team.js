@@ -14,6 +14,7 @@
 
 var _ = require('lodash')
 var mongoose = require('mongoose')
+var utils = require('../helpers/utils')
 
 // Refs
 require('./user')
@@ -35,11 +36,11 @@ var teamSchema = mongoose.Schema({
 teamSchema.plugin(require('mongoose-autopopulate'))
 
 teamSchema.pre('validate', function () {
-  this.normalized = this.name.trim().toLowerCase()
+  this.normalized = utils.sanitizeFieldPlainText(this.name.trim().toLowerCase())
 })
 
 teamSchema.pre('save', function (next) {
-  this.name = this.name.trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
 
   return next()
 })

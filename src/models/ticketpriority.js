@@ -16,6 +16,7 @@
 var mongoose = require('mongoose')
 var moment = require('moment')
 require('moment-duration-format')
+var utils = require('../helpers/utils')
 
 var COLLECTION = 'priorities'
 
@@ -36,7 +37,7 @@ var prioritySchema = mongoose.Schema(
 )
 
 prioritySchema.pre('save', function (next) {
-  this.name = this.name.trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
 
   return next()
 })

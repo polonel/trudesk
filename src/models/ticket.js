@@ -20,6 +20,7 @@ var moment = require('moment')
 var sanitizeHtml = require('sanitize-html')
 // var redisCache          = require('../cache/rediscache');
 var xss = require('xss')
+var utils = require('../helpers/utils')
 
 // Needed - For Population
 var groupSchema = require('./group')
@@ -120,7 +121,7 @@ var autoPopulate = function (next) {
 ticketSchema.pre('findOne', autoPopulate).pre('find', autoPopulate)
 
 ticketSchema.pre('save', function (next) {
-  this.subject = this.subject.trim()
+  this.subject = utils.sanitizeFieldPlainText(this.subject.trim())
   this.wasNew = this.isNew
 
   if (!_.isUndefined(this.uid) || this.uid) {

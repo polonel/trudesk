@@ -13,6 +13,7 @@
  */
 
 var mongoose = require('mongoose')
+var utils = require('../helpers/utils')
 
 var COLLECTION = 'tags'
 
@@ -31,8 +32,8 @@ var tagSchema = mongoose.Schema({
 })
 
 tagSchema.pre('save', function (next) {
-  this.name = this.name.trim()
-  this.normalized = this.name.toLowerCase().trim()
+  this.name = utils.sanitizeFieldPlainText(this.name.trim())
+  this.normalized = utils.sanitizeFieldPlainText(this.name.toLowerCase().trim())
 
   return next()
 })
