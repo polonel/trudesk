@@ -65,7 +65,7 @@
     "mkdirp": "0.5.2",
     "mobx": "5.9.0",
     "mobx-react": "5.4.3",
-    "moment": "2.23.0",
+    "moment": "2.29.2",
     "moment-duration-format": "2.2.2",
     "moment-timezone": "0.5.23",
     "mongoose": "5.12.3",
