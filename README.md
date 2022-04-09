@@ -10,7 +10,7 @@
 <a title="Crowdin" target="_blank" href="https://crowdin.com/project/trudesk"><img src="https://d322cqt584bo4o.cloudfront.net/trudesk/localized.svg?style=flat-square"></a>
 <a href="https://github.com/polonel/trudesk/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-APACHE%202-green.svg?style=flat-square" /></a>
 <a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
-<a href="http://docs.trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
+<a href="https://docs.trudesk.io/v1.2"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
 <sub>© 2014-2022, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
 </p>
@@ -41,7 +41,7 @@ Take it for a spin on Ubuntu 20.04 with a one liner - <br />`curl -L -s https://
 - Elasticsearch 8 (optional to enable search)
 
 ### Documentation
-Online documentation: [https://docs.trudesk.io/docs](https://docs.trudesk.io/docs) (outdated)
+Online documentation: [https://docs.trudesk.io/v1.2](https://docs.trudesk.io/v1.2)
 
 ### Contributing
 If you like what you see here, and want to help support the work being done, you could:
