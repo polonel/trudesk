@@ -575,9 +575,7 @@ ticketsController.uploadImageMDE = function (req, res) {
       '.bmp',
       '.dib',
       '.heif',
-      '.heic',
-      '.svg',
-      '.svgz'
+      '.heic'
     ]
 
     if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
