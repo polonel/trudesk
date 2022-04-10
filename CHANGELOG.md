@@ -1,3 +1,23 @@
+# [1.2.0](https://github.com/polonel/trudesk/compare/v1.1.11...v1.2.0) (2022-04-10)
+
+
+### Bug Fixes
+
+* **appearance:** color scheme updates in production build [#469](https://github.com/polonel/trudesk/issues/469) ([881a919](https://github.com/polonel/trudesk/commit/881a919))
+* **appearance:** issue when uploading logo/favicon ([cb48e79](https://github.com/polonel/trudesk/commit/cb48e79))
+* **log:** log file view ([0c2b180](https://github.com/polonel/trudesk/commit/0c2b180))
+* **mailer:** missing data elements in mailer template [#480](https://github.com/polonel/trudesk/issues/480) ([cd54631](https://github.com/polonel/trudesk/commit/cd54631))
+* **profile:** profile image upload on new version of chrome ([cb72e75](https://github.com/polonel/trudesk/commit/cb72e75))
+* **sidebar:** spacing when activating/deactivating notice ([d1b2b10](https://github.com/polonel/trudesk/commit/d1b2b10))
+* **tickets:** disable uploading .svg as an attachment ([c4b262c](https://github.com/polonel/trudesk/commit/c4b262c))
+* **tickets:** incorrect tickets removed from ticket view ([a943497](https://github.com/polonel/trudesk/commit/a943497))
+* **ui:** input fields reset on clear [#452](https://github.com/polonel/trudesk/issues/452) ([3b8682c](https://github.com/polonel/trudesk/commit/3b8682c))
+
+
+### Features
+
+* **maintenance:** added maintenance mode [#475](https://github.com/polonel/trudesk/issues/475) ([a04f15b](https://github.com/polonel/trudesk/commit/a04f15b))
+
 ## [1.1.11](https://github.com/polonel/trudesk/compare/v1.1.10...v1.1.11) (2021-11-21)
 
 
