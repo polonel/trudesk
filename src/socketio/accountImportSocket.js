@@ -29,7 +29,7 @@ function register (socket) {
 
 function eventLoop () {}
 
-events.onImportCSV = async socket => {
+events.onImportCSV = socket => {
   socket.on('$trudesk:accounts:import:csv', async data => {
     const authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {

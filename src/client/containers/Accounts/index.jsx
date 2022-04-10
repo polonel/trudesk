@@ -237,22 +237,22 @@ class AccountsContainer extends React.Component {
                     extraClass={'hover-accent'}
                     onClick={() => this.props.showModal('CREATE_ACCOUNT')}
                   />
-                  {helpers.canUser('accounts:import', true) && (
-                    <DropdownTrigger mode={'click'} pos={'bottom-right'} offset={5} extraClass={'uk-float-right'}>
-                      <Button
-                        text={''}
-                        hasDropdown={true}
-                        small={true}
-                        waves={false}
-                        styleOverride={{ padding: '0 5px 0 0' }}
-                        extraClass={'pr-5 no-border-radius nbl bg-accent md-color-white hover-accent'}
-                      />
-                      <Dropdown small={true}>
-                        <DropdownHeader text={'Account Actions'} />
-                        <DropdownItem text={'Import'} href={'/accounts/import'} />
-                      </Dropdown>
-                    </DropdownTrigger>
-                  )}
+                  {/*{helpers.canUser('accounts:import', true) && (*/}
+                  {/*  <DropdownTrigger mode={'click'} pos={'bottom-right'} offset={5} extraClass={'uk-float-right'}>*/}
+                  {/*    <Button*/}
+                  {/*      text={''}*/}
+                  {/*      hasDropdown={true}*/}
+                  {/*      small={true}*/}
+                  {/*      waves={false}*/}
+                  {/*      styleOverride={{ padding: '0 5px 0 0' }}*/}
+                  {/*      extraClass={'pr-5 no-border-radius nbl bg-accent md-color-white hover-accent'}*/}
+                  {/*    />*/}
+                  {/*    <Dropdown small={true}>*/}
+                  {/*      <DropdownHeader text={'Account Actions'} />*/}
+                  {/*      <DropdownItem text={'Import'} href={'/accounts/import'} />*/}
+                  {/*    </Dropdown>*/}
+                  {/*  </DropdownTrigger>*/}
+                  {/*)}*/}
                 </ButtonGroup>
               </div>
             </div>

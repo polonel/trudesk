@@ -24,10 +24,22 @@ class StepWizard extends React.Component {
     this.init = this.init.bind(this)
     this.show = this.show.bind(this)
     this.hide = this.hide.bind(this)
+
+    this.onImportStatusChange = this.onImportStatusChange.bind(this)
   }
 
   componentDidMount () {
     this.init()
+
+    socket.socket.on('$trudesk:accounts:import:onStatusChange', this.onImportStatusChange)
+  }
+
+  componentWillUnmount () {
+    socket.socket.removeAllListeners('$trudesk:accounts:import:onStatusChange')
+  }
+
+  onImportStatusChange = data => {
+    console.log(data)
   }
 
   init = () => {
