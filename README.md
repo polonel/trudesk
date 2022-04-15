@@ -17,7 +17,7 @@
 <br />
 
 ### Open Source Help Desk - Simply Organized.
-Quickly resolve issues & task with an easy-to-use solution. Built with one goal in mind, to keep work loads organized and simple. **This is the source for Trudesk Community Edition**, the community edition of Trudesk. **For the more comprehensive, cloud-hosted version, please see Trudesk Cloud at <a href="http://trudesk.io">Trudesk.io</a>.**
+Quickly resolve issues & task with an easy-to-use solution. Built with one goal in mind, to keep work loads organized and simple. **This is the source for Trudesk Community Edition. For the more comprehensive, cloud-hosted version, please see Trudesk Cloud at <a href="http://trudesk.io">Trudesk.io</a>.**
 
 <p align="center">
     <img src="https://files.trudesk.io/hero-td-right.png" />
