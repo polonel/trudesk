@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  coverage-reporter: codacy/coverage-reporter@13.9.3
 
 executors:
   docker-executor:
@@ -67,7 +69,10 @@ jobs:
         command: yarn run build
     - run:
         name: Run Codacy
-        command: yarn run codacy
+        command: yarn run coverage
+    - coverage-reporter/send_report:
+        coverage-reports: './coverage/lcov.info'
+        prject-token: $CODACY_PROJECT_TOKEN
   build_production:
     docker:
     - image: circleci/node:16-stretch
