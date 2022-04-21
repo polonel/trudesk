@@ -58,6 +58,7 @@ jobs:
     - image: circleci/node:16-stretch
     - image: circleci/mongo:5.0
     working_directory: ~/trudesk
+    resource_class: medium+
     steps:
     - checkout
     - yarninstall
