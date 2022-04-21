@@ -74,12 +74,13 @@ jobs:
     - coverage-reporter/send_report:
         coverage-reports: './coverage/lcov.info'
         project-token: $CODACY_PROJECT_TOKEN
-    parallelism: 4
+    parallelism: 2
   build_production:
     docker:
     - image: circleci/node:16-stretch
     - image: circleci/mongo:5.0
     working_directory: ~/trudesk
+    resource_class: large
     steps:
     - checkout
     - run:
@@ -98,6 +99,7 @@ jobs:
     - run:
         name: Semantic Release
         command: npx semantic-release
+    parallelism: 2
 
 workflows:
   version: 2.1
