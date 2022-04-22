@@ -1048,37 +1048,55 @@ ticketSchema.statics.getTicketByUid = function (uid, callback) {
  * @param {Object} id MongoDb _id.
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-ticketSchema.statics.getTicketById = function (id, callback) {
-  if (_.isUndefined(id)) return callback('Invalid Id - TicketSchema.GetTicketById()', null)
+ticketSchema.statics.getTicketById = async function (id, callback) {
+  const self = this
 
-  var self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(id)) {
+        const error = new Error('Invalid Id - TicketSchema.GetTicketById()')
 
-  var q = self
-    .model(COLLECTION)
-    .findOne({ _id: id, deleted: false })
-    .populate(
-      'owner assignee comments.owner notes.owner subscribers history.owner',
-      'username fullname email role image title'
-    )
-    .populate('type tags')
-    .populate({
-      path: 'group',
-      model: groupSchema,
-      populate: [
-        {
-          path: 'members',
-          model: userSchema,
-          select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
-        },
-        {
-          path: 'sendMailTo',
-          model: userSchema,
-          select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
-        }
-      ]
-    })
+        if (typeof callback === 'function') return callback(error, null)
 
-  return q.exec(callback)
+        return reject(error)
+      }
+
+      const q = self
+        .model(COLLECTION)
+        .findOne({ _id: id, deleted: false })
+        .populate(
+          'owner assignee comments.owner notes.owner subscribers history.owner',
+          'username fullname email role image title'
+        )
+        .populate('type tags')
+        .populate({
+          path: 'group',
+          model: groupSchema,
+          populate: [
+            {
+              path: 'members',
+              model: userSchema,
+              select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+            },
+            {
+              path: 'sendMailTo',
+              model: userSchema,
+              select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+            }
+          ]
+        })
+
+      try {
+        const result = await q.exec(callback)
+
+        return resolve(result)
+      } catch (e) {
+        if (typeof callback === 'function') callback(e)
+
+        return reject(e)
+      }
+    })()
+  })
 }
 
 /**
