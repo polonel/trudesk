@@ -13,7 +13,7 @@
  */
 var _ = require('lodash')
 var async = require('async')
-var winston = require('winston')
+var winston = require('../logger')
 var utils = require('../helpers/utils')
 
 var events = {}
@@ -30,9 +30,10 @@ function eventLoop () {
 }
 
 function updateNotifications () {
-  _.each(io.sockets.sockets, function (socket) {
-    var notifications = {}
-    var notificationSchema = require('../models/notification')
+  const notificationSchema = require('../models/notification')
+  // eslint-disable-next-line no-unused-vars
+  for (const [_, socket] of io.of('/').sockets) {
+    const notifications = {}
     async.parallel(
       [
         function (done) {
@@ -48,6 +49,7 @@ function updateNotifications () {
             if (err) return done(err)
 
             notifications.count = count
+
             return done()
           })
         }
@@ -61,7 +63,7 @@ function updateNotifications () {
         utils.sendToSelf(socket, 'updateNotifications', notifications)
       }
     )
-  })
+  }
 }
 
 function updateAllNotifications (socket) {
