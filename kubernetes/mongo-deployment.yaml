@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: mongo
   name: mongo
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -29,13 +30,31 @@ spec:
           name: mongo
           ports:
             - containerPort: 27017
+
+          readinessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/mongo
               name: mongo
+            - mountPath: /data/db
+              name: mongo-claim0
       restartPolicy: Always
       volumes:
         - name: mongo
           persistentVolumeClaim:
             claimName: mongo
+        - name: mongo-claim0
+          persistentVolumeClaim:
+            claimName: mongo-claim0
 status: {}

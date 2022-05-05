@@ -6,7 +6,7 @@
 <code> kubectl create ns trudesk </code>
 
 ### Apply manifests
-<code> kubectl apply -f . -n trudesk </code>
+<code> kubectl apply -f .  </code>
 
 **You need to define your own ingress or expose the service to access trudesk!!!**
 
@@ -22,4 +22,4 @@ Log into TrueDesk and go to Settings > Elasticsearch and define the enpoint of t
 
 ## To Do
 
-- Trudesk reinstalls every time the pod dies 
+- Trudesk reinstalls every time the pod dies (DONE)

@@ -3,30 +3,32 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: mongo
-  name: mongo
+    io.kompose.service: trudesk-uploads
+  name: trudesk-uploads
   namespace: default
+
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
-
 status: {}
 
---- 
+---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  creationTimestamp: null
   labels:
-    app: mongo-claim0
-  name: mongo-claim0
+    io.kompose.service: trudesk-backups
+  name: trudesk-backups
   namespace: default
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 500Mi
+status: {}

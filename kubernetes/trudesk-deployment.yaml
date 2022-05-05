@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: trudesk
   name: trudesk
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -33,17 +34,34 @@ spec:
             - name: TD_MONGODB_SERVER
               value: mongo
             - name: TRUDESK_DOCKER
-              value: "true"
+              value: 'true'
           image: polonel/trudesk:1
           name: trudesk
           ports:
             - containerPort: 8118
+
+          readinessProbe:
+            tcpSocket:
+              port: 8118
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            tcpSocket:
+              port: 8118
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
           resources: {}
           volumeMounts:
             - mountPath: /usr/src/trudesk/public/uploads
               name: trudesk-uploads
             - mountPath: /usr/src/trudesk/backups
               name: trudesk-backups
+            - mountPath: /usr/src/trudesk/config.json
+              name: trudesk-config-json
+              readOnly: true
+              subPath: config.json
       restartPolicy: Always
       volumes:
         - name: trudesk-uploads
@@ -52,4 +70,9 @@ spec:
         - name: trudesk-backups
           persistentVolumeClaim:
             claimName: trudesk-backups
+        - name: trudesk-config-json
+          configMap:
+            name: trudesk-config-json
 status: {}
+
+

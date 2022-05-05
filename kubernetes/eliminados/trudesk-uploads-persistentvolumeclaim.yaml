@@ -5,6 +5,7 @@ metadata:
   labels:
     io.kompose.service: trudesk-uploads
   name: trudesk-uploads
+
 spec:
   accessModes:
     - ReadWriteOnce

@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: mongo
   name: mongo
+  namespace: default
 spec:
   ports:
     - name: "27017"

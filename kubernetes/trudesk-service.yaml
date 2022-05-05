@@ -8,6 +8,7 @@ metadata:
   labels:
     io.kompose.service: trudesk
   name: trudesk
+  namespace: default
 spec:
   ports:
     - name: "8118"
