@@ -11,3 +11,6 @@ exclude_paths:
   - public/**
   - public/**/*
   - test/**/*
+  - .github/**
+  - CHANGELOG.md
+  - README.md
