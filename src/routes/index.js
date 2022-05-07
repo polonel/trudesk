@@ -9,12 +9,12 @@
  ========================================================================
  **/
 
-var express = require('express')
-var router = express.Router()
-var controllers = require('../controllers')
-var path = require('path')
-var winston = require('winston')
-var packagejson = require('../../package.json')
+const express = require('express')
+const router = express.Router()
+const controllers = require('../controllers')
+const path = require('path')
+const winston = require('winston')
+const packagejson = require('../../package.json')
 
 function mainRoutes (router, middleware, controllers) {
   router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index)
@@ -44,8 +44,8 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about)
 
   router.get('/captcha', function (req, res) {
-    var svgCaptcha = require('svg-captcha')
-    var captcha = svgCaptcha.create()
+    const svgCaptcha = require('svg-captcha')
+    const captcha = svgCaptcha.create()
     req.session.captcha = captcha.text
     res.set('Content-Type', 'image/svg+xml')
     res.send(captcha.data)
@@ -57,8 +57,8 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/signup', controllers.accounts.signup)
 
   router.get('/logoimage', function (req, res) {
-    var s = require('../models/setting')
-    var _ = require('lodash')
+    const s = require('../models/setting')
+    const _ = require('lodash')
     s.getSettingByName('gen:customlogo', function (err, hasCustomLogo) {
       if (!err && hasCustomLogo && hasCustomLogo.value) {
         s.getSettingByName('gen:customlogofilename', function (err, logoFilename) {
@@ -368,7 +368,7 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function (req, res) {
     if (process.env.DISABLE_RESTART) return res.json({ success: true })
 
-    var pm2 = require('pm2')
+    const pm2 = require('pm2')
     pm2.connect(function (err) {
       if (err) {
         winston.error(err)
@@ -391,15 +391,15 @@ function mainRoutes (router, middleware, controllers) {
     router.get('/debug/populatedb', controllers.debug.populatedatabase)
     router.get('/debug/sendmail', controllers.debug.sendmail)
     router.get('/debug/mailcheck/refetch', function (req, res) {
-      var mailCheck = require('../mailer/mailCheck')
+      const mailCheck = require('../mailer/mailCheck')
       mailCheck.refetch()
       res.send('OK')
     })
 
     router.get('/debug/cache/refresh', function (req, res) {
-      var _ = require('lodash')
+      const _ = require('lodash')
 
-      var forkProcess = _.find(global.forks, { name: 'cache' })
+      const forkProcess = _.find(global.forks, { name: 'cache' })
       forkProcess.fork.send({ name: 'cache:refresh' })
 
       res.send('OK')
@@ -407,7 +407,7 @@ function mainRoutes (router, middleware, controllers) {
 
     router.get('/debug/restart', function (req, res) {
       if (process.env.DISABLE_RESTART) return res.send('RESTART DISABLED')
-      var pm2 = require('pm2')
+      const pm2 = require('pm2')
       pm2.connect(function (err) {
         if (err) {
           winston.error(err)
@@ -433,13 +433,13 @@ module.exports = function (app, middleware) {
   app.use('/', router)
 
   // Load Plugin routes
-  var dive = require('dive')
-  var fs = require('fs')
-  var pluginDir = path.join(__dirname, '../../plugins')
+  const dive = require('dive')
+  const fs = require('fs')
+  const pluginDir = path.join(__dirname, '../../plugins')
   if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir)
   dive(pluginDir, { directories: true, files: false, recursive: false }, function (err, dir) {
     if (err) throw err
-    var pluginRoutes = require(path.join(dir, '/routes'))
+    const pluginRoutes = require(path.join(dir, '/routes'))
     if (pluginRoutes) {
       pluginRoutes(router, middleware)
     } else {
@@ -452,7 +452,7 @@ module.exports = function (app, middleware) {
 }
 
 function handleErrors (err, req, res) {
-  var status = err.status || 500
+  const status = err.status || 500
   res.status(err.status)
 
   if (status === 500) {

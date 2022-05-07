@@ -12,28 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var path = require('path')
-var async = require('async')
-var winston = require('../logger')
-var emitter = require('../emitter')
-var util = require('../helpers/utils')
-var templateSchema = require('../models/template')
-var ticketSchema = require('../models/ticket')
-var userSchema = require('../models/user')
-var departmentSchema = require('../models/department')
-var NotificationSchema = require('../models/notification')
-var settingsSchema = require('../models/setting')
-var Email = require('email-templates')
-var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-var permissions = require('../permissions')
+const _ = require('lodash')
+const path = require('path')
+const async = require('async')
+const winston = require('../logger')
+const emitter = require('../emitter')
+const NotificationSchema = require('../models/notification')
+const settingsSchema = require('../models/setting')
+const Email = require('email-templates')
+const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-var socketUtils = require('../helpers/utils')
-var sharedVars = require('../socketio/index').shared
+const notifications = require('../notifications') // Load Push Events
 
-var notifications = require('../notifications') // Load Push Events
-
-var eventTicketCreated = require('./events/event_ticket_created')
+const eventTicketCreated = require('./events/event_ticket_created')
 
 ;(function () {
   notifications.init(emitter)
@@ -43,12 +34,12 @@ var eventTicketCreated = require('./events/event_ticket_created')
   })
 
   function sendPushNotification (tpsObj, data) {
-    var tpsEnabled = tpsObj.tpsEnabled
-    var tpsUsername = tpsObj.tpsUsername
-    var tpsApiKey = tpsObj.tpsApiKey
-    var hostname = tpsObj.hostname
-    var ticket = data.ticket
-    var message = data.message
+    const tpsEnabled = tpsObj.tpsEnabled
+    const tpsUsername = tpsObj.tpsUsername
+    const tpsApiKey = tpsObj.tpsApiKey
+    const hostname = tpsObj.hostname
+    let ticket = data.ticket
+    const message = data.message
 
     if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
       winston.debug('Warn: TPS - Push Service Not Enabled')
@@ -66,9 +57,9 @@ var eventTicketCreated = require('./events/event_ticket_created')
     // 3 - Ticket Note Added
     // 4 - Ticket Assignee Set
     //  - Message
-    var title
-    var users = []
-    var content
+    let title
+    let users = []
+    let content, comment, assigneeId, ticketUid
     switch (data.type) {
       case 1:
         title = 'Ticket #' + ticket.uid + ' Created'
@@ -80,7 +71,7 @@ var eventTicketCreated = require('./events/event_ticket_created')
       case 2:
         title = 'Ticket #' + ticket.uid + ' Updated'
         content = _.last(ticket.history).description
-        var comment = _.last(ticket.comments)
+        comment = _.last(ticket.comments)
         users = _.compact(
           _.map(ticket.subscribers, function (o) {
             if (comment.owner._id.toString() !== o._id.toString()) {
@@ -93,8 +84,8 @@ var eventTicketCreated = require('./events/event_ticket_created')
         title = message.owner.fullname + ' sent you a message'
         break
       case 4:
-        var assigneeId = data.assigneeId
-        var ticketUid = data.ticketUid
+        assigneeId = data.assigneeId
+        ticketUid = data.ticketUid
         ticket = {}
         ticket._id = data.ticketId
         ticket.uid = data.ticketUid
@@ -111,7 +102,7 @@ var eventTicketCreated = require('./events/event_ticket_created')
       return
     }
 
-    var n = {
+    const n = {
       title: title,
       data: {
         ticketId: ticket._id,
@@ -151,10 +142,10 @@ var eventTicketCreated = require('./events/event_ticket_created')
     ) {
       if (err) return false
 
-      var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
-      var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
-      var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
-      var mailerEnabled = _.head(_.filter(tpsSettings), ['name', 'mailer:enable'])
+      let tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
+      let tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
+      let tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
+      let mailerEnabled = _.head(_.filter(tpsSettings), ['name', 'mailer:enable'])
       mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
 
       if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
@@ -172,7 +163,7 @@ var eventTicketCreated = require('./events/event_ticket_created')
             if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() === comment.owner.toString())
               return cb
 
-            var notification = new NotificationSchema({
+            const notification = new NotificationSchema({
               owner: ticket.owner,
               title: 'Comment Added to Ticket#' + ticket.uid,
               message: ticket.subject,
@@ -190,7 +181,7 @@ var eventTicketCreated = require('./events/event_ticket_created')
             if (ticket.assignee._id.toString() === comment.owner.toString()) return cb
             if (ticket.owner._id.toString() === ticket.assignee._id.toString()) return cb()
 
-            var notification = new NotificationSchema({
+            const notification = new NotificationSchema({
               owner: ticket.assignee,
               title: 'Comment Added to Ticket#' + ticket.uid,
               message: ticket.subject,
@@ -219,8 +210,8 @@ var eventTicketCreated = require('./events/event_ticket_created')
           function (c) {
             if (!mailerEnabled) return c()
 
-            var mailer = require('../mailer')
-            var emails = []
+            const mailer = require('../mailer')
+            let emails = []
             async.each(
               ticket.subscribers,
               function (member, cb) {
@@ -241,7 +232,7 @@ var eventTicketCreated = require('./events/event_ticket_created')
                   return c()
                 }
 
-                var email = new Email({
+                const email = new Email({
                   views: {
                     root: templateDir,
                     options: {
@@ -262,7 +253,7 @@ var eventTicketCreated = require('./events/event_ticket_created')
                       comment: comment
                     })
                     .then(function (html) {
-                      var mailOptions = {
+                      const mailOptions = {
                         to: emails.join(),
                         subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
                         html: html,
@@ -297,9 +288,9 @@ var eventTicketCreated = require('./events/event_ticket_created')
     settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
       if (err) return false
 
-      var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
-      var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
-      var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
+      let tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
+      let tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
+      let tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
 
       if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
         tpsEnabled = false

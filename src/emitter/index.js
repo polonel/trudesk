@@ -14,10 +14,10 @@
 
 'use strict'
 
-var eventEmitter = new (require('events')).EventEmitter()
+const eventEmitter = new (require('events').EventEmitter)()
 
 eventEmitter.all = function (events, callback) {
-  var eventList = events.slice(0)
+  const eventList = events.slice(0)
 
   function onEvent (event) {
     eventEmitter.on(events[event], function () {
@@ -29,8 +29,8 @@ eventEmitter.all = function (events, callback) {
     })
   }
 
-  for (var ev in events) {
-    if (events.hasOwnProperty(ev)) {
+  for (const ev in events) {
+    if (Object.hasOwn(events, ev)) {
       onEvent(ev)
     }
   }

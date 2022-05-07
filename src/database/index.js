@@ -12,12 +12,12 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var nconf = require('nconf')
-var mongoose = require('mongoose')
-var winston = require('../logger')
+const nconf = require('nconf')
+const mongoose = require('mongoose')
+const winston = require('../logger')
 
-var db = {}
-var mongoConnectionUri = {
+const db = {}
+const mongoConnectionUri = {
   server: process.env.TD_MONGODB_SERVER || nconf.get('mongo:host'),
   port: process.env.TD_MONGODB_PORT || nconf.get('mongo:port') || '27017',
   username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
@@ -26,7 +26,7 @@ var mongoConnectionUri = {
   shard: process.env.TD_MONGODB_SHARD || nconf.get('mongo:shard')
 }
 
-var CONNECTION_URI = ''
+let CONNECTION_URI = ''
 if (!mongoConnectionUri.username) {
   CONNECTION_URI =
     'mongodb://' + mongoConnectionUri.server + ':' + mongoConnectionUri.port + '/' + mongoConnectionUri.database
@@ -60,12 +60,12 @@ if (!mongoConnectionUri.username) {
 
 if (process.env.TD_MONGODB_URI) CONNECTION_URI = process.env.TD_MONGODB_URI
 
-var options = {
+let options = {
   keepAlive: 1,
   connectTimeoutMS: 30000
 }
 
-module.exports.init = function (callback, connectionString, opts) {
+module.exports.init = async function (callback, connectionString, opts) {
   if (connectionString) CONNECTION_URI = connectionString
   if (opts) options = opts
   options.dbName = mongoConnectionUri.database
