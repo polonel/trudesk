@@ -14,6 +14,8 @@
 
 const _ = require('lodash')
 const xss = require('xss')
+const fs = require('fs')
+const piexifjs = require('piexifjs')
 
 module.exports.sanitizeFieldPlainText = function (text) {
   const t = xss(text, {
@@ -22,6 +24,15 @@ module.exports.sanitizeFieldPlainText = function (text) {
     stripIgnoreTagBody: ['script']
   })
   return t
+}
+
+module.exports.stripExifData = function (path) {
+  const fs = require('fs')
+  const piexifjs = require('piexifjs')
+
+  const imgData = fs.readFileSync(path).toString('binary')
+  const newImgData = piexifjs.remove(imgData)
+  fs.writeFileSync(path, newImgData, 'binary')
 }
 
 module.exports.sendToSelf = function (socket, method, data) {

@@ -451,10 +451,10 @@ accountsController.uploadJSON = function (req, res) {
 }
 
 accountsController.uploadImage = function (req, res) {
-  var fs = require('fs')
-  var path = require('path')
-  var Busboy = require('busboy')
-  var busboy = Busboy({
+  const fs = require('fs')
+  const path = require('path')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -462,8 +462,8 @@ accountsController.uploadImage = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
   busboy.on('field', function (fieldname, val) {
     if (fieldname === '_id') object._id = val
@@ -482,7 +482,7 @@ accountsController.uploadImage = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/users')
+    const savePath = path.join(__dirname, '../../public/uploads/users')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
     object.filePath = path.join(savePath, 'aProfile_' + object.username + path.extname(filename))
@@ -521,6 +521,9 @@ accountsController.uploadImage = function (req, res) {
 
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
     if (!fs.existsSync(object.filePath)) return res.status(400).send('File Failed to Save to Disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg') {
+      require('../helpers/utils').stripExifData(object.filePath)
+    }
 
     userSchema.getUser(object._id, function (err, user) {
       if (err) return handleError(res, err)

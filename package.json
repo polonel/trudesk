@@ -84,6 +84,7 @@
     "passport-totp": "0.0.2",
     "passport.socketio": "3.7.0",
     "pdfkit": "0.13.0",
+    "piexifjs": "1.0.6",
     "pm2": "5.1.2",
     "prop-types": "15.8.1",
     "react": "17.0.2",
