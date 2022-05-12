@@ -533,7 +533,7 @@ ticketsController.uploadImageMDE = function (req, res) {
   const chance = new Chance()
   const fs = require('fs-extra')
   const Busboy = require('busboy')
-  const busboy = new Busboy({
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -547,7 +547,9 @@ ticketsController.uploadImageMDE = function (req, res) {
   object.ticketId = req.headers.ticketid
   if (!object.ticketId) return res.status(400).json({ success: false })
 
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 500,
