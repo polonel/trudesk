@@ -641,7 +641,7 @@ ticketsController.uploadImageMDE = function (req, res) {
 ticketsController.uploadAttachment = function (req, res) {
   const fs = require('fs-extra')
   const Busboy = require('busboy')
-  const busboy = new Busboy({
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -659,8 +659,9 @@ ticketsController.uploadAttachment = function (req, res) {
     if (fieldname === 'ownerId') object.ownerId = val
   })
 
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-    // winston.debug(mimetype);
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
 
     if (
       mimetype.indexOf('image/') === -1 &&
