@@ -12,22 +12,22 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var moment = require('moment')
+const _ = require('lodash')
+const async = require('async')
+const moment = require('moment')
 
-var ticketSchema = require('../models/ticket')
+const ticketSchema = require('../models/ticket')
 
-var init = function (tickets, timespan, callback) {
-  var tags = []
-  var $tickets = []
+const init = function (tickets, timespan, callback) {
+  let tags = []
+  let $tickets = []
   if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 365
 
-  var today = moment()
+  let today = moment()
     .hour(23)
     .minute(59)
     .second(59)
-  var tsDate = today
+  const tsDate = today
     .clone()
     .subtract(timespan, 'd')
     .toDate()
@@ -58,13 +58,13 @@ var init = function (tickets, timespan, callback) {
         }
       },
       function (done) {
-        var t = []
+        let t = []
 
         $tickets = _.filter($tickets, function (v) {
           return v.date < today && v.date > tsDate
         })
 
-        for (var i = 0; i < $tickets.length; i++) {
+        for (let i = 0; i < $tickets.length; i++) {
           _.each(tickets[i].tags, function (tag) {
             t.push(tag.name)
           })

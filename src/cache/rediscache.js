@@ -12,33 +12,33 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var redis = require('redis')
-var winston = require('winston')
+const _ = require('lodash')
+const redis = require('redis')
+const winston = require('winston')
 
-// var REDIS_PORT = process.env.REDIS_PORT || 6379;
-// var REDIS_HOST = process.env.REDIS_HOST || 'localhost';
+// const REDIS_PORT = process.env.REDIS_PORT || 6379;
+// const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 
-var client = redis.createClient(32819, '24.142.200.107')
+const client = redis.createClient(32819, '127.0.0.1')
 
 client.on('error', function (err) {
   winston.warn(err)
 })
 
-var redisCache = {}
+const redisCache = {}
 
 redisCache.setCache = function (key, value, callback, ttl) {
   if (!_.isArray(value)) {
     value = [value]
   }
   if (!_.isUndefined(ttl)) {
-    var importMulti = client.multi()
-    var v = JSON.stringify(value)
+    const importMulti = client.multi()
+    const v = JSON.stringify(value)
     importMulti.hmset(rake('$trudesk', key), { data: v })
     importMulti.expire(rake('$trudesk', key), 600)
 
     // value.forEach(function(item) {
-    //     var v = JSON.stringify(item);
+    //     const v = JSON.stringify(item);
     //     importMulti.hmset(rake('$trudesk', key), {_id: item._id.toString(), data: v});
     //     importMulti.expire(rake('$trudesk', key), 600);
     // });

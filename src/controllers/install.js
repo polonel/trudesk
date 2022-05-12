@@ -12,18 +12,18 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var path = require('path')
-var _ = require('lodash')
-var winston = require('../logger')
-var pkg = require('../../package')
-var Chance = require('chance')
+const async = require('async')
+const path = require('path')
+const _ = require('lodash')
+const winston = require('../logger')
+const pkg = require('../../package')
+const Chance = require('chance')
 
-var installController = {}
+const installController = {}
 installController.content = {}
 
 installController.index = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Install Trudesk'
   content.layout = false
 
@@ -34,10 +34,10 @@ installController.index = function (req, res) {
 }
 
 installController.elastictest = function (req, res) {
-  var data = req.body
-  var CONNECTION_URI = data.host + ':' + data.port
+  const data = req.body
+  const CONNECTION_URI = data.host + ':' + data.port
 
-  var child = require('child_process').fork(path.join(__dirname, '../../src/install/elasticsearchtest'), {
+  const child = require('child_process').fork(path.join(__dirname, '../../src/install/elasticsearchtest'), {
     env: { FORK: 1, NODE_ENV: global.env, ELASTICSEARCH_URI: CONNECTION_URI }
   })
   global.forks.push({ name: 'elastictest', fork: child })
@@ -53,15 +53,15 @@ installController.elastictest = function (req, res) {
 }
 
 installController.mongotest = function (req, res) {
-  var data = req.body
-  var dbPassword = encodeURIComponent(data.password)
-  var CONNECTION_URI =
+  const data = req.body
+  const dbPassword = encodeURIComponent(data.password)
+  let CONNECTION_URI =
     'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
 
   if (data.port === '---')
     CONNECTION_URI = 'mongodb+srv://' + data.username + ':' + dbPassword + '@' + data.host + '/' + data.database
 
-  var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
+  const child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
     env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
   })
 
@@ -79,21 +79,21 @@ installController.mongotest = function (req, res) {
 }
 
 installController.existingdb = function (req, res) {
-  var data = req.body
+  const data = req.body
 
   // Mongo
-  var host = data.host
-  var port = data.port
-  var database = data.database
-  var username = data.username
-  var password = data.password
+  const host = data.host
+  const port = data.port
+  const database = data.database
+  const username = data.username
+  const password = data.password
 
   // Write Configfile
-  var fs = require('fs')
-  var chance = new Chance()
-  var configFile = path.join(__dirname, '../../config.json')
+  const fs = require('fs')
+  const chance = new Chance()
+  const configFile = path.join(__dirname, '../../config.json')
 
-  var conf = {
+  const conf = {
     mongo: {
       host: host,
       port: port,
@@ -118,33 +118,33 @@ installController.existingdb = function (req, res) {
 }
 
 installController.install = function (req, res) {
-  var db = require('../database')
-  var roleSchema = require('../models/role')
-  var roleOrderSchema = require('../models/roleorder')
-  var UserSchema = require('../models/user')
-  var GroupSchema = require('../models/group')
-  var Counters = require('../models/counters')
-  var TicketTypeSchema = require('../models/tickettype')
-  var SettingsSchema = require('../models/setting')
+  const db = require('../database')
+  const roleSchema = require('../models/role')
+  const roleOrderSchema = require('../models/roleorder')
+  const UserSchema = require('../models/user')
+  const GroupSchema = require('../models/group')
+  const Counters = require('../models/counters')
+  const TicketTypeSchema = require('../models/tickettype')
+  const SettingsSchema = require('../models/setting')
 
-  var data = req.body
+  const data = req.body
 
   // Mongo
-  var host = data['mongo[host]']
-  var port = data['mongo[port]']
-  var database = data['mongo[database]']
-  var username = data['mongo[username]']
-  var password = data['mongo[password]']
+  const host = data['mongo[host]']
+  const port = data['mongo[port]']
+  const database = data['mongo[database]']
+  const username = data['mongo[username]']
+  const password = data['mongo[password]']
 
   // ElasticSearch
-  var eEnabled = data['elastic[enable]']
+  let eEnabled = data['elastic[enable]']
   if (typeof eEnabled === 'string') eEnabled = eEnabled.toLowerCase() === 'true'
 
-  var eHost = data['elastic[host]']
-  var ePort = data['elastic[port]']
+  const eHost = data['elastic[host]']
+  const ePort = data['elastic[port]']
 
   // Account
-  var user = {
+  const user = {
     username: data['account[username]'],
     password: data['account[password]'],
     passconfirm: data['account[cpassword]'],
@@ -152,8 +152,8 @@ installController.install = function (req, res) {
     fullname: data['account[fullname]']
   }
 
-  var dbPassword = encodeURIComponent(password)
-  var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
+  const dbPassword = encodeURIComponent(password)
+  let conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
   if (port === '---') conuri = 'mongodb+srv://' + username + ':' + dbPassword + '@' + host + '/' + database
 
   async.waterfall(
@@ -164,7 +164,7 @@ installController.install = function (req, res) {
         }, conuri)
       },
       function (next) {
-        var s = new SettingsSchema({
+        const s = new SettingsSchema({
           name: 'gen:version',
           value: require('../../package.json').version
         })
@@ -213,7 +213,7 @@ installController.install = function (req, res) {
         )
       },
       function (next) {
-        var Counter = new Counters({
+        const Counter = new Counters({
           _id: 'tickets',
           next: 1001
         })
@@ -223,7 +223,7 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
-        var Counter = new Counters({
+        const Counter = new Counters({
           _id: 'reports',
           next: 1001
         })
@@ -233,7 +233,7 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
-        var type = new TicketTypeSchema({
+        const type = new TicketTypeSchema({
           name: 'Issue'
         })
 
@@ -242,7 +242,7 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
-        var type = new TicketTypeSchema({
+        const type = new TicketTypeSchema({
           name: 'Task'
         })
 
@@ -251,8 +251,8 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
-        var defaults = require('../settings/defaults')
-        var roleResults = {}
+        const defaults = require('../settings/defaults')
+        const roleResults = {}
         async.parallel(
           [
             function (done) {
@@ -304,7 +304,7 @@ installController.install = function (req, res) {
         )
       },
       function (roleResults, next) {
-        var TeamSchema = require('../models/team')
+        const TeamSchema = require('../models/team')
         TeamSchema.create(
           {
             name: 'Support (Default)',
@@ -330,8 +330,8 @@ installController.install = function (req, res) {
             return next('Passwords do not match!')
           }
 
-          var chance = new Chance()
-          var adminUser = new UserSchema({
+          const chance = new Chance()
+          const adminUser = new UserSchema({
             username: user.username,
             password: user.password,
             fullname: user.fullname,
@@ -370,7 +370,7 @@ installController.install = function (req, res) {
         })
       },
       function (defaultTeam, next) {
-        var DepartmentSchema = require('../models/department')
+        const DepartmentSchema = require('../models/department')
         DepartmentSchema.create(
           {
             name: 'Support - All Groups (Default)',
@@ -385,8 +385,8 @@ installController.install = function (req, res) {
       },
       function (next) {
         if (!process.env.TRUDESK_DOCKER) return next()
-        var S = require('../models/setting')
-        var installed = new S({
+        const S = require('../models/setting')
+        const installed = new S({
           name: 'installed',
           value: true
         })
@@ -403,11 +403,11 @@ installController.install = function (req, res) {
       function (next) {
         if (process.env.TRUDESK_DOCKER) return next()
         // Write Configfile
-        var fs = require('fs')
-        var configFile = path.join(__dirname, '../../config.json')
-        var chance = new Chance()
+        const fs = require('fs')
+        const configFile = path.join(__dirname, '../../config.json')
+        const chance = new Chance()
 
-        var conf = {
+        const conf = {
           mongo: {
             host: host,
             port: port,
@@ -443,7 +443,7 @@ installController.install = function (req, res) {
 }
 
 installController.restart = function (req, res) {
-  var pm2 = require('pm2')
+  const pm2 = require('pm2')
   pm2.connect(function (err) {
     if (err) {
       winston.error(err)

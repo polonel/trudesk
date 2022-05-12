@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
+const _ = require('lodash')
 
-var apiUtils = {}
+const apiUtils = {}
 
 apiUtils.sendApiSuccess = function (res, object) {
-  var sendObject = { success: true }
-  var resObject = _.merge(sendObject, object)
+  const sendObject = { success: true }
+  const resObject = _.merge(sendObject, object)
 
   return res.json(resObject)
 }
@@ -31,11 +31,11 @@ apiUtils.sendApiError_InvalidPostData = function (res) {
 }
 
 apiUtils.generateJWTToken = function (dbUser, callback) {
-  var nconf = require('nconf')
-  var jwt = require('jsonwebtoken')
+  const nconf = require('nconf')
+  const jwt = require('jsonwebtoken')
 
-  var resUser = _.clone(dbUser._doc)
-  var refreshToken = resUser.accessToken
+  const resUser = _.clone(dbUser._doc)
+  const refreshToken = resUser.accessToken
   delete resUser.resetPassExpire
   delete resUser.resetPassHash
   delete resUser.password
@@ -47,8 +47,8 @@ apiUtils.generateJWTToken = function (dbUser, callback) {
   delete resUser.deleted
   delete resUser.hasL2Auth
 
-  var secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
-  var expires = nconf.get('tokens') ? nconf.get('tokens').expires : 3600
+  const secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
+  const expires = nconf.get('tokens') ? nconf.get('tokens').expires : 3600
   if (!secret || !expires) return callback({ message: 'Invalid Server Configuration' })
 
   require('../../models/group').getAllGroupsOfUserNoPopulate(dbUser._id, function (err, grps) {
@@ -57,7 +57,7 @@ apiUtils.generateJWTToken = function (dbUser, callback) {
       return g._id
     })
 
-    var token = jwt.sign({ user: resUser }, secret, { expiresIn: expires })
+    const token = jwt.sign({ user: resUser }, secret, { expiresIn: expires })
 
     return callback(null, { token: token, refreshToken: refreshToken })
   })

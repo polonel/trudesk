@@ -12,19 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var permissions = require('../permissions')
-var Department = require('../models/department')
+const _ = require('lodash')
+const permissions = require('../permissions')
+const Department = require('../models/department')
 
-var departmentController = {}
+const departmentController = {}
 
 departmentController.get = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'departments:view')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Departments'
   content.nav = 'departments'
 

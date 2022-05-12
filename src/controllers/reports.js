@@ -12,21 +12,21 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var permissions = require('../permissions')
+const _ = require('lodash')
+const permissions = require('../permissions')
 
-var reportsController = {}
+const reportsController = {}
 
 reportsController.content = {}
 
 reportsController.overview = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Overview'
   content.nav = 'reports'
   content.subnav = 'reports-overview'
@@ -42,13 +42,13 @@ reportsController.overview = function (req, res) {
 }
 
 reportsController.generate = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Generate Report'
   content.nav = 'reports'
   content.subnav = 'reports-generate'
@@ -57,7 +57,7 @@ reportsController.generate = function (req, res) {
   content.data.user = req.user
   content.data.common = req.viewdata
 
-  var prioritySchema = require('../models/ticketpriority')
+  const prioritySchema = require('../models/ticketpriority')
   prioritySchema.getPriorities(function (err, priorities) {
     if (err) {
       return res.render('error', {
@@ -74,13 +74,13 @@ reportsController.generate = function (req, res) {
 }
 
 reportsController.breakdownGroup = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Group Breakdown'
   content.nav = 'reports'
   content.subnav = 'reports-breakdown-group'
@@ -96,13 +96,13 @@ reportsController.breakdownGroup = function (req, res) {
 }
 
 reportsController.breakdownUser = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'User Breakdown'
   content.nav = 'reports'
   content.subnav = 'reports-breakdown-user'

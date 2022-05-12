@@ -12,26 +12,26 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var moment = require('moment')
-var winston = require('winston')
+const _ = require('lodash')
+const async = require('async')
+const moment = require('moment')
+const winston = require('winston')
 
-var ticketSchema = require('../models/ticket')
+const ticketSchema = require('../models/ticket')
 
-var ex = {}
+const ex = {}
 
 function buildGraphData (arr, days, callback) {
-  var graphData = []
+  const graphData = []
   if (arr.length < 1) {
     return callback(graphData)
   }
-  var today = moment()
+  const today = moment()
     .hour(23)
     .minute(59)
     .second(59)
-  var timespanArray = []
-  for (var i = days; i--; ) {
+  const timespanArray = []
+  for (let i = days; i--; ) {
     timespanArray.push(i)
   }
 
@@ -39,12 +39,12 @@ function buildGraphData (arr, days, callback) {
     return moment(i.date).format('YYYY-MM-DD')
   })
 
-  var counted = _.countBy(arr)
+  let counted = _.countBy(arr)
 
-  for (var k = 0; k < timespanArray.length; k++) {
-    var obj = {}
-    var day = timespanArray[k]
-    var d = today.clone().subtract(day, 'd')
+  for (let k = 0; k < timespanArray.length; k++) {
+    const obj = {}
+    const day = timespanArray[k]
+    const d = today.clone().subtract(day, 'd')
     obj.date = d.format('YYYY-MM-DD')
 
     obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date]
@@ -58,20 +58,20 @@ function buildGraphData (arr, days, callback) {
 }
 
 function buildAvgResponse (ticketArray, callback) {
-  var cbObj = {}
-  var $ticketAvg = []
-  for (var i = 0; i < ticketArray.length; i++) {
-    var ticket = ticketArray[i]
+  const cbObj = {}
+  const $ticketAvg = []
+  for (let i = 0; i < ticketArray.length; i++) {
+    const ticket = ticketArray[i]
     if (ticket.comments === undefined || ticket.comments.length < 1) continue
 
-    var ticketDate = moment(ticket.date)
-    var firstCommentDate = moment(ticket.comments[0].date)
+    const ticketDate = moment(ticket.date)
+    const firstCommentDate = moment(ticket.comments[0].date)
 
-    var diff = firstCommentDate.diff(ticketDate, 'seconds')
+    const diff = firstCommentDate.diff(ticketDate, 'seconds')
     $ticketAvg.push(diff)
   }
 
-  var ticketAvgTotal = _.reduce(
+  const ticketAvgTotal = _.reduce(
     $ticketAvg,
     function (m, x) {
       return m + x
@@ -79,14 +79,14 @@ function buildAvgResponse (ticketArray, callback) {
     0
   )
 
-  var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours()
+  const tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours()
   cbObj.avgResponse = Math.floor(tvt)
 
   return callback(cbObj)
 }
 
-var init = function (tickets, callback) {
-  var $tickets = []
+const init = function (tickets, callback) {
+  let $tickets = []
   ex.e30 = {}
   ex.e60 = {}
   ex.e90 = {}
@@ -94,14 +94,14 @@ var init = function (tickets, callback) {
   ex.e365 = {}
   ex.lifetime = {}
   ex.lastUpdated = moment.utc()
-  var today = moment()
+  const today = moment()
     .hour(23)
     .minute(59)
     .second(59)
-  var e30 = today.clone().subtract(30, 'd')
-  var e60 = today.clone().subtract(60, 'd')
-  var e90 = today.clone().subtract(90, 'd')
-  var e180 = today.clone().subtract(180, 'd')
+  const e30 = today.clone().subtract(30, 'd')
+  const e60 = today.clone().subtract(60, 'd')
+  const e90 = today.clone().subtract(90, 'd')
+  const e180 = today.clone().subtract(180, 'd')
   // e365 = today.clone().subtract(365, 'd');
 
   async.series(
@@ -145,7 +145,7 @@ var init = function (tickets, callback) {
                   ex.e365.closedTickets = _.size(ex.e365.closedTickets)
 
                   // Remove all tickets more than 180 days
-                  var t180 = e180.toDate().getTime()
+                  const t180 = e180.toDate().getTime()
                   $tickets = _.filter($tickets, function (t) {
                     return t.date > t180
                   })
@@ -173,7 +173,7 @@ var init = function (tickets, callback) {
                   ex.e180.closedTickets = _.size(ex.e180.closedTickets)
 
                   // Remove all tickets more than 90 days
-                  var t90 = e90.toDate().getTime()
+                  const t90 = e90.toDate().getTime()
                   $tickets = _.filter($tickets, function (t) {
                     return t.date > t90
                   })
@@ -201,7 +201,7 @@ var init = function (tickets, callback) {
                   ex.e90.closedTickets = _.size(ex.e90.closedTickets)
 
                   // Remove all tickets more than 60 days
-                  var t60 = e60.toDate().getTime()
+                  const t60 = e60.toDate().getTime()
                   $tickets = _.filter($tickets, function (t) {
                     return t.date > t60
                   })
@@ -229,7 +229,7 @@ var init = function (tickets, callback) {
                   ex.e60.closedTickets = _.size(ex.e60.closedTickets)
 
                   // Remove all tickets more than 30 days
-                  var t30 = e30.toDate().getTime()
+                  const t30 = e30.toDate().getTime()
                   $tickets = _.filter($tickets, function (t) {
                     return t.date > t30
                   })

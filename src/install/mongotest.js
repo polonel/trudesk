@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var database = require('../database')
+const database = require('../database')
 
 global.env = process.env.NODE_ENV || 'production'
 ;(function () {
-  var CONNECTION_URI = process.env.MONGOTESTURI
+  const CONNECTION_URI = process.env.MONGOTESTURI
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
-  var options = {
+  const options = {
     connectTimeoutMS: 5000
   }
   database.init(

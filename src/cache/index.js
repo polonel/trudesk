@@ -12,39 +12,18 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var NodeCache = require('node-cache')
-var async = require('async')
-var path = require('path')
-var nconf = require('nconf')
-var _ = require('lodash')
-var winston = require('../logger')
-var moment = require('moment-timezone')
+const NodeCache = require('node-cache')
+const async = require('async')
+const path = require('path')
+const nconf = require('nconf')
+const _ = require('lodash')
+const winston = require('../logger')
+const moment = require('moment-timezone')
 
-var truCache = {}
-var cache
+const truCache = {}
+let cache
 
 global.env = process.env.NODE_ENV || 'production'
-
-// winston.setLevels(winston.config.cli.levels)
-// winston.remove(winston.transports.Console)
-// winston.add(winston.transports.Console, {
-//   colorize: true,
-//   timestamp: function () {
-//     var date = new Date()
-//     return (
-//       date.getMonth() +
-//       1 +
-//       '/' +
-//       date.getDate() +
-//       ' ' +
-//       date.toTimeString().substr(0, 8) +
-//       ' [Child:Cache:' +
-//       process.pid +
-//       ']'
-//     )
-//   },
-//   level: global.env === 'production' ? 'info' : 'verbose'
-// })
 
 function loadConfig () {
   nconf.file({
@@ -56,8 +35,8 @@ function loadConfig () {
   })
 }
 
-var refreshTimer
-var lastUpdated = moment.utc().tz(process.env.TIMEZONE || 'America/New_York')
+let refreshTimer
+let lastUpdated = moment.utc().tz(process.env.TIMEZONE || 'America/New_York')
 
 truCache.init = function (callback) {
   cache = new NodeCache({
@@ -89,7 +68,7 @@ truCache.refreshCache = function (callback) {
   async.waterfall(
     [
       function (done) {
-        var ticketSchema = require('../models/ticket')
+        const ticketSchema = require('../models/ticket')
         ticketSchema.getForCache(function (e, tickets) {
           if (e) return done(e)
           winston.debug('Pulled ' + tickets.length)
@@ -102,10 +81,10 @@ truCache.refreshCache = function (callback) {
         async.parallel(
           [
             function (done) {
-              var ticketStats = require('./ticketStats')
+              const ticketStats = require('./ticketStats')
               ticketStats(tickets, function (err, stats) {
                 if (err) return done(err)
-                var expire = 3600 // 1 hour
+                const expire = 3600 // 1 hour
                 cache.set('tickets:overview:lastUpdated', stats.lastUpdated, expire)
 
                 cache.set('tickets:overview:e30:ticketCount', stats.e30.tickets, expire)
@@ -137,7 +116,7 @@ truCache.refreshCache = function (callback) {
               })
             },
             function (done) {
-              var tagStats = require('./tagStats')
+              const tagStats = require('./tagStats')
               async.parallel(
                 [
                   function (c) {
@@ -201,7 +180,7 @@ truCache.refreshCache = function (callback) {
               )
             },
             function (done) {
-              var quickStats = require('./quickStats')
+              const quickStats = require('./quickStats')
               quickStats(tickets, function (err, stats) {
                 if (err) return done(err)
 
@@ -240,10 +219,10 @@ truCache.refreshCache = function (callback) {
   process.on('message', function (message) {
     if (message.name === 'cache:refresh') {
       winston.debug('Refreshing Cache....')
-      var now = moment()
-      var timeSinceLast = Math.round(moment.duration(now.diff(lastUpdated)).asMinutes())
+      const now = moment()
+      const timeSinceLast = Math.round(moment.duration(now.diff(lastUpdated)).asMinutes())
       if (timeSinceLast < 5) {
-        var i = 5 - timeSinceLast
+        const i = 5 - timeSinceLast
         winston.debug('Cannot refresh cache for another ' + i + ' minutes')
         return false
       }
@@ -265,7 +244,7 @@ truCache.refreshCache = function (callback) {
   })
 
   loadConfig()
-  var db = require('../database')
+  const db = require('../database')
   db.init(function (err) {
     if (err) return winston.error(err)
     truCache.init(function (err) {

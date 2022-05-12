@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var ticketSchema = require('../models/ticket')
+const _ = require('lodash')
+const async = require('async')
+const ticketSchema = require('../models/ticket')
 
 _.mixin({
   sortKeysBy: function (obj, comparator) {
-    var keys = _.sortBy(_.keys(obj), function (key) {
+    const keys = _.sortBy(_.keys(obj), function (key) {
       return comparator ? comparator(obj[key], key) : key
     })
 
@@ -31,9 +31,9 @@ _.mixin({
   }
 })
 
-var init = function (tickets, callback) {
-  var obj = {}
-  var $tickets = []
+const init = function (tickets, callback) {
+  const obj = {}
+  let $tickets = []
 
   async.series(
     [
@@ -99,7 +99,7 @@ var init = function (tickets, callback) {
 }
 
 function buildMostRequester (ticketArray, callback) {
-  var requesters = _.map(ticketArray, function (m) {
+  let requesters = _.map(ticketArray, function (m) {
     if (m.owner) {
       return m.owner.fullname
     }
@@ -109,7 +109,7 @@ function buildMostRequester (ticketArray, callback) {
 
   requesters = _.compact(requesters)
 
-  var r = _.countBy(requesters, function (k) {
+  let r = _.countBy(requesters, function (k) {
     return k
   })
   r = _(r).value()
@@ -132,7 +132,7 @@ function flatten (arr) {
 }
 
 function buildMostComments (ticketArray, callback) {
-  var commenters = _.map(ticketArray, function (m) {
+  let commenters = _.map(ticketArray, function (m) {
     return _.map(m.comments, function (i) {
       return i.owner.fullname
     })
@@ -140,7 +140,7 @@ function buildMostComments (ticketArray, callback) {
 
   commenters = flatten(commenters)
 
-  var c = _.countBy(commenters, function (k) {
+  let c = _.countBy(commenters, function (k) {
     return k
   })
 
@@ -162,11 +162,11 @@ function buildMostAssignee (ticketArray, callback) {
     return _.isUndefined(v.assignee) || _.isNull(v.assignee)
   })
 
-  var assignees = _.map(ticketArray, function (m) {
+  const assignees = _.map(ticketArray, function (m) {
     return m.assignee.fullname
   })
 
-  var a = _.countBy(assignees, function (k) {
+  let a = _.countBy(assignees, function (k) {
     return k
   })
 
@@ -184,7 +184,7 @@ function buildMostAssignee (ticketArray, callback) {
 }
 
 function buildMostActiveTicket (ticketArray, callback) {
-  var tickets = _.map(ticketArray, function (m) {
+  let tickets = _.map(ticketArray, function (m) {
     return { uid: m.uid, cSize: _.size(m.history) }
   })
 

@@ -12,22 +12,17 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-
-var async = require('async')
-
-var winston = require('winston')
-
-var conversationSchema = require('../models/chat/conversation')
-
-var messageSchema = require('../models/chat/message')
-
-var messagesController = {}
+const _ = require('lodash')
+const async = require('async')
+const winston = require('../logger')
+const conversationSchema = require('../models/chat/conversation')
+const messageSchema = require('../models/chat/message')
+const messagesController = {}
 
 messagesController.content = {}
 
 messagesController.get = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Messages'
   content.nav = 'messages'
   content.data = {}
@@ -45,9 +40,9 @@ messagesController.get = function (req, res) {
     async.eachSeries(
       convos,
       function (convo, done) {
-        var c = convo.toObject()
+        const c = convo.toObject()
 
-        var userMeta =
+        const userMeta =
           convo.userMeta[
             _.findIndex(convo.userMeta, function (item) {
               return item.userId.toString() === req.user._id.toString()
@@ -96,10 +91,10 @@ messagesController.get = function (req, res) {
 }
 
 messagesController.getConversation = function (req, res) {
-  var cid = req.params.convoid
+  const cid = req.params.convoid
   if (_.isUndefined(cid)) return handleError(res, 'Invalid Conversation ID!')
 
-  var content = {}
+  const content = {}
   content.title = 'Messages'
   content.nav = 'messages'
   content.data = {}
@@ -116,7 +111,7 @@ messagesController.getConversation = function (req, res) {
           async.eachSeries(
             convos,
             function (convo, done) {
-              var userMeta =
+              const userMeta =
                 convo.userMeta[
                   _.findIndex(convo.userMeta, function (item) {
                     return item.userId.toString() === req.user._id.toString()
@@ -131,7 +126,7 @@ messagesController.getConversation = function (req, res) {
                 return done()
               }
 
-              var c = convo.toObject()
+              const c = convo.toObject()
               messageSchema.getMostRecentMessage(c._id, function (err, rm) {
                 if (err) return done(err)
 
@@ -185,7 +180,7 @@ messagesController.getConversation = function (req, res) {
             return res.redirect('/messages')
           }
 
-          var c = convo.toObject()
+          const c = convo.toObject()
           messageSchema.getConversationWithObject(
             { cid: c._id, userMeta: convo.userMeta, requestingUser: req.user },
             function (err, messages) {

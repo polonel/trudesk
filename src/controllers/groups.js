@@ -12,24 +12,24 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var _ = require('lodash')
-var userSchema = require('../models/user')
-var groupSchema = require('../models/group')
-var permissions = require('../permissions')
+const async = require('async')
+const _ = require('lodash')
+const userSchema = require('../models/user')
+const groupSchema = require('../models/group')
+const permissions = require('../permissions')
 
-var groupsController = {}
+const groupsController = {}
 
 groupsController.content = {}
 
 groupsController.get = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:view')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Groups'
   content.nav = 'groups'
 
@@ -55,13 +55,13 @@ groupsController.get = function (req, res) {
 }
 
 groupsController.getCreate = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Groups'
   content.nav = 'groups'
 
@@ -81,13 +81,13 @@ groupsController.getCreate = function (req, res) {
 }
 
 groupsController.edit = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:edit')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Groups'
   content.nav = 'groups'
 
@@ -95,7 +95,7 @@ groupsController.edit = function (req, res) {
   content.data.user = req.user
   content.data.common = req.viewdata
   content.data.users = []
-  var groupId = req.params.id
+  const groupId = req.params.id
   if (_.isUndefined(groupId)) return res.redirect('/groups/')
 
   async.parallel(

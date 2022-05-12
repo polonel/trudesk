@@ -12,10 +12,10 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var pluginsController = {}
+const pluginsController = {}
 
 pluginsController.get = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Plugins'
   content.nav = 'plugins'
 

@@ -12,15 +12,15 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var _ = require('lodash')
-var winston = require('../logger')
-var userSchema = require('../models/user')
-var permissions = require('../permissions')
-var emitter = require('../emitter')
-var xss = require('xss')
+const async = require('async')
+const _ = require('lodash')
+const winston = require('../logger')
+const userSchema = require('../models/user')
+const permissions = require('../permissions')
+const emitter = require('../emitter')
+const xss = require('xss')
 
-var accountsController = {}
+const accountsController = {}
 
 accountsController.content = {}
 
@@ -35,15 +35,15 @@ function handleError (res, err) {
 }
 
 accountsController.signup = function (req, res) {
-  var marked = require('marked')
-  var settings = require('../models/setting')
+  const marked = require('marked')
+  const settings = require('../models/setting')
   settings.getSettingByName('allowUserRegistration:enable', function (err, setting) {
     if (err) return handleError(res, err)
     if (setting && setting.value === true) {
       settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
         if (err) return handleError(res, err)
 
-        var content = {}
+        const content = {}
         content.title = 'Create Account'
         content.layout = false
         content.data = {}
@@ -63,12 +63,12 @@ accountsController.signup = function (req, res) {
 }
 
 accountsController.get = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Accounts'
   content.nav = 'accounts'
 
@@ -80,12 +80,12 @@ accountsController.get = function (req, res) {
 }
 
 accountsController.getCustomers = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Customers'
   content.nav = 'accounts'
   content.subnav = 'accounts-customers'
@@ -99,12 +99,12 @@ accountsController.getCustomers = function (req, res) {
 }
 
 accountsController.getAgents = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Agents'
   content.nav = 'accounts'
   content.subnav = 'accounts-agents'
@@ -118,12 +118,12 @@ accountsController.getAgents = function (req, res) {
 }
 
 accountsController.getAdmins = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Admins'
   content.nav = 'accounts'
   content.subnav = 'accounts-admins'
@@ -137,12 +137,12 @@ accountsController.getAdmins = function (req, res) {
 }
 
 accountsController.importPage = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:import')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Accounts - Import'
   content.nav = 'accounts'
 
@@ -154,15 +154,15 @@ accountsController.importPage = function (req, res) {
 }
 
 accountsController.profile = function (req, res) {
-  var user = req.user
-  var backUrl = req.header('Referer') || '/'
+  const user = req.user
+  const backUrl = req.header('Referer') || '/'
   if (_.isUndefined(user)) {
     req.flash('message', 'Permission Denied.')
     winston.warn('Undefined User - /Profile')
     return res.redirect(backUrl)
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Profile'
   content.nav = 'profile'
 
@@ -194,15 +194,15 @@ accountsController.profile = function (req, res) {
 }
 
 accountsController.bindLdap = function (req, res) {
-  var ldap = require('../ldap')
-  var postData = req.body
+  const ldap = require('../ldap')
+  const postData = req.body
   if (_.isUndefined(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data.' })
 
-  var server = postData['ldap-server']
-  var dn = postData['ldap-bind-dn']
-  var password = postData['ldap-password']
-  var searchBase = postData['ldap-search-base']
-  var filter = postData['ldap-filter']
+  const server = postData['ldap-server']
+  const dn = postData['ldap-bind-dn']
+  const password = postData['ldap-password']
+  const searchBase = postData['ldap-search-base']
+  const filter = postData['ldap-filter']
 
   ldap.bind('ldap://' + server, dn, password, function (err) {
     if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
@@ -211,12 +211,12 @@ accountsController.bindLdap = function (req, res) {
       if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
       if (_.isUndefined(results)) return res.status(400).json({ success: false, error: 'Undefined Results' })
 
-      var entries = results.entries
-      var foundUsers = null
+      const entries = results.entries
+      let foundUsers = null
       ldap.unbind(function (err) {
         if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
 
-        var mappedUsernames = _.map(entries, 'sAMAccountName')
+        let mappedUsernames = _.map(entries, 'sAMAccountName')
 
         userSchema.find({ username: mappedUsernames }, function (err, users) {
           if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
@@ -226,12 +226,12 @@ accountsController.bindLdap = function (req, res) {
           mappedUsernames = _.map(foundUsers, 'username')
 
           _.each(mappedUsernames, function (mappedUsername) {
-            var u = _.find(entries, function (f) {
+            const u = _.find(entries, function (f) {
               return f.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase()
             })
 
             if (u) {
-              var clonedUser = _.find(foundUsers, function (g) {
+              let clonedUser = _.find(foundUsers, function (g) {
                 return g.username.toLowerCase() === u.sAMAccountName.toLowerCase()
               })
               if (clonedUser) {
@@ -376,20 +376,20 @@ accountsController.uploadCSV = function (req, res) {
 }
 
 accountsController.uploadJSON = function (req, res) {
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const Busboy = require('busboy')
+  const busboy = new Busboy({
     headers: req.headers,
     limits: {
       files: 1
     }
   })
 
-  var addedUsers = []
+  const addedUsers = []
 
-  var updatedUsers = []
+  const updatedUsers = []
 
-  var object = {}
-  var error
+  const object = {}
+  let error
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
     if (mimetype.indexOf('application/json') === -1) {
       error = {
@@ -399,7 +399,7 @@ accountsController.uploadJSON = function (req, res) {
 
       return file.resume()
     }
-    var buffer = ''
+    let buffer = ''
     file.on('data', function (data) {
       buffer += data
     })
@@ -407,7 +407,7 @@ accountsController.uploadJSON = function (req, res) {
     file
       .on('end', function () {
         object.json = JSON.parse(buffer)
-        var accounts = object.json.accounts
+        const accounts = object.json.accounts
         if (_.isUndefined(accounts)) {
           return res.status(400).json({
             success: false,

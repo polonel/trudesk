@@ -12,28 +12,28 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var path = require('path')
-var winston = require('../logger')
+const _ = require('lodash')
+const async = require('async')
+const path = require('path')
+const winston = require('../logger')
 
-var debugController = {}
+const debugController = {}
 
 debugController.content = {}
 
 debugController.populatedatabase = function (req, res) {
-  var Chance = require('chance')
-  var chance = new Chance()
-  var ticketSchema = require('../models/ticket')
-  var ticketTypeSchema = require('../models/tickettype')
-  var userSchema = require('../models/user')
-  var groupSchema = require('../models/group')
-  var tagSchema = require('../models/tag')
+  const Chance = require('chance')
+  const chance = new Chance()
+  const ticketSchema = require('../models/ticket')
+  const ticketTypeSchema = require('../models/tickettype')
+  const userSchema = require('../models/user')
+  const groupSchema = require('../models/group')
+  const tagSchema = require('../models/tag')
 
-  var ticketsToSave = []
-  var users = []
+  const ticketsToSave = []
+  let users = []
 
-  var subjects = [
+  const subjects = [
     '911 Cad Updates',
     '911 Copier',
     '911 Handset',
@@ -316,15 +316,15 @@ debugController.populatedatabase = function (req, res) {
   async.series(
     [
       function (done) {
-        var roles = global.roles
-        var userRole = _.find(roles, { normalized: 'user' })
+        const roles = global.roles
+        const userRole = _.find(roles, { normalized: 'user' })
 
         users = []
-        for (var i = 0; i < 11; i++) {
-          var random = Math.floor(Math.random() * (10000 - 1 + 1)) + 1
-          var first = chance.first()
-          var last = chance.last()
-          var user = {
+        for (let i = 0; i < 11; i++) {
+          const random = Math.floor(Math.random() * (10000 - 1 + 1)) + 1
+          const first = chance.first()
+          const last = chance.last()
+          const user = {
             username: first + '.' + last,
             fullname: first + ' ' + last,
             email: first + '.' + last + random + '@' + chance.domain(),
@@ -348,14 +348,14 @@ debugController.populatedatabase = function (req, res) {
         ticketSchema.remove({}, done)
       },
       function (done) {
-        var groups = []
-        for (var i = 0; i < 11; i++) {
-          var name = chance.company()
+        const groups = []
+        for (let i = 0; i < 11; i++) {
+          let name = chance.company()
           while (_.find(groups, { name: name })) {
             name = chance.company()
           }
 
-          var group = {
+          const group = {
             name: name,
             __v: 0,
             members: _.map(users, function (o) {
@@ -370,16 +370,16 @@ debugController.populatedatabase = function (req, res) {
       },
       function (done) {
         // Populate Tags...
-        var tags = getSampleTags()
-        var usedTags = []
-        var savedTags = []
-        for (var i = 0; i < 1001; i++) {
-          var tag = _.sample(tags)
+        const tags = getSampleTags()
+        const usedTags = []
+        const savedTags = []
+        for (let i = 0; i < 1001; i++) {
+          const tag = _.sample(tags)
           if (_.includes(usedTags, tag)) {
             continue
           }
 
-          var t = {
+          const t = {
             name: tag,
             __v: 0
           }
@@ -403,21 +403,21 @@ debugController.populatedatabase = function (req, res) {
               tagSchema.getTags(function (err, tags) {
                 if (err) return done(err)
 
-                var loremIpsum = require('lorem-ipsum')
-                for (var i = 0; i < 100001; i++) {
-                  var user = users[Math.floor(Math.random() * users.length)]
-                  var group = groups[Math.floor(Math.random() * groups.length)]
-                  var type = types[Math.floor(Math.random() * types.length)]
-                  var tagCount = chance.integer({ min: 1, max: 6 })
-                  var ticketTags = []
-                  for (var k = 0; k < tagCount; k++) {
-                    var t = tags[Math.floor(Math.random() * tags.length)]
+                const loremIpsum = require('lorem-ipsum')
+                for (let i = 0; i < 100001; i++) {
+                  const user = users[Math.floor(Math.random() * users.length)]
+                  const group = groups[Math.floor(Math.random() * groups.length)]
+                  const type = types[Math.floor(Math.random() * types.length)]
+                  const tagCount = chance.integer({ min: 1, max: 6 })
+                  const ticketTags = []
+                  for (let k = 0; k < tagCount; k++) {
+                    const t = tags[Math.floor(Math.random() * tags.length)]
                     if (!_.includes(ticketTags, t._id)) {
                       ticketTags.push(t._id)
                     }
                   }
-                  var randomPriority = type.priorities[Math.floor(Math.random() * type.priorities.length)]
-                  var ticket = {
+                  const randomPriority = type.priorities[Math.floor(Math.random() * type.priorities.length)]
+                  const ticket = {
                     __v: 0,
                     // uid: res.value.next,
                     uid: i + 1000,
@@ -448,7 +448,7 @@ debugController.populatedatabase = function (req, res) {
         ticketSchema.collection.insert(ticketsToSave, done)
       },
       function (done) {
-        var counterSchema = require('../models/counters')
+        const counterSchema = require('../models/counters')
         counterSchema.setCounter('tickets', 101001, done)
       }
     ],
@@ -465,17 +465,17 @@ function randomDate (start, end) {
 }
 
 debugController.sendmail = function (req, res) {
-  var mailer = require('../mailer')
-  var templateSchema = require('../models/template')
-  var Email = require('email-templates')
-  var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+  const mailer = require('../mailer')
+  const templateSchema = require('../models/template')
+  const Email = require('email-templates')
+  const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-  var to = req.query.email
+  const to = req.query.email
   if (to === undefined) {
     return res.status(400).send('Invalid Email in querystring "email"')
   }
 
-  var email = new Email({
+  const email = new Email({
     views: {
       root: templateDir,
       options: {
@@ -489,7 +489,7 @@ debugController.sendmail = function (req, res) {
     //     templateSchema.findOne({ name: view }, function (err, template) {
     //       if (err) return reject(err)
     //       if (!template) return reject(new Error('Invalid Template'))
-    //       var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+    //       const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
     //       console.log(html)
     //       email.juiceResources(html).then(resolve)
     //     })
@@ -497,7 +497,7 @@ debugController.sendmail = function (req, res) {
     // }
   })
 
-  var ticket = {
+  const ticket = {
     uid: 100001,
     issue: 'This is the test issue',
     comments: [
@@ -515,7 +515,7 @@ debugController.sendmail = function (req, res) {
   email
     .render('ticket-comment-added', { base_url: global.TRUDESK_BASEURL, ticket: ticket, comment: ticket.comments[0] })
     .then(function (html) {
-      var mailOptions = {
+      const mailOptions = {
         to: to,
         subject: 'Trudesk Test Email #' + ticket.uid + ' [Debugger]',
         html: html,
@@ -535,10 +535,10 @@ debugController.sendmail = function (req, res) {
 }
 
 debugController.uploadPlugin = function (req, res) {
-  var fs = require('fs')
-  var path = require('path')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const fs = require('fs')
+  const path = require('path')
+  const Busboy = require('busboy')
+  const busboy = new Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -546,8 +546,8 @@ debugController.uploadPlugin = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'plugin') object.plugin = val
@@ -564,7 +564,7 @@ debugController.uploadPlugin = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/plugins')
+    const savePath = path.join(__dirname, '../../public/uploads/plugins')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
     object.plugin = path.basename(filename)
@@ -598,7 +598,7 @@ debugController.uploadPlugin = function (req, res) {
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
     if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
 
-    var unzipper = require('unzipper')
+    const unzipper = require('unzipper')
     fs.createReadStream(object.filePath).pipe(unzipper.Extract({ path: path.join(__dirname, '../../plugins') }))
 
     return res.sendStatus(200)
@@ -608,7 +608,7 @@ debugController.uploadPlugin = function (req, res) {
 }
 
 function getSampleTags () {
-  var tags = [
+  const tags = [
     'javascript',
     'java',
     'c#',
@@ -750,7 +750,7 @@ function getSampleTags () {
     'asp.net-mvc-3',
     'debugging',
     'dictionary',
-    'variables',
+    'constiables',
     'session',
     'unix',
     'jquery-ui',

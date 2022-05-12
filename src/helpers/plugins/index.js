@@ -12,14 +12,14 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var pluginHelpers = {}
+const pluginHelpers = {}
 
 pluginHelpers.checkPermissions = function (userRole, permissions) {
   if (userRole === undefined || permissions === undefined) return false
 
-  var permissionArray = permissions.split(' ')
-  var result = false
-  for (var i = 0; i < permissionArray.length; i++) {
+  const permissionArray = permissions.split(' ')
+  let result = false
+  for (let i = 0; i < permissionArray.length; i++) {
     if (userRole.toString().toLowerCase() === permissionArray[i].toString().toLowerCase()) result = true
   }
 

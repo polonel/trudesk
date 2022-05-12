@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var fs = require('fs-extra')
-var path = require('path')
-var async = require('async')
-var moment = require('moment')
+const _ = require('lodash')
+const fs = require('fs-extra')
+const path = require('path')
+const async = require('async')
+const moment = require('moment')
 
-var backupRestore = {}
+const backupRestore = {}
 
 function formatBytes (bytes, fixed) {
   if (!fixed) fixed = 2
@@ -37,14 +37,14 @@ backupRestore.getBackups = function (req, res) {
       return path.extname(file).toLowerCase() === '.zip'
     })
 
-    var fileWithStats = []
+    let fileWithStats = []
     async.forEach(
       files,
       function (f, next) {
         fs.stat(path.join(__dirname, '../../backups/', f), function (err, stats) {
           if (err) return next(err)
 
-          var obj = {}
+          const obj = {}
           obj.size = stats.size
           obj.sizeFormat = formatBytes(obj.size, 1)
           obj.filename = f
@@ -67,13 +67,13 @@ backupRestore.getBackups = function (req, res) {
 }
 
 backupRestore.runBackup = function (req, res) {
-  var database = require('../database')
-  var child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), {
+  const database = require('../database')
+  const child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), {
     env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri, PATH: process.env.PATH }
   })
   global.forks.push({ name: 'backup', fork: child })
 
-  var result = null
+  let result = null
 
   child.on('message', function (data) {
     child.kill('SIGINT')
@@ -106,7 +106,7 @@ backupRestore.runBackup = function (req, res) {
 }
 
 backupRestore.deleteBackup = function (req, res) {
-  var filename = req.params.backup
+  const filename = req.params.backup
   if (_.isUndefined(filename) || !fs.existsSync(path.join(__dirname, '../../backups/', filename))) {
     return res.status(400).json({ success: false, error: 'Invalid Filename' })
   }
@@ -119,9 +119,9 @@ backupRestore.deleteBackup = function (req, res) {
 }
 
 backupRestore.restoreBackup = function (req, res) {
-  var database = require('../database')
+  const database = require('../database')
 
-  var file = req.body.file
+  const file = req.body.file
   if (!file) return res.status(400).json({ success: false, error: 'Invalid File' })
 
   // CHECK IF HAS TOOLS INSTALLED
@@ -134,7 +134,7 @@ backupRestore.restoreBackup = function (req, res) {
   //     return res.json({success: true});
   // });
 
-  var child = require('child_process').fork(path.join(__dirname, '../../src/backup/restore'), {
+  const child = require('child_process').fork(path.join(__dirname, '../../src/backup/restore'), {
     env: {
       FORK: 1,
       NODE_ENV: global.env,
@@ -145,7 +145,7 @@ backupRestore.restoreBackup = function (req, res) {
   })
   global.forks.push({ name: 'restore', fork: child })
 
-  var result = null
+  let result = null
 
   child.on('message', function (data) {
     child.kill('SIGINT')
@@ -159,7 +159,7 @@ backupRestore.restoreBackup = function (req, res) {
     }
 
     if (data.success) {
-      var cache = _.find(global.forks, function (f) {
+      const cache = _.find(global.forks, function (f) {
         return f.name === 'cache'
       })
 
@@ -201,16 +201,16 @@ backupRestore.hasBackupTools = function (req, res) {
 }
 
 backupRestore.uploadBackup = function (req, res) {
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const Busboy = require('busboy')
+  const busboy = new Busboy({
     headers: req.headers,
     limits: {
       files: 1
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
     if (
@@ -228,7 +228,7 @@ backupRestore.uploadBackup = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../backups')
+    const savePath = path.join(__dirname, '../../backups')
     fs.ensureDirSync(savePath)
 
     object.filePath = path.join(savePath, filename)

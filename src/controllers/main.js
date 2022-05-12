@@ -12,28 +12,28 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var path = require('path')
-var passport = require('passport')
-var winston = require('winston')
-var pkg = require('../../package')
-var xss = require('xss')
+const _ = require('lodash')
+const async = require('async')
+const path = require('path')
+const passport = require('passport')
+const winston = require('winston')
+const pkg = require('../../package')
+const xss = require('xss')
 
-var mainController = {}
+const mainController = {}
 
 mainController.content = {}
 
 mainController.index = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Login'
   content.layout = false
   content.flash = req.flash('loginMessage')
 
-  var settingsUtil = require('../settings/settingsUtil')
+  const settingsUtil = require('../settings/settingsUtil')
   settingsUtil.getSettings(function (err, s) {
     if (err) throw new Error(err)
-    var settings = s.data.settings
+    const settings = s.data.settings
     content.siteTitle = settings.siteTitle.value
 
     content.allowUserRegistration = settings.allowUserRegistration.value
@@ -55,9 +55,9 @@ mainController.index = function (req, res) {
 }
 
 mainController.about = function (req, res) {
-  var pkg = require('../../package.json')
-  var marked = require('marked')
-  var settings = require('../models/setting')
+  const pkg = require('../../package.json')
+  const marked = require('marked')
+  const settings = require('../models/setting')
   settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
     if (err)
       return res.render('error', {
@@ -66,7 +66,7 @@ mainController.about = function (req, res) {
         message: err.message
       })
 
-    var content = {}
+    const content = {}
     content.title = 'About'
     content.nav = 'about'
 
@@ -86,7 +86,7 @@ mainController.about = function (req, res) {
 }
 
 mainController.dashboard = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Dashboard'
   content.nav = 'dashboard'
 
@@ -105,7 +105,7 @@ mainController.loginPost = function (req, res, next) {
     }
     if (!user) return res.redirect('/')
 
-    var redirectUrl = '/dashboard'
+    let redirectUrl = '/dashboard'
 
     if (req.session.redirectUrl) {
       redirectUrl = req.session.redirectUrl
@@ -141,7 +141,7 @@ mainController.l2AuthPost = function (req, res, next) {
 
     req.session.l2auth = 'totp'
 
-    var redirectUrl = '/dashboard'
+    let redirectUrl = '/dashboard'
 
     if (req.session.redirectUrl) {
       redirectUrl = req.session.redirectUrl
@@ -160,13 +160,13 @@ mainController.logout = function (req, res) {
 }
 
 mainController.forgotL2Auth = function (req, res) {
-  var data = req.body
+  const data = req.body
   if (_.isUndefined(data['forgotl2auth-email'])) {
     return res.status(400).send('No Form Data')
   }
 
-  var email = data['forgotl2auth-email']
-  var userSchema = require('../models/user')
+  const email = data['forgotl2auth-email']
+  const userSchema = require('../models/user')
   userSchema.getUserByEmail(email, function (err, user) {
     if (err) {
       return res.status(400).send(err.message)
@@ -176,11 +176,11 @@ mainController.forgotL2Auth = function (req, res) {
       return res.status(400).send('Invalid Email: Account not found!')
     }
 
-    var Chance = require('chance')
-    var chance = new Chance()
+    const Chance = require('chance')
+    const chance = new Chance()
 
     user.resetL2AuthHash = chance.hash({ casing: 'upper' })
-    var expireDate = new Date()
+    const expireDate = new Date()
     expireDate.setDate(expireDate.getDate() + 2)
     user.resetL2AuthExpire = expireDate
 
@@ -189,11 +189,11 @@ mainController.forgotL2Auth = function (req, res) {
         return res.status(400).send(err.message)
       }
 
-      var mailer = require('../mailer')
-      var Email = require('email-templates')
-      var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+      const mailer = require('../mailer')
+      const Email = require('email-templates')
+      const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-      var email = new Email({
+      const email = new Email({
         views: {
           root: templateDir,
           options: {
@@ -204,7 +204,7 @@ mainController.forgotL2Auth = function (req, res) {
 
       savedUser = savedUser.toJSON()
 
-      var data = {
+      const data = {
         base_url: req.protocol + '://' + req.get('host'),
         user: savedUser
       }
@@ -212,7 +212,7 @@ mainController.forgotL2Auth = function (req, res) {
       email
         .render('l2auth-reset', data)
         .then(function (html) {
-          var mailOptions = {
+          const mailOptions = {
             to: savedUser.email,
             subject: '[Trudesk] Account Recovery',
             html: html,
@@ -237,13 +237,13 @@ mainController.forgotL2Auth = function (req, res) {
 }
 
 mainController.forgotPass = function (req, res) {
-  var data = req.body
+  const data = req.body
   if (_.isUndefined(data['forgotPass-email'])) {
     return res.status(400).send('No Form Data')
   }
 
-  var email = data['forgotPass-email']
-  var userSchema = require('../models/user')
+  const email = data['forgotPass-email']
+  const userSchema = require('../models/user')
   userSchema.getUserByEmail(email, function (err, user) {
     if (err) {
       req.flash(err)
@@ -257,11 +257,11 @@ mainController.forgotPass = function (req, res) {
 
     // Found user send Password Reset Email.
     // Set User Reset Hash and Expire Date.
-    var Chance = require('chance')
-    var chance = new Chance()
+    const Chance = require('chance')
+    const chance = new Chance()
 
     user.resetPassHash = chance.hash({ casing: 'upper' })
-    var expireDate = new Date()
+    const expireDate = new Date()
     expireDate.setDate(expireDate.getDate() + 2)
     user.resetPassExpire = expireDate
 
@@ -272,16 +272,16 @@ mainController.forgotPass = function (req, res) {
       }
 
       // Send mail
-      var mailer = require('../mailer')
-      var Email = require('email-templates')
-      var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-      var templateSchema = require('../models/template')
+      const mailer = require('../mailer')
+      const Email = require('email-templates')
+      const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+      const templateSchema = require('../models/template')
 
-      var email = null
+      let email = null
 
       savedUser = savedUser.toJSON()
 
-      var data = {
+      const data = {
         base_url: req.protocol + '://' + req.get('host'),
         user: savedUser
       }
@@ -289,10 +289,10 @@ mainController.forgotPass = function (req, res) {
       async.waterfall(
         [
           function (next) {
-            var settingsSchema = require('../models/setting')
+            const settingsSchema = require('../models/setting')
             settingsSchema.getSetting('beta:email', function (err, setting) {
               if (err) return next(err)
-              var betaEnabled = !setting ? false : setting.value
+              const betaEnabled = !setting ? false : setting.value
 
               return next(null, betaEnabled)
             })
@@ -310,7 +310,7 @@ mainController.forgotPass = function (req, res) {
                     templateSchema.findOne({ name: view }, function (err, template) {
                       if (err) return reject(err)
                       if (!template) return reject(new Error('Invalid Template'))
-                      var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+                      const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
                       email.juiceResources(html).then(resolve)
                     })
                   })
@@ -342,13 +342,13 @@ mainController.forgotPass = function (req, res) {
             return res.status(500).send(err)
           }
 
-          var subject = '[Trudesk] Password Reset Request'
+          let subject = '[Trudesk] Password Reset Request'
           if (template) subject = global.Handlebars.compile(template.subject)(data)
 
           email
             .render('password-reset', data)
             .then(function (html) {
-              var mailOptions = {
+              const mailOptions = {
                 to: savedUser.email,
                 subject: subject,
                 html: html,
@@ -375,12 +375,12 @@ mainController.forgotPass = function (req, res) {
 }
 
 mainController.resetl2auth = function (req, res) {
-  var hash = req.params.hash
+  const hash = req.params.hash
   if (_.isUndefined(hash)) {
     return res.status(400).send('Invalid Link!')
   }
 
-  var userSchema = require('../models/user')
+  const userSchema = require('../models/user')
   userSchema.getUserByL2ResetHash(hash, function (err, user) {
     if (err) {
       return res.status(400).send('Invalid Link!')
@@ -390,7 +390,7 @@ mainController.resetl2auth = function (req, res) {
       return res.status(400).send('Invalid Link!')
     }
 
-    var now = new Date()
+    const now = new Date()
     if (now < user.resetL2AuthExpire) {
       user.tOTPKey = undefined
       user.hasL2Auth = false
@@ -403,11 +403,11 @@ mainController.resetl2auth = function (req, res) {
         }
 
         // Send mail
-        var mailer = require('../mailer')
-        var Email = require('email-templates')
-        var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+        const mailer = require('../mailer')
+        const Email = require('email-templates')
+        const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-        var email = new Email({
+        const email = new Email({
           views: {
             root: templateDir,
             options: {
@@ -421,7 +421,7 @@ mainController.resetl2auth = function (req, res) {
         email
           .render('l2auth-cleared', user)
           .then(function (html) {
-            var mailOptions = {
+            const mailOptions = {
               to: updated.email,
               subject: '[Trudesk] Two-Factor Authentication Removed!',
               html: html,
@@ -452,13 +452,13 @@ mainController.resetl2auth = function (req, res) {
 }
 
 mainController.resetPass = function (req, res) {
-  var hash = req.params.hash
+  const hash = req.params.hash
 
   if (_.isUndefined(hash)) {
     return res.status(400).send('Invalid Link!')
   }
 
-  var userSchema = require('../models/user')
+  const userSchema = require('../models/user')
   userSchema.getUserByResetHash(hash, function (err, user) {
     if (err) {
       return res.status(400).send('Invalid Link!')
@@ -468,11 +468,11 @@ mainController.resetPass = function (req, res) {
       return res.status(400).send('Invalid Link!')
     }
 
-    var now = new Date()
+    const now = new Date()
     if (now < user.resetPassExpire) {
-      var Chance = require('chance')
-      var chance = new Chance()
-      var gPass = chance.string({ length: 8 })
+      const Chance = require('chance')
+      const chance = new Chance()
+      const gPass = chance.string({ length: 8 })
       user.password = gPass
 
       user.resetPassHash = undefined
@@ -484,11 +484,11 @@ mainController.resetPass = function (req, res) {
         }
 
         // Send mail
-        var mailer = require('../mailer')
-        var Email = require('email-templates')
-        var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+        const mailer = require('../mailer')
+        const Email = require('email-templates')
+        const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-        var email = new Email({
+        const email = new Email({
           views: {
             root: templateDir,
             options: {
@@ -499,7 +499,7 @@ mainController.resetPass = function (req, res) {
 
         updated = updated.toJSON()
 
-        var data = {
+        const data = {
           password: gPass,
           user: updated
         }
@@ -507,7 +507,7 @@ mainController.resetPass = function (req, res) {
         email
           .render('new-password', data)
           .then(function (html) {
-            var mailOptions = {
+            const mailOptions = {
               to: updated.email,
               subject: '[Trudesk] New Password',
               html: html,
@@ -541,11 +541,11 @@ mainController.l2authget = function (req, res) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Login'
   content.layout = false
 
-  var settings = require('../models/setting')
+  const settings = require('../models/setting')
   settings.getSettingByName('mailer:enable', function (err, setting) {
     if (err) {
       throw new Error(err)

@@ -12,11 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var noticeSchema = require('../models/notice')
-var permissions = require('../permissions')
+const _ = require('lodash')
+const noticeSchema = require('../models/notice')
+const permissions = require('../permissions')
 
-var noticesController = {}
+const noticesController = {}
 
 function handleError (res, err) {
   if (err) {
@@ -29,13 +29,13 @@ function handleError (res, err) {
 }
 
 noticesController.get = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Notices'
   content.nav = 'notices'
 
@@ -48,13 +48,13 @@ noticesController.get = function (req, res) {
 }
 
 noticesController.create = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Notices - Create'
   content.nav = 'notices'
 
@@ -66,13 +66,13 @@ noticesController.create = function (req, res) {
 }
 
 noticesController.edit = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:update')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Notices - Edit'
   content.nav = 'notices'
 

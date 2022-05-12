@@ -12,28 +12,28 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var fs = require('fs-extra')
-var path = require('path')
-var spawn = require('child_process').spawn
-var os = require('os')
-var async = require('async')
-var AdmZip = require('adm-zip')
-var database = require('../database')
-var winston = require('../logger')
+const _ = require('lodash')
+const fs = require('fs-extra')
+const path = require('path')
+const spawn = require('child_process').spawn
+const os = require('os')
+const async = require('async')
+const AdmZip = require('adm-zip')
+const database = require('../database')
+const winston = require('../logger')
 
 global.env = process.env.NODE_ENV || 'production'
 
-var CONNECTION_URI = null
-var databaseName = null
+let CONNECTION_URI = null
+let databaseName = null
 
 function cleanup (callback) {
-  var rimraf = require('rimraf')
+  const rimraf = require('rimraf')
   rimraf(path.join(__dirname, '../../restores/restore_*'), callback)
 }
 
 function cleanUploads (callback) {
-  var rimraf = require('rimraf')
+  const rimraf = require('rimraf')
   rimraf(path.join(__dirname, '../../public/uploads/*'), callback)
 }
 
@@ -67,7 +67,7 @@ function copyUploads (file, callback) {
 }
 
 function extractArchive (file, callback) {
-  var zip = new AdmZip(path.join(__dirname, '../../backups/', file))
+  const zip = new AdmZip(path.join(__dirname, '../../backups/', file))
   zip.extractAllTo(path.join(__dirname, '../../restores/restore_' + file + '/'), true)
 
   if (_.isFunction(callback)) {
@@ -80,15 +80,15 @@ function cleanMongoDb (callback) {
 }
 
 function runRestore (file, callback) {
-  var platform = os.platform()
+  const platform = os.platform()
   winston.info('Starting Restore... (' + platform + ')')
 
-  var dbName = fs.readdirSync(path.join(__dirname, '../../restores/restore_' + file, 'database'))[0]
+  const dbName = fs.readdirSync(path.join(__dirname, '../../restores/restore_' + file, 'database'))[0]
   if (!dbName) {
     return callback(new Error('Invalid Backup. Unable to get DBName'))
   }
 
-  var options = [
+  const options = [
     '--uri',
     CONNECTION_URI,
     '-d',
@@ -96,7 +96,7 @@ function runRestore (file, callback) {
     path.join(__dirname, '../../restores/restore_' + file, 'database', dbName),
     '--noIndexRestore'
   ]
-  var mongorestore = null
+  let mongorestore = null
   if (platform === 'win32') {
     mongorestore = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options, {
       env: { PATH: process.env.PATH }
@@ -126,14 +126,14 @@ function runRestore (file, callback) {
   CONNECTION_URI = process.env.MONGOURI
   if (!CONNECTION_URI) return process.send({ success: false, error: 'Invalid connection uri' })
 
-  var FILE = process.env.FILE
+  const FILE = process.env.FILE
   if (!FILE) return process.send({ success: false, error: 'Invalid File' })
 
   if (!fs.existsSync(path.join(__dirname, '../../backups', FILE))) {
     return process.send({ success: false, error: 'FILE NOT FOUND' })
   }
 
-  var options = {
+  const options = {
     keepAlive: 0,
     connectTimeoutMS: 5000
   }

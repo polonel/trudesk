@@ -12,23 +12,23 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var fs = require('fs-extra')
-var os = require('os')
-var path = require('path')
-var spawn = require('child_process').spawn
-var archiver = require('archiver')
-var database = require('../database')
-var winston = require('../logger')
-var moment = require('moment')
+const fs = require('fs-extra')
+const os = require('os')
+const path = require('path')
+const spawn = require('child_process').spawn
+const archiver = require('archiver')
+const database = require('../database')
+const winston = require('../logger')
+const moment = require('moment')
 
 global.env = process.env.NODE_ENV || 'production'
 
-var CONNECTION_URI = null
+let CONNECTION_URI = null
 
 function createZip (callback) {
-  var filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
-  var output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename))
-  var archive = archiver('zip', {
+  const filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
+  const output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename))
+  const archive = archiver('zip', {
     zlib: { level: 9 }
   })
 
@@ -53,7 +53,7 @@ function createZip (callback) {
 }
 
 function cleanup (callback) {
-  var rimraf = require('rimraf')
+  const rimraf = require('rimraf')
   rimraf(path.join(__dirname, '../../backups/dump'), callback)
 }
 
@@ -67,22 +67,22 @@ function copyFiles (callback) {
 }
 
 function runBackup (callback) {
-  var platform = os.platform()
+  const platform = os.platform()
   winston.info('Starting backup... (' + platform + ')')
 
-  var mongodumpExec = 'mongodump'
+  let mongodumpExec = 'mongodump'
   if (platform === 'win32') {
     mongodumpExec = path.join(__dirname, 'bin/win32/mongodump')
   }
 
-  var options = [
+  const options = [
     '--uri',
     CONNECTION_URI,
     '--forceTableScan',
     '--out',
     path.join(__dirname, '../../backups/dump/database/')
   ]
-  var mongodump = spawn(mongodumpExec, options, { env: { PATH: process.env.PATH } })
+  const mongodump = spawn(mongodumpExec, options, { env: { PATH: process.env.PATH } })
 
   mongodump.stdout.on('data', function (data) {
     winston.debug(data.toString())
@@ -99,7 +99,7 @@ function runBackup (callback) {
 
   mongodump.on('exit', function (code) {
     if (code === 0) {
-      var dbName = fs.readdirSync(path.join(__dirname, '../../backups/dump/database'))[0]
+      const dbName = fs.readdirSync(path.join(__dirname, '../../backups/dump/database'))[0]
       if (!dbName) {
         return callback(new Error('Unable to retrieve database name'))
       }
@@ -125,7 +125,7 @@ function runBackup (callback) {
   CONNECTION_URI = process.env.MONGOURI
 
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
-  var options = {
+  const options = {
     keepAlive: 0,
     connectTimeoutMS: 5000
   }
@@ -150,7 +150,7 @@ function runBackup (callback) {
 
         runBackup(function (err) {
           if (err) return process.send({ success: false, error: err })
-          var filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
+          const filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
 
           winston.info('Backup completed successfully: ' + filename)
           process.send({ success: true })

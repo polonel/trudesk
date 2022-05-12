@@ -12,16 +12,16 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var permissions = require('../permissions')
-var settingsUtil = require('../settings/settingsUtil')
+const _ = require('lodash')
+const permissions = require('../permissions')
+const settingsUtil = require('../settings/settingsUtil')
 
-var settingsController = {}
+const settingsController = {}
 
 settingsController.content = {}
 
 function initViewContent (view, req) {
-  var content = {}
+  const content = {}
   content.title = 'Settings'
   content.nav = 'settings'
   content.subnav = 'settings-' + view
@@ -34,7 +34,7 @@ function initViewContent (view, req) {
 }
 
 function checkPerms (req, role) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, role)) {
     req.flash('message', 'Permission Denied.')
 
@@ -71,7 +71,7 @@ function renderView (res, content) {
 settingsController.general = function (req, res) {
   if (!checkPerms(req, 'settings:view')) return res.redirect('/')
 
-  var content = initViewContent('general', req)
+  const content = initViewContent('general', req)
 
   renderView(res, content)
 }
@@ -79,7 +79,7 @@ settingsController.general = function (req, res) {
 settingsController.appearance = function (req, res) {
   if (!checkPerms(req, 'settings:view')) return res.redirect('/')
 
-  var content = initViewContent('appearance', req)
+  const content = initViewContent('appearance', req)
 
   renderView(res, content)
 }
@@ -87,7 +87,7 @@ settingsController.appearance = function (req, res) {
 settingsController.ticketSettings = function (req, res) {
   if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings')
 
-  var content = initViewContent('tickets', req)
+  const content = initViewContent('tickets', req)
 
   renderView(res, content)
 }
@@ -95,7 +95,7 @@ settingsController.ticketSettings = function (req, res) {
 settingsController.mailerSettings = function (req, res) {
   if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings')
 
-  var content = initViewContent('mailer', req)
+  const content = initViewContent('mailer', req)
 
   renderView(res, content)
 }
@@ -103,7 +103,7 @@ settingsController.mailerSettings = function (req, res) {
 settingsController.permissionsSettings = function (req, res) {
   if (!checkPerms(req, 'settings:permissions')) return res.redirect('/settings')
 
-  var content = initViewContent('permissions', req)
+  const content = initViewContent('permissions', req)
 
   renderView(res, content)
 }
@@ -111,7 +111,7 @@ settingsController.permissionsSettings = function (req, res) {
 settingsController.notificationsSettings = function (req, res) {
   if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings')
 
-  var content = initViewContent('notifications', req)
+  const content = initViewContent('notifications', req)
 
   renderView(res, content)
 }
@@ -119,7 +119,7 @@ settingsController.notificationsSettings = function (req, res) {
 settingsController.elasticsearchSettings = function (req, res) {
   if (!checkPerms(req, 'settings:elasticsearch')) return res.redirect('/settings')
 
-  var content = initViewContent('elasticsearch', req)
+  const content = initViewContent('elasticsearch', req)
 
   renderView(res, content)
 }
@@ -127,7 +127,7 @@ settingsController.elasticsearchSettings = function (req, res) {
 settingsController.tpsSettings = function (req, res) {
   if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings')
 
-  var content = initViewContent('tps', req)
+  const content = initViewContent('tps', req)
 
   renderView(res, content)
 }
@@ -135,13 +135,13 @@ settingsController.tpsSettings = function (req, res) {
 settingsController.backupSettings = function (req, res) {
   if (!checkPerms(req, 'settings:backup')) return res.redirect('/settings')
 
-  var content = initViewContent('backup', req)
+  const content = initViewContent('backup', req)
 
   renderView(res, content)
 }
 
 settingsController.serverSettings = function (req, res) {
-  var content = initViewContent('server', req)
+  const content = initViewContent('server', req)
 
   renderView(res, content)
 }
@@ -149,7 +149,7 @@ settingsController.serverSettings = function (req, res) {
 settingsController.legal = function (req, res) {
   if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings')
 
-  var content = initViewContent('legal', req)
+  const content = initViewContent('legal', req)
 
   renderView(res, content)
 }
@@ -157,17 +157,17 @@ settingsController.legal = function (req, res) {
 settingsController.logs = function (req, res) {
   if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings')
 
-  var content = initViewContent('logs', req)
+  const content = initViewContent('logs', req)
 
-  var fs = require('fs')
+  const fs = require('fs')
 
-  var path = require('path')
+  const path = require('path')
 
-  var AnsiUp = require('ansi_up')
+  const AnsiUp = require('ansi_up')
 
-  var ansiUp = new AnsiUp.default()
+  const ansiUp = new AnsiUp.default()
 
-  var file = path.join(__dirname, '../../logs/output.log')
+  const file = path.join(__dirname, '../../logs/output.log')
 
   fs.readFile(file, 'utf-8', function (err, data) {
     if (err) {

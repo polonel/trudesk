@@ -12,12 +12,12 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var serversController = {}
+const serversController = {}
 
 serversController.content = {}
 
 serversController.get = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Servers'
   content.nav = 'servers'
   content.data = {}

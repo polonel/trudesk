@@ -12,16 +12,16 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var path = require('path')
-var fs = require('fs-extra')
-var Busboy = require('busboy')
-var templateSchema = require('../models/template')
+const _ = require('lodash')
+const path = require('path')
+const fs = require('fs-extra')
+const Busboy = require('busboy')
+const templateSchema = require('../models/template')
 
-var editor = {}
+const editor = {}
 
 editor.page = function (req, res) {
-  var content = {}
+  const content = {}
   content.title = 'Editor'
   content.nav = 'settings'
 
@@ -34,7 +34,7 @@ editor.page = function (req, res) {
 }
 
 editor.getAssets = function (req, res) {
-  var imageExts = ['.gif', '.png', '.jpg', '.jpeg', '.ico', '.bmp']
+  const imageExts = ['.gif', '.png', '.jpg', '.jpeg', '.ico', '.bmp']
 
   fs.ensureDirSync(path.join(__dirname, '../../public/uploads/assets/upload'))
 
@@ -54,10 +54,10 @@ editor.getAssets = function (req, res) {
 }
 
 editor.removeAsset = function (req, res) {
-  var id = req.body.fileUrl
+  const id = req.body.fileUrl
   if (!id) return res.status(400).json({ success: false, error: 'Invalid File' })
 
-  var file = path.basename(id)
+  const file = path.basename(id)
   fs.unlink(path.join(__dirname, '../../public/uploads/assets/upload', file), function (err) {
     if (err) return res.status(500).json({ success: false, error: err })
 
@@ -66,8 +66,8 @@ editor.removeAsset = function (req, res) {
 }
 
 editor.assetsUpload = function (req, res) {
-  // var chance = new Chance()
-  var busboy = new Busboy({
+  // const chance = new Chance()
+  const busboy = new Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -75,8 +75,8 @@ editor.assetsUpload = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
     if (mimetype.indexOf('image/') === -1) {
@@ -88,10 +88,10 @@ editor.assetsUpload = function (req, res) {
       return file.resume()
     }
 
-    // var ext = path.extname(filename)
+    // const ext = path.extname(filename)
 
-    var savePath = path.join(__dirname, '../../public/uploads/assets/upload')
-    // var sanitizedFilename = chance.hash({ length: 20 }) + ext
+    const savePath = path.join(__dirname, '../../public/uploads/assets/upload')
+    // const sanitizedFilename = chance.hash({ length: 20 }) + ext
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
     object.filePath = path.join(savePath, filename)
@@ -130,9 +130,9 @@ editor.assetsUpload = function (req, res) {
     if (!fs.existsSync(object.filePath))
       return res.status(500).json({ success: false, error: { message: 'File Failed to Save to Disk' } })
 
-    var includePort = global.TRUDESK_PORT && global.TRUDESK_PORT !== (80 || 443)
+    const includePort = global.TRUDESK_PORT && global.TRUDESK_PORT !== (80 || 443)
 
-    var fileUrl =
+    const fileUrl =
       req.protocol +
       '://' +
       req.hostname +
@@ -140,7 +140,7 @@ editor.assetsUpload = function (req, res) {
       '/uploads/assets/upload/' +
       object.filename
 
-    // var dimensions = sizeOf(fileUrl)
+    // const dimensions = sizeOf(fileUrl)
 
     return res.json({
       success: true,
@@ -165,7 +165,7 @@ editor.load = function (req, res) {
 }
 
 editor.save = function (req, res) {
-  var name = req.body.template
+  const name = req.body.template
   delete req.body.template
   templateSchema.findOneAndUpdate(
     { name: name },

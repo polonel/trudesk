@@ -12,15 +12,15 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var NodeCache = require('node-cache')
-var path = require('path')
-var cache = {}
+const _ = require('lodash')
+const NodeCache = require('node-cache')
+const path = require('path')
+const cache = {}
 
 cache.init = function () {
   global.cache = new NodeCache({ checkperiod: 0 })
   cache.memLimit = process.env.CACHE_MEMLIMIT || '2048'
-  var env = { FORK: 1, NODE_ENV: global.env, TIMEZONE: global.timezone }
+  const env = { FORK: 1, NODE_ENV: global.env, TIMEZONE: global.timezone }
   cache.env = _.merge(cache.env, env)
 
   spawnCache()
@@ -28,9 +28,9 @@ cache.init = function () {
 }
 
 function spawnCache () {
-  var fork = require('child_process').fork
+  const fork = require('child_process').fork
 
-  var n = fork(path.join(__dirname, './index.js'), {
+  const n = fork(path.join(__dirname, './index.js'), {
     execArgv: ['--max-old-space-size=' + cache.memLimit],
     env: cache.env
   })

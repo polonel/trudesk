@@ -9,22 +9,21 @@
  ========================================================================
 */
 
-var _ = require('lodash')
-var async = require('async')
-var winston = require('winston')
-var request = require('request')
-var ticketSchema = require('../models/ticket')
-var userSchema = require('../models/user')
-var groupSchema = require('../models/group')
-var conversationSchema = require('../models/chat/conversation')
-var settingSchema = require('../models/setting')
+const _ = require('lodash')
+const async = require('async')
+const request = require('request')
+const ticketSchema = require('../models/ticket')
+const userSchema = require('../models/user')
+const groupSchema = require('../models/group')
+const conversationSchema = require('../models/chat/conversation')
+const settingSchema = require('../models/setting')
 
-var taskRunner = {}
+const taskRunner = {}
 
 taskRunner.init = function (callback) {
-  taskRunner.sendStats(function (err) {
-    if (!err) setInterval(taskRunner.sendStats, 86400000) // 24 hours
-  })
+  // taskRunner.sendStats(function (err) {
+  //   if (!err) setInterval(taskRunner.sendStats, 86400000) // 24 hours
+  // })
 
   return callback()
 }
@@ -34,14 +33,14 @@ taskRunner.sendStats = function (callback) {
     if (err) return callback(err)
     if (!settings || settings.length < 1) return callback()
 
-    var versionSetting = _.find(settings, function (x) {
+    let versionSetting = _.find(settings, function (x) {
       return x.name === 'gen:version'
     })
-    var installIdSetting = _.find(settings, function (x) {
+    const installIdSetting = _.find(settings, function (x) {
       return x.name === 'gen:installid'
     })
 
-    var hostnameSetting = _.find(settings, function (x) {
+    let hostnameSetting = _.find(settings, function (x) {
       return x.name === 'gen:siteurl'
     })
 
@@ -51,7 +50,7 @@ taskRunner.sendStats = function (callback) {
 
     hostnameSetting = _.isUndefined(hostnameSetting) ? { value: '--' } : hostnameSetting
 
-    var result = {
+    const result = {
       ticketCount: 0,
       agentCount: 0,
       customerGroupCount: 0,

@@ -9,15 +9,15 @@
  ========================================================================
  **/
 
-var ticketSchema = require('../models/ticket')
-var async = require('async')
-var path = require('path')
-var _ = require('lodash')
-var winston = require('../logger')
-var groupSchema = require('../models/group')
-var departmentSchema = require('../models/department')
-var permissions = require('../permissions')
-var xss = require('xss')
+const ticketSchema = require('../models/ticket')
+const async = require('async')
+const path = require('path')
+const _ = require('lodash')
+const winston = require('../logger')
+const groupSchema = require('../models/group')
+const departmentSchema = require('../models/department')
+const permissions = require('../permissions')
+const xss = require('xss')
 /**
  * @since 1.0
  * @author Chris Brame <polonel@gmail.com>
@@ -33,7 +33,7 @@ var xss = require('xss')
  * @requires {@link Emitter}
  *
  */
-var ticketsController = {}
+const ticketsController = {}
 
 /**
  * @name ticketsController.content
@@ -42,15 +42,15 @@ var ticketsController = {}
 ticketsController.content = {}
 
 ticketsController.pubNewIssue = function (req, res) {
-  var marked = require('marked')
-  var settings = require('../models/setting')
+  const marked = require('marked')
+  const settings = require('../models/setting')
   settings.getSettingByName('allowPublicTickets:enable', function (err, setting) {
     if (err) return handleError(res, err)
     if (setting && setting.value === true) {
       settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
         if (err) return handleError(res, err)
 
-        var content = {}
+        const content = {}
         content.title = 'New Issue'
         content.layout = false
         content.data = {}
@@ -76,11 +76,11 @@ ticketsController.pubNewIssue = function (req, res) {
  * @see Ticket
  */
 ticketsController.getByStatus = function (req, res, next) {
-  var url = require('url')
-  var page = req.params.page
+  const url = require('url')
+  let page = req.params.page
   if (_.isUndefined(page)) page = 0
 
-  var processor = {}
+  const processor = {}
   processor.title = 'Tickets'
   processor.nav = 'tickets'
   processor.subnav = 'tickets-'
@@ -92,16 +92,16 @@ ticketsController.getByStatus = function (req, res, next) {
     status: []
   }
 
-  var fullUrl = url.format({
+  const fullUrl = url.format({
     protocol: req.protocol,
     host: req.get('host'),
     pathname: req.originalUrl
   })
 
-  var pathname = new url.URL(fullUrl).pathname
-  var arr = pathname.split('/')
-  var tType = 'new'
-  var s = 0
+  const pathname = new url.URL(fullUrl).pathname
+  const arr = pathname.split('/')
+  let tType = 'new'
+  let s = 0
   if (_.size(arr) > 2) tType = arr[2]
 
   switch (tType) {
@@ -132,10 +132,10 @@ ticketsController.getByStatus = function (req, res, next) {
  * @see Ticket
  */
 ticketsController.getActive = function (req, res, next) {
-  var page = req.params.page
+  let page = req.params.page
   if (_.isUndefined(page)) page = 0
 
-  var processor = {}
+  const processor = {}
   processor.title = 'Tickets'
   processor.nav = 'tickets'
   processor.subnav = 'tickets-active'
@@ -161,10 +161,10 @@ ticketsController.getActive = function (req, res, next) {
  * @see Ticket
  */
 ticketsController.getAssigned = function (req, res, next) {
-  var page = req.params.page
+  let page = req.params.page
   if (_.isUndefined(page)) page = 0
 
-  var processor = {}
+  const processor = {}
   processor.title = 'Tickets'
   processor.nav = 'tickets'
   processor.subnav = 'tickets-assigned'
@@ -192,10 +192,10 @@ ticketsController.getAssigned = function (req, res, next) {
  * @see Ticket
  */
 ticketsController.getUnassigned = function (req, res, next) {
-  var page = req.params.page
+  let page = req.params.page
   if (_.isUndefined(page)) page = 0
 
-  var processor = {}
+  const processor = {}
   processor.title = 'Tickets'
   processor.nav = 'tickets'
   processor.subnav = 'tickets-unassigned'
@@ -215,25 +215,23 @@ ticketsController.getUnassigned = function (req, res, next) {
 }
 
 ticketsController.filter = function (req, res, next) {
-  var page = req.query.page
+  let page = req.query.page
   if (_.isUndefined(page)) page = 0
 
-  var queryString = req.query
-  var uid = queryString.uid
-  var subject = queryString.fs
-  var issue = queryString.it
-  var dateStart = queryString.ds
-  var dateEnd = queryString.de
-  var status = queryString.st
-  var priority = queryString.pr
-  var groups = queryString.gp
-  var types = queryString.tt
-  var tags = queryString.tag
-  var assignee = queryString.au
+  const queryString = req.query
+  const uid = queryString.uid
+  const subject = queryString.fs
+  const issue = queryString.it
+  const dateStart = queryString.ds
+  const dateEnd = queryString.de
+  let status = queryString.st
+  let priority = queryString.pr
+  let groups = queryString.gp
+  let types = queryString.tt
+  let tags = queryString.tag
+  let assignee = queryString.au
 
-  var rawNoPage = req.originalUrl
-    .replace(new RegExp('[?&]page=[^&#]*(#.*)?$'), '$1')
-    .replace(new RegExp('([?&])page=[^&]*&'), '$1')
+  const rawNoPage = req.originalUrl.replace(/[?&]page=[^&#]*(#.*)?$/, '$1').replace(/([?&])page=[^&]*&/, '$1')
 
   if (!_.isUndefined(status) && !_.isArray(status)) status = [status]
   if (!_.isUndefined(priority) && !_.isArray(priority)) priority = [priority]
@@ -242,7 +240,7 @@ ticketsController.filter = function (req, res, next) {
   if (!_.isUndefined(tags) && !_.isArray(tags)) tags = [tags]
   if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee]
 
-  var filter = {
+  const filter = {
     uid: uid,
     subject: subject,
     issue: issue,
@@ -259,7 +257,7 @@ ticketsController.filter = function (req, res, next) {
     raw: rawNoPage
   }
 
-  var processor = {}
+  const processor = {}
   processor.title = 'Tickets'
   processor.nav = 'tickets'
   processor.renderpage = 'tickets'
@@ -286,10 +284,10 @@ ticketsController.filter = function (req, res, next) {
  * @see Ticket
  */
 ticketsController.processor = function (req, res) {
-  var processor = req.processor
+  const processor = req.processor
   if (_.isUndefined(processor)) return res.redirect('/')
 
-  var content = {}
+  const content = {}
   content.title = processor.title
   content.nav = processor.nav
   content.subnav = processor.subnav
@@ -299,7 +297,7 @@ ticketsController.processor = function (req, res) {
   content.data.user = req.user
   content.data.common = req.viewdata
 
-  var object = processor.object
+  const object = processor.object
   content.data.page = object.page
   content.data.filter = object.filter
 
@@ -307,8 +305,8 @@ ticketsController.processor = function (req, res) {
 }
 
 ticketsController.pdf = function (req, res) {
-  var TicketPDFGenerator = require('../pdf/ticketGenerator')
-  var uid = null
+  const TicketPDFGenerator = require('../pdf/ticketGenerator')
+  let uid = null
   try {
     uid = parseInt(req.params.uid)
   } catch (e) {
@@ -319,7 +317,7 @@ ticketsController.pdf = function (req, res) {
   ticketSchema.getTicketByUid(uid, function (err, ticket) {
     if (err) return handleError(res, err)
 
-    var ticketGenerator = new TicketPDFGenerator(ticket)
+    const ticketGenerator = new TicketPDFGenerator(ticket)
 
     ticketGenerator.generate(function (err, obj) {
       if (err) return res.redirect('/tickets')
@@ -336,8 +334,8 @@ ticketsController.pdf = function (req, res) {
  * @return {View} Subviews/PrintTicket View
  */
 ticketsController.print = function (req, res) {
-  var user = req.user
-  var uid = null
+  const user = req.user
+  let uid = null
   try {
     uid = parseInt(req.params.uid)
   } catch (e) {
@@ -345,7 +343,7 @@ ticketsController.print = function (req, res) {
     return res.redirect('/tickets')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Tickets - ' + req.params.uid
   content.nav = 'tickets'
 
@@ -358,15 +356,15 @@ ticketsController.print = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var hasPublic = permissions.canThis(user.role, 'tickets:public')
-    var hasAccess = false
+    const hasPublic = permissions.canThis(user.role, 'tickets:public')
+    let hasAccess = false
     async.series(
       [
         function (next) {
           if (user.role.isAdmin || user.role.isAgent) {
             departmentSchema.getDepartmentGroupsOfUser(user._id, function (err, groups) {
               if (err) return res.redirect('/tickets')
-              var gIds = groups.map(function (g) {
+              const gIds = groups.map(function (g) {
                 return g._id
               })
 
@@ -388,7 +386,7 @@ ticketsController.print = function (req, res) {
         function (next) {
           if (hasAccess) return next()
 
-          var members = ticket.group.members.map(function (m) {
+          const members = ticket.group.members.map(function (m) {
             return m._id.toString()
           })
 
@@ -451,13 +449,13 @@ ticketsController.print = function (req, res) {
  * content.data.ticket.commentCount = _.size(ticket.comments);
  */
 ticketsController.single = function (req, res) {
-  var user = req.user
-  var uid = req.params.id
+  const user = req.user
+  const uid = req.params.id
   if (isNaN(uid)) {
     return res.redirect('/tickets')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Tickets - ' + req.params.id
   content.nav = 'tickets'
 
@@ -470,7 +468,7 @@ ticketsController.single = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var departmentSchema = require('../models/department')
+    const departmentSchema = require('../models/department')
     async.waterfall(
       [
         function (next) {
@@ -484,7 +482,7 @@ ticketsController.single = function (req, res) {
               return groupSchema.find({}, next)
             }
 
-            var groups = _.flattenDeep(
+            const groups = _.flattenDeep(
               departments.map(function (d) {
                 return d.groups
               })
@@ -494,8 +492,8 @@ ticketsController.single = function (req, res) {
           })
         },
         function (userGroups, next) {
-          var hasPublic = permissions.canThis(user.role, 'tickets:public')
-          var groupIds = userGroups.map(function (g) {
+          const hasPublic = permissions.canThis(user.role, 'tickets:public')
+          const groupIds = userGroups.map(function (g) {
             return g._id.toString()
           })
 
@@ -531,11 +529,11 @@ ticketsController.single = function (req, res) {
 }
 
 ticketsController.uploadImageMDE = function (req, res) {
-  var Chance = require('chance')
-  var chance = new Chance()
-  var fs = require('fs-extra')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const Chance = require('chance')
+  const chance = new Chance()
+  const fs = require('fs-extra')
+  const Busboy = require('busboy')
+  const busboy = new Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -543,8 +541,8 @@ ticketsController.uploadImageMDE = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
   object.ticketId = req.headers.ticketid
   if (!object.ticketId) return res.status(400).json({ success: false })
@@ -559,8 +557,8 @@ ticketsController.uploadImageMDE = function (req, res) {
       return file.resume()
     }
 
-    var ext = path.extname(filename)
-    var allowedExtensions = [
+    const ext = path.extname(filename)
+    const allowedExtensions = [
       '.jpg',
       '.jpeg',
       '.jpe',
@@ -587,9 +585,9 @@ ticketsController.uploadImageMDE = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
-    // var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
-    var sanitizedFilename = chance.hash({ length: 20 }) + ext
+    const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
+    // const sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+    const sanitizedFilename = chance.hash({ length: 20 }) + ext
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
     object.filePath = path.join(savePath, 'inline_' + sanitizedFilename)
@@ -630,7 +628,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
     if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
 
-    var fileUrl = '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename
+    const fileUrl = '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename
 
     return res.json({ filename: fileUrl, ticketId: object.ticketId })
   })
@@ -639,9 +637,9 @@ ticketsController.uploadImageMDE = function (req, res) {
 }
 
 ticketsController.uploadAttachment = function (req, res) {
-  var fs = require('fs-extra')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const fs = require('fs-extra')
+  const Busboy = require('busboy')
+  const busboy = new Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -649,10 +647,10 @@ ticketsController.uploadAttachment = function (req, res) {
     }
   })
 
-  var object = {
+  const object = {
     ownerId: req.user._id
   }
-  var error
+  let error
 
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'ticketId') object.ticketId = val
@@ -684,11 +682,11 @@ ticketsController.uploadAttachment = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
-    var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
+    const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
+    const sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
 
-    var ext = path.extname(sanitizedFilename)
-    var badExts = ['.html', '.htm', '.js']
+    const ext = path.extname(sanitizedFilename)
+    const badExts = ['.html', '.htm', '.js']
 
     if (badExts.includes(ext)) {
       error = {
@@ -746,7 +744,7 @@ ticketsController.uploadAttachment = function (req, res) {
         return res.status(500).send(err.message)
       }
 
-      var attachment = {
+      const attachment = {
         owner: object.ownerId,
         name: object.filename,
         path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
@@ -754,7 +752,7 @@ ticketsController.uploadAttachment = function (req, res) {
       }
       ticket.attachments.push(attachment)
 
-      var historyItem = {
+      const historyItem = {
         action: 'ticket:added:attachment',
         description: 'Attachment ' + object.filename + ' was added.',
         owner: object.ownerId
@@ -769,7 +767,7 @@ ticketsController.uploadAttachment = function (req, res) {
           return res.status(500).send(err.message)
         }
 
-        var returnData = {
+        const returnData = {
           ticket: t
         }
 

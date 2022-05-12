@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var Controllers = {
+const Controllers = {
   install: require('./install'),
   main: require('./main'),
   tickets: require('./tickets'),

@@ -12,19 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var permissions = require('../permissions')
-var Team = require('../models/team')
+const _ = require('lodash')
+const permissions = require('../permissions')
+const Team = require('../models/team')
 
-var teamController = {}
+const teamController = {}
 
 teamController.get = function (req, res) {
-  var user = req.user
+  const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'teams:view')) {
     return res.redirect('/')
   }
 
-  var content = {}
+  const content = {}
   content.title = 'Teams'
   content.nav = 'teams'
 

@@ -18,18 +18,14 @@ const fs = require('fs')
 const piexifjs = require('piexifjs')
 
 module.exports.sanitizeFieldPlainText = function (text) {
-  const t = xss(text, {
+  return xss(text, {
     whileList: {},
     stripIgnoreTag: true,
     stripIgnoreTagBody: ['script']
   })
-  return t
 }
 
 module.exports.stripExifData = function (path) {
-  const fs = require('fs')
-  const piexifjs = require('piexifjs')
-
   const imgData = fs.readFileSync(path).toString('binary')
   const newImgData = piexifjs.remove(imgData)
   fs.writeFileSync(path, newImgData, 'binary')
@@ -56,7 +52,7 @@ module.exports.sendToAllClientsInRoom = function (io, room, method, data) {
 }
 
 module.exports.sendToUser = function (socketList, userList, username, method, data) {
-  var userOnline = null
+  let userOnline = null
   _.forEach(userList, function (v, k) {
     if (k.toLowerCase() === username.toLowerCase()) {
       userOnline = v
@@ -67,8 +63,8 @@ module.exports.sendToUser = function (socketList, userList, username, method, da
   if (_.isNull(userOnline)) return true
 
   _.forEach(userOnline.sockets, function (socket) {
-    var o = _.findKey(socketList, { id: socket })
-    var i = socketList[o]
+    const o = _.findKey(socketList, { id: socket })
+    const i = socketList[o]
     if (_.isUndefined(i)) return true
     i.emit(method, data)
   })
