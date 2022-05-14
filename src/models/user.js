@@ -90,11 +90,11 @@ userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
 userSchema.pre('save', function (next) {
   var user = this
 
-  user.username = utils.sanitizeFieldPlainText(user.username.toLowerCase().trim())
+  user.username = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.username.toLowerCase().trim()))
   user.email = utils.sanitizeFieldPlainText(user.email.trim())
 
-  if (user.fullname) user.fullname = utils.sanitizeFieldPlainText(user.fullname.trim())
-  if (user.title) user.title = utils.sanitizeFieldPlainText(user.title.trim())
+  if (user.fullname) user.fullname = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.fullname.trim()))
+  if (user.title) user.title = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.title.trim()))
 
   if (!user.isModified('password')) {
     return next()

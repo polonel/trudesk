@@ -17,6 +17,13 @@ const xss = require('xss')
 const fs = require('fs')
 const piexifjs = require('piexifjs')
 
+const MAX_FIELD_TEXT_LENGTH = 255
+const MAX_SHORT_FIELD_TEXT_LENGTH = 25
+
+module.exports.applyMaxShortTextLength = function (text) {
+  return text.toString().substring(0, MAX_SHORT_FIELD_TEXT_LENGTH)
+}
+
 module.exports.sanitizeFieldPlainText = function (text) {
   return xss(text, {
     whileList: {},
