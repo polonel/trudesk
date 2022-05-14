@@ -1,3 +1,13 @@
+## [1.2.1](https://github.com/polonel/trudesk/compare/v1.2.0...v1.2.1) (2022-05-14)
+
+
+### Bug Fixes
+
+* **notifications:** issue where notifications would not update [#495](https://github.com/polonel/trudesk/issues/495) ([f529734](https://github.com/polonel/trudesk/commit/f529734))
+* **tickets:** error when uploading attachments [#500](https://github.com/polonel/trudesk/issues/500) ([d861f04](https://github.com/polonel/trudesk/commit/d861f04))
+* **tickets:** unable to upload image in reply [#500](https://github.com/polonel/trudesk/issues/500) ([ddf2486](https://github.com/polonel/trudesk/commit/ddf2486))
+* **uploads:** removal of EXIF data on profile picture uploads ([097b482](https://github.com/polonel/trudesk/commit/097b482))
+
 # [1.2.0](https://github.com/polonel/trudesk/compare/v1.1.11...v1.2.0) (2022-04-10)
 
 
