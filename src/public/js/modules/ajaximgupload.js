@@ -39,7 +39,7 @@ define('modules/ajaximgupload', ['jquery', 'underscore', 'modules/helpers'], fun
           error: function (err) {
             console.log('[trudesk:ajaximgupload:onChange] Error - ', err)
             helpers.UI.showSnackbar({
-              text: 'An error occurred. Please check console. 2',
+              text: 'An error occurred. Please check console. (' + err.responseText + ')',
               actionTextColor: '#B92929'
             })
           }

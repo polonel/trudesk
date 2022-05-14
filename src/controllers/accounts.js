@@ -473,7 +473,8 @@ accountsController.uploadImage = function (req, res) {
   busboy.on('file', function (name, file, info) {
     const filename = info.filename
     const mimetype = info.mimeType
-    if (mimetype.indexOf('image/') === -1) {
+    const ext = path.extname(filename)
+    if (mimetype.indexOf('image/') === -1 || ext === '.svg') {
       error = {
         status: 400,
         message: 'Invalid File Type'
