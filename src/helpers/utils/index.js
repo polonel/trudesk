@@ -20,6 +20,10 @@ const piexifjs = require('piexifjs')
 const MAX_FIELD_TEXT_LENGTH = 255
 const MAX_SHORT_FIELD_TEXT_LENGTH = 25
 
+module.exports.applyMaxTextLength = function (text) {
+  return text.toString().substring(0, MAX_FIELD_TEXT_LENGTH)
+}
+
 module.exports.applyMaxShortTextLength = function (text) {
   return text.toString().substring(0, MAX_SHORT_FIELD_TEXT_LENGTH)
 }

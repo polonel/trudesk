@@ -233,16 +233,22 @@ ticketsController.filter = function (req, res, next) {
 
   const rawNoPage = req.originalUrl.replace(/[?&]page=[^&#]*(#.*)?$/, '$1').replace(/([?&])page=[^&]*&/, '$1')
 
+  if (!_.isUndefined(status)) status = xss(status)
   if (!_.isUndefined(status) && !_.isArray(status)) status = [status]
+  if (!_.isUndefined(priority)) priority = xss(priority)
   if (!_.isUndefined(priority) && !_.isArray(priority)) priority = [priority]
+  if (!_.isUndefined(groups)) groups = xss(groups)
   if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups]
+  if (!_.isUndefined(types)) types = xss(types)
   if (!_.isUndefined(types) && !_.isArray(types)) types = [types]
+  if (!_.isUndefined(tags)) tags = xss(tags)
   if (!_.isUndefined(tags) && !_.isArray(tags)) tags = [tags]
+  if (!_.isUndefined(assignee)) assignee = xss(assignee)
   if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee]
 
   const filter = {
     uid: uid,
-    subject: subject,
+    subject: xss(subject),
     issue: issue,
     date: {
       start: dateStart,
