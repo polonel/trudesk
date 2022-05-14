@@ -9,58 +9,27 @@
  *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
- *  Updated:    5/17/19 7:26 PM
- *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
+ *  Updated:    5/11/22 2:26 AM
+ *  Copyright (c) 2014-2022 Trudesk, Inc. All rights reserved.
  */
 
-var async = require('async')
-var path = require('path')
-var fs = require('fs')
-var winston = require('./src/logger')
-var nconf = require('nconf')
-var Chance = require('chance')
-var chance = new Chance()
-var pkg = require('./package.json')
-// `var memory = require('./src/memory');
+const async = require('async')
+const path = require('path')
+const fs = require('fs')
+const winston = require('./src/logger')
+const nconf = require('nconf')
+const Chance = require('chance')
+const chance = new Chance()
+const pkg = require('./package.json')
+// `const memory = require('./src/memory');
 
-var isDocker = process.env.TRUDESK_DOCKER || false
+const isDocker = process.env.TRUDESK_DOCKER || false
 
 global.forks = []
 
 nconf.argv().env()
 
 global.env = process.env.NODE_ENV || 'development'
-// global.env = process.env.NODE_ENV || 'production';
-
-//winston.setLevels(winston.config.cli.levels)
-// winston.remove(winston.transports.Console)
-// winston.add(winston.transports.Console, {
-//   colorize: true,
-//   timestamp: function () {
-//     var date = new Date()
-//     return (
-//       date.getMonth() +
-//       1 +
-//       '/' +
-//       date.getDate() +
-//       ' ' +
-//       date.toTimeString().substr(0, 8) +
-//       ' [' +
-//       global.process.pid +
-//       ']'
-//     )
-//   },
-//   level: global.env === 'production' ? 'info' : 'verbose'
-// })
-
-// winston.add(winston.transports.File, {
-//   filename: 'logs/error.log',
-//   level: 'error'
-// })
-
-// winston.err = function (err) {
-//   winston.error(err.stack)
-// }
 
 if (!process.env.FORK) {
   winston.info('    .                              .o8                     oooo')
@@ -77,8 +46,7 @@ if (!process.env.FORK) {
   winston.info('Server Time: ' + new Date())
 }
 
-var configFile = path.join(__dirname, '/config.json')
-var configExists
+let configFile = path.join(__dirname, '/config.json')
 
 nconf.defaults({
   base_dir: __dirname,
@@ -92,10 +60,10 @@ if (nconf.get('config')) {
   configFile = path.resolve(__dirname, nconf.get('config'))
 }
 
-configExists = fs.existsSync(configFile)
+const configExists = fs.existsSync(configFile)
 
 function launchInstallServer () {
-  var ws = require('./src/webserver')
+  const ws = require('./src/webserver')
   ws.installServer(function () {
     return winston.info('Trudesk Install Server Running...')
   })
@@ -114,7 +82,7 @@ function loadConfig () {
 function start () {
   if (!isDocker) loadConfig()
 
-  var _db = require('./src/database')
+  const _db = require('./src/database')
 
   _db.init(function (err, db) {
     if (err) {
@@ -130,7 +98,7 @@ function start () {
 }
 
 function launchServer (db) {
-  var ws = require('./src/webserver')
+  const ws = require('./src/webserver')
   ws.init(db, function (err) {
     if (err) {
       winston.error(err)
@@ -160,7 +128,7 @@ function launchServer (db) {
         },
         function (next) {
           // Start Check Mail
-          var settingSchema = require('./src/models/setting')
+          const settingSchema = require('./src/models/setting')
           settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
               winston.warn(err)
@@ -171,7 +139,7 @@ function launchServer (db) {
               settingSchema.getSettings(function (err, settings) {
                 if (err) return next(err)
 
-                var mailCheck = require('./src/mailer/mailCheck')
+                const mailCheck = require('./src/mailer/mailCheck')
                 winston.debug('Starting MailCheck...')
                 mailCheck.init(settings)
 
@@ -195,9 +163,9 @@ function launchServer (db) {
         //   return next()
         // },
         function (next) {
-          var cache = require('./src/cache/cache')
+          const cache = require('./src/cache/cache')
           if (isDocker) {
-            var envDocker = {
+            cache.env = {
               TRUDESK_DOCKER: process.env.TRUDESK_DOCKER,
               TD_MONGODB_SERVER: process.env.TD_MONGODB_SERVER,
               TD_MONGODB_PORT: process.env.TD_MONGODB_PORT,
@@ -206,8 +174,6 @@ function launchServer (db) {
               TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE,
               TD_MONGODB_URI: process.env.TD_MONGODB_URI
             }
-
-            cache.env = envDocker
           }
 
           cache.init()
@@ -215,7 +181,7 @@ function launchServer (db) {
           return next()
         },
         function (next) {
-          var taskRunner = require('./src/taskrunner')
+          const taskRunner = require('./src/taskrunner')
           return taskRunner.init(next)
         }
       ],
@@ -236,7 +202,7 @@ function dbCallback (err, db) {
   }
 
   if (isDocker) {
-    var s = require('./src/models/setting')
+    const s = require('./src/models/setting')
     s.getSettingByName('installed', function (err, installed) {
       if (err) return start()
 

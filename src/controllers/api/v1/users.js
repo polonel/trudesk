@@ -12,16 +12,16 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var _ = require('lodash')
-var winston = require('winston')
-var permissions = require('../../../permissions')
-var emitter = require('../../../emitter')
-var UserSchema = require('../../../models/user')
-var groupSchema = require('../../../models/group')
-var notificationSchema = require('../../../models/notification')
+const async = require('async')
+const _ = require('lodash')
+const winston = require('winston')
+const permissions = require('../../../permissions')
+const emitter = require('../../../emitter')
+const UserSchema = require('../../../models/user')
+const groupSchema = require('../../../models/group')
+const notificationSchema = require('../../../models/notification')
 
-var apiUsers = {}
+const apiUsers = {}
 
 /**
  * @api {get} /api/v1/users Gets users with query string
@@ -44,14 +44,14 @@ var apiUsers = {}
  }
  */
 apiUsers.getWithLimit = function (req, res) {
-  var limit = 10
+  let limit = 10
   if (!_.isUndefined(req.query.limit)) {
     limit = parseInt(req.query.limit)
   }
-  var page = parseInt(req.query.page)
-  var search = req.query.search
+  const page = parseInt(req.query.page)
+  const search = req.query.search
 
-  var obj = {
+  const obj = {
     limit: limit,
     page: page,
     search: search
@@ -65,7 +65,7 @@ apiUsers.getWithLimit = function (req, res) {
         })
       },
       function (users, callback) {
-        var result = []
+        const result = []
 
         async.waterfall(
           [
@@ -79,9 +79,9 @@ apiUsers.getWithLimit = function (req, res) {
               async.eachSeries(
                 users,
                 function (u, c) {
-                  var user = u.toObject()
+                  const user = u.toObject()
 
-                  var groups = _.filter(grps, function (g) {
+                  const groups = _.filter(grps, function (g) {
                     return _.some(g.members, function (m) {
                       return m._id.toString() === user._id.toString()
                     })
@@ -148,16 +148,16 @@ apiUsers.getWithLimit = function (req, res) {
  }
  */
 apiUsers.create = function (req, res) {
-  var response = {}
+  const response = {}
   response.success = true
 
-  var postData = req.body
+  const postData = req.body
 
   if (_.isUndefined(postData) || !_.isObject(postData)) {
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
   }
 
-  var propCheck = ['aUsername', 'aPass', 'aPassConfirm', 'aFullname', 'aEmail', 'aRole']
+  const propCheck = ['aUsername', 'aPass', 'aPassConfirm', 'aFullname', 'aEmail', 'aRole']
 
   if (
     !_.every(propCheck, function (x) {
@@ -174,10 +174,10 @@ apiUsers.create = function (req, res) {
   if (postData.aPass !== postData.aPassConfirm)
     return res.status(400).json({ success: false, error: 'Invalid Password Match' })
 
-  var Chance = require('chance')
-  var chance = new Chance()
+  const Chance = require('chance')
+  const chance = new Chance()
 
-  var account = new UserSchema({
+  const account = new UserSchema({
     username: postData.aUsername,
     password: postData.aPass,
     fullname: postData.aFullname,
@@ -204,7 +204,7 @@ apiUsers.create = function (req, res) {
       response.account = populatedAccount.toObject()
       delete response.account.password
 
-      var groups = []
+      const groups = []
 
       async.each(
         postData.aGrps,
@@ -262,17 +262,19 @@ apiUsers.create = function (req, res) {
  }
  */
 apiUsers.createPublicAccount = function (req, res) {
-  var response = {}
+  const SettingSchema = require('../../../models/setting')
+  const SettingsUtil = require('../../../settings/settingsUtil')
+
+  const response = {}
   response.success = true
-  var postData = req.body
+  const postData = req.body
   if (!_.isObject(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-  var user, group
+  let user, group
 
   async.waterfall(
     [
       function (next) {
-        var SettingSchema = require('../../../models/setting')
         SettingSchema.getSetting('role:user:default', function (err, roleDefault) {
           if (err) return next(err)
           if (!roleDefault) {
@@ -284,7 +286,7 @@ apiUsers.createPublicAccount = function (req, res) {
         })
       },
       function (roleDefault, next) {
-        var UserSchema = require('../../../models/user')
+        const UserSchema = require('../../../models/user')
         user = new UserSchema({
           username: postData.user.email,
           password: postData.user.password,
@@ -300,7 +302,7 @@ apiUsers.createPublicAccount = function (req, res) {
         })
       },
       function (savedUser, next) {
-        var GroupSchema = require('../../../models/group')
+        const GroupSchema = require('../../../models/group')
         group = new GroupSchema({
           name: savedUser.email,
           members: [savedUser._id],
@@ -360,14 +362,14 @@ apiUsers.createPublicAccount = function (req, res) {
  }
  */
 apiUsers.update = function (req, res) {
-  var username = req.params.username
+  const username = req.params.username
   if (_.isNull(username) || _.isUndefined(username))
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-  var data = req.body
+  const data = req.body
   // saveGroups - Profile saving where groups are not sent
-  var saveGroups = !_.isUndefined(data.saveGroups) ? data.saveGroups : true
-  var obj = {
+  const saveGroups = !_.isUndefined(data.saveGroups) ? data.saveGroups : true
+  const obj = {
     fullname: data.aFullname,
     title: data.aTitle,
     password: data.aPass,
@@ -413,7 +415,7 @@ apiUsers.update = function (req, res) {
 
             nUser.populate('role', function (err, populatedUser) {
               if (err) return done(err)
-              var resUser = stripUserFields(populatedUser)
+              const resUser = stripUserFields(populatedUser)
 
               return done(null, resUser)
             })
@@ -424,7 +426,7 @@ apiUsers.update = function (req, res) {
         if (!saveGroups) {
           groupSchema.getAllGroupsOfUser(obj._id, done)
         } else {
-          var userGroups = []
+          const userGroups = []
           groupSchema.getAllGroups(function (err, groups) {
             if (err) return done(err)
             async.each(
@@ -480,7 +482,7 @@ apiUsers.update = function (req, res) {
         return res.status(400).json({ success: false, error: err })
       }
 
-      var user = results.user.toJSON()
+      const user = results.user.toJSON()
       user.groups = results.groups.map(function (g) {
         return { _id: g._id, name: g.name }
       })
@@ -516,14 +518,14 @@ apiUsers.update = function (req, res) {
  }
  */
 apiUsers.updatePreferences = function (req, res) {
-  var username = req.params.username
+  const username = req.params.username
   if (typeof username === 'undefined') {
     return res.status(400).json({ success: false, error: 'Invalid Request' })
   }
 
-  var data = req.body
-  var preference = data.preference
-  var value = data.value
+  const data = req.body
+  const preference = data.preference
+  const value = data.value
 
   UserSchema.getUserByUsername(username, function (err, user) {
     if (err) {
@@ -543,7 +545,7 @@ apiUsers.updatePreferences = function (req, res) {
         return res.status(400).json({ success: false, error: err })
       }
 
-      var resUser = stripUserFields(u)
+      const resUser = stripUserFields(u)
 
       return res.json({ success: true, user: resUser })
     })
@@ -571,7 +573,7 @@ apiUsers.updatePreferences = function (req, res) {
  }
  */
 apiUsers.deleteUser = function (req, res) {
-  var username = req.params.username
+  const username = req.params.username
 
   if (_.isUndefined(username) || _.isNull(username)) return res.status(400).json({ error: 'Invalid Request' })
 
@@ -602,29 +604,29 @@ apiUsers.deleteUser = function (req, res) {
         })
       },
       function (user, cb) {
-        var ticketSchema = require('../../../models/ticket')
+        const ticketSchema = require('../../../models/ticket')
         ticketSchema.find({ owner: user._id }, function (err, tickets) {
           if (err) return cb(err)
 
-          var hasTickets = _.size(tickets) > 0
+          const hasTickets = _.size(tickets) > 0
           return cb(null, hasTickets, user)
         })
       },
       function (hasTickets, user, cb) {
-        var conversationSchema = require('../../../models/chat/conversation')
+        const conversationSchema = require('../../../models/chat/conversation')
         conversationSchema.getConversationsWithLimit(user._id, 10, function (err, conversations) {
           if (err) return cb(err)
 
-          var hasConversations = _.size(conversations) > 0
+          const hasConversations = _.size(conversations) > 0
           return cb(null, hasTickets, hasConversations, user)
         })
       },
       function (hasTickets, hasConversations, user, cb) {
-        var ticketSchema = require('../../../models/ticket')
+        const ticketSchema = require('../../../models/ticket')
         ticketSchema.find({ assignee: user._id }, function (err, tickets) {
           if (err) return cb(err)
 
-          var isAssignee = _.size(tickets) > 0
+          const isAssignee = _.size(tickets) > 0
           return cb(null, hasTickets, hasConversations, isAssignee, user)
         })
       },
@@ -675,7 +677,7 @@ apiUsers.deleteUser = function (req, res) {
  }
  */
 apiUsers.enableUser = function (req, res) {
-  var username = req.params.username
+  const username = req.params.username
   if (_.isUndefined(username)) return res.status(400).json({ error: 'Invalid Request' })
 
   UserSchema.getUserByUsername(username, function (err, user) {
@@ -727,10 +729,10 @@ apiUsers.enableUser = function (req, res) {
  }
  */
 apiUsers.single = function (req, res) {
-  var username = req.params.username
+  const username = req.params.username
   if (_.isUndefined(username)) return res.status(400).json({ error: 'Invalid Request.' })
 
-  var response = {
+  const response = {
     success: true,
     groups: []
   }
@@ -824,7 +826,7 @@ apiUsers.getNotifications = function (req, res) {
  }
  */
 apiUsers.generateApiKey = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
   if (!req.user.role.isAdmin && req.user._id.toString() !== id)
     return res.status(401).json({ success: false, error: 'Unauthorized' })
@@ -862,7 +864,7 @@ apiUsers.generateApiKey = function (req, res) {
  }
  */
 apiUsers.removeApiKey = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
 
   if (!req.user.isAdmin && req.user._id.toString() !== id) return res.status(401).json({ success: 'Unauthorized' })
@@ -898,7 +900,7 @@ apiUsers.removeApiKey = function (req, res) {
  }
  */
 apiUsers.generateL2Auth = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (id.toString() !== req.user._id.toString()) {
     return res.status(400).json({ success: false, error: 'Invalid Account Owner!' })
   }
@@ -935,7 +937,7 @@ apiUsers.generateL2Auth = function (req, res) {
  }
  */
 apiUsers.removeL2Auth = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (id.toString() !== req.user._id.toString()) {
     return res.status(400).json({ success: false, error: 'Invalid Account Owner!' })
   }
@@ -974,7 +976,7 @@ apiUsers.removeL2Auth = function (req, res) {
  */
 
 apiUsers.checkEmail = function (req, res) {
-  var email = req.body.email
+  const email = req.body.email
 
   if (_.isUndefined(email) || _.isNull(email)) {
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
@@ -1015,7 +1017,7 @@ apiUsers.getAssingees = function (req, res) {
   UserSchema.getAssigneeUsers(function (err, users) {
     if (err) return res.status(400).json({ error: 'Invalid Request' })
 
-    var strippedUsers = []
+    const strippedUsers = []
 
     async.each(
       users,
@@ -1034,11 +1036,11 @@ apiUsers.getAssingees = function (req, res) {
 
 apiUsers.getGroups = function (req, res) {
   if (req.user.role.isAdmin || req.user.role.isAgent) {
-    var departmentSchema = require('../../../models/department')
+    const departmentSchema = require('../../../models/department')
     departmentSchema.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
       if (err) return res.status(400).json({ success: false, error: err.message })
 
-      var mappedGroups = groups.map(function (g) {
+      const mappedGroups = groups.map(function (g) {
         return g._id
       })
 
@@ -1051,7 +1053,7 @@ apiUsers.getGroups = function (req, res) {
     groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, groups) {
       if (err) return res.status(400).json({ success: false, error: err.message })
 
-      var mappedGroups = groups.map(function (g) {
+      const mappedGroups = groups.map(function (g) {
         return g._id
       })
 
@@ -1061,10 +1063,10 @@ apiUsers.getGroups = function (req, res) {
 }
 
 apiUsers.uploadProfilePic = function (req, res) {
-  var fs = require('fs')
-  var path = require('path')
-  var Busboy = require('busboy')
-  var busboy = new Busboy({
+  const fs = require('fs')
+  const path = require('path')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
     headers: req.headers,
     limits: {
       files: 1,
@@ -1072,13 +1074,15 @@ apiUsers.uploadProfilePic = function (req, res) {
     }
   })
 
-  var object = {}
-  var error
+  const object = {}
+  let error
 
   if (_.isUndefined(req.params.username)) return res.status(400).json({ error: 'Invalid Username' })
   object.username = req.params.username
 
-  busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+  busboy.on('file', function (name, file, info) {
+    const mimetype = info.mimeType
+
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
@@ -1088,7 +1092,7 @@ apiUsers.uploadProfilePic = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(__dirname, '../../../../public/uploads/users')
+    const savePath = path.join(__dirname, '../../../../public/uploads/users')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
     object.filePath = path.join(savePath, 'aProfile_' + object.username + '.jpg')
