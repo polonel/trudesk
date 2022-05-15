@@ -92,15 +92,15 @@
                                         </div>
                                         <div class="uk-margin-medium-bottom">
                                             <label for="aPass">Password</label>
-                                            <input id="aPass" class="md-input" name="aPass" type="password" />
+                                            <input id="aPass" class="md-input" name="aPass" type="password" data-validation="length" data-validation-length="max255" data-validation-error-msg="Password too long. Maximum length is 25 characters." />
                                         </div>
                                         <div class="uk-margin-medium-bottom">
                                             <label for="aPassConfirm">Confirm Password</label>
-                                            <input id="aPassConfirm" class="md-input" name="aPassConfirm" type="password" />
+                                            <input id="aPassConfirm" class="md-input" name="aPassConfirm" type="password" data-validation="length" data-validation-length="max255" data-validation-error-msg="Password too long. Maximum length is 25 characters." />
                                         </div>
                                         <div class="uk-margin-medium-bottom">
                                             <label for="aEmail">Email</label>
-                                            <input id="aEmail" class="md-input" name="aEmail" type="email" value="{{data.account.email}}"/>
+                                            <input id="aEmail" class="md-input" name="aEmail" type="email" value="{{data.account.email}}" data-validation="email" data-validation-error-msg="Please enter a valid email address."/>
                                         </div>
                                         <div class="uk-clearfix">
                                             <button type="submit" class="uk-float-right md-btn md-btn-small md-btn-success md-btn-wave-light" ng-click="updateUser($event)">Save</button>

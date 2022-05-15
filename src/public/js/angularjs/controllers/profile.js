@@ -45,12 +45,31 @@ define([
         }, 0)
       }
 
+      function validateEmail (email) {
+        return String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          )
+      }
+
       $scope.updateUser = function ($event) {
         $event.preventDefault()
 
         var id = $('div[data-user_id]').attr('data-user_id')
         if (_.isUndefined(id)) return
         var data = getFormData()
+
+        if (
+          data.fullname.toString().length > 25 ||
+          data.password.toString().length > 255 ||
+          data.cPassword.toString().length > 255 ||
+          data.email.toString().length > 255 ||
+          !validateEmail(data.email.toString())
+        ) {
+          helpers.UI.showSnackbar('Form data invalid.', true)
+          return false
+        }
 
         $http
           .put('/api/v1/users/' + data.username, {

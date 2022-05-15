@@ -100,6 +100,8 @@ userSchema.pre('save', function (next) {
     return next()
   }
 
+  if (user.password.toString().length > 255) user.password = utils.applyMaxTextLength(user.password)
+
   bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
     if (err) return next(err)
 
