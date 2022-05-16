@@ -308,7 +308,18 @@ apiMessages.deleteConversation = function (req, res) {
     convo.save(function (err, sConvo) {
       if (err) return res.status(400).json({ success: false, error: err.message })
 
-      return res.json({ success: true, conversation: sConvo })
+      const cleanConvo = sConvo.toObject()
+      cleanConvo.participants.forEach(function (p) {
+        delete p._id
+        delete p.id
+        delete p.role
+      })
+
+      cleanConvo.userMeta.forEach(function (meta) {
+        delete meta.userId
+      })
+
+      return res.json({ success: true, conversation: cleanConvo })
     })
   })
 }
