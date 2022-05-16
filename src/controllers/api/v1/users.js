@@ -263,7 +263,6 @@ apiUsers.create = function (req, res) {
  */
 apiUsers.createPublicAccount = function (req, res) {
   const SettingSchema = require('../../../models/setting')
-  const SettingsUtil = require('../../../settings/settingsUtil')
 
   const response = {}
   response.success = true
@@ -274,6 +273,17 @@ apiUsers.createPublicAccount = function (req, res) {
 
   async.waterfall(
     [
+      function (next) {
+        SettingSchema.getSetting('allowUserRegistration:enable', function (err, allowUserRegistration) {
+          if (err) return next(err)
+          if (!allowUserRegistration) {
+            winston.warn('Public account creation was attempted while disabled!')
+            return next({ message: 'Public account creation is disabled.' })
+          }
+
+          return next()
+        })
+      },
       function (next) {
         SettingSchema.getSetting('role:user:default', function (err, roleDefault) {
           if (err) return next(err)
