@@ -49,11 +49,13 @@ module.exports = function () {
             }
 
             if (!user || user.deleted) {
-              return done(null, false, req.flash('loginMessage', 'No User Found.'))
+              req.flash('loginMessage', '')
+              return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
             }
 
             if (!User.validate(password, user.password)) {
-              return done(null, false, req.flash('loginMessage', 'Incorrect Password.'))
+              req.flash('loginMessage', '')
+              return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
             }
 
             req.user = user

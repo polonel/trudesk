@@ -19,6 +19,14 @@ const passport = require('passport')
 const winston = require('winston')
 const pkg = require('../../package')
 const xss = require('xss')
+const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
+
+const limiterSlowBruteByIP = new RateLimiterMemory({
+  keyPrefix: 'login_fail_ip_per_day',
+  points: 15,
+  duration: 60 * 60 * 24,
+  blockDuration: 60 * 60
+})
 
 const mainController = {}
 
@@ -97,34 +105,62 @@ mainController.dashboard = function (req, res) {
   return res.render('dashboard', content)
 }
 
-mainController.loginPost = function (req, res, next) {
-  passport.authenticate('local', function (err, user) {
-    if (err) {
-      winston.error(err)
-      return next(err)
-    }
-    if (!user) return res.redirect('/')
+mainController.loginPost = async function (req, res, next) {
+  const ipAddress = req.ip
+  const [resEmailAndIP] = await Promise.all([limiterSlowBruteByIP.get(ipAddress)])
 
-    let redirectUrl = '/dashboard'
+  let retrySecs = 0
+  if (resEmailAndIP !== null && resEmailAndIP.consumedPoints > 2) {
+    retrySecs = Math.round(resEmailAndIP.msBeforeNext / 1000) || 1
+  }
 
-    if (req.session.redirectUrl) {
-      redirectUrl = req.session.redirectUrl
-      req.session.redirectUrl = null
-    }
-
-    if (req.user.role === 'user') {
-      redirectUrl = '/tickets'
-    }
-
-    req.logIn(user, function (err) {
+  if (retrySecs > 0) {
+    res.set('Retry-After', retrySecs.toString())
+    // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
+    res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
+  } else {
+    passport.authenticate('local', async function (err, user) {
       if (err) {
-        winston.debug(err)
+        winston.error(err)
         return next(err)
       }
+      if (!user) {
+        try {
+          await limiterSlowBruteByIP.consume(ipAddress)
+          return res.redirect('/')
+        } catch (rlRejected) {
+          if (rlRejected instanceof Error) throw rlRejected
+          else {
+            const timeout = String(Math.round(rlRejected.msBeforeNext / 1000)) || 1
+            res.set('Retry-After', timeout)
+            res.status(429).render('429', { timeout, layout: false })
+          }
+        }
+      }
 
-      return res.redirect(redirectUrl)
-    })
-  })(req, res, next)
+      if (user) {
+        let redirectUrl = '/dashboard'
+
+        if (req.session.redirectUrl) {
+          redirectUrl = req.session.redirectUrl
+          req.session.redirectUrl = null
+        }
+
+        if (req.user.role === 'user') {
+          redirectUrl = '/tickets'
+        }
+
+        req.logIn(user, function (err) {
+          if (err) {
+            winston.debug(err)
+            return next(err)
+          }
+
+          return res.redirect(redirectUrl)
+        })
+      }
+    })(req, res, next)
+  }
 }
 
 mainController.l2AuthPost = function (req, res, next) {

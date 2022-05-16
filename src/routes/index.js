@@ -455,6 +455,11 @@ function handleErrors (err, req, res) {
   const status = err.status || 500
   res.status(err.status)
 
+  if (status === 429) {
+    res.render('429', { layout: false })
+    return
+  }
+
   if (status === 500) {
     res.render('500', { layout: false })
     return

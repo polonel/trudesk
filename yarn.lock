@@ -3144,15 +3144,10 @@ async@1.4.2:
   resolved "https://registry.yarnpkg.com/async/-/async-1.4.2.tgz#6c9edcb11ced4f0dd2f2d40db0d49a109c088aab"
   integrity sha1-bJ7csRztTw3S8tQNsNSaEJwIiqs=
 
-async@3.2.3, async@^3.2.3:
+async@3.2.3, async@^3.0.0, async@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/async/-/async-3.2.3.tgz#ac53dafd3f4720ee9e8a160628f18ea91df196c9"
   integrity sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g==
-
-async@^1.4.0:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
-  integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
 
 async@^2.6.0:
   version "2.6.1"
@@ -10583,12 +10578,12 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-nconf@0.11.3:
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/nconf/-/nconf-0.11.3.tgz#4ee545019c53f1037ca57d696836feede3c49163"
-  integrity sha512-iYsAuDS9pzjVMGIzJrGE0Vk3Eh8r/suJanRAnWGBd29rVS2XtSgzcAo5l6asV3e4hH2idVONHirg1efoBOslBg==
+nconf@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/nconf/-/nconf-0.12.0.tgz#9cf70757aae4d440d43ed53c42f87da18471b8bf"
+  integrity sha512-T3fZPw3c7Dfrz8JBQEbEcZJ2s8f7cUMpKuyBtsGQe0b71pcXx6gNh4oti2xh5dxB+gO9ufNfISBlGvvWtfyMcA==
   dependencies:
-    async "^1.4.0"
+    async "^3.0.0"
     ini "^2.0.0"
     secure-keys "^1.0.0"
     yargs "^16.1.1"
@@ -12545,6 +12540,11 @@ range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
+
+rate-limiter-flexible@2.3.7:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-2.3.7.tgz#c23e1f818a1575f1de1fd173437f4072125e1615"
+  integrity sha512-dmc+J/IffVBvHlqq5/XClsdLdkOdQV/tjrz00cwneHUbEDYVrf4aUDAyR4Jybcf2+Vpn4NwoVrnnAyt/D0ciWw==
 
 raw-body@2.4.3:
   version "2.4.3"
