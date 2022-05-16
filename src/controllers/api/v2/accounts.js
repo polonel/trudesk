@@ -246,6 +246,8 @@ accountsApi.update = function (req, res) {
   var postData = req.body
   if (!username || !postData) return apiUtil.sendApiError_InvalidPostData(res)
 
+  let passwordUpdated = false
+
   async.series(
     {
       user: function (next) {
@@ -263,6 +265,7 @@ accountsApi.update = function (req, res) {
           ) {
             if (postData.password === postData.passwordConfirm) {
               user.password = postData.password
+              passwordUpdated = true
             }
           }
 
@@ -389,7 +392,7 @@ accountsApi.update = function (req, res) {
         Department.getUserDepartments(postData._id, next)
       }
     },
-    function (err, results) {
+    async function (err, results) {
       if (err) return apiUtil.sendApiError(res, 500, err.message)
 
       var user = results.user.toJSON()
@@ -405,6 +408,11 @@ accountsApi.update = function (req, res) {
         user.departments = results.departments.map(function (d) {
           return { _id: d._id, name: d.name }
         })
+      }
+
+      if (passwordUpdated) {
+        const Session = require('../../../models/session')
+        await Session.destroy(user._id)
       }
 
       return apiUtil.sendApiSuccess(res, { user: user })

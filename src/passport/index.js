@@ -12,14 +12,14 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var passport = require('passport')
-var Local = require('passport-local').Strategy
-var TotpStrategy = require('passport-totp').Strategy
-var JwtStrategy = require('passport-jwt').Strategy
-var ExtractJwt = require('passport-jwt').ExtractJwt
-var base32 = require('thirty-two')
-var User = require('../models/user')
-var nconf = require('nconf')
+const passport = require('passport')
+const Local = require('passport-local').Strategy
+const TotpStrategy = require('passport-totp').Strategy
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt
+const base32 = require('thirty-two')
+const User = require('../models/user')
+const nconf = require('nconf')
 
 module.exports = function () {
   passport.serializeUser(function (user, done) {
@@ -48,12 +48,7 @@ module.exports = function () {
               return done(err)
             }
 
-            if (!user || user.deleted) {
-              req.flash('loginMessage', '')
-              return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
-            }
-
-            if (!User.validate(password, user.password)) {
+            if (!user || user.deleted || !User.validate(password, user.password)) {
               req.flash('loginMessage', '')
               return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
             }
@@ -100,15 +95,6 @@ module.exports = function () {
         if (jwtPayload.exp < Date.now() / 1000) return done({ type: 'exp' })
 
         return done(null, jwtPayload.user)
-
-        // User.findOne({ _id: jwtPayload.user._id }, function (err, user) {
-        //   if (err) return done(err)
-        //   if (user) {
-        //     return done(null, jwtPayload.user)
-        //   } else {
-        //     return done(null, false)
-        //   }
-        // })
       }
     )
   )

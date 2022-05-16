@@ -369,6 +369,8 @@ apiUsers.update = function (req, res) {
   const data = req.body
   // saveGroups - Profile saving where groups are not sent
   const saveGroups = !_.isUndefined(data.saveGroups) ? data.saveGroups : true
+  let passwordUpdated = false
+
   const obj = {
     fullname: data.aFullname,
     title: data.aTitle,
@@ -402,6 +404,7 @@ apiUsers.update = function (req, res) {
           ) {
             if (obj.password === obj.passconfirm) {
               user.password = obj.password
+              passwordUpdated = true
             }
           }
 
@@ -476,7 +479,7 @@ apiUsers.update = function (req, res) {
         }
       }
     },
-    function (err, results) {
+    async function (err, results) {
       if (err) {
         winston.debug(err)
         return res.status(400).json({ success: false, error: err })
@@ -486,6 +489,11 @@ apiUsers.update = function (req, res) {
       user.groups = results.groups.map(function (g) {
         return { _id: g._id, name: g.name }
       })
+
+      if (passwordUpdated) {
+        const Session = require('../../../models/session')
+        await Session.destroy(user._id)
+      }
 
       return res.json({ success: true, user: user })
     }

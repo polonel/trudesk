@@ -189,10 +189,12 @@ mainController.l2AuthPost = function (req, res, next) {
 }
 
 mainController.logout = function (req, res) {
-  req.logout()
   req.session.l2auth = null
-  req.session.destroy()
-  return res.redirect('/')
+  req.session.destroy(function () {
+    req.logout()
+    res.clearCookie('connect.sid')
+    return res.redirect('/')
+  })
 }
 
 mainController.forgotL2Auth = function (req, res) {
