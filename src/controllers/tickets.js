@@ -18,6 +18,7 @@ const groupSchema = require('../models/group')
 const departmentSchema = require('../models/department')
 const permissions = require('../permissions')
 const xss = require('xss')
+const fs = require('fs-extra')
 /**
  * @since 1.0
  * @author Chris Brame <polonel@gmail.com>
@@ -645,7 +646,6 @@ ticketsController.uploadImageMDE = function (req, res) {
 }
 
 ticketsController.uploadAttachment = function (req, res) {
-  const fs = require('fs-extra')
   const Busboy = require('busboy')
   const busboy = Busboy({
     headers: req.headers,
@@ -659,6 +659,8 @@ ticketsController.uploadAttachment = function (req, res) {
     ownerId: req.user._id
   }
   let error
+
+  const events = []
 
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'ticketId') object.ticketId = val
@@ -692,10 +694,10 @@ ticketsController.uploadAttachment = function (req, res) {
     }
 
     const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
-    const sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
+    let sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
 
     const ext = path.extname(sanitizedFilename)
-    const badExts = ['.html', '.htm', '.js']
+    const badExts = ['.html', '.htm', '.js', '.svg']
 
     if (badExts.includes(ext)) {
       error = {
@@ -709,12 +711,20 @@ ticketsController.uploadAttachment = function (req, res) {
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
     object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
-    object.filename = sanitizedFilename
+    object.filename = sanitizedFilename.replace('/', '').replace('..', '')
     object.mimetype = mimetype
 
     if (fs.existsSync(object.filePath)) {
+      const Chance = require('chance')
+      const chance = new Chance()
+      sanitizedFilename = chance.hash({ length: 15 }) + '-' + sanitizedFilename
+      object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+      object.filename = sanitizedFilename
+    }
+
+    if (fs.existsSync(object.filePath)) {
       error = {
-        status: 500,
+        status: 400,
         message: 'File already exists'
       }
 
@@ -723,7 +733,7 @@ ticketsController.uploadAttachment = function (req, res) {
 
     file.on('limit', function () {
       error = {
-        status: 500,
+        status: 400,
         message: 'File too large'
       }
 
@@ -733,54 +743,64 @@ ticketsController.uploadAttachment = function (req, res) {
       return file.resume()
     })
 
-    file.pipe(fs.createWriteStream(object.filePath))
+    const fstream = fs.createWriteStream(object.filePath)
+    events.push(function (cb) {
+      fstream.on('finish', cb)
+    })
+
+    file.pipe(fstream)
   })
 
   busboy.on('finish', function () {
-    if (error) return res.status(error.status).send(error.message)
+    async.series(events, function () {
+      if (error) return res.status(error.status).send(error.message)
 
-    if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
-      fs.unlinkSync(object.filePath)
-      return res.status(400).send('Invalid Form Data')
-    }
-
-    // Everything Checks out lets make sure the file exists and then add it to the attachments array
-    if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
-
-    ticketSchema.getTicketById(object.ticketId, function (err, ticket) {
-      if (err) {
-        winston.warn(err)
-        return res.status(500).send(err.message)
+      if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
+        fs.unlinkSync(object.filePath)
+        return res.status(400).send('Invalid Form Data')
       }
 
-      const attachment = {
-        owner: object.ownerId,
-        name: object.filename,
-        path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
-        type: object.mimetype
+      // Everything Checks out lets make sure the file exists and then add it to the attachments array
+      if (!fs.existsSync(object.filePath)) {
+        winston.warn('Unable to save file to disk: ' + object.filePath)
+        return res.status(500).send('File Failed to Save to Disk')
       }
-      ticket.attachments.push(attachment)
 
-      const historyItem = {
-        action: 'ticket:added:attachment',
-        description: 'Attachment ' + object.filename + ' was added.',
-        owner: object.ownerId
-      }
-      ticket.history.push(historyItem)
-
-      ticket.updated = Date.now()
-      ticket.save(function (err, t) {
+      ticketSchema.getTicketById(object.ticketId, function (err, ticket) {
         if (err) {
-          fs.unlinkSync(object.filePath)
           winston.warn(err)
           return res.status(500).send(err.message)
         }
 
-        const returnData = {
-          ticket: t
+        const attachment = {
+          owner: object.ownerId,
+          name: object.filename,
+          path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
+          type: object.mimetype
         }
+        ticket.attachments.push(attachment)
 
-        return res.json(returnData)
+        const historyItem = {
+          action: 'ticket:added:attachment',
+          description: 'Attachment ' + object.filename + ' was added.',
+          owner: object.ownerId
+        }
+        ticket.history.push(historyItem)
+
+        ticket.updated = Date.now()
+        ticket.save(function (err, t) {
+          if (err) {
+            fs.unlinkSync(object.filePath)
+            winston.warn(err)
+            return res.status(500).send(err.message)
+          }
+
+          const returnData = {
+            ticket: t
+          }
+
+          return res.json(returnData)
+        })
       })
     })
   })
