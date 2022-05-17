@@ -130,7 +130,6 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/users/:username', apiv1, canUser('accounts:view'), apiCtrl.users.single)
   router.put('/api/v1/users/:username', apiv1, canUser('accounts:update'), apiCtrl.users.update)
   router.get('/api/v1/users/:username/groups', apiv1, apiCtrl.users.getGroups)
-  router.post('/api/v1/users/:username/uploadprofilepic', apiv1, apiCtrl.users.uploadProfilePic)
   router.put('/api/v1/users/:username/updatepreferences', apiv1, apiCtrl.users.updatePreferences)
   router.get('/api/v1/users/:username/enable', apiv1, canUser('accounts:update'), apiCtrl.users.enableUser)
   router.delete('/api/v1/users/:username', apiv1, canUser('accounts:delete'), apiCtrl.users.deleteUser)

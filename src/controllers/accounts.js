@@ -19,6 +19,7 @@ const userSchema = require('../models/user')
 const permissions = require('../permissions')
 const emitter = require('../emitter')
 const xss = require('xss')
+const path = require('path')
 
 const accountsController = {}
 
@@ -462,6 +463,8 @@ accountsController.uploadImage = function (req, res) {
     }
   })
 
+  const allowedExts = ['.png', '.jpg', '.jpeg', '.gif']
+
   const object = {}
   let error
 
@@ -474,7 +477,8 @@ accountsController.uploadImage = function (req, res) {
     const filename = info.filename
     const mimetype = info.mimeType
     const ext = path.extname(filename)
-    if (mimetype.indexOf('image/') === -1 || ext === '.svg') {
+
+    if (!allowedExts.includes(ext)) {
       error = {
         status: 400,
         message: 'Invalid File Type'
@@ -486,8 +490,9 @@ accountsController.uploadImage = function (req, res) {
     const savePath = path.join(__dirname, '../../public/uploads/users')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
-    object.filePath = path.join(savePath, 'aProfile_' + object.username + path.extname(filename))
     object.filename = 'aProfile_' + object.username + path.extname(filename)
+    object.filename = object.filename.replace('/', '').replace('..', '')
+    object.filePath = path.join(savePath, object.filename)
     object.mimetype = mimetype
 
     file.on('limit', function () {
