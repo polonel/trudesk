@@ -59,11 +59,20 @@ class ServerSettingsController extends React.Component {
   restartServer () {
     this.setState({ restarting: true })
 
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     axios
-      .get('/api/v1/admin/restart')
+      .post(
+        '/api/v1/admin/restart',
+        {},
+        {
+          headers: {
+            'CSRF-TOKEN': token
+          }
+        }
+      )
       .catch(error => {
         helpers.hideLoader()
-        Log.error(error.response)
+        Log.error(error.responseText)
         Log.error('Unable to restart server. Server must run under PM2 and Account must have admin rights.')
         helpers.UI.showSnackbar('Unable to restart server. Are you an Administrator?', true)
       })

@@ -17,7 +17,9 @@
 var _ = require('lodash')
 var db = require('../database')
 var mongoose = require('mongoose')
-var winston = require('winston')
+var winston = require('../logger')
+const csrf = require('../dependencies/csrf-td')
+const viewdata = require('../helpers/viewdata')
 
 var middleware = {}
 
@@ -111,8 +113,8 @@ middleware.ensurel2Auth = function (req, res, next) {
 
 // Common
 middleware.loadCommonData = function (req, res, next) {
-  var viewdata = require('../helpers/viewdata')
   viewdata.getData(req, function (data) {
+    data.csrfToken = req.csrfToken
     req.viewdata = data
 
     return next()
@@ -249,6 +251,11 @@ middleware.isAgent = function (req, res, next) {
 }
 
 middleware.isSupport = middleware.isAgent
+
+middleware.csrfCheck = function (req, res, next) {
+  csrf.init()
+  return csrf.middleware(req, res, next)
+}
 
 module.exports = function () {
   return middleware

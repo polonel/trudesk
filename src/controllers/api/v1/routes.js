@@ -136,8 +136,8 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v1/users/:username', apiv1, canUser('accounts:delete'), apiCtrl.users.deleteUser)
   router.post('/api/v1/users/:id/generateapikey', apiv1, apiCtrl.users.generateApiKey)
   router.post('/api/v1/users/:id/removeapikey', apiv1, apiCtrl.users.removeApiKey)
-  router.post('/api/v1/users/:id/generatel2auth', apiv1, apiCtrl.users.generateL2Auth)
-  router.post('/api/v1/users/:id/removel2auth', apiv1, apiCtrl.users.removeL2Auth)
+  router.post('/api/v1/users/:id/generatel2auth', apiv1, middleware.csrfCheck, apiCtrl.users.generateL2Auth)
+  router.post('/api/v1/users/:id/removel2auth', apiv1, middleware.csrfCheck, apiCtrl.users.removeL2Auth)
 
   // Messages
   router.get('/api/v1/messages', apiv1, apiCtrl.messages.get)

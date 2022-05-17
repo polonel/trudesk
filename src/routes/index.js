@@ -13,7 +13,7 @@ const express = require('express')
 const router = express.Router()
 const controllers = require('../controllers')
 const path = require('path')
-const winston = require('winston')
+const winston = require('../logger')
 const packagejson = require('../../package.json')
 
 function mainRoutes (router, middleware, controllers) {
@@ -226,7 +226,13 @@ function mainRoutes (router, middleware, controllers) {
   )
 
   // Accounts
-  router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile)
+  router.get(
+    '/profile',
+    middleware.redirectToLogin,
+    middleware.csrfCheck,
+    middleware.loadCommonData,
+    controllers.accounts.profile
+  )
   router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getCustomers)
   router.get(
     '/accounts/customers',
@@ -328,6 +334,7 @@ function mainRoutes (router, middleware, controllers) {
     middleware.redirectToLogin,
     middleware.isAdmin,
     middleware.loadCommonData,
+    middleware.csrfCheck,
     controllers.settings.serverSettings
   )
   router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal)
@@ -365,7 +372,7 @@ function mainRoutes (router, middleware, controllers) {
     controllers.api.v1.plugins.removePlugin
   )
 
-  router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function (req, res) {
+  router.post('/api/v1/admin/restart', middleware.csrfCheck, middleware.api, middleware.isAdmin, function (req, res) {
     if (process.env.DISABLE_RESTART) return res.json({ success: true })
 
     const pm2 = require('pm2')

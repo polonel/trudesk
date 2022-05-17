@@ -24,10 +24,12 @@ define([
 ], function (angular, _, $, helpers, UIKit) {
   return angular
     .module('trudesk.controllers.profile', ['trudesk.services.session'])
-    .controller('profileCtrl', function (SessionService, $scope, $window, $http, $log, $timeout) {
+    .controller('profileCtrl', function (SessionService, $scope, $window, $document, $http, $log, $timeout) {
+      var otpEnabled = false
       $scope.init = function () {
         // Fix Inputs if input is preloaded with a value
         fixInputLabels()
+        otpEnabled = $scope.otpEnabled
       }
 
       function fixInputLabels () {
@@ -164,7 +166,7 @@ define([
         var $qrCode = $totpSettings.find('#totp-qrcode')
         event.preventDefault()
 
-        if ($scope.otpEnabled) {
+        if (otpEnabled) {
           UIKit.modal.confirm(
             '<span style="font-size: 16px; color: #FF9800;">WARNING: Disabling Two Factor Authentication will remove your shared secret. A new key will generate when re-enabled.</span><br />' +
               'Are you sure you want to disable two factor authentication?',
@@ -180,7 +182,7 @@ define([
                   $qrCode.find('canvas').remove()
                   $tOTPKey.val()
                   $timeout(function () {
-                    $scope.otpEnabled = false
+                    otpEnabled = false
                   }, 0)
                 })
               })
@@ -198,7 +200,7 @@ define([
             }
 
             $timeout(function () {
-              $scope.otpEnabled = true
+              otpEnabled = true
               angular.element(event.target).prop('checked', true)
             }, 0)
 
@@ -234,29 +236,39 @@ define([
           return helpers.UI.showSnackbar('Unable to get user ID.', true)
         }
 
-        $http.post('/api/v1/users/' + id + '/generatel2auth').then(
-          function success (response) {
-            if (!response.data.success) {
-              helpers.UI.showSnackbar('Error: Unknown error has occurred.', true)
-              if (_.isFunction(completed)) {
-                return completed('Error: Unknown error has occurred.')
-              }
-            } else {
-              // Success
-              if (_.isFunction(completed)) {
-                completed(null, response.data.generatedKey)
+        $http
+          .post(
+            '/api/v1/users/' + id + '/generatel2auth',
+            {},
+            {
+              headers: {
+                'CSRF-TOKEN': $document[0].querySelector('meta[name="csrf-token"]').getAttribute('content')
               }
             }
-          },
-          function error (err) {
-            $log.error('[trudesk:profile:generateL2Auth]')
-            $log.error(err)
-            helpers.UI.showSnackbar('Error: Could not generate new secret! Check Console', true)
-            if (_.isFunction(completed)) {
-              completed(err)
+          )
+          .then(
+            function success (response) {
+              if (!response.data.success) {
+                helpers.UI.showSnackbar('Error: Unknown error has occurred.', true)
+                if (_.isFunction(completed)) {
+                  return completed('Error: Unknown error has occurred.')
+                }
+              } else {
+                // Success
+                if (_.isFunction(completed)) {
+                  completed(null, response.data.generatedKey)
+                }
+              }
+            },
+            function error (err) {
+              $log.error('[trudesk:profile:generateL2Auth]')
+              $log.error(err)
+              helpers.UI.showSnackbar('Error: Could not generate new secret! Check Console', true)
+              if (_.isFunction(completed)) {
+                completed(err)
+              }
             }
-          }
-        )
+          )
       }
 
       function removeL2Auth (completed) {
@@ -266,7 +278,15 @@ define([
         }
 
         $http
-          .post('/api/v1/users/' + id + '/removel2auth')
+          .post(
+            '/api/v1/users/' + id + '/removel2auth',
+            {},
+            {
+              headers: {
+                'CSRF-TOKEN': $document[0].querySelector('meta[name="csrf-token"]').getAttribute('content')
+              }
+            }
+          )
           .success(function () {
             if (_.isFunction(completed)) {
               completed()

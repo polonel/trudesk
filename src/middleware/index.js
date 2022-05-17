@@ -99,6 +99,9 @@ module.exports = function (app, db, callback) {
 
         // CORS
         app.use(allowCrossDomain)
+        const csrf = require('../dependencies/csrf-td')
+        csrf.init()
+        app.use(csrf.generateToken)
 
         // Maintenance Mode
         app.use(function (req, res, next) {
