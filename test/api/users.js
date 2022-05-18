@@ -32,8 +32,8 @@ describe('api/users.js', function () {
   it('should create new user', function (done) {
     var user = {
       aUsername: 'new.user.1',
-      aPass: 'password',
-      aPassConfirm: 'password',
+      aPass: 'SecureP@ssW0rd',
+      aPassConfirm: 'SecureP@ssW0rd',
       aFullname: 'New User',
       aEmail: 'new.user.1@trudesk.io',
       aRole: global.userRoleId,
