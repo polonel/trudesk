@@ -173,6 +173,7 @@ function allowCrossDomain (req, res, next) {
     'Access-Control-Allow-Headers',
     'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken,X-RToken,X-Token'
   )
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'none';")
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200)
