@@ -228,7 +228,7 @@ accountsApi.update = async function (req, res) {
     let user = await User.getByUsername(username)
     if (!user) throw new Error('Invalid User')
 
-    postData._id = user._id
+    postData._id = user._id.toString()
     if (
       !_.isUndefined(postData.password) &&
       !_.isEmpty(postData.password) &&

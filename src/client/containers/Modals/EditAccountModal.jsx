@@ -82,7 +82,7 @@ class EditAccountModal extends React.Component {
   onImageUploadChanged (e) {
     const self = e.target
     const that = this
-    let formData = new FormData()
+    const formData = new FormData()
     formData.append('username', this.props.user.username)
     formData.append('_id', this.props.user._id)
     formData.append('image', self.files[0])
@@ -139,9 +139,7 @@ class EditAccountModal extends React.Component {
       return { text: role.name, value: role._id }
     })
 
-    let departments, groups, teams
-
-    teams = this.props.teams
+    const teams = this.props.teams
       ? this.props.teams
           .map(team => {
             return { text: team.get('name'), value: team.get('_id') }
@@ -149,7 +147,7 @@ class EditAccountModal extends React.Component {
           .toArray()
       : []
 
-    departments = this.props.departments
+    const departments = this.props.departments
       ? this.props.departments
           .map(department => {
             return { text: department.get('name'), value: department.get('_id') }
@@ -157,7 +155,7 @@ class EditAccountModal extends React.Component {
           .toArray()
       : []
 
-    groups = this.props.groups
+    const groups = this.props.groups
       ? this.props.groups
           .map(group => {
             return { text: group.get('name'), value: group.get('_id') }
