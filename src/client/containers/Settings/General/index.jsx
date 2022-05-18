@@ -94,17 +94,6 @@ class GeneralSettings extends React.Component {
       />
     )
 
-    const AllowUserRegistration = (
-      <EnableSwitch
-        stateName='allowUserRegistration'
-        label='Enable'
-        checked={this.getSettingsValue('allowUserRegistration')}
-        onChange={e => {
-          this.updateSetting('allowUserRegistration', 'allowUserRegistration:enable', e.target.checked)
-        }}
-      />
-    )
-
     return (
       <div className={active ? 'active' : 'hide'}>
         <SettingItem
@@ -184,11 +173,6 @@ class GeneralSettings extends React.Component {
             </ZoneBox>
           </Zone>
         </SettingItem>
-        <SettingItem
-          title='Allow User Registration'
-          subtitle='Allow users to create accounts on the login screen.'
-          component={AllowUserRegistration}
-        />
       </div>
     )
   }

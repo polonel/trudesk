@@ -17,6 +17,7 @@ const _ = require('lodash')
 const winston = require('../../logger')
 const moment = require('moment')
 const settingSchema = require('../../models/setting')
+const settingsUtil = require('../../settings/settingsUtil')
 
 const viewController = {}
 const viewdata = {}
@@ -356,11 +357,19 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        const settingsUtil = require('../../settings/settingsUtil')
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
           viewdata.hasThirdParty = res.data.settings.hasThirdParty
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.accountsPasswordComplexity = res.data.settings.accountsPasswordComplexity.value
 
           return callback()
         })

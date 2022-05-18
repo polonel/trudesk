@@ -203,9 +203,9 @@ class CreateAccountModal extends React.Component {
                   name={'password_confirmation'}
                   value={this.password}
                   onChange={e => this.onInputChanged(e, 'password')}
-                  data-validation={'length'}
-                  data-validation-length={'min6'}
-                  data-validation-error-msg={'Password must contain at least 6 characters.'}
+                  data-validation={this.props.common.accountsPasswordComplexity ? 'length' : 'none'}
+                  data-validation-length={'min8'}
+                  data-validation-error-msg={'Password must contain at least 8 characters.'}
                 />
               </div>
               <div className='uk-float-left uk-width-1-2'>

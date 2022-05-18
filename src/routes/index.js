@@ -283,6 +283,7 @@ function mainRoutes (router, middleware, controllers) {
 
   router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general)
   router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general)
+  router.get('/settings/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.accounts)
   router.get(
     '/settings/appearance',
     middleware.redirectToLogin,

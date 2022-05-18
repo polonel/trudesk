@@ -91,8 +91,13 @@ define([
             })
           })
           .error(function (e) {
-            $log.log('[trudesk:profile:updateUser] - ' + e.error.message)
-            helpers.UI.showSnackbar('Error ' + e.error.message, true)
+            if (e.error.message) {
+              $log.log('[trudesk:profile:updateUser] - ' + e.error.message)
+              helpers.UI.showSnackbar('Error ' + e.error.message, true)
+            } else {
+              $log.log('[trudesk:profile:updateUser] - ' + e.error)
+              helpers.UI.showSnackbar('Error: ' + e.error, true)
+            }
           })
       }
 

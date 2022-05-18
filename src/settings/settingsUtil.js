@@ -122,6 +122,8 @@ util.getSettings = async callback => {
 
         s.maintenanceMode = parseSetting(settings, 'maintenanceMode:enable', false)
 
+        s.accountsPasswordComplexity = parseSetting(settings, 'accountsPasswordComplexity:enable', true)
+
         const types = await ticketTypeSchema.getTypes()
         content.data.ticketTypes = _.sortBy(types, o => o.name)
 

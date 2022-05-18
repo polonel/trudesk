@@ -48,16 +48,23 @@ departmentSchema.statics.getDepartmentsByTeam = function (teamIds, callback) {
     .exec(callback)
 }
 
-departmentSchema.statics.getUserDepartments = function (userId, callback) {
-  var self = this
+departmentSchema.statics.getUserDepartments = async function (userId, callback) {
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const teams = await Teams.getTeamsOfUser(userId)
+        const exec = self.model(COLLECTION).find({ teams: { $in: teams } })
+        if (typeof callback === 'function') {
+          return exec.exec(callback)
+        }
 
-  Teams.getTeamsOfUser(userId, function (err, teams) {
-    if (err) return callback(err)
-
-    return self
-      .model(COLLECTION)
-      .find({ teams: { $in: teams } })
-      .exec(callback)
+        const departments = await exec.exec()
+        return resolve(departments)
+      } catch (e) {
+        return reject(e)
+      }
+    })()
   })
 }
 

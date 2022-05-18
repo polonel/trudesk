@@ -14,111 +14,80 @@
 
 const _ = require('lodash')
 const async = require('async')
+const winston = require('../../../logger')
 const Chance = require('chance')
 const apiUtil = require('../apiUtils')
 const User = require('../../../models/user')
 const Group = require('../../../models/group')
 const Team = require('../../../models/team')
 const Department = require('../../../models/department')
+const passwordComplexity = require('../../../settings/passwordComplexity')
 
 const accountsApi = {}
 
-accountsApi.create = function (req, res) {
+accountsApi.create = async function (req, res) {
   const postData = req.body
   if (!postData) return apiUtil.sendApiError_InvalidPostData(res)
 
   let savedId = null
   const chance = new Chance()
-  async.series(
-    {
-      user: function (next) {
-        User.create(
-          {
-            username: postData.username,
-            email: postData.email,
-            password: postData.password,
-            fullname: postData.fullname,
-            title: postData.title,
-            role: postData.role,
-            accessToken: chance.hash()
-          },
-          function (err, user) {
-            if (err) return apiUtil.sendApiError(res, 500, err.message)
 
-            savedId = user._id
+  try {
+    let user = await User.create({
+      username: postData.username,
+      email: postData.email,
+      password: postData.password,
+      fullname: postData.fullname,
+      title: postData.title,
+      role: postData.role,
+      accessToken: chance.hash()
+    })
 
-            return user.populate('role', next)
-          }
-        )
-      },
-      groups: function (next) {
-        if (!postData.groups) return next(null, [])
+    savedId = user._id
 
-        Group.getGroups(postData.groups, function (err, groups) {
-          if (err) return next(err)
+    const userPopulated = await user.populate('role')
 
-          async.each(
-            groups,
-            function (group, callback) {
-              group.addMember(savedId, function (err) {
-                if (err) return callback(err)
-                group.save(callback)
-              })
-            },
-            function (err) {
-              if (err) return next(err)
-
-              return next(null, groups)
-            }
-          )
-        })
-      },
-      teams: function (next) {
-        if (!postData.teams) return next()
-
-        Team.getTeamsByIds(postData.teams, function (err, teams) {
-          if (err) return next(err)
-
-          async.each(
-            teams,
-            function (team, callback) {
-              team.addMember(savedId, function () {
-                team.save(callback)
-              })
-            },
-            function (err) {
-              if (err) return next(err)
-
-              return next(null, teams)
-            }
-          )
-        })
-      },
-      departments: function (next) {
-        Department.getUserDepartments(savedId, next)
+    let groups = []
+    if (postData.groups) {
+      groups = await Group.getGroups(postData.groups)
+      for (const group in groups) {
+        await group.addMember(savedId)
+        await group.save()
       }
-    },
-    function (err, results) {
-      if (err) return apiUtil.sendApiError(res, 500, err.message)
+    }
 
-      const user = results.user.toJSON()
-      user.groups = results.groups.map(function (g) {
-        return { _id: g._id, name: g.name }
+    let teams = []
+    if (postData.teams) {
+      const dbTeams = await Team.getTeamsByIds(postData.teams)
+      for (const team of dbTeams) {
+        await team.addMember(savedId)
+        await team.save()
+      }
+
+      teams = dbTeams
+    }
+
+    const departments = await Department.getUserDepartments(savedId)
+    user = userPopulated.toJSON()
+    user.groups = groups.map(g => {
+      return { _id: g._id, name: g.name }
+    })
+
+    if ((user.role.isAgent || user.role.isAdmin) && teams.length > 0) {
+      user.teams = teams.map(t => {
+        return { _id: t._id, name: t.name }
       })
 
-      if ((user.role.isAgent || user.role.isAdmin) && results.teams) {
-        user.teams = results.teams.map(function (t) {
-          return { _id: t._id, name: t.name }
-        })
-
-        user.departments = results.departments.map(function (d) {
-          return { _id: d._id, name: d.name }
-        })
-      }
-
-      return apiUtil.sendApiSuccess(res, { account: user })
+      user.departments = departments.map(d => {
+        return { _id: d._id, name: d.name }
+      })
     }
-  )
+
+    return apiUtil.sendApiSuccess(res, { account: user })
+  } catch (e) {
+    winston.warn(e)
+    return apiUtil.sendApiError(res, 500, e.message)
+  }
 }
 
 accountsApi.get = function (req, res) {
@@ -241,183 +210,124 @@ accountsApi.get = function (req, res) {
   }
 }
 
-accountsApi.update = function (req, res) {
-  var username = req.params.username
-  var postData = req.body
+accountsApi.update = async function (req, res) {
+  const username = req.params.username
+  const postData = req.body
   if (!username || !postData) return apiUtil.sendApiError_InvalidPostData(res)
 
   let passwordUpdated = false
 
-  async.series(
-    {
-      user: function (next) {
-        User.getByUsername(username, function (err, user) {
-          if (err) return next(err)
-          if (!user) return next({ message: 'Invalid User' })
+  try {
+    // SETTINGS
+    const SettingsUtil = require('../../../settings/settingsUtil')
+    const settingsContent = await SettingsUtil.getSettings()
+    const settings = settingsContent.data.settings
+    const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
-          postData._id = user._id
+    // USER
+    let user = await User.getByUsername(username)
+    if (!user) throw new Error('Invalid User')
 
-          if (
-            !_.isUndefined(postData.password) &&
-            !_.isEmpty(postData.password) &&
-            !_.isUndefined(postData.passwordConfirm) &&
-            !_.isEmpty(postData.passwordConfirm)
-          ) {
-            if (postData.password === postData.passwordConfirm) {
-              user.password = postData.password
-              passwordUpdated = true
+    postData._id = user._id
+    if (
+      !_.isUndefined(postData.password) &&
+      !_.isEmpty(postData.password) &&
+      !_.isUndefined(postData.passwordConfirm) &&
+      !_.isEmpty(postData.passwordConfirm)
+    ) {
+      if (postData.password === postData.passwordConfirm) {
+        if (passwordComplexityEnabled) {
+          if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
+        }
+
+        user.password = postData.password
+        passwordUpdated = true
+      } else throw new Error('Password and Confirm Password do not match.')
+    }
+
+    if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
+    if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
+    if (!_.isUndefined(postData.title) && postData.title.length > 0) user.title = postData.title
+    if (!_.isUndefined(postData.role) && postData.role.length > 0) user.role = postData.role
+
+    user = await user.save()
+    const populatedUser = await user.populate('role')
+    const resUser = apiUtil.stripUserFields(populatedUser)
+
+    // GROUPS
+    let groups = []
+    if (!postData.groups) groups = await Group.getAllGroupsOfUser(postData._id)
+    else {
+      const allGroups = await Group.getAllGroups()
+      for (const g of allGroups) {
+        if (_.includes(postData.groups, g._id.toString())) {
+          if (g.isMember(postData._id)) {
+            groups.push(g)
+          } else {
+            const result = await g.addMember(postData._id)
+            if (result) {
+              await g.save()
+              groups.push(g)
             }
           }
-
-          if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
-          if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
-          if (!_.isUndefined(postData.title) && postData.title.length > 0) user.title = postData.title
-          if (!_.isUndefined(postData.role) && postData.role.length > 0) user.role = postData.role
-
-          user.save(function (err, user) {
-            if (err) return next(err)
-
-            user.populate('role', function (err, populatedUser) {
-              if (err) return next(err)
-              var resUser = apiUtil.stripUserFields(populatedUser)
-
-              return next(null, resUser)
-            })
-          })
-        })
-      },
-      groups: function (next) {
-        if (!postData.groups) return Group.getAllGroupsOfUser(postData._id, next)
-
-        var userGroups = []
-        Group.getAllGroups(function (err, groups) {
-          if (err) return next(err)
-          async.each(
-            groups,
-            function (grp, callback) {
-              if (_.includes(postData.groups, grp._id.toString())) {
-                if (grp.isMember(postData._id)) {
-                  userGroups.push(grp)
-                  return callback()
-                }
-                grp.addMember(postData._id, function (err, result) {
-                  if (err) return callback(err)
-
-                  if (result) {
-                    grp.save(function (err) {
-                      if (err) return callback(err)
-                      userGroups.push(grp)
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
-              } else {
-                // Remove Member from group
-                grp.removeMember(postData._id, function (err, result) {
-                  if (err) return callback(err)
-                  if (result) {
-                    grp.save(function (err) {
-                      if (err) return callback(err)
-
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
-              }
-            },
-            function (err) {
-              if (err) return next(err)
-
-              return next(null, userGroups)
-            }
-          )
-        })
-      },
-      teams: function (next) {
-        if (!postData.teams) return Team.getTeamsOfUser(postData._id, next)
-
-        var userTeams = []
-        Team.getTeams(function (err, teams) {
-          if (err) return next(err)
-          async.each(
-            teams,
-            function (team, callback) {
-              if (_.includes(postData.teams, team._id.toString())) {
-                if (team.isMember(postData._id)) {
-                  userTeams.push(team)
-                  return callback()
-                }
-                team.addMember(postData._id, function (err, result) {
-                  if (err) return callback(err)
-
-                  if (result) {
-                    team.save(function (err) {
-                      if (err) return callback(err)
-                      userTeams.push(team)
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
-              } else {
-                // Remove Member from group
-                team.removeMember(postData._id, function (err, result) {
-                  if (err) return callback(err)
-                  if (result) {
-                    team.save(function (err) {
-                      if (err) return callback(err)
-
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
-              }
-            },
-            function (err) {
-              if (err) return next(err)
-
-              return next(null, userTeams)
-            }
-          )
-        })
-      },
-      departments: function (next) {
-        Department.getUserDepartments(postData._id, next)
+        } else {
+          const result = await g.removeMember(postData._id)
+          if (result) await g.save()
+        }
       }
-    },
-    async function (err, results) {
-      if (err) return apiUtil.sendApiError(res, 500, err.message)
+    }
 
-      var user = results.user.toJSON()
-      user.groups = results.groups.map(function (g) {
-        return { _id: g._id, name: g.name }
+    // TEAMS
+    let teams = []
+    if (!postData.teams) {
+      teams = await Team.getTeamsOfUser(postData._id)
+    } else {
+      const allTeams = await Team.getTeams()
+      for (const t of allTeams) {
+        if (_.includes(postData.teams, t._id.toString())) {
+          if (t.isMember(postData._id)) teams.push(t)
+          else {
+            const result = await t.addMember(postData._id)
+            if (result) {
+              await t.save()
+              teams.push(t)
+            }
+          }
+        } else {
+          const result = await t.removeMember(postData._id)
+          if (result) await t.save()
+        }
+      }
+    }
+
+    // DEPARTMENTS
+    const departments = await Department.getUserDepartments(postData._id)
+
+    user = resUser.toJSON()
+    user.groups = groups.map(g => {
+      return { _id: g._id, name: g.name }
+    })
+
+    if ((user.role.isAgent || user.role.isAdmin) && teams.length > 0) {
+      user.teams = teams.map(t => {
+        return { _id: t._id, name: t.name }
       })
 
-      if ((user.role.isAgent || user.role.isAdmin) && results.teams) {
-        user.teams = results.teams.map(function (t) {
-          return { _id: t._id, name: t.name }
-        })
-
-        user.departments = results.departments.map(function (d) {
-          return { _id: d._id, name: d.name }
-        })
-      }
-
-      if (passwordUpdated) {
-        const Session = require('../../../models/session')
-        await Session.destroy(user._id)
-      }
-
-      return apiUtil.sendApiSuccess(res, { user: user })
+      user.departments = departments.map(d => {
+        return { _id: d._id, name: d.name }
+      })
     }
-  )
+
+    if (passwordUpdated) {
+      const Session = require('../../../models/session')
+      await Session.destroy(user._id)
+    }
+
+    return apiUtil.sendApiSuccess(res, { user })
+  } catch (e) {
+    const error = { name: e.name, message: e.message }
+    return apiUtil.sendApiError(res, 400, error)
+  }
 }
 
 module.exports = accountsApi

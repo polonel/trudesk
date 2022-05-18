@@ -2062,6 +2062,13 @@
     })
 
     $.formUtils.addValidator({
+      name: 'none',
+      validatorFunction: function(value, $el, config, language, $form) {
+        return true
+      }
+    })
+
+    $.formUtils.addValidator({
       name: 'confirmation',
       validatorFunction: function (value, $el, config, language, $form) {
         var password,

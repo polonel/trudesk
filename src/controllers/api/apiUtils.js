@@ -24,7 +24,7 @@ apiUtils.sendApiSuccess = function (res, object) {
 }
 
 apiUtils.sendApiError = function (res, errorNum, error) {
-  return res.status(errorNum).json({ success: false, error: error })
+  return res.status(errorNum).json({ success: false, error })
 }
 apiUtils.sendApiError_InvalidPostData = function (res) {
   return apiUtils.sendApiError(res, 400, 'Invalid Post Data')

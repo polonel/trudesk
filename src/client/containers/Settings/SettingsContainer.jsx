@@ -21,6 +21,7 @@ import { fetchSettings } from 'actions/settings'
 import Menu from 'components/Settings/Menu'
 import MenuItem from 'components/Settings/MenuItem'
 import GeneralSettings from './General'
+import AccountsSettings from './Accounts'
 import AppearanceSettings from './Appearance'
 import PermissionsSettingsContainer from './Permissions'
 import TicketsSettings from './Tickets'
@@ -90,6 +91,13 @@ class SettingsContainer extends React.Component {
                 }}
               />
               <MenuItem
+                title='Accounts'
+                active={this.state.activeCategory === 'settings-accounts'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'accounts')
+                }}
+              />
+              <MenuItem
                 title='Appearance'
                 active={this.state.activeCategory === 'settings-appearance'}
                 onClick={e => {
@@ -156,6 +164,7 @@ class SettingsContainer extends React.Component {
           <div className='page-wrapper full-height scrollable no-overflow-x' ref={i => (this.page = i)}>
             <div className='settings-wrap'>
               <GeneralSettings active={this.state.activeCategory === 'settings-general'} />
+              <AccountsSettings active={this.state.activeCategory === 'settings-accounts'} />
               <AppearanceSettings active={this.state.activeCategory === 'settings-appearance'} />
               <PermissionsSettingsContainer active={this.state.activeCategory === 'settings-permissions'} />
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />

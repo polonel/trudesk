@@ -14,12 +14,14 @@
 
 const async = require('async')
 const _ = require('lodash')
-const winston = require('winston')
+const winston = require('../../../logger')
 const permissions = require('../../../permissions')
 const emitter = require('../../../emitter')
 const UserSchema = require('../../../models/user')
 const groupSchema = require('../../../models/group')
 const notificationSchema = require('../../../models/notification')
+const SettingUtil = require('../../../settings/settingsUtil')
+const Chance = require('chance')
 
 const apiUsers = {}
 
@@ -147,7 +149,7 @@ apiUsers.getWithLimit = function (req, res) {
      "error": "Invalid Post Data"
  }
  */
-apiUsers.create = function (req, res) {
+apiUsers.create = async function (req, res) {
   const response = {}
   response.success = true
 
@@ -174,65 +176,91 @@ apiUsers.create = function (req, res) {
   if (postData.aPass !== postData.aPassConfirm)
     return res.status(400).json({ success: false, error: 'Invalid Password Match' })
 
-  const Chance = require('chance')
-  const chance = new Chance()
+  async.series(
+    [
+      function (next) {
+        SettingUtil.getSettings(function (err, content) {
+          if (err) return next(err)
+          const settings = content.data.settings
+          if (settings.accountsPasswordComplexity.value) {
+            const passwordComplexity = require('../../../settings/passwordComplexity')
+            if (!passwordComplexity.validate(postData.aPass))
+              return next({ message: 'Password does not meet minimum requirements.' })
 
-  const account = new UserSchema({
-    username: postData.aUsername,
-    password: postData.aPass,
-    fullname: postData.aFullname,
-    email: postData.aEmail,
-    accessToken: chance.hash(),
-    role: postData.aRole
-  })
+            return next()
+          }
 
-  if (postData.aTitle) {
-    account.title = postData.aTitle
-  }
+          return next()
+        })
+      },
+      function (next) {
+        const chance = new Chance()
 
-  account.save(function (err, a) {
-    if (err) {
-      response.success = false
-      response.error = err
-      winston.debug(response)
-      return res.status(400).json(response)
-    }
+        const account = new UserSchema({
+          username: postData.aUsername,
+          password: postData.aPass,
+          fullname: postData.aFullname,
+          email: postData.aEmail,
+          accessToken: chance.hash(),
+          role: postData.aRole
+        })
 
-    a.populate('role', function (err, populatedAccount) {
-      if (err) return res.status(500).json({ success: false, error: err })
-
-      response.account = populatedAccount.toObject()
-      delete response.account.password
-
-      const groups = []
-
-      async.each(
-        postData.aGrps,
-        function (id, done) {
-          if (_.isUndefined(id)) return done(null)
-          groupSchema.getGroupById(id, function (err, grp) {
-            if (err) return done(err)
-            if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID')
-
-            grp.addMember(a._id, function (err, success) {
-              if (err) return done(err)
-
-              grp.save(function (err) {
-                if (err) return done(err)
-                groups.push(grp)
-                done(null, success)
-              })
-            })
-          })
-        },
-        function (err) {
-          if (err) return res.status(400).json({ success: false, error: err })
-          response.account.groups = groups
-          return res.json(response)
+        if (postData.aTitle) {
+          account.title = postData.aTitle
         }
-      )
-    })
-  })
+
+        account.save(function (err, a) {
+          if (err) return next(err)
+
+          a.populate('role', function (err, populatedAccount) {
+            if (err) return next(err)
+
+            response.account = populatedAccount.toObject()
+            delete response.account.password
+
+            const groups = []
+
+            async.each(
+              postData.aGrps,
+              function (id, done) {
+                if (_.isUndefined(id)) return done()
+                groupSchema.getGroupById(id, function (err, grp) {
+                  if (err) return done(err)
+                  if (!grp) return done({ message: `Invalid Group (${id}) - Group not found. Check Group ID.` })
+
+                  grp.addMember(a._id, function (err, success) {
+                    if (err) return done(err)
+
+                    grp.save(function (err) {
+                      if (err) return done(err)
+                      groups.push(grp)
+                      done(null, success)
+                    })
+                  })
+                })
+              },
+              function (e) {
+                if (e) return next(e)
+                response.account.groups = groups
+
+                return next()
+              }
+            )
+          })
+        })
+      }
+    ],
+    function (e) {
+      if (e) {
+        response.success = false
+        response.error = e
+        winston.debug(response)
+        return res.status(400).json(response)
+      }
+
+      return res.json(response)
+    }
+  )
 }
 
 /**
@@ -290,6 +318,20 @@ apiUsers.createPublicAccount = function (req, res) {
           if (!roleDefault) {
             winston.error('No Default User Role Set. (Settings > Permissions > Default User Role)')
             return next({ message: 'No Default Role Set. Please contact administrator.' })
+          }
+
+          return next(null, roleDefault)
+        })
+      },
+      function (roleDefault, next) {
+        SettingSchema.getSetting('accountsPasswordComplexity:enable', function (err, passwordComplexitySetting) {
+          if (err) return next(err)
+          if (!passwordComplexitySetting || passwordComplexitySetting.value === true) {
+            const passwordComplexity = require('../../../settings/passwordComplexity')
+            if (!passwordComplexity.validate(postData.user.password))
+              return next({ message: 'Password does not minimum requirements.' })
+
+            return next(null, roleDefault)
           }
 
           return next(null, roleDefault)
@@ -397,8 +439,20 @@ apiUsers.update = function (req, res) {
     obj.groups = [obj.groups]
   }
 
+  let passwordComplexityEnabled = true
+
   async.series(
     {
+      settings: function (done) {
+        var SettingUtil = require('../../../settings/settingsUtil')
+        SettingUtil.getSettings(function (err, content) {
+          if (err) return done(err)
+          var settings = content.data.settings
+          passwordComplexityEnabled = settings.accountsPasswordComplexity.value
+
+          return done()
+        })
+      },
       user: function (done) {
         UserSchema.getUserByUsername(username, function (err, user) {
           if (err) return done(err)
@@ -413,6 +467,12 @@ apiUsers.update = function (req, res) {
             !_.isEmpty(obj.passconfirm)
           ) {
             if (obj.password === obj.passconfirm) {
+              if (passwordComplexityEnabled) {
+                // check Password Complexity
+                const passwordComplexity = require('../../../settings/passwordComplexity')
+                if (!passwordComplexity.validate(obj.password)) return done('Password does not meet requirements')
+              }
+
               user.password = obj.password
               passwordUpdated = true
             }

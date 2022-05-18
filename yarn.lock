@@ -3878,6 +3878,11 @@ check-error@^1.0.2:
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
   integrity sha1-V00xLt2Iu13YkS6Sht1sCu1KrII=
 
+check-password-strength@2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/check-password-strength/-/check-password-strength-2.0.5.tgz#bb10da01d24bd69e5e629c5cea2a6b729e5061af"
+  integrity sha512-b61T/+4OIGWSMRxJUsYOY44Cf9w7orIt2OQmF/WgH16qbJKIT1jG3XHx3jP+o090eH7rq13DRleKgXCiROBzMQ==
+
 cheerio-select@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/cheerio-select/-/cheerio-select-1.5.0.tgz#faf3daeb31b17c5e1a9dabcee288aaf8aafa5823"

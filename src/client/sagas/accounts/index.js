@@ -80,6 +80,7 @@ function * saveEditAccount ({ payload }) {
   } catch (error) {
     let errorText = ''
     if (error.response) errorText = error.response.data.error
+    if (errorText.message) errorText = errorText.message
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response || error)
     yield put({ type: SAVE_EDIT_ACCOUNT.ERROR, error })

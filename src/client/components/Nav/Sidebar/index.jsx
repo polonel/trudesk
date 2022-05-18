@@ -281,6 +281,12 @@ class Sidebar extends React.Component {
                     active={activeSubItem === 'settings-general'}
                   />
                   <SubmenuItem
+                    text='Accounts'
+                    icon='tune'
+                    href='/settings/accounts'
+                    active={activeSubItem === 'settings-accounts'}
+                  />
+                  <SubmenuItem
                     text='Appearance'
                     icon='style'
                     href='/settings/appearance'

@@ -165,14 +165,33 @@ groupSchema.statics.getAllPublicGroups = function (callback) {
   return q.exec(callback)
 }
 
-groupSchema.statics.getGroups = function (groupIds, callback) {
-  if (_.isUndefined(groupIds)) return callback('Invalid Array of Group IDs - GroupSchema.GetGroups()')
+groupSchema.statics.getGroups = async function (groupIds, callback) {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(groupIds)) {
+        if (typeof callback === 'function') return callback('Invalid Array of Group IDs - GroupSchema.GetGroups()')
+        return reject(new Error('Invalid Array of Group IDs - GroupSchema.GetGroups()'))
+      }
 
-  this.model(COLLECTION)
-    .find({ _id: { $in: groupIds } })
-    .populate('members', '_id username fullname email role preferences image title deleted')
-    .sort('name')
-    .exec(callback)
+      try {
+        const exec = this.model(COLLECTION)
+          .find({ _id: { $in: groupIds } })
+          .populate('members', '_id username fullname email role preferences image title deleted')
+          .sort('name')
+
+        if (typeof callback === 'function') {
+          return exec.exec(callback)
+        }
+
+        const groups = await exec.exec()
+
+        return resolve(groups)
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
+        return reject(e)
+      }
+    })()
+  })
 }
 
 groupSchema.statics.getAllGroupsOfUser = function (userId, callback) {

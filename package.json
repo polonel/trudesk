@@ -32,6 +32,7 @@
     "body-parser": "1.19.2",
     "busboy": "1.4.0",
     "chance": "1.1.8",
+    "check-password-strength": "2.0.5",
     "cheerio": "1.0.0-rc.10",
     "clone": "2.1.2",
     "clsx": "1.1.1",

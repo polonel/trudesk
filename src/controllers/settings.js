@@ -76,6 +76,14 @@ settingsController.general = function (req, res) {
   renderView(res, content)
 }
 
+settingsController.accounts = function (req, res) {
+  if (!checkPerms(req, 'settings:view')) return res.redirect('/')
+
+  const content = initViewContent('accounts', req)
+
+  renderView(res, content)
+}
+
 settingsController.appearance = function (req, res) {
   if (!checkPerms(req, 'settings:view')) return res.redirect('/')
 

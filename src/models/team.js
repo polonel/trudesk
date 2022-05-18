@@ -45,17 +45,22 @@ teamSchema.pre('save', function (next) {
   return next()
 })
 
-teamSchema.methods.addMember = function (memberId, callback) {
-  if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.AddMember()')
+teamSchema.methods.addMember = async function (memberId, callback) {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(memberId)) {
+        if (typeof callback === 'function') return callback({ message: 'Invalid MemberId - TeamSchema.AddMember()' })
+        return reject(new Error('Invalid MemberId - TeamSchema.AddMember()'))
+      }
 
-  if (this.members === null) this.members = []
+      if (this.members === null) this.members = []
 
-  if (isMember(this.members, memberId)) return callback(null, false)
+      this.members.push(memberId)
+      this.members = _.uniq(this.members)
 
-  this.members.push(memberId)
-  this.members = _.uniq(this.members)
-
-  return callback(null, true)
+      return resolve(true)
+    })()
+  })
 }
 
 teamSchema.methods.removeMember = function (memberId, callback) {
