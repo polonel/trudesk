@@ -38,11 +38,11 @@ var register = function (callback) {
  * Checks to see if a role as the given action
  * @param role [role to check against]
  * @param a [action to check]
- * @param adminOverride [Override permission check if idAdmin]
+ * @param adminOverride [override if admin]
  * @returns {boolean}
  */
 
-var canThis = function (role, a, adminOverride) {
+var canThis = function (role, a, adminOverride = false) {
   if (_.isUndefined(role)) return false
   if (adminOverride === true && role.isAdmin) return true
 

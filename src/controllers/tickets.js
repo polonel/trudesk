@@ -513,6 +513,13 @@ ticketsController.single = function (req, res) {
             }
           }
 
+          if (
+            ticket.owner._id.toString() !== req.user._id.toString() &&
+            !permissions.canThis(user.role, 'tickets:viewall')
+          ) {
+            return res.redirect('/tickets')
+          }
+
           if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
 
           if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []

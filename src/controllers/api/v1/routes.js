@@ -12,20 +12,20 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var packagejson = require('../../../../package')
+const packagejson = require('../../../../package')
 
 module.exports = function (middleware, router, controllers) {
-  // ShortenVars
-  var apiv1 = middleware.api
-  var isAdmin = middleware.isAdmin
-  var isAgent = middleware.isAgent
-  var isAgentOrAdmin = middleware.isAgentOrAdmin
-  var canUser = middleware.canUser
-  var apiCtrl = controllers.api.v1
+  // Shortenconsts
+  const apiv1 = middleware.api
+  const isAdmin = middleware.isAdmin
+  const isAgent = middleware.isAgent
+  const isAgentOrAdmin = middleware.isAgentOrAdmin
+  const canUser = middleware.canUser
+  const apiCtrl = controllers.api.v1
 
   // Common
   router.get('/api', controllers.api.index)
-  router.get('/api/v1/version', function (req, res) {
+  router.get('/api/v1/version', (req, res) => {
     return res.json({ version: packagejson.version })
   })
   router.post('/api/v1/login', apiCtrl.common.login)
@@ -92,7 +92,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Tags
   router.get('/api/v1/count/tags', middleware.api, function (req, res) {
-    var tagSchema = require('../models/tag')
+    const tagSchema = require('../../../models/tag')
     tagSchema.countDocuments({}, function (err, count) {
       if (err) return res.status(500).json({ success: false, error: err })
 
@@ -106,8 +106,8 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v1/tags/:id', apiv1, isAgentOrAdmin, apiCtrl.tags.deleteTag)
 
   // Public Tickets
-  var checkCaptcha = middleware.checkCaptcha
-  var checkOrigin = middleware.checkOrigin
+  const checkCaptcha = middleware.checkCaptcha
+  const checkOrigin = middleware.checkOrigin
 
   router.post('/api/v1/public/users/checkemail', checkCaptcha, checkOrigin, apiCtrl.users.checkEmail)
   router.post('/api/v1/public/tickets/create', checkCaptcha, checkOrigin, apiCtrl.tickets.createPublicTicket)
@@ -154,8 +154,8 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v1/notices/:id', apiv1, canUser('notices:delete'), apiCtrl.notices.deleteNotice)
 
   // Reports Generator
-  var reportsGenCtrl = apiCtrl.reports.generate
-  var genBaseUrl = '/api/v1/reports/generate/'
+  const reportsGenCtrl = apiCtrl.reports.generate
+  const genBaseUrl = '/api/v1/reports/generate/'
   router.post(genBaseUrl + 'tickets_by_group', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByGroup)
   router.post(genBaseUrl + 'tickets_by_status', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByStatus)
   router.post(genBaseUrl + 'tickets_by_priority', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByPriority)
@@ -171,7 +171,7 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v1/settings/testmailer', apiv1, isAdmin, apiCtrl.settings.testMailer)
   router.put('/api/v1/settings/mailer/template/:id', apiv1, isAdmin, apiCtrl.settings.updateTemplateSubject)
   router.get('/api/v1/settings/buildsass', apiv1, isAdmin, apiCtrl.settings.buildsass)
-  router.put('/api/v1/settings/updateroleorder', isAdmin, apiv1, apiCtrl.settings.updateRoleOrder)
+  router.put('/api/v1/settings/updateroleorder', apiv1, isAdmin, apiCtrl.settings.updateRoleOrder)
 
   // Backups
   router.get('/api/v1/backups', apiv1, isAdmin, controllers.backuprestore.getBackups)

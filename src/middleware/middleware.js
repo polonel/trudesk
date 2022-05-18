@@ -213,8 +213,8 @@ middleware.apiv2 = function (req, res, next) {
 middleware.canUser = function (action) {
   return function (req, res, next) {
     if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
-    var permissions = require('../permissions')
-    var perm = permissions.canThis(req.user.role, action)
+    const permissions = require('../permissions')
+    const perm = permissions.canThis(req.user.role, action)
     if (perm) return next()
 
     return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })

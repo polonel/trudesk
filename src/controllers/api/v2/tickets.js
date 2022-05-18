@@ -134,8 +134,8 @@ ticketsV2.get = function (req, res) {
   )
 }
 
-ticketsV2.single = function (req, res) {
-  var uid = req.params.uid
+ticketsV2.single = async function (req, res) {
+  const uid = req.params.uid
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
   Ticket.getTicketByUid(uid, function (err, ticket) {
     if (err) return apiUtils.sendApiError(res, 500, err)
@@ -144,7 +144,7 @@ ticketsV2.single = function (req, res) {
       Department.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
         if (err) return apiUtils.sendApiError(res, 500, err)
 
-        var groups = dbGroups.map(function (g) {
+        const groups = dbGroups.map(function (g) {
           return g._id.toString()
         })
 
@@ -158,7 +158,7 @@ ticketsV2.single = function (req, res) {
       Group.getAllGroupsOfUser(req.user._id, function (err, userGroups) {
         if (err) return apiUtils.sendApiError(res, 500, err)
 
-        var groupIds = userGroups.map(function (m) {
+        const groupIds = userGroups.map(function (m) {
           return m._id.toString()
         })
 
