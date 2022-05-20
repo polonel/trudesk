@@ -2129,6 +2129,18 @@ define([
   }
 
   helpers.UI.showLinkWarning = function (el) {
+    $(el).on('auxclick', function (e) {
+      const $this = $(this)
+      const href = $this.attr('href')
+      if (e.button === 1 && helpers.isExternalLink(href)) {
+        e.preventDefault()
+        window.react.redux.store.dispatch({
+          type: 'SHOW_MODAL',
+          payload: { modalType: 'LINK_WARNING', modalProps: { href } }
+        })
+      }
+    })
+
     $(el).on('click', function (e) {
       e.preventDefault()
       const $this = $(this)
