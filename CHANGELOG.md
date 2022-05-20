@@ -1,3 +1,19 @@
+## [1.2.2](https://github.com/polonel/trudesk/compare/v1.2.1...v1.2.2) (2022-05-20)
+
+
+### Bug Fixes
+
+* **account:** security fix ([e836d04](https://github.com/polonel/trudesk/commit/e836d04))
+* **account:** security fix ([87e231e](https://github.com/polonel/trudesk/commit/87e231e))
+* **api:** v1 security fix ([e2db47f](https://github.com/polonel/trudesk/commit/e2db47f))
+* **api:** v1 security fix ([49befa2](https://github.com/polonel/trudesk/commit/49befa2))
+* **attachments:** files with small file size was failing to upload ([691d12c](https://github.com/polonel/trudesk/commit/691d12c))
+* **core:** iframe security fix ([6ea9db7](https://github.com/polonel/trudesk/commit/6ea9db7))
+* **login:** basic rate limit protection ([526cef3](https://github.com/polonel/trudesk/commit/526cef3))
+* **profile:** svg images ([4575ed7](https://github.com/polonel/trudesk/commit/4575ed7))
+* **tickets:** permission enforcement ([577c7eb](https://github.com/polonel/trudesk/commit/577c7eb))
+* **tickets:** security fix ([36a542a](https://github.com/polonel/trudesk/commit/36a542a))
+
 ## [1.2.1](https://github.com/polonel/trudesk/compare/v1.2.0...v1.2.1) (2022-05-14)
 
 
