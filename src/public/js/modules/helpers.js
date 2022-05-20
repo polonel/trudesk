@@ -2115,6 +2115,12 @@ define([
     $this.wrap(a)
   }
 
+  helpers.isExternalLink = function (url) {
+    const tmp = document.createElement('a')
+    tmp.href = url
+    return tmp.host !== window.location.host
+  }
+
   helpers.setupLinkWarning = function (el) {
     const $this = $(el)
 
@@ -2127,6 +2133,12 @@ define([
       e.preventDefault()
       const $this = $(this)
       const href = $this.attr('href')
+
+      if (!helpers.isExternalLink(href)) {
+        if (History) History.pushState(null, null, href)
+        else window.location.href = href
+        return
+      }
 
       window.react.redux.store.dispatch({
         type: 'SHOW_MODAL',
