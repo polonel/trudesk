@@ -13,9 +13,9 @@
 
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
-import clsx from 'clsx'
 
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
@@ -28,6 +28,11 @@ import Log from '../../logger'
 const setupImages = parent => {
   const imagesEl = parent.issueBody.querySelectorAll('img:not(.hasLinked)')
   imagesEl.forEach(i => helpers.setupImageLink(i))
+}
+
+const setupLinks = parent => {
+  const linksEl = parent.issueBody.querySelectorAll('a')
+  linksEl.forEach(i => helpers.setupLinkWarning(i))
 }
 
 @observer
@@ -56,6 +61,7 @@ class IssuePartial extends React.Component {
 
   componentDidMount () {
     setupImages(this)
+    setupLinks(this)
 
     socket.socket.on('updateTicketIssue', this.onUpdateTicketIssue)
     socket.socket.on('updateTicketAttachments', this.onUpdateTicketAttachments)

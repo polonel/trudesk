@@ -74,6 +74,7 @@ define([
     self.UI.waves()
     self.UI.matchHeight()
     self.UI.onlineUserSearch()
+    self.UI.showLinkWarning('.link-warning')
 
     var layout = self.onWindowResize()
 
@@ -2112,6 +2113,26 @@ define([
       .attr('href', src)
       .attr('target', '_blank')
     $this.wrap(a)
+  }
+
+  helpers.setupLinkWarning = function (el) {
+    const $this = $(el)
+
+    $this.attr('target', '_blank').addClass('link-warning')
+    helpers.UI.showLinkWarning(el)
+  }
+
+  helpers.UI.showLinkWarning = function (el) {
+    $(el).on('click', function (e) {
+      e.preventDefault()
+      const $this = $(this)
+      const href = $this.attr('href')
+
+      window.react.redux.store.dispatch({
+        type: 'SHOW_MODAL',
+        payload: { modalType: 'LINK_WARNING', modalProps: { href } }
+      })
+    })
   }
 
   return helpers
