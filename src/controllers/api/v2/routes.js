@@ -8,7 +8,7 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/14/19 12:07 AM
+ *  Updated:    5/17/22 2:15 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
@@ -26,37 +26,37 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/token', controllers.api.v2.common.token)
 
   // Accounts
-  router.get('/api/v2/accounts', apiv2Auth, apiv2.accounts.get)
-  router.post('/api/v2/accounts', apiv2Auth, apiv2.accounts.create)
-  router.put('/api/v2/accounts/:username', apiv2Auth, apiv2.accounts.update)
+  router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
+  router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
+  router.put('/api/v2/accounts/:username', canUser('accounts:update'), apiv2Auth, apiv2.accounts.update)
 
   // Tickets
-  router.get('/api/v2/tickets', apiv2Auth, apiv2.tickets.get)
-  router.post('/api/v2/tickets', apiv2Auth, apiv2.tickets.create)
+  router.get('/api/v2/tickets', apiv2Auth, canUser('tickets:view'), apiv2.tickets.get)
+  router.post('/api/v2/tickets', apiv2Auth, canUser('tickets:create'), apiv2.tickets.create)
   router.post('/api/v2/tickets/transfer/:uid', apiv2Auth, isAdmin, apiv2.tickets.transferToThirdParty)
-  router.get('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.single)
-  router.put('/api/v2/tickets/batch', apiv2Auth, apiv2.tickets.batchUpdate)
-  router.put('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.update)
-  router.delete('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.delete)
+  router.get('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:view'), apiv2.tickets.single)
+  router.put('/api/v2/tickets/batch', apiv2Auth, canUser('tickets:update'), apiv2.tickets.batchUpdate)
+  router.put('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:update'), apiv2.tickets.update)
+  router.delete('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:delete'), apiv2.tickets.delete)
   router.delete('/api/v2/tickets/deleted/:id', apiv2Auth, isAdmin, apiv2.tickets.permDelete)
 
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)
-  router.post('/api/v2/groups', apiv2Auth, apiv2.groups.create)
-  router.put('/api/v2/groups/:id', apiv2Auth, apiv2.groups.update)
-  router.delete('/api/v2/groups/:id', apiv2Auth, apiv2.groups.delete)
+  router.post('/api/v2/groups', apiv2Auth, canUser('groups:create'), apiv2.groups.create)
+  router.put('/api/v2/groups/:id', apiv2Auth, canUser('groups:update'), apiv2.groups.update)
+  router.delete('/api/v2/groups/:id', apiv2Auth, canUser('groups:delete'), apiv2.groups.delete)
 
   // Teams
-  router.get('/api/v2/teams', apiv2Auth, apiv2.teams.get)
-  router.post('/api/v2/teams', apiv2Auth, apiv2.teams.create)
-  router.put('/api/v2/teams/:id', apiv2Auth, apiv2.teams.update)
-  router.delete('/api/v2/teams/:id', apiv2Auth, apiv2.teams.delete)
+  router.get('/api/v2/teams', apiv2Auth, canUser('teams:view'), apiv2.teams.get)
+  router.post('/api/v2/teams', apiv2Auth, canUser('teams:create'), apiv2.teams.create)
+  router.put('/api/v2/teams/:id', apiv2Auth, canUser('teams:update'), apiv2.teams.update)
+  router.delete('/api/v2/teams/:id', apiv2Auth, canUser('teams:delete'), apiv2.teams.delete)
 
   // Departments
-  router.get('/api/v2/departments', apiv2Auth, apiv2.departments.get)
-  router.post('/api/v2/departments', apiv2Auth, apiv2.departments.create)
-  router.put('/api/v2/departments/:id', apiv2Auth, apiv2.departments.update)
-  router.delete('/api/v2/departments/:id', apiv2Auth, apiv2.departments.delete)
+  router.get('/api/v2/departments', apiv2Auth, canUser('departments:view'), apiv2.departments.get)
+  router.post('/api/v2/departments', apiv2Auth, canUser('departments:create'), apiv2.departments.create)
+  router.put('/api/v2/departments/:id', apiv2Auth, canUser('departments:update'), apiv2.departments.update)
+  router.delete('/api/v2/departments/:id', apiv2Auth, canUser('departments:delete'), apiv2.departments.delete)
 
   // Notices
   router.get('/api/v2/notices', apiv2Auth, apiv2.notices.get)
