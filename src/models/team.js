@@ -58,6 +58,8 @@ teamSchema.methods.addMember = async function (memberId, callback) {
       this.members.push(memberId)
       this.members = _.uniq(this.members)
 
+      if (typeof callback === 'function') return callback(null, true)
+
       return resolve(true)
     })()
   })
