@@ -15,7 +15,7 @@
 var async = require('async')
 var _ = require('lodash')
 var moment = require('moment-timezone')
-var winston = require('winston')
+var winston = require('../../../logger')
 var permissions = require('../../../permissions')
 var emitter = require('../../../emitter')
 var xss = require('xss')
@@ -1828,12 +1828,23 @@ apiTickets.subscribe = function (req, res) {
   if (_.isUndefined(data.user) || _.isUndefined(data.subscribe))
     return res.status(400).json({ error: 'Invalid Post Data.' })
 
+  if (data.user.toString() !== req.user._id.toString()) return res.status(401).json({ error: 'Unauthorized!' })
+
   var ticketModel = require('../../../models/ticket')
   ticketModel.getTicketById(ticketId, function (err, ticket) {
     if (err) return res.status(400).json({ error: 'Invalid Ticket Id' })
 
     async.series(
       [
+        function (callback) {
+          require('../../../models/user').find({ _id: data.user }, function (err, user) {
+            if (err) return callback(err)
+
+            if (!user) return callback(new Error('Unauthorized!'))
+
+            return callback()
+          })
+        },
         function (callback) {
           if (data.subscribe) {
             ticket.addSubscriber(data.user, function () {
@@ -1846,7 +1857,12 @@ apiTickets.subscribe = function (req, res) {
           }
         }
       ],
-      function () {
+      function (err) {
+        if (err) {
+          winston.warn(err)
+          return res.status(401).json({ error: 'Unauthorized!' })
+        }
+
         ticket.save(function (err, ticket) {
           if (err) return res.status(400).json({ error: err })
 
