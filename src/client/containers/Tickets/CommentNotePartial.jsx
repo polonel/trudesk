@@ -24,13 +24,20 @@ const setupImages = parent => {
   imagesEl.forEach(i => helpers.setupImageLink(i))
 }
 
+const setupLinks = parent => {
+  const linksEl = parent.body.querySelectorAll('a')
+  linksEl.forEach(i => helpers.setupLinkWarning(i))
+}
+
 class CommentNotePartial extends React.Component {
   componentDidMount () {
     setupImages(this)
+    setupLinks(this)
   }
 
   componentDidUpdate () {
     setupImages(this)
+    setupLinks(this)
   }
 
   componentWillUnmount () {}
