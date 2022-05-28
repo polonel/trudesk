@@ -655,6 +655,9 @@ mainController.uploadFavicon = function (req, res) {
     }
 
     if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg') {
+      require('../helpers/utils').stripExifData(object.filePath)
+    }
 
     settingUtil.setSetting('gen:customfavicon', true, function (err) {
       if (err) return res.status(400).send('Failed to save setting to database')
@@ -727,6 +730,9 @@ mainController.uploadLogo = function (req, res) {
     }
 
     if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg') {
+      require('../helpers/utils').stripExifData(object.filePath)
+    }
 
     settingUtil.setSetting('gen:customlogo', true, function (err) {
       if (err) return res.status(400).send('Failed to save setting to database')
@@ -800,6 +806,9 @@ mainController.uploadPageLogo = function (req, res) {
     }
 
     if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg') {
+      require('../helpers/utils').stripExifData(object.filePath)
+    }
 
     settingUtil.setSetting('gen:custompagelogo', true, function (err) {
       if (err) return res.status(400).send('Failed to save setting to database')
