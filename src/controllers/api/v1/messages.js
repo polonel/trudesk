@@ -14,9 +14,10 @@
 
 var async = require('async')
 var _ = require('lodash')
-var winston = require('winston')
+var winston = require('../../../logger')
 var ConversationSchema = require('../../../models/chat/conversation')
 var MessageSchema = require('../../../models/chat/message')
+var UserSchema = require('../../../models/user')
 
 var apiMessages = {}
 
@@ -191,22 +192,32 @@ apiMessages.send = function (req, res) {
   async.waterfall(
     [
       function (done) {
-        // Updated conversation to save UpdatedAt field.
-        ConversationSchema.findOneAndUpdate({ _id: cId }, { updatedAt: new Date() }, { new: false }, function (
-          err,
-          convo
-        ) {
-          if (err) return done(err)
-          if (convo === null || convo === undefined) {
-            return done('Invalid Conversation: ' + convo)
-          }
+        ConversationSchema.findOne({ _id: cId }, function (err, convo) {
+          if (err || !convo) return done('Invalid Conversation')
+
           return done(null, convo)
         })
       },
       function (convo, done) {
-        var Message = new MessageSchema({
+        // Updated conversation to save UpdatedAt field.
+        convo.updatedAt = new Date()
+        convo.save(function (err, savedConvo) {
+          if (err) return done(err)
+
+          return done(null, savedConvo)
+        })
+      },
+      function (convo, done) {
+        UserSchema.findOne({ _id: owner }, function (err, user) {
+          if (err || !user) return done('Invalid Conversation')
+
+          return done(null, user, convo)
+        })
+      },
+      function (user, convo, done) {
+        const Message = new MessageSchema({
           conversation: convo._id,
-          owner: owner,
+          owner: user._id,
           body: message
         })
 

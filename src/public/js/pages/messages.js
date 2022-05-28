@@ -23,41 +23,34 @@ define('pages/messages', [
   'history',
   'isinview'
 ], function ($, _, angular, UIKit, moment, helpers) {
-  var messagesPage = {}
+  const messagesPage = {}
 
   messagesPage.init = function (callback) {
     $(document).ready(function () {
-      var $messageScroller = $('#message-content.scrollable')
-
-      var $messagesWrapper = $('#messages')
-
-      var $scrollspy = $('#conversation-scrollspy')
-
-      var $spinner = $scrollspy.find('i')
-
-      var $searchBox = $('.search-box').find('input')
-
-      var $nextPage = 2
-
-      var $enabled = true
-
-      var $loading = false
-
+      const $messageScroller = $('#message-content.scrollable')
+      const $messagesWrapper = $('#messages')
+      const $scrollspy = $('#conversation-scrollspy')
+      const $spinner = $scrollspy.find('i')
+      const $searchBox = $('.search-box').find('input')
+      let $nextPage = 2
+      let $enabled = true
+      let $loading = false
       // $inview             = null,
+      const $recentMessages = {}
+      const $convoId = $('#message-content[data-conversation-id]').attr('data-conversation-id')
+      const $loggedInAccountId = window.trudeskSessionService.getUser()._id
 
-      var $recentMessages = {}
-
-      var $convoId = $('#message-content[data-conversation-id]').attr('data-conversation-id')
-
-      var $loggedInAccountId = window.trudeskSessionService.getUser()._id
+      setTimeout(function () {
+        $('script#preloader').remove()
+      }, 1000)
 
       // Setup Context Menu
       helpers.setupContextMenu('#convo-list > ul > li', function (action, target) {
-        var $li = $(target)
+        let $li = $(target)
         if (!$li.is('li')) {
           $li = $(target).parents('li')
         }
-        var convoId = $li.attr('data-conversation-id')
+        const convoId = $li.attr('data-conversation-id')
         if (action.toLowerCase() === 'delete') {
           UIKit.modal.confirm(
             'Are you sure you want to delete this conversation?',
@@ -87,7 +80,7 @@ define('pages/messages', [
 
         // set active
         if ($convoId !== undefined) {
-          var item = $('ul > li[data-conversation-id="' + $convoId + '"]')
+          const item = $('ul > li[data-conversation-id="' + $convoId + '"]')
           item.addClass('active')
         }
 
@@ -98,7 +91,7 @@ define('pages/messages', [
             .toLowerCase() === 'messages'
         ) {
           $('.chat-box-position').each(function () {
-            var self = $(this)
+            const self = $(this)
             self.remove()
           })
 
@@ -108,7 +101,7 @@ define('pages/messages', [
 
           $messageScroller.scroll(function () {
             if ($scrollspy.isInView($messageScroller)) {
-              var run = _.throttle(loadMoreMessages, 100)
+              const run = _.throttle(loadMoreMessages, 100)
               run()
             }
           })
@@ -122,11 +115,11 @@ define('pages/messages', [
           success: function (response) {
             if (response.success) {
               // Check if on conversation
-              var $convo = $('#message-content[data-conversation-id="' + response.conversation._id + '"]')
+              const $convo = $('#message-content[data-conversation-id="' + response.conversation._id + '"]')
               if ($convo.length > 0) {
                 History.pushState(null, null, '/messages', false)
               } else {
-                var $convoLI = $('#convo-list').find('li[data-conversation-id="' + response.conversation._id + '"]')
+                const $convoLI = $('#convo-list').find('li[data-conversation-id="' + response.conversation._id + '"]')
                 if ($convoLI.length > 0) {
                   $convoLI.remove()
                 }
@@ -146,7 +139,7 @@ define('pages/messages', [
       }
 
       function onSearchKeyUp () {
-        var searchTerm = $searchBox.val().toLowerCase()
+        const searchTerm = $searchBox.val().toLowerCase()
         $('.all-user-list li').each(function () {
           if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
             $(this).show()
@@ -168,21 +161,21 @@ define('pages/messages', [
         })
           .done(function (data) {
             $spinner.addClass('uk-hidden')
-            var messages = data.messages
+            const messages = data.messages
             if (_.size(messages) < 1) {
               $enabled = false
               $loading = false
               return false
             }
 
-            var html = ''
+            let html = ''
 
             _.each(messages, function (m) {
-              var h = buildMessageHTML(m)
+              const h = buildMessageHTML(m)
               if (h.length > 0) html += h
             })
 
-            var stage = $('<div></div>')
+            const stage = $('<div></div>')
               .appendTo('body')
               .addClass('stage')
               .css({
@@ -193,7 +186,7 @@ define('pages/messages', [
                 left: '-9999em'
               })
               .append(html)
-            var height = $(stage).outerHeight()
+            const height = $(stage).outerHeight()
             $(stage).remove()
 
             $messagesWrapper.prepend(html)
@@ -210,15 +203,15 @@ define('pages/messages', [
       }
 
       function buildMessageHTML (message) {
-        var html = ''
-        var loggedInAccountId = window.trudeskSessionService.getUser()._id
+        let html = ''
+        const loggedInAccountId = window.trudeskSessionService.getUser()._id
         if (loggedInAccountId === undefined) return false
-        var left = true
+        let left = true
         if (message.owner._id.toString() === loggedInAccountId.toString()) {
           left = false
         }
 
-        var image = message.owner.image === undefined ? 'defaultProfile.jpg' : message.owner.image
+        const image = message.owner.image === undefined ? 'defaultProfile.jpg' : message.owner.image
 
         if (left) {
           html += '<div class="message message-left">'
@@ -259,7 +252,7 @@ define('pages/messages', [
 
       // On user Typing
       $(window).on('$trudesk:chat:typing.conversation', function (event, data) {
-        var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]')
+        const convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]')
         if (convoListItem.length > 0) {
           $recentMessages[data.cid] = convoListItem.find('.message-subject').text()
           convoListItem.find('.message-subject').text(data.fromUser.fullname + ' is typing...')
@@ -267,7 +260,7 @@ define('pages/messages', [
       })
 
       $(window).on('$trudesk:chat:stoptyping.conversation', function (event, data) {
-        var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]')
+        const convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]')
         if (convoListItem.length > 0) {
           convoListItem.find('.message-subject').text($recentMessages[data.cid])
         }
@@ -275,38 +268,38 @@ define('pages/messages', [
 
       // On Chat Message
       $(window).on('$trudesk:chat:message.conversation', function (event, data) {
-        var message = {
+        const message = {
           _id: data.messageId,
           conversation: data.conversation,
           body: data.message,
           owner: data.fromUser
         }
 
-        var html = buildMessageHTML(message)
-        var messageWrapper = $('#message-content[data-conversation-id="' + message.conversation + '"]')
+        const html = buildMessageHTML(message)
+        const messageWrapper = $('#message-content[data-conversation-id="' + message.conversation + '"]')
         if (messageWrapper.length > 0) {
           messageWrapper.find('#messages').append(html)
         }
 
-        var convoListItem = $('li[data-conversation-id="' + data.conversation + '"]')
+        const convoListItem = $('li[data-conversation-id="' + data.conversation + '"]')
         if (convoListItem.length > 0) {
           convoListItem.attr('data-updatedAt', new Date())
-          var ul = convoListItem.parent('ul')
-          var li = ul.children('li')
+          const ul = convoListItem.parent('ul')
+          const li = ul.children('li')
           li.detach().sort(function (a, b) {
             return new Date($(a).attr('data-updatedAt')) < new Date($(b).attr('data-updatedAt'))
           })
 
           ul.append(li)
 
-          var fromName = message.owner.fullname
+          let fromName = message.owner.fullname
           if (message.owner._id.toString() === $loggedInAccountId) {
             fromName = 'You'
           }
 
           convoListItem.find('.message-subject').text(fromName + ': ' + message.body)
           $recentMessages[message.conversation] = fromName + ': ' + message.body
-          var timezone = helpers.getTimezone()
+          const timezone = helpers.getTimezone()
           convoListItem.find('.message-date').text(
             moment
               .utc()
@@ -314,25 +307,25 @@ define('pages/messages', [
               .calendar()
           )
         } else {
-          var convoUL = $('#convo-list > ul.message-items')
+          const convoUL = $('#convo-list > ul.message-items')
           if (convoUL.length > 0) {
-            var partner = message.owner
+            let partner = message.owner
             if (message.owner._id.toString() === $loggedInAccountId.toString()) {
               partner = data.toUser
             }
-            var newLI = buildConversationListItem({
+            const newLI = buildConversationListItem({
               _id: message.conversation,
               partner: partner,
               updatedAt: new Date(),
               recentMessage: message.owner.fullname + ': ' + message.body
             })
 
-            var $injector = angular.injector(['ng', 'trudesk'])
+            const $injector = angular.injector(['ng', 'trudesk'])
             $injector.invoke([
               '$compile',
               '$rootScope',
               function ($compile, $rootScope) {
-                var $scope = convoUL.prepend(newLI).scope()
+                const $scope = convoUL.prepend(newLI).scope()
                 $compile(convoUL)($scope || $rootScope)
                 $rootScope.$digest()
               }
@@ -345,7 +338,7 @@ define('pages/messages', [
       })
 
       function buildConversationListItem (data) {
-        var html = ''
+        let html = ''
 
         html +=
           '<li ng-click="loadConversation(\'' +
@@ -356,7 +349,7 @@ define('pages/messages', [
           data.updatedAt +
           '">'
         html += '<div class="profile-pic">'
-        var imageUrl = 'defaultProfile.jpg'
+        let imageUrl = 'defaultProfile.jpg'
         if (data.partner.image) {
           imageUrl = data.partner.image
         }

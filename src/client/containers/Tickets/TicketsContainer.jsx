@@ -104,7 +104,6 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketUpdated (data) {
-    console.log(data)
     this.props.ticketUpdated(data)
   }
 
