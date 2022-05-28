@@ -12,12 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose')
-var _ = require('lodash')
+const mongoose = require('mongoose')
+const _ = require('lodash')
+const utils = require('../../helpers/utils')
 
-var COLLECTION = 'messages'
+const COLLECTION = 'messages'
 
-var messageSchema = mongoose.Schema(
+const messageSchema = mongoose.Schema(
   {
     conversation: {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,6 +35,12 @@ var messageSchema = mongoose.Schema(
   },
   { timestamps: true }
 )
+
+messageSchema.pre('save', function (next) {
+  this.body = utils.sanitizeFieldPlainText(utils.applyExtremeTextLength(this.body))
+
+  next()
+})
 
 messageSchema.statics.getFullConversation = function (convoId, callback) {
   return this.model(COLLECTION)
@@ -65,14 +72,14 @@ messageSchema.statics.getConversationWithObject = function (object, callback) {
     return callback('Invalid Object (Must by of type Object) - MessageSchema.GetUserWithObject()', null)
   }
 
-  var self = this
-  var deletedAt = null
+  const self = this
+  let deletedAt = null
 
-  var limit = object.limit === null ? 25 : object.limit
-  var page = object.page === null ? 0 : object.page
+  const limit = object.limit === null ? 25 : object.limit
+  const page = object.page === null ? 0 : object.page
 
   if (object.requestingUser) {
-    var userMetaIdx = _.findIndex(object.userMeta, function (item) {
+    const userMetaIdx = _.findIndex(object.userMeta, function (item) {
       return item.userId.toString() === object.requestingUser._id.toString()
     })
     if (userMetaIdx !== -1 && object.userMeta[userMetaIdx].deletedAt) {
@@ -80,7 +87,7 @@ messageSchema.statics.getConversationWithObject = function (object, callback) {
     }
   }
 
-  var q = self
+  const q = self
     .model(COLLECTION)
     .find({})
     .sort('-createdAt')
