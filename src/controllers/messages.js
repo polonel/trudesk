@@ -90,7 +90,7 @@ messagesController.get = function (req, res) {
   })
 }
 
-messagesController.getConversation = function (req, res) {
+messagesController.getConversation = async (req, res) => {
   const cid = req.params.convoid
   if (_.isUndefined(cid)) return handleError(res, 'Invalid Conversation ID!')
 
@@ -181,6 +181,16 @@ messagesController.getConversation = function (req, res) {
           }
 
           const c = convo.toObject()
+
+          let isPart = false
+          _.each(c.participants, function (p) {
+            if (p._id.toString() === req.user._id.toString()) isPart = true
+          })
+
+          if (!isPart) {
+            return res.redirect('/messages')
+          }
+
           messageSchema.getConversationWithObject(
             { cid: c._id, userMeta: convo.userMeta, requestingUser: req.user },
             function (err, messages) {
