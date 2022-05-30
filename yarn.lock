@@ -8800,7 +8800,7 @@ js-yaml@4.1.0, js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
-js-yaml@^3.13.1, js-yaml@~3.14.0:
+js-yaml@^3.13.1, js-yaml@^3.2.3, js-yaml@~3.14.0:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.14.1.tgz#dae812fdb3825fa306609a8717383c50c36a0537"
   integrity sha512-okMH7OXXJ7YrN9Ok3/SXrnu4iX9yOk+25nqX4imS2npuvTYDmo/QEZoqwZkYaIDk3jVvBOTOIEgEhaLOynBS9g==
@@ -10591,6 +10591,13 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
+
+nconf-yaml@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/nconf-yaml/-/nconf-yaml-1.0.2.tgz#fea065333cf42b77a5e8060517969799d4156575"
+  integrity sha1-/qBlMzz0K3el6AYFF5aXmdQVZXU=
+  dependencies:
+    js-yaml "^3.2.3"
 
 nconf@0.12.0:
   version "0.12.0"
@@ -15976,6 +15983,11 @@ yaml@1.8.3:
   integrity sha512-X/v7VDnK+sxbQ2Imq4Jt2PRUsRsP7UcpSl3Llg6+NRRqWLIvxkMFYtH1FmvwNGYRKKPa+EPA4qDBlI9WVG1UKw==
   dependencies:
     "@babel/runtime" "^7.8.7"
+
+yaml@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.1.1.tgz#1e06fb4ca46e60d9da07e4f786ea370ed3c3cfec"
+  integrity sha512-o96x3OPo8GjWeSLF+wOAbrPfhFOGY0W00GNaxCDv+9hkcDJEnev1yh8S7pgHF0ik6zc8sQLuL8hjHjJULZp8bw==
 
 yaml@^1.10.0, yaml@^1.10.2, yaml@^1.7.1:
   version "1.10.2"

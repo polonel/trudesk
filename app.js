@@ -46,7 +46,7 @@ if (!process.env.FORK) {
   winston.info('Server Time: ' + new Date())
 }
 
-let configFile = path.join(__dirname, '/config.json')
+let configFile = path.join(__dirname, '/config.yml')
 
 nconf.defaults({
   base_dir: __dirname,
@@ -75,7 +75,8 @@ if (nconf.get('install') || (!configExists && !isDocker)) {
 
 function loadConfig () {
   nconf.file({
-    file: configFile
+    file: configFile,
+    format: require('nconf-yaml')
   })
 }
 
