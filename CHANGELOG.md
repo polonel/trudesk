@@ -1,3 +1,15 @@
+## [1.2.3](https://github.com/polonel/trudesk/compare/v1.2.2...v1.2.3) (2022-05-30)
+
+
+### Bug Fixes
+
+* **core:** image data removal ([ae904d3](https://github.com/polonel/trudesk/commit/ae904d3))
+* **core:** verify user exists ([f739eac](https://github.com/polonel/trudesk/commit/f739eac))
+* **messages:** invalid permissions ([a9e38f2](https://github.com/polonel/trudesk/commit/a9e38f2))
+* **messages:** validation check ([3145408](https://github.com/polonel/trudesk/commit/3145408))
+* **messages:** xss security ([b7c1518](https://github.com/polonel/trudesk/commit/b7c1518))
+* **tickets:** external link warning in comments ([c2cb0df](https://github.com/polonel/trudesk/commit/c2cb0df))
+
 ## [1.2.2](https://github.com/polonel/trudesk/compare/v1.2.1...v1.2.2) (2022-05-20)
 
 
