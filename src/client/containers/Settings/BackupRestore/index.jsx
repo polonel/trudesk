@@ -237,21 +237,16 @@ class BackupRestoreSettingsContainer extends React.Component {
                 MongoDB Tools are required to perform backup and restore. See below for instructions on installing
                 MongoDB Tools.
               </p>
-              <br />
-              <h5>
-                <strong>Ubuntu 16.04</strong>
-              </h5>
-              <pre style={{ whiteSpace: 'pre-line' }}>
-                wget
-                https://repo.mongodb.org/apt/ubuntu/dists/xenial/mongodb-org/3.6/multiverse/binary-amd64/mongodb-org-tools_3.6.9_amd64.deb
-                && \ dpkg -i mongodb-org-tools_3.6.9_amd64.deb
-              </pre>
-              <br />
               <h5>
                 <strong>Ubuntu 18.04</strong>
               </h5>
               <pre style={{ whiteSpace: 'pre-line' }}>sudo apt install -y mongo-tools</pre>
               <br />
+              <h5>
+                <strong>ArchLinux</strong>
+              </h5>
+              <pre style={{ whiteSpace: 'pre-line' }}>yay -S mongodb-tools-bin</pre>
+              <br/>
               <h5>
                 <strong>Fedora 29</strong>
               </h5>
