@@ -62,7 +62,7 @@ function restartRefreshClock () {
   refreshTimer = setInterval(function () {
     truCache.refreshCache()
     winston.debug('Refreshing Cache...')
-  }, 5 * 60 * 1000)
+  }, 55 * 60 * 1000)
 }
 
 truCache.refreshCache = function (callback) {

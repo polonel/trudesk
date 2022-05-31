@@ -24,7 +24,7 @@ cache.init = function () {
   cache.env = _.merge(cache.env, env)
 
   spawnCache()
-  setInterval(spawnCache, 5 * 60 * 1000)
+  setInterval(spawnCache, 55 * 60 * 1000)
 }
 
 cache.forceRefresh = function() {
