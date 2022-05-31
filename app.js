@@ -60,6 +60,9 @@ if (nconf.get('config')) {
   configFile = path.resolve(__dirname, nconf.get('config'))
 }
 
+// Make sure we convert the .json file to .yml
+checkForOldConfig()
+
 const configExists = fs.existsSync(configFile)
 
 function launchInstallServer () {
@@ -80,8 +83,23 @@ function loadConfig () {
   })
 }
 
+function checkForOldConfig() {
+  const oldConfigFile = path.join(__dirname, '/config.json')
+  if (fs.existsSync(oldConfigFile)) {
+    // Convert config to yaml.
+    const content = fs.readFileSync(oldConfigFile)
+    const YAML = require('yaml')
+    const data = JSON.parse(content)
+
+    fs.writeFileSync(configFile, YAML.stringify(data))
+
+    // Rename the old config.json to config.json.bk
+    fs.renameSync(oldConfigFile, path.join(__dirname, '/config.json.bk'))
+  }
+}
+
 function start () {
-  if (!isDocker) loadConfig()
+  if (!isDocker)loadConfig()
 
   const _db = require('./src/database')
 
