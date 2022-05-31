@@ -404,8 +404,9 @@ installController.install = function (req, res) {
         if (process.env.TRUDESK_DOCKER) return next()
         // Write Configfile
         const fs = require('fs')
-        const configFile = path.join(__dirname, '../../config.json')
+        const configFile = path.join(__dirname, '../../config.yml')
         const chance = new Chance()
+        const YAML = require('yaml')
 
         const conf = {
           mongo: {
@@ -422,7 +423,7 @@ installController.install = function (req, res) {
           }
         }
 
-        fs.writeFile(configFile, JSON.stringify(conf, null, 4), function (err) {
+        fs.writeFile(configFile, YAML.stringify(conf), function (err) {
           if (err) {
             winston.error('FS Error: ' + err.message)
             return next('FS Error: ' + err.message)

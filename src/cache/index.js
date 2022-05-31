@@ -27,7 +27,8 @@ global.env = process.env.NODE_ENV || 'production'
 
 function loadConfig () {
   nconf.file({
-    file: path.join(__dirname, '/../../config.json')
+    file: path.join(__dirname, '/../../config.yml'),
+    format: require('nconf-yaml')
   })
 
   nconf.defaults({
@@ -61,7 +62,7 @@ function restartRefreshClock () {
   refreshTimer = setInterval(function () {
     truCache.refreshCache()
     winston.debug('Refreshing Cache...')
-  }, 55 * 60 * 1000)
+  }, 5 * 60 * 1000)
 }
 
 truCache.refreshCache = function (callback) {

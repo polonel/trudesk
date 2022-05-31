@@ -24,7 +24,11 @@ cache.init = function () {
   cache.env = _.merge(cache.env, env)
 
   spawnCache()
-  setInterval(spawnCache, 55 * 60 * 1000)
+  setInterval(spawnCache, 5 * 60 * 1000)
+}
+
+cache.forceRefresh = function() {
+  spawnCache()
 }
 
 function spawnCache () {
@@ -34,6 +38,8 @@ function spawnCache () {
     execArgv: ['--max-old-space-size=' + cache.memLimit],
     env: cache.env
   })
+
+  cache.fork = n
 
   global.forks.push({ name: 'cache', fork: n })
 
