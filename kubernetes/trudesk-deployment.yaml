@@ -58,10 +58,10 @@ spec:
               name: trudesk-uploads
             - mountPath: /usr/src/trudesk/backups
               name: trudesk-backups
-            - mountPath: /usr/src/trudesk/config.json
-              name: trudesk-config-json
+            - mountPath: /usr/src/trudesk/config.yml
+              name: trudesk-config-yml
               readOnly: true
-              subPath: config.json
+              subPath: config.yml
       restartPolicy: Always
       volumes:
         - name: trudesk-uploads
@@ -70,9 +70,9 @@ spec:
         - name: trudesk-backups
           persistentVolumeClaim:
             claimName: trudesk-backups
-        - name: trudesk-config-json
+        - name: trudesk-config-yml
           configMap:
-            name: trudesk-config-json
+            name: trudesk-config-yml
 status: {}
 
 
