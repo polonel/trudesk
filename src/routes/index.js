@@ -405,12 +405,9 @@ function mainRoutes (router, middleware, controllers) {
     })
 
     router.get('/debug/cache/refresh', function (req, res) {
-      const _ = require('lodash')
-
-      const forkProcess = _.find(global.forks, { name: 'cache' })
-      forkProcess.fork.send({ name: 'cache:refresh' })
-
-      res.send('OK')
+      const cache = require('../cache/cache.js')
+      cache.forceRefresh()
+      return res.send('OK')
     })
 
     router.get('/debug/restart', function (req, res) {

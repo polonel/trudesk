@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: trudesk-config-json
+  name: trudesk-config-yml
   namespace: default
 
 data:
-  config.json: |-
+  config.yml: |-
     {
       "tokens": {
         "secret": "SECRET_USED_TO_HASH"

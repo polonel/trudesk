@@ -27,6 +27,10 @@ cache.init = function () {
   setInterval(spawnCache, 55 * 60 * 1000)
 }
 
+cache.forceRefresh = function() {
+  spawnCache()
+}
+
 function spawnCache () {
   const fork = require('child_process').fork
 
@@ -34,6 +38,8 @@ function spawnCache () {
     execArgv: ['--max-old-space-size=' + cache.memLimit],
     env: cache.env
   })
+
+  cache.fork = n
 
   global.forks.push({ name: 'cache', fork: n })
 

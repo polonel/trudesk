@@ -592,11 +592,11 @@ function elasticSearchConfToDB (callback) {
   const nconf = require('nconf')
   const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
-    host: nconf.get('elasticsearch:host'),
-    port: nconf.get('elasticsearch:port')
+    host: nconf.get('elasticsearch:host') || "",
+    port: nconf.get('elasticsearch:port') || 9200
   }
 
-  nconf.set('elasticsearch', undefined)
+  nconf.set('elasticsearch', {})
 
   async.parallel(
     [

@@ -74,7 +74,7 @@ define([
         }
 
         $http
-          .put('/api/v1/users/' + data.username, {
+          .put('/api/v1/profile/', {
             aId: id,
             aFullname: data.fullname,
             aPass: data.password,

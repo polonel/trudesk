@@ -76,6 +76,7 @@
     "mongoose-autopopulate": "0.16.0",
     "mongoose-lean-virtuals": "0.9.0",
     "nconf": "0.12.0",
+    "nconf-yaml": "1.0.2",
     "netmask": "2.0.2",
     "node-cache": "5.1.2",
     "node-sass": "7.0.1",
@@ -121,7 +122,8 @@
     "util": "0.12.4",
     "velocity-react": "1.4.3",
     "winston": "3.6.0",
-    "xss": "1.0.10"
+    "xss": "1.0.10",
+    "yaml": "2.1.1"
   },
   "devDependencies": {
     "@babel/core": "7.17.4",

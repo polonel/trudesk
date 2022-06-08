@@ -27,7 +27,8 @@ global.env = process.env.NODE_ENV || 'production'
 
 function loadConfig () {
   nconf.file({
-    file: path.join(__dirname, '/../../config.json')
+    file: path.join(__dirname, '/../../config.yml'),
+    format: require('nconf-yaml')
   })
 
   nconf.defaults({
