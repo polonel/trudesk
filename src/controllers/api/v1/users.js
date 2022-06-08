@@ -384,6 +384,104 @@ apiUsers.createPublicAccount = function (req, res) {
   )
 }
 
+apiUsers.profileUpdate = function (req, res) {
+  if (!req.user) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  const username = req.user.username
+  if (_.isNull(username) || _.isUndefined(username))
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+
+  const data = req.body
+  let passwordUpdated = false
+
+  const obj = {
+    fullname: data.aFullname,
+    title: data.aTitle,
+    password: data.aPassword,
+    passconfirm: data.aPassConfirm,
+    email: data.aEmail
+  }
+
+  let passwordComplexityEnabled = true
+
+  async.series(
+    {
+      settings: function (done) {
+        const SettingUtil = require('../../../settings/settingsUtil')
+        SettingUtil.getSettings(function (err, content) {
+          if (err) return done(err)
+
+          const settings = content.data.settings
+          passwordComplexityEnabled = settings.accountsPasswordComplexity.value
+
+          return done()
+        })
+      },
+      user: function (done) {
+        UserSchema.getUserByUsername(username, function (err, user) {
+          if (err) return done(err)
+          if (!user) return done('Invalid User Object')
+
+          obj._id = user._id
+
+          if (
+            !_.isUndefined(obj.password) &&
+            !_.isEmpty(obj.password) &&
+            !_.isUndefined(obj.passconfirm) &&
+            !_.isEmpty(obj.passconfirm)
+          ) {
+            if (obj.password === obj.passconfirm) {
+              if (passwordComplexityEnabled) {
+                // check Password Complexity
+                const passwordComplexity = require('../../../settings/passwordComplexity')
+                if (!passwordComplexity.validate(obj.password)) return done('Password does not meet requirements')
+              }
+
+              user.password = obj.password
+              passwordUpdated = true
+            }
+          }
+
+          if (!_.isUndefined(obj.fullname) && obj.fullname.length > 0) user.fullname = obj.fullname
+          if (!_.isUndefined(obj.email) && obj.email.length > 0) user.email = obj.email
+          if (!_.isUndefined(obj.title) && obj.title.length > 0) user.title = obj.title
+
+          user.save(function (err, nUser) {
+            if (err) return done(err)
+
+            nUser.populate('role', function (err, populatedUser) {
+              if (err) return done(err)
+              const resUser = stripUserFields(populatedUser)
+
+              return done(null, resUser)
+            })
+          })
+        })
+      },
+      groups: function (done) {
+        groupSchema.getAllGroupsOfUser(obj._id, done)
+      }
+    },
+    async function (err, results) {
+      if (err) {
+        winston.debug(err)
+        return res.status(400).json({ success: false, error: err })
+      }
+
+      const user = results.user.toJSON()
+      user.groups = results.groups.map(function (g) {
+        return { _id: g._id, name: g.name }
+      })
+
+      if (passwordUpdated) {
+        const Session = require('../../../models/session')
+        await Session.destroy(user._id)
+      }
+
+      return res.json({ success: true, user: user })
+    }
+  )
+}
+
 /**
  * @api {put} /api/v1/users/:username Update User
  * @apiName updateUser

@@ -122,6 +122,7 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v1/groups/:id', apiv1, canUser('groups:delete'), apiCtrl.groups.deleteGroup)
 
   // Users
+  router.put('/api/v1/profile', apiv1, apiCtrl.users.profileUpdate)
   router.get('/api/v1/users', apiv1, canUser('accounts:view'), apiCtrl.users.getWithLimit)
   router.post('/api/v1/users/create', apiv1, canUser('accounts:create'), apiCtrl.users.create)
   router.get('/api/v1/users/notifications', apiv1, apiCtrl.users.getNotifications)
