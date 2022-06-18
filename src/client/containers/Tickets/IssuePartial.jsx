@@ -99,10 +99,12 @@ class IssuePartial extends React.Component {
     const attachmentFile = e.target.files[0]
     formData.append('ticketId', this.ticketId)
     formData.append('attachment', attachmentFile)
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     axios
       .post(`/tickets/uploadattachment`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'CSRF-TOKEN': token
         }
       })
       .then(() => {

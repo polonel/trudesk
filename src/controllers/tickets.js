@@ -704,9 +704,33 @@ ticketsController.uploadAttachment = function (req, res) {
     let sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
 
     const ext = path.extname(sanitizedFilename)
+    const allowedExts = [
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.tif',
+      '.gif',
+      '.doc',
+      '.docx',
+      '.xlsx',
+      '.xls',
+      '.pdf',
+      '.zip',
+      '.rar',
+      '.7z',
+      '.mp3',
+      '.wav',
+      '.txt',
+      '.mp4',
+      '.avi',
+      '.mpeg',
+      '.eps',
+      '.ai',
+      '.psd'
+    ]
     const badExts = ['.html', '.htm', '.js', '.svg']
 
-    if (badExts.includes(ext)) {
+    if (!allowedExts.includes(ext)) {
       error = {
         status: 400,
         message: 'Invalid File Type'

@@ -203,7 +203,12 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/tickets/print/:uid', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print)
   router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single)
   // router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
-  router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment)
+  router.post(
+    '/tickets/uploadattachment',
+    middleware.redirectToLogin,
+    middleware.csrfCheck,
+    controllers.tickets.uploadAttachment
+  )
   router.post('/tickets/uploadmdeimage', middleware.redirectToLogin, controllers.tickets.uploadImageMDE)
 
   // Messages
