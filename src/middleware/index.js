@@ -72,7 +72,7 @@ module.exports = function (app, db, callback) {
     maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year
   }
 
-  const sessionSecret = 'trudesk$123#SessionKeY!2387'
+  const sessionSecret = crypto.randomBytes(32).toString('hex');
   async.waterfall(
     [
       function (next) {
