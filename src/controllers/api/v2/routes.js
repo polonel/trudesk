@@ -24,11 +24,16 @@ module.exports = function (middleware, router, controllers) {
   // Common
   router.post('/api/v2/login', controllers.api.v2.common.login)
   router.post('/api/v2/token', controllers.api.v2.common.token)
+  router.get('/api/v2/viewdata', middleware.loadCommonData, controllers.api.v2.common.viewData)
 
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
   router.put('/api/v2/accounts/:username', canUser('accounts:update'), apiv2Auth, apiv2.accounts.update)
+
+  // Ticket Info
+  router.get('/api/v2/tickets/info/types', apiv2Auth, apiv2.tickets.info.types)
+  router.get('/api/v2/tickets/info/tags', apiv2Auth, apiv2.tickets.info.tags)
 
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, canUser('tickets:view'), apiv2.tickets.get)
@@ -60,6 +65,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Notices
   router.get('/api/v2/notices', apiv2Auth, apiv2.notices.get)
+  // router.get('/api/v2/notices/active', apiv2Auth, apiv2.notices.getActive)
   router.put('/api/v2/notices/:id', apiv2Auth, canUser('notices:update'), apiv2.notices.update)
   router.put('/api/v2/notices/:id/activate', apiv2Auth, canUser('notices:activate'), apiv2.notices.activate)
   router.get('/api/v2/notices/clear', apiv2Auth, canUser('notices:deactivate'), apiv2.notices.clear)

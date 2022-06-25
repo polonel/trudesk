@@ -154,13 +154,6 @@
         document.location = '/mobile';
     }
 </script>
-<script type="text/javascript" id="preloader">
-    // TODO: Temp. Until we pass render fully on server.
-    if (!window.trudesk)
-        window.trudesk = {};
-    window.trudesk.__PRELOADED_STATE__ = {{{stringify data.common}}};
-    window.trudesk.viewdata = {{{stringify data.common}}};
-</script>
 
 <script src="/js/trudesk.min.js"></script>
 

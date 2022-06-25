@@ -17,6 +17,9 @@ var async = require('async')
 var winston = require('winston')
 var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
+const TicketType = require('../../../models/tickettype')
+const Priorities = require('../../../models/ticketpriority')
+const TicketTags = require('../../../models/tag')
 var Group = require('../../../models/group')
 var Department = require('../../../models/department')
 var permissions = require('../../../permissions')
@@ -272,6 +275,28 @@ ticketsV2.transferToThirdParty = function (req, res) {
         return apiUtils.sendApiError(res, err.response.status, err.response.data.message)
       })
   })
+}
+
+ticketsV2.info = {}
+ticketsV2.info.types = async (req, res) => {
+  try {
+    const ticketTypes = await TicketType.find({})
+    const priorities = await Priorities.find({})
+
+    return apiUtils.sendApiSuccess(res, { ticketTypes, priorities })
+  } catch (err) {
+    return apiUtils.sendApiError(500, err)
+  }
+}
+
+ticketsV2.info.tags = async (req, res) => {
+  try {
+    const tags = await TicketTags.find({}).sort('normalized')
+
+    return apiUtils.sendApiSuccess(res, { tags })
+  } catch (err) {
+    return apiUtils.sendApiError(500, err)
+  }
 }
 
 module.exports = ticketsV2

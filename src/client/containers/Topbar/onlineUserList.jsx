@@ -30,7 +30,7 @@ class OnlineUserListPartial extends React.Component {
 
   constructor (props) {
     super(props)
-    configure({ enforceActions: "never"})
+    configure({ enforceActions: 'never' })
     makeObservable(this)
 
     this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this)
@@ -130,24 +130,26 @@ class OnlineUserListPartial extends React.Component {
             <ul className='user-list'>
               {users.map(user => {
                 if (this.props.sessionUser && user._id === this.props.sessionUser._id) return
-                const image = user.image || 'defaultProfile.jpg'
+                const image = user.get('image') || 'defaultProfile.jpg'
                 return (
-                  <li key={user._id} data-search-term={user.fullname.toLowerCase()}>
-                    <a className='no-ajaxy' onClick={e => OnlineUserListPartial.onUserClicked(e, user._id)}>
+                  <li key={user.get('_id')} data-search-term={user.get('fullname').toLowerCase()}>
+                    <a className='no-ajaxy' onClick={e => OnlineUserListPartial.onUserClicked(e, user.get('_id'))}>
                       <div className='user-list-user'>
                         <div className='image'>
                           <img src={`/uploads/users/${image}`} alt='Profile Picture' />
                         </div>
                       </div>
                       <span
-                        className={'online-status-offline' + (this.isActiveUser(user.username) ? ' success-text' : '')}
-                        data-user-status-id={user._id}
+                        className={
+                          'online-status-offline' + (this.isActiveUser(user.get('username')) ? ' success-text' : '')
+                        }
+                        data-user-status-id={user.get('_id')}
                       >
-                        {this.isActiveUser(user.username)
+                        {this.isActiveUser(user.get('username'))
                           ? 'Now'
-                          : OnlineUserListPartial.fromNow(timezone, user.lastOnline)}
+                          : OnlineUserListPartial.fromNow(timezone, user.get('lastOnline'))}
                       </span>
-                      <div className='user-name'>{user.fullname}</div>
+                      <div className='user-name'>{user.get('fullname')}</div>
                     </a>
                   </li>
                 )

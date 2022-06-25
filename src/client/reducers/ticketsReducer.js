@@ -21,11 +21,18 @@ import {
   TICKET_UPDATED,
   UNLOAD_TICKETS,
   DELETE_TICKET,
-  TICKET_EVENT
+  TICKET_EVENT,
+  FETCH_TICKET_TYPES,
+  FETCH_TICKET_TAGS
 } from 'actions/types'
 
 const initialState = {
   tickets: List([]),
+  loadingTicketTypes: false,
+  types: List([]),
+  priorities: List([]),
+  loadingTicketTags: false,
+  tags: List([]),
   totalCount: '',
   viewType: 'active',
   loading: false,
@@ -197,6 +204,37 @@ const reducer = handleActions(
         ...state,
         tickets: state.tickets.clear(),
         loading: false
+      }
+    },
+
+    [FETCH_TICKET_TYPES.PENDING]: state => {
+      return {
+        ...state,
+        loadingTicketTypes: true
+      }
+    },
+
+    [FETCH_TICKET_TYPES.SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        loadingTicketTypes: false,
+        types: fromJS(action.response.ticketTypes),
+        priorities: fromJS(action.response.priorities)
+      }
+    },
+
+    [FETCH_TICKET_TAGS.PENDING]: state => {
+      return {
+        ...state,
+        loadingTicketTags: true
+      }
+    },
+
+    [FETCH_TICKET_TAGS.SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        loadingTicketTags: false,
+        tags: fromJS(action.response.tags)
       }
     }
   },

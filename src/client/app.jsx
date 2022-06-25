@@ -40,14 +40,7 @@ const composeSetup =
 localStorage.setItem('debug', 'trudesk:*') // Enable logger
 // }
 
-const preloadedState = {
-  common: window.trudesk.__PRELOADED_STATE__
-}
-
-delete window.trudesk
-$('script#preloader').remove()
-
-const store = createStore(IndexReducer, preloadedState, composeSetup(applyMiddleware(thunkMiddleware, sagaMiddleware)))
+const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddleware, sagaMiddleware)))
 
 // This is need to call an action from angular
 // Goal: remove this once angular is fully removed

@@ -20,7 +20,7 @@ import { makeObservable, observable } from 'mobx'
 import { size } from 'lodash'
 import clsx from 'clsx'
 
-import { showModal, hideModal, showNotice, clearNotice } from 'actions/common'
+import { fetchViewData, showModal, hideModal, showNotice, clearNotice } from 'actions/common'
 
 import Avatar from 'components/Avatar/Avatar'
 import Dropdown from 'components/Dropdown'
@@ -59,6 +59,10 @@ class TopbarContainer extends React.Component {
   }
 
   componentDidMount () {
+    this.props.fetchViewData().then(() => {
+      this.showNotice(this.props.viewdata.get('notice'), this.props.viewdata.get('noticeCookieName'))
+    })
+
     socket.socket.on('updateNotifications', this.onSocketUpdateNotifications)
     socket.socket.on('updateUsers', this.onSocketUpdateUsers)
     socket.socket.on('$trudesk:notice:show', this.onSocketShowNotice)
@@ -68,8 +72,7 @@ class TopbarContainer extends React.Component {
     socket.ui.updateNotifications()
     socket.ui.updateUsers()
 
-    this.showNotice(this.props.viewdata.notice, this.props.viewdata.noticeCookieName)
-    this.shouldShowBanner()
+    // this.shouldShowBanner()
   }
 
   componentWillUnmount () {
@@ -99,8 +102,8 @@ class TopbarContainer extends React.Component {
           modalTag: 'NOTICE_ALERT',
           notice: notice,
           noticeCookieName: cookieName,
-          shortDateFormat: this.props.viewdata.shortDateFormat,
-          timeFormat: this.props.viewdata.timeFormat
+          shortDateFormat: this.props.viewdata.get('shortDateFormat'),
+          timeFormat: this.props.viewdata.get('timeFormat')
         })
     }
   }
@@ -138,32 +141,16 @@ class TopbarContainer extends React.Component {
 
   render () {
     const { viewdata, sessionUser } = this.props
+    if (this.props.loadingViewData) return <div />
     return (
       <div>
-        {/*{sessionUser && sessionUser.role.isAdmin && (*/}
-        {/*  <div className={clsx('info-banner', this.showInfoBanner ? '' : 'hide')}>*/}
-        {/*    <div className={'close'} onClick={() => this.closeInfo()} />*/}
-        {/*    <p>*/}
-        {/*      You're invited to sign up for Trudesk Cloud Beta, our free-to-use cloud-hosted platform.*/}
-        {/*      <a*/}
-        {/*        href='https://trudesk.io'*/}
-        {/*        className={'md-btn md-btn-wave md-btn-small md-btn-success text-white'}*/}
-        {/*        style={{ marginLeft: 15 }}*/}
-        {/*        target={'_blank'}*/}
-        {/*        onClick={() => this.closeInfo()}*/}
-        {/*      >*/}
-        {/*        Apply Now*/}
-        {/*      </a>*/}
-        {/*    </p>*/}
-        {/*  </div>*/}
-        {/*)}*/}
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
         <div className={'uk-grid top-nav'}>
           <div className='uk-width-1-1'>
             <div className='top-bar' data-topbar>
               <div className='title-area uk-float-left'>
                 <div className='logo'>
-                  <img src={viewdata.logoImage} alt='Logo' className={'site-logo'} />
+                  <img src={viewdata.get('logoImage')} alt='Logo' className={'site-logo'} />
                 </div>
               </div>
               <section className='top-bar-section uk-clearfix'>
@@ -230,18 +217,18 @@ class TopbarContainer extends React.Component {
                     </li>
 
                     <li className='profile-area profile-name'>
-                      <span style={{ fontSize: 16 }}>{viewdata.loggedInAccount.fullname}</span>
+                      <span style={{ fontSize: 16 }}>{sessionUser.fullname}</span>
                       <div className='uk-position-relative uk-display-inline-block'>
                         <DropdownTrigger pos={'bottom-right'}>
                           <a
                             href='#'
-                            title={viewdata.loggedInAccount.fullname}
+                            title={sessionUser.fullname}
                             className={'profile-pic no-ajaxy uk-vertical-align-middle'}
                           >
-                            <Avatar image={viewdata.loggedInAccount.image} showOnlineBubble={false} size={35} />
+                            <Avatar image={sessionUser.image} showOnlineBubble={false} size={35} />
                           </a>
                           <Dropdown small={true}>
-                            <DropdownHeader text={viewdata.loggedInAccount.fullname} />
+                            <DropdownHeader text={sessionUser.fullname} />
                             <DropdownItem text='Profile' href={'/profile'} />
                             <DropdownSeparator />
                             <DropdownItem text={'Logout'} href={'/logout'} />
@@ -251,13 +238,13 @@ class TopbarContainer extends React.Component {
                     </li>
                   </ul>
                   <NotificationsDropdownPartial
-                    shortDateFormat={viewdata.shortDateFormat}
-                    timezone={viewdata.timezone}
+                    shortDateFormat={viewdata.get('shortDateFormat')}
+                    timezone={viewdata.get('timezone')}
                     onViewAllNotificationsClick={() => this.props.showModal('VIEW_ALL_NOTIFICATIONS')}
                   />
                   <ConversationsDropdownPartial
-                    shortDateFormat={viewdata.shortDateFormat}
-                    timezone={viewdata.timezone}
+                    shortDateFormat={viewdata.get('shortDateFormat')}
+                    timezone={viewdata.get('timezone')}
                   />
                 </div>
               </section>
@@ -265,8 +252,8 @@ class TopbarContainer extends React.Component {
           </div>
 
           <OnlineUserListPartial
-            timezone={viewdata.timezone}
-            users={viewdata.users}
+            timezone={viewdata.get('timezone')}
+            users={viewdata.get('users').toArray()}
             sessionUser={this.props.sessionUser}
           />
         </div>
@@ -277,6 +264,8 @@ class TopbarContainer extends React.Component {
 
 TopbarContainer.propTypes = {
   sessionUser: PropTypes.object,
+  fetchViewData: PropTypes.func.isRequired,
+  loadingViewData: PropTypes.bool.isRequired,
   viewdata: PropTypes.object.isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
@@ -288,7 +277,10 @@ TopbarContainer.propTypes = {
 const mapStateToProps = state => ({
   sessionUser: state.shared.sessionUser,
   notice: state.shared.notice,
-  viewdata: state.common
+  loadingViewData: state.common.loadingViewData,
+  viewdata: state.common.viewdata
 })
 
-export default connect(mapStateToProps, { showModal, hideModal, showNotice, clearNotice })(TopbarContainer)
+export default connect(mapStateToProps, { fetchViewData, showModal, hideModal, showNotice, clearNotice })(
+  TopbarContainer
+)

@@ -135,6 +135,18 @@ api.tickets.transferToThirdParty = ({ uid }) => {
   })
 }
 
+api.tickets.fetchTicketTypes = () => {
+  return axios.get('/api/v2/tickets/info/types').then(res => {
+    return res.data
+  })
+}
+
+api.tickets.fetchTicketTags = () => {
+  return axios.get('/api/v2/tickets/info/tags').then(res => {
+    return res.data
+  })
+}
+
 api.accounts = {}
 api.accounts.create = payload => {
   return axios.post('/api/v2/accounts', payload).then(res => {
@@ -345,6 +357,11 @@ api.settings.buildSass = () => {
 api.common = {}
 api.common.fetchRoles = () => {
   return axios.get('/api/v1/roles').then(res => {
+    return res.data
+  })
+}
+api.common.fetchViewData = () => {
+  return axios.get('/api/v2/viewdata').then(res => {
     return res.data
   })
 }

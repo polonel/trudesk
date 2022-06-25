@@ -20,7 +20,7 @@ import { makeObservable, observable, when } from 'mobx'
 import { head, orderBy } from 'lodash'
 import axios from 'axios'
 import Log from '../../logger'
-import { createTicket } from 'actions/tickets'
+import { createTicket, fetchTicketTypes, fetchTicketTags } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
 
@@ -50,14 +50,16 @@ class CreateTicketModal extends React.Component {
   }
 
   componentDidMount () {
+    this.props.fetchTicketTypes()
+    this.props.fetchTicketTags()
     this.props.fetchGroups()
     this.props.fetchAccountsCreateTicket({ type: 'all', limit: 1000 })
     helpers.UI.inputs()
     helpers.formvalidator()
     this.defaultTicketTypeWatcher = when(
-      () => this.props.viewdata.defaultTicketType,
+      () => this.props.viewdata.get('defaultTicketType'),
       () => {
-        this.priorities = orderBy(this.props.viewdata.defaultTicketType.priorities, ['migrationNum'])
+        this.priorities = orderBy(this.props.viewdata.toJS().defaultTicketType.priorities, ['migrationNum'])
         this.selectedPriority = head(this.priorities) ? head(this.priorities)._id : ''
       }
     )
@@ -106,10 +108,10 @@ class CreateTicketModal extends React.Component {
     let data = {}
     if (this.issueText.length < 1) return
     const allowAgentUserTickets =
-      this.props.viewdata.ticketSettings.allowAgentUserTickets &&
+      this.props.viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
       (this.props.shared.sessionUser.role.isAdmin || this.props.shared.sessionUser.role.isAgent)
 
-    const minIssueLength = this.props.viewdata.ticketSettings.minIssue
+    const minIssueLength = this.props.viewdata.get('ticketSettings').get('minIssue')
     let $mdeError
     const $issueTextbox = $(this.issueMde.element)
     const $errorBorderWrap = $issueTextbox.parents('.error-border-wrap')
@@ -156,9 +158,8 @@ class CreateTicketModal extends React.Component {
 
   render () {
     const { shared, viewdata } = this.props
-
     const allowAgentUserTickets =
-      viewdata.ticketSettings.allowAgentUserTickets &&
+      viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
       (shared.sessionUser.role.isAdmin || shared.sessionUser.role.isAgent)
 
     const mappedAccounts = this.props.accounts
@@ -173,11 +174,11 @@ class CreateTicketModal extends React.Component {
       })
       .toArray()
 
-    const mappedTicketTypes = this.props.viewdata.ticketTypes.map(type => {
-      return { text: type.name, value: type._id }
+    const mappedTicketTypes = this.props.ticketTypes.toArray().map(type => {
+      return { text: type.get('name'), value: type.get('_id') }
     })
-    const mappedTicketTags = this.props.viewdata.ticketTags.map(tag => {
-      return { text: tag.name, value: tag._id }
+    const mappedTicketTags = this.props.ticketTags.toArray().map(tag => {
+      return { text: tag.get('name'), value: tag.get('_id') }
     })
     return (
       <BaseModal {...this.props} options={{ bgclose: false }}>
@@ -189,8 +190,10 @@ class CreateTicketModal extends React.Component {
               name={'subject'}
               className={'md-input'}
               data-validation='length'
-              data-validation-length={`min${viewdata.ticketSettings.minSubject}`}
-              data-validation-error-msg={`Please enter a valid Subject. Subject must contain at least ${viewdata.ticketSettings.minSubject} characters.`}
+              data-validation-length={`min${viewdata.get('ticketSettings').get('minSubject')}`}
+              data-validation-error-msg={`Please enter a valid Subject. Subject must contain at least ${viewdata
+                .get('ticketSettings')
+                .get('minSubject')} characters.`}
             />
           </div>
           <div className='uk-margin-medium-bottom'>
@@ -201,7 +204,7 @@ class CreateTicketModal extends React.Component {
                   <SingleSelect
                     showTextbox={true}
                     items={mappedAccounts}
-                    defaultValue={[this.props.viewdata.loggedInAccount._id]}
+                    defaultValue={this.props.shared.sessionUser._id}
                     width={'100%'}
                     ref={i => (this.ownerSelect = i)}
                   />
@@ -228,7 +231,7 @@ class CreateTicketModal extends React.Component {
                   showTextbox={false}
                   items={mappedTicketTypes}
                   width={'100%'}
-                  defaultValue={this.props.viewdata.defaultTicketType._id}
+                  defaultValue={this.props.viewdata.get('defaultTicketType').get('_id')}
                   onSelectChange={e => {
                     this.onTicketTypeSelectChange(e)
                   }}
@@ -318,18 +321,32 @@ class CreateTicketModal extends React.Component {
 CreateTicketModal.propTypes = {
   shared: PropTypes.object.isRequired,
   viewdata: PropTypes.object.isRequired,
+  ticketTypes: PropTypes.object.isRequired,
+  priorities: PropTypes.object.isRequired,
+  ticketTags: PropTypes.object.isRequired,
   accounts: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
   createTicket: PropTypes.func.isRequired,
+  fetchTicketTypes: PropTypes.func.isRequired,
+  fetchTicketTags: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   fetchAccountsCreateTicket: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   shared: state.shared,
-  viewdata: state.common,
+  viewdata: state.common.viewdata,
+  ticketTypes: state.ticketsState.types,
+  priorities: state.ticketsState.priorities,
+  ticketTags: state.ticketsState.tags,
   groups: state.groupsState.groups,
   accounts: state.accountsState.accountsCreateTicket
 })
 
-export default connect(mapStateToProps, { createTicket, fetchGroups, fetchAccountsCreateTicket })(CreateTicketModal)
+export default connect(mapStateToProps, {
+  createTicket,
+  fetchTicketTypes,
+  fetchTicketTags,
+  fetchGroups,
+  fetchAccountsCreateTicket
+})(CreateTicketModal)

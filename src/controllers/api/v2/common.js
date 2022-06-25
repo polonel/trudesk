@@ -53,4 +53,8 @@ commonV2.token = async (req, res) => {
   }
 }
 
+commonV2.viewData = async (req, res) => {
+  return apiUtils.sendApiSuccess(res, { viewdata: req.viewdata })
+}
+
 module.exports = commonV2

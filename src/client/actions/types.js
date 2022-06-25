@@ -24,6 +24,7 @@ export const CLEAR_NOTICE = defineAction('CLEAR_NOTICE')
 export const SET_SESSION_USER = defineAction('SET_SESSION_USER')
 export const FETCH_ROLES = defineAction('FETCH_ROLES', [SUCCESS, ERROR])
 export const UPDATE_ROLE_ORDER = defineAction('UPDATE_ROLE_ORDER', [SUCCESS, ERROR])
+export const FETCH_VIEWDATA = defineAction('FETCH_VIEWDATA', [SUCCESS, PENDING, ERROR])
 
 // Common Nav Change
 export const NAV_CHANGE = defineAction('NAV_CHANGE')
@@ -35,6 +36,9 @@ export const DELETE_TICKET = defineAction('DELETE_TICKET', [SUCCESS, PENDING, ER
 export const UNLOAD_TICKETS = defineAction('UNLOAD_TICKETS', [SUCCESS])
 export const TICKET_UPDATED = defineAction('TICKET_UPDATED', [SUCCESS])
 export const TICKET_EVENT = defineAction('TICKET_EVENT', [SUCCESS])
+
+export const FETCH_TICKET_TYPES = defineAction('FETCH_TICKET_TYPES', [SUCCESS, PENDING, ERROR])
+export const FETCH_TICKET_TAGS = defineAction('FETCH_TICKET_TAGS', [SUCCESS, PENDING, ERROR])
 
 export const CREATE_TICKET_TYPE = defineAction('CREATE_TICKET_TYPE', [SUCCESS, ERROR])
 export const RENAME_TICKET_TYPE = defineAction('RENAME_TICKET_TYPE', [SUCCESS, ERROR])

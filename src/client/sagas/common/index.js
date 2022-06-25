@@ -15,7 +15,7 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 
 import api from '../../api'
-import { FETCH_ROLES } from 'actions/types'
+import { FETCH_ROLES, FETCH_VIEWDATA } from 'actions/types'
 
 import Log from '../../logger'
 import helpers from 'lib/helpers'
@@ -32,6 +32,21 @@ function * fetchRoles ({ payload }) {
   }
 }
 
+function * fetchViewData ({ payload, meta }) {
+  yield put({ type: FETCH_VIEWDATA.PENDING })
+  try {
+    const response = yield call(api.common.fetchViewData)
+    yield put({ type: FETCH_VIEWDATA.SUCCESS, payload: { response, payload }, meta })
+  } catch (error) {
+    let errorText = ''
+    if (error.response) errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: FETCH_VIEWDATA.ERROR, error })
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
+  yield takeLatest(FETCH_VIEWDATA.ACTION, fetchViewData)
 }

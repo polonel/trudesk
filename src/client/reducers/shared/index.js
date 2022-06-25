@@ -21,7 +21,9 @@ const initialState = {
   sessionUser: null,
   roles: List([]),
   roleOrder: Map({}),
-  notice: null
+  notice: null,
+  loadingViewData: true,
+  viewdata: Map({})
 }
 
 const sharedReducer = handleActions(

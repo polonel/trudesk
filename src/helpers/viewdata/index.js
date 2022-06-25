@@ -247,54 +247,54 @@ viewController.getData = function (request, cb) {
       //     return callback()
       //   })
       // },
-      function (callback) {
-        viewController.getConversations(request, function (err, conversations) {
-          if (err) return callback(err)
-
-          viewdata.conversations = conversations
-
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getUsers(request, function (users) {
-          viewdata.users = users
-
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.loggedInAccount(request, function (data) {
-          viewdata.loggedInAccount = data
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getTeams(request, function (err, teams) {
-          if (err) return callback(null, null)
-
-          viewdata.teams = teams
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getGroups(request, function (err, data) {
-          if (err) return callback(null, null)
-
-          viewdata.groups = data
-
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getTypes(request, function (err, data) {
-          if (err) return callback()
-
-          viewdata.ticketTypes = data
-
-          return callback()
-        })
-      },
+      // function (callback) {
+      //   viewController.getConversations(request, function (err, conversations) {
+      //     if (err) return callback(err)
+      //
+      //     viewdata.conversations = conversations
+      //
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getUsers(request, function (users) {
+      //     viewdata.users = users
+      //
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.loggedInAccount(request, function (data) {
+      //     viewdata.loggedInAccount = data
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getTeams(request, function (err, teams) {
+      //     if (err) return callback(null, null)
+      //
+      //     viewdata.teams = teams
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getGroups(request, function (err, data) {
+      //     if (err) return callback(null, null)
+      //
+      //     viewdata.groups = data
+      //
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getTypes(request, function (err, data) {
+      //     if (err) return callback()
+      //
+      //     viewdata.ticketTypes = data
+      //
+      //     return callback()
+      //   })
+      // },
       function (callback) {
         viewController.getDefaultTicketType(request, function (err, data) {
           if (err) return callback()
@@ -304,40 +304,40 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
-      function (callback) {
-        viewController.getPriorities(request, function (err, data) {
-          if (err) return callback()
-
-          viewdata.priorities = data
-
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getTags(request, function (err, data) {
-          if (err) return callback()
-
-          viewdata.ticketTags = data
-
-          return callback()
-        })
-      },
-      function (callback) {
-        const roleSchmea = require('../../models/role')
-        const roleOrder = require('../../models/roleorder')
-        roleSchmea.getRoles(function (err, roles) {
-          if (err) return callback(err)
-
-          roleOrder.getOrder(function (err, ro) {
-            if (err) return callback(err)
-
-            viewdata.roles = roles
-            viewdata.roleOrder = ro
-
-            return callback()
-          })
-        })
-      },
+      // function (callback) {
+      //   viewController.getPriorities(request, function (err, data) {
+      //     if (err) return callback()
+      //
+      //     viewdata.priorities = data
+      //
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getTags(request, function (err, data) {
+      //     if (err) return callback()
+      //
+      //     viewdata.ticketTags = data
+      //
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   const roleSchmea = require('../../models/role')
+      //   const roleOrder = require('../../models/roleorder')
+      //   roleSchmea.getRoles(function (err, roles) {
+      //     if (err) return callback(err)
+      //
+      //     roleOrder.getOrder(function (err, ro) {
+      //       if (err) return callback(err)
+      //
+      //       viewdata.roles = roles
+      //       viewdata.roleOrder = ro
+      //
+      //       return callback()
+      //     })
+      //   })
+      // },
       function (callback) {
         viewController.getShowTourSetting(request, function (err, data) {
           if (err) return callback(err)

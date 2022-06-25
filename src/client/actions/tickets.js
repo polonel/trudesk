@@ -29,14 +29,20 @@ import {
   TICKET_UPDATED,
   DELETE_TICKET,
   TICKET_EVENT,
-  TRANSFER_TO_THIRDPARTY
+  TRANSFER_TO_THIRDPARTY,
+  FETCH_TICKET_TYPES,
+  FETCH_TICKET_TAGS
 } from 'actions/types'
 
 export const fetchTickets = createAction(FETCH_TICKETS.ACTION)
 export const createTicket = createAction(CREATE_TICKET.ACTION)
 export const ticketUpdated = createAction(TICKET_UPDATED.ACTION)
 export const deleteTicket = createAction(DELETE_TICKET.ACTION)
-export const unloadTickets = createAction(UNLOAD_TICKETS.ACTION, payload => payload, () => ({ thunk: true }))
+export const unloadTickets = createAction(
+  UNLOAD_TICKETS.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
 export const ticketEvent = createAction(TICKET_EVENT.ACTION)
 
 export const createTicketType = createAction(CREATE_TICKET_TYPE.ACTION, input => ({ name: input.name }))
@@ -58,3 +64,5 @@ export const getTagsWithPage = createAction(GET_TAGS_WITH_PAGE.ACTION, ({ limit,
 export const tagsUpdateCurrentPage = createAction(TAGS_UPDATE_CURRENT_PAGE.ACTION, currentPage => ({ currentPage }))
 export const createTag = createAction(CREATE_TAG.ACTION, ({ name, currentPage }) => ({ name, currentPage }))
 export const transferToThirdParty = createAction(TRANSFER_TO_THIRDPARTY.ACTION, ({ uid }) => ({ uid }))
+export const fetchTicketTypes = createAction(FETCH_TICKET_TYPES.ACTION)
+export const fetchTicketTags = createAction(FETCH_TICKET_TAGS.ACTION)

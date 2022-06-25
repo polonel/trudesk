@@ -19,6 +19,7 @@ import {
   CLEAR_MODAL,
   FETCH_ROLES,
   UPDATE_ROLE_ORDER,
+  FETCH_VIEWDATA,
   SHOW_NOTICE,
   CLEAR_NOTICE
 } from 'actions/types'
@@ -32,3 +33,9 @@ export const clearNotice = createAction(CLEAR_NOTICE.ACTION)
 
 export const fetchRoles = createAction(FETCH_ROLES.ACTION)
 export const updateRoleOrder = createAction(UPDATE_ROLE_ORDER.ACTION)
+
+export const fetchViewData = createAction(
+  FETCH_VIEWDATA.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
