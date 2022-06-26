@@ -47,8 +47,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/plugins',
       'pages/logs',
 
-      'modules/ajaximgupload',
-      'modules/attachmentUpload'
+      'modules/ajaximgupload'
     ], function (a, b, c, d, e, f, g, h, i, j, k, l, m) {
       async.parallel(
         [
@@ -87,7 +86,6 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
           },
           function (done) {
             l.init()
-            m.init()
 
             return done()
           }

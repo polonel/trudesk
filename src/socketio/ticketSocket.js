@@ -31,7 +31,7 @@ var events = {}
 function register (socket) {
   events.onUpdateTicketGrid(socket)
   events.onUpdateTicketStatus(socket)
-  events.onUpdateComments(socket)
+  events.onUpdateTicket(socket)
   events.onUpdateAssigneeList(socket)
   events.onSetAssignee(socket)
   events.onUpdateTicketTags(socket)
@@ -41,11 +41,9 @@ function register (socket) {
   events.onSetTicketGroup(socket)
   events.onSetTicketDueDate(socket)
   events.onSetTicketIssue(socket)
-  events.onSetCommentText(socket)
-  events.onRemoveComment(socket)
-  events.onSetNoteText(socket)
-  events.onRemoveNote(socket)
-  events.onRefreshTicketAttachments(socket)
+  events.onCommentNoteSet(socket)
+  events.onRemoveCommentNote(socket)
+  events.onAttachmentsUIUpdate(socket)
 }
 
 function eventLoop () {}
@@ -56,42 +54,38 @@ events.onUpdateTicketGrid = function (socket) {
   })
 }
 
-events.onUpdateTicketStatus = function (socket) {
-  socket.on('updateTicketStatus', function (data) {
-    var ticketId = data.ticketId
-    var ownerId = socket.request.user._id
-    var status = data.status
+events.onUpdateTicketStatus = socket => {
+  socket.on(socketEvents.TICKETS_STATUS_SET, async data => {
+    const ticketId = data._id
+    const status = data.value
+    const ownerId = socket.request.user._id
 
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+    try {
+      let ticket = await ticketSchema.getTicketById(ticketId)
+      ticket = await ticket.setStatus(ownerId, status)
+      ticket = await ticket.save()
 
-      ticket.setStatus(ownerId, status, function (err, t) {
-        if (err) return true
-
-        t.save(function (err, t) {
-          if (err) return true
-
-          // emitter.emit('ticket:updated', t)
-          utils.sendToAllConnectedClients(io, 'updateTicketStatus', {
-            tid: t._id,
-            owner: t.owner,
-            status: status
-          })
-        })
+      // emitter.emit('ticket:updated', t)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
+        tid: ticket._id,
+        owner: ticket.owner,
+        status: status
       })
-    })
+    } catch (e) {
+      // Blank
+    }
   })
 }
 
-events.onUpdateComments = function (socket) {
-  socket.on('updateComments', function (data) {
-    var ticketId = data.ticketId
+events.onUpdateTicket = function (socket) {
+  socket.on(socketEvents.TICKETS_UPDATE, async data => {
+    try {
+      const ticket = await ticketSchema.getTicketById(data._id)
 
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
-
-      utils.sendToAllConnectedClients(io, 'updateComments', ticket)
-    })
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+    } catch (error) {
+      // Blank
+    }
   })
 }
 
@@ -304,160 +298,101 @@ events.onSetTicketDueDate = function (socket) {
   })
 }
 
-events.onSetTicketIssue = function (socket) {
-  socket.on('setTicketIssue', function (data) {
-    var ticketId = data.ticketId
-    var issue = data.issue
-    var subject = data.subject
-    var ownerId = socket.request.user._id
+events.onSetTicketIssue = socket => {
+  socket.on(socketEvents.TICKETS_ISSUE_SET, async data => {
+    const ticketId = data._id
+    const issue = data.value
+    const subject = data.subject
+    const ownerId = socket.request.user._id
     if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true
 
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+    try {
+      let ticket = await ticketSchema.getTicketById(ticketId)
+      if (subject !== ticket.subject) ticket = await ticket.setSubject(ownerId, subject)
+      if (issue !== ticket.issue) ticket = await ticket.setIssue(ownerId, issue)
 
-      ticket.setSubject(ownerId, subject, function (err, ticket) {
-        if (err) return true
+      ticket = await ticket.save()
 
-        ticket.setIssue(ownerId, issue, function (err, t) {
-          if (err) return true
-
-          t.save(function (err, tt) {
-            if (err) return true
-
-            utils.sendToAllConnectedClients(io, 'updateTicketIssue', tt)
-          })
-        })
-      })
-    })
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+    } catch (e) {
+      // Blank
+    }
   })
 }
 
-events.onSetCommentText = function (socket) {
-  socket.on('setCommentText', function (data) {
-    var ownerId = socket.request.user._id
-    var ticketId = data.ticketId
-    var commentId = data.commentId
-    var comment = data.commentText
-    if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true
+events.onCommentNoteSet = socket => {
+  socket.on(socketEvents.TICKETS_COMMENT_NOTE_SET, async data => {
+    const ownerId = socket.request.user._id
+    const ticketId = data._id
+    const itemId = data.item
+    let text = data.value
+    const isNote = data.isNote
+
+    if (_.isUndefined(ticketId) || _.isUndefined(itemId) || _.isUndefined(text)) return true
 
     marked.setOptions({
       breaks: true
     })
 
-    comment = sanitizeHtml(comment).trim()
+    text = sanitizeHtml(text).trim()
+    const markedText = xss(marked.parse(text))
 
-    var markedComment = xss(marked.parse(comment))
+    try {
+      let ticket = await ticketSchema.getTicketById(ticketId)
+      if (!isNote) ticket = await ticket.updateComment(ownerId, itemId, markedText)
+      else ticket = await ticket.updateNote(ownerId, itemId, markedText)
+      ticket = await ticket.save()
 
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return winston.error(err)
-
-      ticket.updateComment(ownerId, commentId, markedComment, function (err) {
-        if (err) return winston.error(err)
-        ticket.save(function (err, tt) {
-          if (err) return winston.error(err)
-
-          utils.sendToAllConnectedClients(io, 'updateComments', tt)
-        })
-      })
-    })
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+    } catch (e) {
+      winston.error(e)
+    }
   })
 }
 
-events.onRemoveComment = function (socket) {
-  socket.on('removeComment', function (data) {
-    var ownerId = socket.request.user._id
-    var ticketId = data.ticketId
-    var commentId = data.commentId
+events.onRemoveCommentNote = socket => {
+  socket.on(socketEvents.TICKETS_COMMENT_NOTE_REMOVE, async data => {
+    const ownerId = socket.request.user._id
+    const ticketId = data._id
+    const itemId = data.value
+    const isNote = data.isNote
 
-    if (_.isUndefined(ticketId) || _.isUndefined(commentId)) return true
+    try {
+      let ticket = await ticketSchema.getTicketById(ticketId)
+      if (!isNote) ticket = await ticket.removeComment(ownerId, itemId)
+      else ticket = await ticket.removeNote(ownerId, itemId)
 
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+      ticket = await ticket.save()
 
-      ticket.removeComment(ownerId, commentId, function (err, t) {
-        if (err) return true
-
-        t.save(function (err, tt) {
-          if (err) return true
-
-          utils.sendToAllConnectedClients(io, 'updateComments', tt)
-        })
-      })
-    })
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+    } catch (e) {
+      // Blank
+    }
   })
 }
 
-events.onSetNoteText = function (socket) {
-  socket.on('$trudesk:tickets:setNoteText', function (data) {
-    var ownerId = socket.request.user._id
-    var ticketId = data.ticketId
-    var noteId = data.noteId
-    var note = data.noteText
-    if (_.isUndefined(ticketId) || _.isUndefined(noteId) || _.isUndefined(note)) return true
+events.onAttachmentsUIUpdate = socket => {
+  socket.on(socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, async data => {
+    const ticketId = data._id
 
-    marked.setOptions({
-      breaks: true
-    })
-    var markedNote = xss(marked.parse(note))
-
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return winston.error(err)
-
-      ticket.updateNote(ownerId, noteId, markedNote, function (err) {
-        if (err) return winston.error(err)
-        ticket.save(function (err, tt) {
-          if (err) return winston.error(err)
-
-          utils.sendToAllConnectedClients(io, 'updateNotes', tt)
-        })
-      })
-    })
-  })
-}
-
-events.onRemoveNote = function (socket) {
-  socket.on('$trudesk:tickets:removeNote', function (data) {
-    var ownerId = socket.request.user._id
-    var ticketId = data.ticketId
-    var noteId = data.noteId
-    if (_.isUndefined(ticketId) || _.isUndefined(noteId)) return true
-
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
-
-      ticket.removeNote(ownerId, noteId, function (err, t) {
-        if (err) return true
-
-        t.save(function (err, tt) {
-          if (err) return true
-
-          utils.sendToAllConnectedClients(io, 'updateNotes', tt)
-        })
-      })
-    })
-  })
-}
-
-events.onRefreshTicketAttachments = function (socket) {
-  socket.on('refreshTicketAttachments', function (data) {
-    var ticketId = data.ticketId
     if (_.isUndefined(ticketId)) return true
 
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
-
-      var user = socket.request.user
+    try {
+      const ticket = await ticketSchema.getTicketById(ticketId)
+      const user = socket.request.user
       if (_.isUndefined(user)) return true
 
-      var canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
+      const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
 
-      var data = {
-        ticket: ticket,
-        canRemoveAttachments: canRemoveAttachments
+      const data = {
+        ticket,
+        canRemoveAttachments
       }
 
-      utils.sendToAllConnectedClients(io, 'updateTicketAttachments', data)
-    })
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, data)
+    } catch (e) {
+      // Blank
+    }
   })
 }
 

@@ -13,15 +13,15 @@
 
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
 
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
+
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 import axios from 'axios'
 import Log from '../../logger'
 
@@ -55,7 +55,6 @@ class IssuePartial extends React.Component {
     this.issue = this.props.issue
     this.attachments = this.props.attachments
 
-    this.onUpdateTicketIssue = this.onUpdateTicketIssue.bind(this)
     this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
   }
 
@@ -63,8 +62,7 @@ class IssuePartial extends React.Component {
     setupImages(this)
     setupLinks(this)
 
-    socket.socket.on('updateTicketIssue', this.onUpdateTicketIssue)
-    socket.socket.on('updateTicketAttachments', this.onUpdateTicketAttachments)
+    this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
   componentDidUpdate (prevProps) {
@@ -77,15 +75,7 @@ class IssuePartial extends React.Component {
   }
 
   componentWillUnmount () {
-    socket.socket.off('updateTicketIssue', this.onUpdateTicketIssue)
-    socket.socket.off('updateTicketAttachments', this.onUpdateTicketAttachments)
-  }
-
-  onUpdateTicketIssue (data) {
-    if (this.ticketId === data._id) {
-      this.subject = data.subject
-      this.issue = data.issue
-    }
+    this.props.socket.off(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
   onUpdateTicketAttachments (data) {
@@ -108,7 +98,7 @@ class IssuePartial extends React.Component {
         }
       })
       .then(() => {
-        socket.ui.refreshTicketAttachments(this.ticketId)
+        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
         helpers.UI.showSnackbar('Attachment Successfully Uploaded')
       })
       .catch(error => {
@@ -122,7 +112,7 @@ class IssuePartial extends React.Component {
     axios
       .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
       .then(() => {
-        socket.ui.refreshTicketAttachments(this.ticketId)
+        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
         helpers.UI.showSnackbar('Attachment Removed')
       })
       .catch(error => {
@@ -182,7 +172,11 @@ class IssuePartial extends React.Component {
                     subject: this.subject,
                     text: this.issue,
                     onPrimaryClick: data => {
-                      socket.ui.setTicketIssue(this.ticketId, data.text, data.subjectText)
+                      this.props.socket.emit(TICKETS_ISSUE_SET, {
+                        _id: this.ticketId,
+                        value: data.text,
+                        subject: data.subjectText
+                      })
                     }
                   })
               }}
@@ -217,7 +211,8 @@ IssuePartial.propTypes = {
   date: PropTypes.string.isRequired,
   dateFormat: PropTypes.string.isRequired,
   attachments: PropTypes.array,
-  editorWindow: PropTypes.object
+  editorWindow: PropTypes.object,
+  socket: PropTypes.object.isRequired
 }
 
 export default IssuePartial

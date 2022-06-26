@@ -134,7 +134,7 @@ const eventTicketCreated = require('./events/event_ticket_created')
 
   emitter.on('ticket:comment:added', function (ticket, comment, hostname) {
     // Goes to client
-    io.sockets.emit('updateComments', ticket)
+    io.sockets.emit(socketEvents.TICKETS_UPDATE, ticket)
 
     settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey', 'mailer:enable'], function (
       err,

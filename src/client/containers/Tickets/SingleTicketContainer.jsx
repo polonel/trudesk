@@ -36,7 +36,8 @@ import {
   TICKETS_UI_DUEDATE_UPDATE,
   TICKETS_DUEDATE_SET,
   TICKETS_UI_TAGS_UPDATE,
-  TICKETS_TAGS_SET
+  TICKETS_COMMENT_NOTE_REMOVE,
+  TICKETS_COMMENT_NOTE_SET
 } from 'serverSocket/socketEventConsts'
 
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial'
@@ -98,7 +99,6 @@ class SingleTicketContainer extends React.Component {
     makeObservable(this)
 
     this.onUpdateTicket = this.onUpdateTicket.bind(this)
-
     this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this)
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this)
     this.onUpdateAssignee = this.onUpdateAssignee.bind(this)
@@ -110,8 +110,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   componentDidMount () {
-    // socket.socket.on('updateComments', this.onSocketUpdateComments)
-    // socket.socket.on('updateNotes', this.onUpdateTicketNotes)
+    this.props.socket.on(TICKETS_UPDATE, this.onUpdateTicket)
     this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
     this.props.socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
     this.props.socket.on(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
@@ -130,8 +129,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   componentWillUnmount () {
-    // socket.socket.off('updateComments', this.onSocketUpdateComments)
-    // socket.socket.off('updateNotes', this.onUpdateTicketNotes)
+    this.props.socket.off(TICKETS_UPDATE, this.onUpdateTicket)
     this.props.socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
     this.props.socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
     this.props.socket.off(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
@@ -143,7 +141,9 @@ class SingleTicketContainer extends React.Component {
   }
 
   onUpdateTicket (data) {
-    console.log(data)
+    if (this.ticket._id === data._id) {
+      this.ticket = data
+    }
   }
 
   onSocketUpdateComments (data) {
@@ -295,6 +295,7 @@ class SingleTicketContainer extends React.Component {
                   <StatusSelector
                     ticketId={this.ticket._id}
                     status={this.ticket.status}
+                    socket={this.props.socket}
                     onStatusChange={status => (this.ticket.status = status)}
                     hasPerm={helpers.hasPermOverRole(this.ticket.owner.role, null, 'tickets:update', true)}
                   />
@@ -626,6 +627,7 @@ class SingleTicketContainer extends React.Component {
                       dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
                       attachments={this.ticket.attachments}
                       editorWindow={this.editorWindow}
+                      socket={this.props.socket}
                     />
 
                     {/* Tabs */}
@@ -673,14 +675,21 @@ class SingleTicketContainer extends React.Component {
                                     showSubject: false,
                                     text: !item.isNote ? item.comment : item.note,
                                     onPrimaryClick: data => {
-                                      if (item.isNote) socket.ui.setNoteText(this.ticket._id, item._id, data.text)
-                                      else socket.ui.setCommentText(this.ticket._id, item._id, data.text)
+                                      this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
+                                        _id: this.ticket._id,
+                                        item: item._id,
+                                        isNote: item.isNote,
+                                        value: data.text
+                                      })
                                     }
                                   })
                                 }}
                                 onRemoveClick={() => {
-                                  if (!item.isNote) socket.ui.removeComment(this.ticket._id, item._id)
-                                  else socket.ui.removeNote(this.ticket._id, item._id)
+                                  this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
+                                    _id: this.ticket._id,
+                                    value: item._id,
+                                    isNote: item.isNote
+                                  })
                                 }}
                               />
                             ))}

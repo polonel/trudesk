@@ -24,6 +24,9 @@ exported.ROLES_FLUSH = '$trudesk:roles:flush'
 exported.TICKETS_CREATED = '$trudesk:tickets:created'
 exported.TICKETS_UPDATE = '$trudesk:tickets:update'
 // --- SUB TICKET EVENTS
+exported.TICKETS_UI_STATUS_UPDATE = '$trudesk:tickets:ui:status:update'
+exported.TICKETS_STATUS_SET = '$trudesk:tickets:status:set'
+
 exported.TICKETS_UI_GROUP_UPDATE = '$trudesk:tickets:ui:group:update'
 exported.TICKETS_GROUP_SET = '$trudesk:tickets:group:set'
 
@@ -43,6 +46,13 @@ exported.TICKETS_ASSIGNEE_LOAD = '$trudesk:tickets:assignee:load'
 exported.TICKETS_ASSIGNEE_SET = '$trudesk:tickets:assignee:set'
 exported.TICKETS_ASSIGNEE_CLEAR = '$trudesk:tickets:assignee:clear'
 exported.TICKETS_ASSIGNEE_UPDATE = '$trudesk:tickets:assignee: update'
+
+exported.TICKETS_ISSUE_SET = '$trudesk:tickets:issue:set'
+
+exported.TICKETS_COMMENT_NOTE_REMOVE = '$trudesk:tickets:comment_note:remove'
+exported.TICKETS_COMMENT_NOTE_SET = '$trudesk:tickets:comment_note:set'
+
+exported.TICKETS_UI_ATTACHMENTS_UPDATE = '$trudesk:tickets:ui:attachments:update'
 
 // NOTIFICATIONS
 exported.NOTIFICATIONS_UPDATE = '$trudesk:notifications:update'

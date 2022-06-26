@@ -14,10 +14,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-
-import socket from 'lib/socket'
 import { observer } from 'mobx-react'
 import { observable, makeObservable } from 'mobx'
+
+import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts'
 
 const statusToName = status => {
   switch (status) {
@@ -49,7 +49,7 @@ class StatusSelector extends React.Component {
   componentDidMount () {
     document.addEventListener('click', this.onDocumentClick)
 
-    socket.socket.on('updateTicketStatus', this.onUpdateTicketStatus)
+    this.props.socket.on(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus)
   }
 
   componentDidUpdate (prevProps) {
@@ -58,7 +58,7 @@ class StatusSelector extends React.Component {
 
   componentWillUnmount () {
     document.removeEventListener('click', this.onDocumentClick)
-    socket.socket.off('updateTicketStatus', this.onUpdateTicketStatus)
+    this.props.socket.off(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus)
   }
 
   onDocumentClick (e) {
@@ -89,7 +89,7 @@ class StatusSelector extends React.Component {
   changeStatus (status) {
     if (!this.props.hasPerm) return
 
-    socket.ui.sendUpdateTicketStatus(this.props.ticketId, status)
+    this.props.socket.emit(TICKETS_STATUS_SET, { _id: this.props.ticketId, value: status })
     this.forceClose()
   }
 
@@ -140,7 +140,8 @@ StatusSelector.propTypes = {
   ticketId: PropTypes.string.isRequired,
   status: PropTypes.number.isRequired,
   onStatusChange: PropTypes.func,
-  hasPerm: PropTypes.bool.isRequired
+  hasPerm: PropTypes.bool.isRequired,
+  socket: PropTypes.object.isRequired
 }
 
 StatusSelector.defaultProps = {

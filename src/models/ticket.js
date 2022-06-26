@@ -32,6 +32,7 @@ var attachmentSchema = require('./attachment')
 var historySchema = require('./history')
 require('./tag')
 require('./ticketpriority')
+const marked = require('marked')
 
 var COLLECTION = 'tickets'
 
@@ -237,25 +238,28 @@ ticketSchema.virtual('commentsAndNotes').get(function () {
  *      3 - Closed
  */
 ticketSchema.methods.setStatus = function (ownerId, status, callback) {
-  if (_.isUndefined(status)) return callback('Invalid Status', null)
+  const self = this
+  return new Promise((resolve, reject) => {
+    if (_.isUndefined(status)) {
+      if (typeof callback === 'function') callback('Invalid Status', null)
+      return reject(new Error('Invalid Status'))
+    }
 
-  var self = this
+    self.closedDate = status === 3 ? new Date() : null
+    self.status = status
 
-  if (status === 3) {
-    self.closedDate = new Date()
-  } else {
-    self.closedDate = null
-  }
+    const historyItem = {
+      action: 'ticket:set:status:' + status,
+      description: 'Ticket Status set to: ' + statusToString(status),
+      owner: ownerId
+    }
 
-  self.status = status
-  var historyItem = {
-    action: 'ticket:set:status:' + status,
-    description: 'Ticket Status set to: ' + statusToString(status),
-    owner: ownerId
-  }
-  self.history.push(historyItem)
+    self.history.push(historyItem)
 
-  callback(null, self)
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
+  })
 }
 
 /**
@@ -444,36 +448,43 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
  * });
  */
 ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
-  var marked = require('marked')
+  const marked = require('marked')
+  const self = this
+  return new Promise(resolve => {
+    issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+    issue = sanitizeHtml(issue).trim()
+    self.issue = xss(marked.parse(issue))
 
-  var self = this
-  issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
-  issue = sanitizeHtml(issue).trim()
-  self.issue = xss(marked.parse(issue))
+    const historyItem = {
+      action: 'ticket:update:issue',
+      description: 'Ticket Issue was updated.',
+      owner: ownerId
+    }
 
-  var historyItem = {
-    action: 'ticket:update:issue',
-    description: 'Ticket Issue was updated.',
-    owner: ownerId
-  }
+    self.history.push(historyItem)
 
-  self.history.push(historyItem)
+    if (typeof callback === 'function') callback(null, self)
 
-  return callback(null, self)
+    return resolve(self)
+  })
 }
 
 ticketSchema.methods.setSubject = function (ownerId, subject, callback) {
-  var self = this
-  self.subject = subject
-  var historyItem = {
-    action: 'ticket:update:subject',
-    description: 'Ticket Subject was updated.',
-    owner: ownerId
-  }
+  const self = this
+  return new Promise(resolve => {
+    self.subject = subject
+    const historyItem = {
+      action: 'ticket:update:subject',
+      description: 'Ticket Subject was updated.',
+      owner: ownerId
+    }
 
-  self.history.push(historyItem)
+    self.history.push(historyItem)
 
-  return callback(null, self)
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
+  })
 }
 
 /**
@@ -496,22 +507,30 @@ ticketSchema.methods.setSubject = function (ownerId, subject, callback) {
  * });
  */
 ticketSchema.methods.updateComment = function (ownerId, commentId, commentText, callback) {
-  var self = this
-  var comment = _.find(self.comments, function (c) {
-    return c._id.toString() === commentId.toString()
+  const self = this
+  return new Promise((resolve, reject) => {
+    const comment = _.find(self.comments, function (c) {
+      return c._id.toString() === commentId.toString()
+    })
+
+    if (_.isUndefined(comment)) {
+      if (typeof callback === 'function') callback('Invalid Comment', null)
+      return reject(new Error('Invalid Comment'))
+    }
+
+    comment.comment = commentText
+
+    const historyItem = {
+      action: 'ticket:comment:updated',
+      description: 'Comment was updated: ' + commentId,
+      owner: ownerId
+    }
+    self.history.push(historyItem)
+
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
   })
-  if (_.isUndefined(comment)) return callback('Invalid Comment', null)
-
-  comment.comment = commentText
-
-  var historyItem = {
-    action: 'ticket:comment:updated',
-    description: 'Comment was updated: ' + commentId,
-    owner: ownerId
-  }
-  self.history.push(historyItem)
-
-  return callback(null, self)
 }
 
 /**
@@ -525,19 +544,24 @@ ticketSchema.methods.updateComment = function (ownerId, commentId, commentText, 
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.removeComment = function (ownerId, commentId, callback) {
-  var self = this
-  self.comments = _.reject(self.comments, function (o) {
-    return o._id.toString() === commentId.toString()
+  const self = this
+  return new Promise((resolve, reject) => {
+    self.comments = _.reject(self.comments, function (o) {
+      return o._id.toString() === commentId.toString()
+    })
+
+    const historyItem = {
+      action: 'ticket:delete:comment',
+      description: 'Comment was deleted: ' + commentId,
+      owner: ownerId
+    }
+
+    self.history.push(historyItem)
+
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
   })
-
-  var historyItem = {
-    action: 'ticket:delete:comment',
-    description: 'Comment was deleted: ' + commentId,
-    owner: ownerId
-  }
-  self.history.push(historyItem)
-
-  return callback(null, self)
 }
 
 /**
@@ -560,22 +584,29 @@ ticketSchema.methods.removeComment = function (ownerId, commentId, callback) {
  * });
  */
 ticketSchema.methods.updateNote = function (ownerId, noteId, noteText, callback) {
-  var self = this
-  var note = _.find(self.notes, function (c) {
-    return c._id.toString() === noteId.toString()
+  const self = this
+  return new Promise((resolve, reject) => {
+    const note = _.find(self.notes, function (c) {
+      return c._id.toString() === noteId.toString()
+    })
+    if (_.isUndefined(note)) {
+      if (typeof callback === 'function') callback('Invalid Note', null)
+      return reject(new Error('Invalid Note'))
+    }
+
+    note.note = noteText
+
+    const historyItem = {
+      action: 'ticket:note:updated',
+      description: 'Note was updated: ' + noteId,
+      owner: ownerId
+    }
+    self.history.push(historyItem)
+
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
   })
-  if (_.isUndefined(note)) return callback('Invalid Note', null)
-
-  note.note = noteText
-
-  var historyItem = {
-    action: 'ticket:note:updated',
-    description: 'Note was updated: ' + noteId,
-    owner: ownerId
-  }
-  self.history.push(historyItem)
-
-  return callback(null, self)
 }
 
 /**
@@ -589,19 +620,23 @@ ticketSchema.methods.updateNote = function (ownerId, noteId, noteText, callback)
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.removeNote = function (ownerId, noteId, callback) {
-  var self = this
-  self.notes = _.reject(self.notes, function (o) {
-    return o._id.toString() === noteId.toString()
+  const self = this
+  return new Promise(resolve => {
+    self.notes = _.reject(self.notes, function (o) {
+      return o._id.toString() === noteId.toString()
+    })
+
+    const historyItem = {
+      action: 'ticket:delete:note',
+      description: 'Note was deleted: ' + noteId,
+      owner: ownerId
+    }
+    self.history.push(historyItem)
+
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
   })
-
-  var historyItem = {
-    action: 'ticket:delete:note',
-    description: 'Note was deleted: ' + noteId,
-    owner: ownerId
-  }
-  self.history.push(historyItem)
-
-  return callback(null, self)
 }
 
 ticketSchema.methods.getAttachment = function (attachmentId, callback) {

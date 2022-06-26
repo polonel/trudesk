@@ -141,12 +141,6 @@ api.tickets.fetchTicketTypes = () => {
   })
 }
 
-api.tickets.fetchTicketTags = () => {
-  return axios.get('/api/v2/tickets/info/tags').then(res => {
-    return res.data
-  })
-}
-
 api.accounts = {}
 api.accounts.create = payload => {
   return axios.post('/api/v2/accounts', payload).then(res => {

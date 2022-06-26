@@ -32,9 +32,6 @@ define('modules/ui', [
     socketUi.socket = socket = sock
 
     this.flushRoles()
-    // this.onReconnect()
-    // this.onDisconnect()
-    // this.updateUi()
 
     // Events
     this.onProfileImageUpdate()
@@ -91,79 +88,6 @@ define('modules/ui', [
     socket.on(socketEvents.ROLES_FLUSH, function () {
       helpers.flushRoles()
     })
-  }
-
-  socketUi.sendUpdateTicketStatus = function (id, status) {
-    socket.emit('updateTicketStatus', { ticketId: id, status: status })
-  }
-
-  socketUi.onReconnect = function () {
-    socket.io.removeAllListeners('reconnect')
-    socket.io.on('reconnect', function () {
-      helpers.UI.hideDisconnectedOverlay()
-    })
-  }
-
-  socketUi.sendUpdateTicketStatus = function (id, status) {
-    socket.emit('updateTicketStatus', { ticketId: id, status: status })
-  }
-
-  socketUi.setTicketIssue = function (ticketId, issue, subject) {
-    var payload = {
-      ticketId: ticketId,
-      issue: issue,
-      subject: subject
-    }
-
-    socket.emit('setTicketIssue', payload)
-  }
-  socketUi.setCommentText = function (ticketId, commentId, commentText) {
-    var payload = {
-      ticketId: ticketId,
-      commentId: commentId,
-      commentText: commentText
-    }
-
-    socket.emit('setCommentText', payload)
-  }
-  socketUi.removeComment = function (ticketId, commentId) {
-    var payload = {
-      ticketId: ticketId,
-      commentId: commentId
-    }
-
-    socket.emit('removeComment', payload)
-  }
-  socketUi.setNoteText = function (ticketId, noteId, noteText) {
-    var payload = {
-      ticketId: ticketId,
-      noteId: noteId,
-      noteText: noteText
-    }
-
-    socket.emit('$trudesk:tickets:setNoteText', payload)
-  }
-  socketUi.removeNote = function (ticketId, noteId) {
-    var payload = {
-      ticketId: ticketId,
-      noteId: noteId
-    }
-
-    socket.emit('$trudesk:tickets:removeNote', payload)
-  }
-  socketUi.refreshTicketAttachments = function (ticketId) {
-    var payload = {
-      ticketId: ticketId
-    }
-
-    socket.emit('refreshTicketAttachments', payload)
-  }
-  socketUi.refreshTicketTags = function (ticketId) {
-    var payload = {
-      ticketId: ticketId
-    }
-
-    socket.emit('refreshTicketTags', payload)
   }
 
   socketUi.onProfileImageUpdate = function () {
