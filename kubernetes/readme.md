@@ -14,12 +14,7 @@
 Wait some seconds until the deployment is completed.
 
 ## Configure Elastic
-Log into TrueDesk and go to Settings > Elasticsearch and define the enpoint of the elastic service
+Log into Trudesk and go to Settings > Elasticsearch and define the endpoint of the elastic service
 
 - Server: http://elasticsearch.trudesk.svc.cluster.local
-- Port: 9200 
-
-
-## To Do
-
-- Trudesk reinstalls every time the pod dies (DONE)
+- Port: 9200
