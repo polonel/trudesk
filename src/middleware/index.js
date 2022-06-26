@@ -22,6 +22,7 @@ const insecureHandlebars = APC.allowInsecurePrototypeAccess(HandleBars)
 const hbs = require('express-hbs')
 const hbsHelpers = require('../helpers/hbs/helpers')
 const winston = require('../logger')
+const nconf = require('nconf')
 const flash = require('connect-flash')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -72,7 +73,8 @@ module.exports = function (app, db, callback) {
     maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year
   }
 
-  const sessionSecret = 'trudesk$123#SessionKeY!2387'
+  const sessionSecret = nconf.get('tokens:secret') ? nconf.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
+
   async.waterfall(
     [
       function (next) {

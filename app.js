@@ -48,14 +48,6 @@ if (!process.env.FORK) {
 
 let configFile = path.join(__dirname, '/config.yml')
 
-nconf.defaults({
-  base_dir: __dirname,
-  tokens: {
-    secret: chance.hash() + chance.md5(),
-    expires: 900
-  }
-})
-
 if (nconf.get('config')) {
   configFile = path.resolve(__dirname, nconf.get('config'))
 }
@@ -81,9 +73,18 @@ function loadConfig () {
     file: configFile,
     format: require('nconf-yaml')
   })
+
+  // Must load after file
+  nconf.defaults({
+    base_dir: __dirname,
+    tokens: {
+      secret: chance.hash() + chance.md5(),
+      expires: 900
+    }
+  })
 }
 
-function checkForOldConfig() {
+function checkForOldConfig () {
   const oldConfigFile = path.join(__dirname, '/config.json')
   if (fs.existsSync(oldConfigFile)) {
     // Convert config to yaml.
@@ -99,7 +100,7 @@ function checkForOldConfig() {
 }
 
 function start () {
-  if (!isDocker)loadConfig()
+  if (!isDocker) loadConfig()
 
   const _db = require('./src/database')
 

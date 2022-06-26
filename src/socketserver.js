@@ -32,7 +32,8 @@ const socketServer = function (ws) {
 
   const socketConfig = {
     pingTimeout: nconf.get('socket:pingTimeout') ? nconf.get('socket:pingTimeout') : 15000,
-    pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 30000
+    pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 30000,
+    secret: nconf.get('tokens:secret') ? nconf.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
   }
 
   const io = require('socket.io')(ws.server, {
@@ -74,7 +75,7 @@ const socketServer = function (ws) {
             cookieParser: cookieparser,
             key: 'connect.sid',
             store: ws.sessionStore,
-            secret: 'trudesk$123#SessionKeY!2387',
+            secret: socketConfig.secret,
             success: onAuthorizeSuccess
           })(data, accept)
         }
