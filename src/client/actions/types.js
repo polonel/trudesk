@@ -16,6 +16,8 @@ import { defineAction } from 'redux-define'
 import { PENDING, ERROR, SUCCESS } from './stateConstants'
 
 // Shared
+export const INIT_SOCKET = defineAction('INIT_SOCKET', [SUCCESS, ERROR])
+export const UPDATE_SOCKET = defineAction('UPDATE_SOCKET', [SUCCESS, ERROR])
 export const SHOW_MODAL = defineAction('SHOW_MODAL')
 export const HIDE_MODAL = defineAction('HIDE_MODAL')
 export const CLEAR_MODAL = defineAction('CLEAR_MODAL')

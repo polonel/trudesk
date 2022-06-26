@@ -15,6 +15,7 @@ var _ = require('lodash')
 var async = require('async')
 var winston = require('../logger')
 var utils = require('../helpers/utils')
+var socketEvents = require('./socketEventConsts')
 
 var events = {}
 
@@ -60,7 +61,7 @@ function updateNotifications () {
           return true
         }
 
-        utils.sendToSelf(socket, 'updateNotifications', notifications)
+        utils.sendToSelf(socket, socketEvents.NOTIFICATIONS_UPDATE, notifications)
       }
     )
   }
@@ -79,7 +80,7 @@ function updateAllNotifications (socket) {
 }
 
 events.updateNotifications = function (socket) {
-  socket.on('updateNotifications', function () {
+  socket.on(socketEvents.NOTIFICATIONS_UPDATE, function () {
     updateNotifications(socket)
   })
 }
@@ -91,7 +92,7 @@ events.updateAllNotifications = function (socket) {
 }
 
 events.markNotificationRead = function (socket) {
-  socket.on('markNotificationRead', function (_id) {
+  socket.on(socketEvents.NOTIFICATIONS_MARK_READ, function (_id) {
     if (_.isUndefined(_id)) return true
     var notificationSchema = require('../models/notification')
     notificationSchema.getNotification(_id, function (err, notification) {
@@ -109,7 +110,7 @@ events.markNotificationRead = function (socket) {
 }
 
 events.clearNotifications = function (socket) {
-  socket.on('clearNotifications', function () {
+  socket.on(socketEvents.NOTIFICATIONS_CLEAR, function () {
     var userId = socket.request.user._id
     if (_.isUndefined(userId)) return true
     var notifications = {}
@@ -120,7 +121,7 @@ events.clearNotifications = function (socket) {
     notificationSchema.clearNotifications(userId, function (err) {
       if (err) return true
 
-      utils.sendToSelf(socket, 'updateNotifications', notifications)
+      utils.sendToSelf(socket, socketEvents.UPDATE_NOTIFICATIONS, notifications)
     })
   })
 }

@@ -13,6 +13,7 @@
  */
 
 define('modules/ui', [
+  'serverSocket/socketEventConsts',
   'jquery',
   'underscore',
   'uikit',
@@ -22,7 +23,7 @@ define('modules/ui', [
   'modules/socket.io/ticketsUI',
   'modules/socket.io/logs.io',
   'history'
-], function ($, _, UIKit, helpers, nav, noticeUI, ticketsUI, logsIO) {
+], function (socketEvents, $, _, UIKit, helpers, nav, noticeUI, ticketsUI, logsIO) {
   var socketUi = {}
 
   var socket
@@ -31,12 +32,11 @@ define('modules/ui', [
     socketUi.socket = socket = sock
 
     this.flushRoles()
-    this.onReconnect()
-    this.onDisconnect()
-    this.updateUi()
+    // this.onReconnect()
+    // this.onDisconnect()
+    // this.updateUi()
 
     // Events
-    this.onTicketCreated()
     this.onProfileImageUpdate()
 
     // Logs
@@ -87,8 +87,8 @@ define('modules/ui', [
     socket.emit('logs:fetch')
   }
   socketUi.flushRoles = function () {
-    socket.removeAllListeners('$trudesk:flushRoles')
-    socket.on('$trudesk:flushRoles', function () {
+    socket.removeAllListeners(socketEvents.ROLES_FLUSH)
+    socket.on(socketEvents.ROLES_FLUSH, function () {
       helpers.flushRoles()
     })
   }
@@ -101,23 +101,6 @@ define('modules/ui', [
     socket.io.removeAllListeners('reconnect')
     socket.io.on('reconnect', function () {
       helpers.UI.hideDisconnectedOverlay()
-    })
-  }
-
-  socketUi.onDisconnect = function () {
-    socket.removeAllListeners('disconnect')
-    socket.on('disconnect', function () {
-      helpers.UI.showDisconnectedOverlay()
-    })
-
-    socket.io.removeAllListeners('reconnect_attempt')
-    socket.io.on('reconnect_attempt', function () {
-      helpers.UI.showDisconnectedOverlay()
-    })
-
-    socket.removeAllListeners('connect_timeout')
-    socket.on('connect_timeout', function () {
-      helpers.UI.showDisconnectedOverlay()
     })
   }
 
@@ -217,71 +200,6 @@ define('modules/ui', [
     }
 
     socket.emit('refreshTicketTags', payload)
-  }
-
-  socketUi.updateUi = function () {
-    $(document).ready(function () {
-      var $button = $('*[data-updateUi]')
-      $.each($button, function () {
-        var self = $(this)
-        var $action = self.attr('data-updateUi')
-        if ($action.toLowerCase() === 'online-users') {
-          self.off('click', updateUsersBtnClicked)
-          self.on('click', updateUsersBtnClicked)
-        } else if ($action.toLowerCase() === 'assigneelist') {
-          self.off('click', updateAssigneeList)
-          self.on('click', updateAssigneeList)
-        } else if ($action.toLowerCase() === 'notifications') {
-          self.off('click', updateNotificationsClicked)
-          self.on('click', updateNotificationsClicked)
-        }
-      })
-    })
-  }
-
-  function updateUsersBtnClicked (e) {
-    e.preventDefault()
-    socket.emit('updateUsers')
-  }
-
-  socketUi.updateUsers = function () {
-    socket.emit('updateUsers')
-  }
-
-  function updateAssigneeList (e) {
-    socket.emit('updateAssigneeList')
-    e.preventDefault()
-  }
-
-  function updateNotificationsClicked (e) {
-    socket.emit('updateNotifications')
-    e.preventDefault()
-  }
-
-  socketUi.clearNotifications = function () {
-    socket.emit('clearNotifications')
-
-    helpers.hideAllpDropDowns()
-  }
-
-  socketUi.markNotificationRead = function (_id) {
-    socket.emit('markNotificationRead', _id)
-
-    helpers.hideAllpDropDowns()
-  }
-
-  socketUi.updateNotifications = function () {
-    socket.emit('updateNotifications')
-  }
-
-  socketUi.onTicketCreated = function () {
-    socket.removeAllListeners('ticket:created')
-    socket.on('ticket:created', function () {
-      socket.emit('updateNotifications')
-      var audio = $('audio#newticketaudio')
-      if (audio.length > 0) audio.trigger('play')
-      $('a#refreshTicketGrid').trigger('click')
-    })
   }
 
   socketUi.onProfileImageUpdate = function () {

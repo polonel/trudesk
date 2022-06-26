@@ -21,7 +21,7 @@ const NotificationSchema = require('../models/notification')
 const settingsSchema = require('../models/setting')
 const Email = require('email-templates')
 const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-
+const socketEvents = require('../socketio/socketEventConsts')
 const notifications = require('../notifications') // Load Push Events
 
 const eventTicketCreated = require('./events/event_ticket_created')
@@ -328,9 +328,9 @@ const eventTicketCreated = require('./events/event_ticket_created')
     io.sockets.emit('trudesk:profileImageUpdate', data)
   })
 
-  emitter.on('$trudesk:flushRoles', function () {
+  emitter.on(socketEvents.ROLES_FLUSH, function () {
     require('../permissions').register(function () {
-      io.sockets.emit('$trudesk:flushRoles')
+      io.sockets.emit(socketEvents.ROLES_FLUSH)
     })
   })
 })()

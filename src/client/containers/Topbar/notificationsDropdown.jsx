@@ -14,6 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import moment from 'moment-timezone'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
@@ -21,7 +22,7 @@ import { makeObservable, observable } from 'mobx'
 import PDropdown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
+import { NOTIFICATIONS_UPDATE, NOTIFICATIONS_MARK_READ, NOTIFICATIONS_CLEAR } from 'serverSocket/socketEventConsts'
 import 'history'
 
 @observer
@@ -33,32 +34,34 @@ class NotificationsDropdownPartial extends React.Component {
     makeObservable(this)
 
     this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this)
+    this.clearNotificationsClicked = this.clearNotificationsClicked.bind(this)
+    this.markNotificationRead = this.markNotificationRead.bind(this)
   }
 
   componentDidMount () {
-    socket.ui.socket.on('updateNotifications', this.onSocketUpdateNotifications)
+    this.props.socket.on(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
   }
 
   componentWillUnmount () {
-    socket.ui.socket.off('updateNotifications', this.onSocketUpdateNotifications)
+    this.props.socket.off(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
   }
 
   onSocketUpdateNotifications (data) {
     if (!helpers.arrayIsEqual(this.notifications, data.items)) this.notifications = data.items
   }
 
-  static clearNotificationsClicked (e) {
+  clearNotificationsClicked (e) {
     e.preventDefault()
     e.stopPropagation()
 
-    socket.ui.clearNotifications()
+    this.props.socket.emit(NOTIFICATIONS_CLEAR)
   }
 
-  static markNotificationRead (e, notification) {
+  markNotificationRead (e, notification) {
     e.preventDefault()
     e.stopPropagation()
 
-    socket.ui.markNotificationRead(notification._id)
+    this.props.socket.emit(NOTIFICATIONS_MARK_READ, notification._id)
 
     History.pushState(null, null, `/tickets/${notification.data.ticket.uid}`)
   }
@@ -73,10 +76,7 @@ class NotificationsDropdownPartial extends React.Component {
         topOffset={'-10'}
         leftOffset={'4'}
         rightComponent={
-          <a
-            className={'hoverUnderline no-ajaxy'}
-            onClick={e => NotificationsDropdownPartial.clearNotificationsClicked(e)}
-          >
+          <a className={'hoverUnderline no-ajaxy'} onClick={e => this.clearNotificationsClicked(e)}>
             Clear Notifications
           </a>
         }
@@ -99,10 +99,7 @@ class NotificationsDropdownPartial extends React.Component {
             .format(shortDateFormat)
           return (
             <li key={notification._id}>
-              <a
-                className='item no-ajaxy'
-                onClick={e => NotificationsDropdownPartial.markNotificationRead(e, notification)}
-              >
+              <a className='item no-ajaxy' onClick={e => this.markNotificationRead(e, notification)}>
                 <div className='uk-clearfix'>
                   {notification.unread && <div className={'messageUnread'} />}
                   {notification.type === 0 && (
@@ -142,9 +139,14 @@ class NotificationsDropdownPartial extends React.Component {
 }
 
 NotificationsDropdownPartial.propTypes = {
+  socket: PropTypes.object.isRequired,
   timezone: PropTypes.string.isRequired,
   shortDateFormat: PropTypes.string.isRequired,
   onViewAllNotificationsClick: PropTypes.func.isRequired
 }
 
-export default NotificationsDropdownPartial
+const mapStateToProps = state => ({
+  socket: state.shared.socket
+})
+
+export default connect(mapStateToProps, {})(NotificationsDropdownPartial)

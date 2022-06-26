@@ -39,6 +39,7 @@ import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
+import { NOTIFICATIONS_UPDATE, USERS_UPDATE } from 'serverSocket/socketEventConsts'
 
 @observer
 class TopbarContainer extends React.Component {
@@ -63,23 +64,26 @@ class TopbarContainer extends React.Component {
       this.showNotice(this.props.viewdata.get('notice'), this.props.viewdata.get('noticeCookieName'))
     })
 
-    socket.socket.on('updateNotifications', this.onSocketUpdateNotifications)
-    socket.socket.on('updateUsers', this.onSocketUpdateUsers)
-    socket.socket.on('$trudesk:notice:show', this.onSocketShowNotice)
-    socket.socket.on('updateClearNotice', this.onSocketClearNotice)
+    this.props.socket.on(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
+    this.props.socket.on(USERS_UPDATE, this.onSocketUpdateUsers)
+    this.props.socket.on('$trudesk:notice:show', this.onSocketShowNotice)
+    this.props.socket.on('updateClearNotice', this.onSocketClearNotice)
 
     // Call for an update on Mount
-    socket.ui.updateNotifications()
-    socket.ui.updateUsers()
+    this.props.socket.emit(NOTIFICATIONS_UPDATE)
+    this.props.socket.emit(USERS_UPDATE)
+
+    // socket.ui.updateNotifications()
+    // socket.ui.updateUsers()
 
     // this.shouldShowBanner()
   }
 
   componentWillUnmount () {
-    socket.socket.off('updateNotifications', this.onSocketUpdateNotifications)
-    socket.socket.off('updateUsers', this.onSocketUpdateUsers)
-    socket.socket.off('$trudesk:notice:show', this.onSocketShowNotice)
-    socket.socket.off('updateClearNotice', this.onSocketClearNotice)
+    this.props.socket.off(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
+    this.props.socket.off(USERS_UPDATE, this.onSocketUpdateUsers)
+    this.props.socket.off('$trudesk:notice:show', this.onSocketShowNotice)
+    this.props.socket.off('updateClearNotice', this.onSocketClearNotice)
   }
 
   shouldShowBanner () {
@@ -263,6 +267,7 @@ class TopbarContainer extends React.Component {
 }
 
 TopbarContainer.propTypes = {
+  socket: PropTypes.object.isRequired,
   sessionUser: PropTypes.object,
   fetchViewData: PropTypes.func.isRequired,
   loadingViewData: PropTypes.bool.isRequired,
@@ -275,6 +280,7 @@ TopbarContainer.propTypes = {
 }
 
 const mapStateToProps = state => ({
+  socket: state.shared.socket,
   sessionUser: state.shared.sessionUser,
   notice: state.shared.notice,
   loadingViewData: state.common.loadingViewData,

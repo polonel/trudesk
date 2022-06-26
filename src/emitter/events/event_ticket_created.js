@@ -29,6 +29,7 @@ const permissions = require('../../permissions')
 
 const socketUtils = require('../../helpers/utils')
 const sharedVars = require('../../socketio/index').shared
+const socketEvents = require('../../socketio/socketEventConsts')
 const util = require('../../helpers/utils')
 
 const sendSocketUpdateToUser = (user, ticket) => {
@@ -194,7 +195,7 @@ module.exports = async data => {
     if (ticket.group.public) await createPublicNotification(ticket)
     else await createNotification(ticket)
 
-    util.sendToAllConnectedClients(io, 'ticket:created', ticket)
+    util.sendToAllConnectedClients(io, socketEvents.TICKETS_CREATED, ticket)
   } catch (e) {
     logger.warn(`[trudesk:events:ticket:created] - Error: ${e}`)
   }

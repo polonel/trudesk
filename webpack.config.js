@@ -2,6 +2,7 @@ var path = require('path')
 var webpack = require('webpack')
 var MiniCssExtractPlugin = require('mini-css-extract-plugin')
 var TerserPlugin = require('terser-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -100,7 +101,9 @@ module.exports = {
       containers: path.resolve(__dirname, 'src/client/containers'),
       actions: path.resolve(__dirname, 'src/client/actions'),
       api: path.resolve(__dirname, 'src/client/api'),
-      lib: path.resolve(__dirname, 'src/public/js/modules')
+      lib: path.resolve(__dirname, 'src/public/js/modules'),
+      lib2: path.resolve(__dirname, 'src/client/lib'),
+      serverSocket: path.resolve(__dirname, 'src/socketio')
     },
 
     extensions: ['.js', '.jsx', '.ts', 'tsx']
@@ -201,6 +204,9 @@ module.exports = {
     new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/ }),
     new MiniCssExtractPlugin({
       filename: 'app.min.css'
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/client/index.html'
     })
   ],
   performance: {

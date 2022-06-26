@@ -15,10 +15,33 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 
 import api from '../../api'
-import { FETCH_ROLES, FETCH_VIEWDATA } from 'actions/types'
+import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, UPDATE_SOCKET } from 'actions/types'
 
 import Log from '../../logger'
 import helpers from 'lib/helpers'
+
+function * initSocket ({ meta }) {
+  try {
+    const s = io.connect({
+      transports: ['polling', 'websocket']
+    })
+
+    yield put({ type: INIT_SOCKET.SUCCESS, payload: { socket: s }, meta })
+  } catch (error) {
+    Log.error(error)
+    yield put({ type: INIT_SOCKET.ERROR, error })
+  }
+}
+
+function * updateSocket ({ payload }) {
+  try {
+    const s = payload.socket
+    yield put({ type: UPDATE_SOCKET.SUCCESS, payload: { socket: s } })
+  } catch (error) {
+    Log.error(error)
+    yield put({ type: UPDATE_SOCKET.ERROR, error })
+  }
+}
 
 function * fetchRoles ({ payload }) {
   try {
@@ -47,6 +70,8 @@ function * fetchViewData ({ payload, meta }) {
 }
 
 export default function * watcher () {
+  yield takeLatest(INIT_SOCKET.ACTION, initSocket)
+  yield takeLatest(UPDATE_SOCKET.ACTION, updateSocket)
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
   yield takeLatest(FETCH_VIEWDATA.ACTION, fetchViewData)
 }

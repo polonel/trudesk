@@ -19,7 +19,7 @@ import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
 
-import { transferToThirdParty } from 'actions/tickets'
+import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { showModal } from 'actions/common'
 
@@ -101,6 +101,7 @@ class SingleTicketContainer extends React.Component {
     socket.socket.on('updateTicketTags', this.onUpdateTicketTags)
 
     fetchTicket(this)
+    this.props.fetchTicketTypes()
     this.props.fetchGroups()
   }
 
@@ -243,9 +244,9 @@ class SingleTicketContainer extends React.Component {
         })
       : []
 
-    const mappedTypes = this.props.common.ticketTypes
-      ? this.props.common.ticketTypes.map(type => {
-          return { text: type.name, value: type._id, raw: type }
+    const mappedTypes = this.props.ticketTypes
+      ? this.props.ticketTypes.map(type => {
+          return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() }
         })
       : []
 
@@ -341,14 +342,18 @@ class SingleTicketContainer extends React.Component {
                               <select
                                 value={this.ticket.type._id}
                                 onChange={e => {
-                                  const type = this.props.common.ticketTypes.find(t => t._id === e.target.value)
-                                  const hasPriority =
-                                    type.priorities.findIndex(p => p._id === this.ticket.priority._id) !== -1
+                                  const type = this.props.ticketTypes.find(t => t.get('_id') === e.target.value)
+
+                                  const priority = type
+                                    .get('priorities')
+                                    .findIndex(p => p.get('_id') === this.ticket.priority._id)
+
+                                  const hasPriority = priority !== -1
 
                                   if (!hasPriority) {
                                     socket.ui.setTicketPriority(
                                       this.ticket._id,
-                                      type.priorities.find(() => true)
+                                      type.get('priorities').find(() => true)
                                     )
                                     showPriorityConfirm()
                                   }
@@ -438,7 +443,7 @@ class SingleTicketContainer extends React.Component {
                           )}
                           {!hasTicketUpdate && (
                             <div className='input-box'>
-                              {helpers.formatDate(this.ticket.dueDate, this.props.common.shortDateFormat)}
+                              {helpers.formatDate(this.ticket.dueDate, this.props.common.get('shortDateFormat'))}
                             </div>
                           )}
                         </div>
@@ -489,7 +494,9 @@ class SingleTicketContainer extends React.Component {
                             {this.ticket.history &&
                               this.ticket.history.map(item => (
                                 <div key={item._id} className='history-item'>
-                                  <time dateTime={helpers.formatDate(item.date, this.props.common.longDateFormat)} />
+                                  <time
+                                    dateTime={helpers.formatDate(item.date, this.props.common.get('longDateFormat'))}
+                                  />
                                   <em>
                                     Action by: <span>{item.owner.fullname}</span>
                                   </em>
@@ -506,7 +513,7 @@ class SingleTicketContainer extends React.Component {
               {/* Right Side */}
               <div className='page-message nopadding' style={{ marginLeft: 360 }}>
                 <div className='page-title-right noshadow'>
-                  {this.props.common.hasThirdParty && (
+                  {this.props.common.get('hasThirdParty') && (
                     <div className='page-top-comments uk-float-right'>
                       <a
                         role='button'
@@ -576,7 +583,7 @@ class SingleTicketContainer extends React.Component {
                       subject={this.ticket.subject}
                       issue={this.ticket.issue}
                       date={this.ticket.date}
-                      dateFormat={`${this.props.common.longDateFormat}, ${this.props.common.timeFormat}`}
+                      dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
                       attachments={this.ticket.attachments}
                       editorWindow={this.editorWindow}
                     />
@@ -618,7 +625,9 @@ class SingleTicketContainer extends React.Component {
                                 ticketSubject={this.ticket.subject}
                                 comment={item}
                                 isNote={item.isNote}
-                                dateFormat={`${this.props.common.longDateFormat}, ${this.props.common.timeFormat}`}
+                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
+                                  'timeFormat'
+                                )}`}
                                 onEditClick={() => {
                                   this.editorWindow.openEditorWindow({
                                     showSubject: false,
@@ -646,7 +655,9 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={comment}
-                                  dateFormat={`${this.props.common.longDateFormat}, ${this.props.common.timeFormat}`}
+                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
+                                    'timeFormat'
+                                  )}`}
                                   onEditClick={() => {
                                     this.editorWindow.openEditorWindow({
                                       showSubject: false,
@@ -673,7 +684,9 @@ class SingleTicketContainer extends React.Component {
                                   ticketSubject={this.ticket.subject}
                                   comment={note}
                                   isNote={true}
-                                  dateFormat={`${this.props.common.longDateFormat}, ${this.props.common.timeFormat}`}
+                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
+                                    'timeFormat'
+                                  )}`}
                                   onEditClick={() => {
                                     this.editorWindow.openEditorWindow({
                                       showSubject: false,
@@ -781,6 +794,8 @@ SingleTicketContainer.propTypes = {
   ticketUid: PropTypes.string.isRequired,
   shared: PropTypes.object.isRequired,
   common: PropTypes.object.isRequired,
+  ticketTypes: PropTypes.object.isRequired,
+  fetchTicketTypes: PropTypes.func.isRequired,
   groupsState: PropTypes.object.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
@@ -789,11 +804,16 @@ SingleTicketContainer.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  common: state.common,
+  common: state.common.viewdata,
   shared: state.shared,
+  ticketTypes: state.ticketsState.types,
   groupsState: state.groupsState
 })
 
-export default connect(mapStateToProps, { fetchGroups, unloadGroups, showModal, transferToThirdParty })(
-  SingleTicketContainer
-)
+export default connect(mapStateToProps, {
+  fetchTicketTypes,
+  fetchGroups,
+  unloadGroups,
+  showModal,
+  transferToThirdParty
+})(SingleTicketContainer)

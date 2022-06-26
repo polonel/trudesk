@@ -20,12 +20,14 @@ import createSagaMiddleware from 'redux-saga'
 import { middleware as thunkMiddleware } from 'redux-saga-thunk'
 import IndexReducer from './reducers'
 import IndexSagas from './sagas'
+import { SingletonHooksContainer } from 'react-singleton-hook'
 import TopbarContainer from './containers/Topbar/TopbarContainer'
 import Sidebar from './components/Nav/Sidebar/index.jsx'
 import ModalRoot from './containers/Modals'
 import renderer from './renderer'
 
 import $ from 'jquery'
+import SocketGlobal from 'containers/Global/SocketGlobal'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -68,7 +70,11 @@ if (document.getElementById('modal-wrapper')) {
 if (document.getElementById('topbar')) {
   const TopbarRoot = (
     <Provider store={store}>
-      <TopbarContainer />
+      <>
+        <SingletonHooksContainer />
+        <SocketGlobal />
+        <TopbarContainer />
+      </>
     </Provider>
   )
 

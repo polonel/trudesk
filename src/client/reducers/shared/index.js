@@ -15,7 +15,7 @@
 import { handleActions } from 'redux-actions'
 import { fromJS, List, Map } from 'immutable'
 
-import { SET_SESSION_USER, FETCH_ROLES, UPDATE_ROLE_ORDER, SHOW_NOTICE, CLEAR_NOTICE } from 'actions/types'
+import { SET_SESSION_USER, FETCH_ROLES, UPDATE_ROLE_ORDER, SHOW_NOTICE, CLEAR_NOTICE, INIT_SOCKET } from 'actions/types'
 
 const initialState = {
   sessionUser: null,
@@ -23,11 +23,27 @@ const initialState = {
   roleOrder: Map({}),
   notice: null,
   loadingViewData: true,
-  viewdata: Map({})
+  viewdata: Map({}),
+
+  socket: {},
+  socketInitialized: false
 }
 
 const sharedReducer = handleActions(
   {
+    [INIT_SOCKET.SUCCESS]: (state, action) => {
+      if (state.socketInitialized)
+        return {
+          ...state
+        }
+
+      return {
+        ...state,
+        socket: action.payload.socket,
+        socketInitialized: true
+      }
+    },
+
     [SET_SESSION_USER]: (state, action) => {
       return {
         ...state,
