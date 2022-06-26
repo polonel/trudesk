@@ -1,6 +1,6 @@
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
-import { FETCH_NOTICES, UPDATE_NOTICE, DELETE_NOTICE, UNLOAD_NOTICES } from 'actions/types'
+import { FETCH_NOTICES, UPDATE_NOTICE, DELETE_NOTICE, UNLOAD_NOTICES, CREATE_NOTICE } from 'actions/types'
 
 const initialState = {
   notices: List([]),
@@ -21,6 +21,15 @@ const reducer = handleActions(
         ...state,
         notices: fromJS(action.response.notices || []),
         loading: false
+      }
+    },
+
+    [CREATE_NOTICE.SUCCESS]: (state, action) => {
+      const notice = action.response.notice
+
+      return {
+        ...state,
+        notices: state.notices.push(fromJS(notice))
       }
     },
 

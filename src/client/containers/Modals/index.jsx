@@ -38,6 +38,7 @@ import CreateTeamModal from './CreateTeamModal'
 import EditTeamModal from './EditTeamModal'
 import CreateDepartmentModal from './CreateDepartmentModal'
 import EditDepartmentModal from './EditDepartmentModal'
+import CreateNoticeModal from 'containers/Modals/CreateNoticeModal'
 import EditNoticeModal from 'containers/Modals/EditNoticeModal'
 import LinkWarningModal from 'containers/Modals/LinkWarningModal'
 
@@ -63,6 +64,7 @@ const MODAL_COMPONENTS = {
   EDIT_TEAM: EditTeamModal,
   CREATE_DEPARTMENT: CreateDepartmentModal,
   EDIT_DEPARTMENT: EditDepartmentModal,
+  CREATE_NOTICE: CreateNoticeModal,
   EDIT_NOTICE: EditNoticeModal,
   LINK_WARNING: LinkWarningModal
 }

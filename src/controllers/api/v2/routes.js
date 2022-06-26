@@ -64,6 +64,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Notices
   router.get('/api/v2/notices', apiv2Auth, apiv2.notices.get)
+  router.post('/api/v2/notices', apiv2Auth, canUser('notices:create'), apiv2.notices.create)
   // router.get('/api/v2/notices/active', apiv2Auth, apiv2.notices.getActive)
   router.put('/api/v2/notices/:id', apiv2Auth, canUser('notices:update'), apiv2.notices.update)
   router.put('/api/v2/notices/:id/activate', apiv2Auth, canUser('notices:activate'), apiv2.notices.activate)

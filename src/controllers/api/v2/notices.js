@@ -12,10 +12,29 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-var apiUtils = require('../apiUtils')
-var Notice = require('../../../models/notice')
+const winston = require('../../../logger')
+const apiUtils = require('../apiUtils')
+const Notice = require('../../../models/notice')
 
-var apiNotices = {}
+const apiNotices = {}
+
+apiNotices.create = async (req, res) => {
+  const payload = req.body
+
+  try {
+    const notice = await Notice.create({
+      name: payload.name,
+      message: payload.message,
+      color: payload.color,
+      fontColor: payload.fontColor
+    })
+
+    return apiUtils.sendApiSuccess(res, { notice })
+  } catch (err) {
+    winston.debug(err)
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
+}
 
 apiNotices.get = function (req, res) {
   Notice.find({}, function (err, notices) {

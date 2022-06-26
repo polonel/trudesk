@@ -29,6 +29,10 @@ class NoticeContainer extends React.Component {
     this.props.fetchNotices()
   }
 
+  componentDidUpdate () {
+    helpers.resizeAll()
+  }
+
   componentWillUnmount () {
     this.props.unloadNotices()
   }
@@ -143,6 +147,18 @@ class NoticeContainer extends React.Component {
                     waves={false}
                     extraClass={'hover-accent'}
                     onClick={() => this.onDeactivateNotice()}
+                  />
+                )}
+                {helpers.canUser('notices:create') && (
+                  <Button
+                    text={'Create'}
+                    flat={false}
+                    small={true}
+                    waves={false}
+                    extraClass={'hover-success'}
+                    onClick={() => {
+                      this.props.showModal('CREATE_NOTICE')
+                    }}
                   />
                 )}
               </div>

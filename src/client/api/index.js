@@ -251,6 +251,12 @@ api.departments.delete = ({ _id }) => {
 }
 
 api.notices = {}
+api.notices.create = payload => {
+  return axios.post('/api/v2/notices', payload).then(res => {
+    return res.data
+  })
+}
+
 api.notices.get = () => {
   return axios.get('/api/v2/notices').then(res => {
     return res.data
