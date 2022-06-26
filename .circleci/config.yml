@@ -56,7 +56,7 @@ jobs:
   build_develop:
     docker:
     - image: circleci/node:16-stretch
-    - image: circleci/mongo:5.0
+    - image: mongo:5.0
     working_directory: ~/trudesk
     resource_class: medium+
     steps:
@@ -78,7 +78,7 @@ jobs:
   build_production:
     docker:
     - image: circleci/node:16-stretch
-    - image: circleci/mongo:5.0
+    - image: mongo:5.0
     working_directory: ~/trudesk
     resource_class: large
     steps:
