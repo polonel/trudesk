@@ -38,7 +38,6 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/dashboard',
       'pages/messages',
       'pages/accountsImport',
-      'pages/groups',
       'pages/profile',
       'pages/reports',
       'pages/reportsBreakdown',
@@ -48,7 +47,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/logs',
 
       'modules/ajaximgupload'
-    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m) {
+    ], function (a, b, c, e, f, g, h, i, j, k, l, m) {
       async.parallel(
         [
           function (done) {
@@ -59,9 +58,6 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
           },
           function (done) {
             c.init(done)
-          },
-          function (done) {
-            d.init(done)
           },
           function (done) {
             e.init(done)
@@ -75,9 +71,9 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
           function (done) {
             h.init(done)
           },
-          function (done) {
-            i.init(done)
-          },
+          // function (done) {
+          //   i.init(done)
+          // },
           function (done) {
             j.init(done)
           },
