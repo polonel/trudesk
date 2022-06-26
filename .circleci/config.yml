@@ -28,7 +28,7 @@ jobs:
   build_general:
     docker:
     - image: circleci/node:16-stretch
-    - image: circleci/mongo:5.0
+    - image: mongo:5.0
     working_directory: ~/trudesk
     steps:
     - checkout
