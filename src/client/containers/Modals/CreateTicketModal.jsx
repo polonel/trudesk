@@ -20,7 +20,7 @@ import { makeObservable, observable, when } from 'mobx'
 import { head, orderBy } from 'lodash'
 import axios from 'axios'
 import Log from '../../logger'
-import { createTicket, fetchTicketTypes, fetchTicketTags } from 'actions/tickets'
+import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
 
@@ -51,7 +51,7 @@ class CreateTicketModal extends React.Component {
 
   componentDidMount () {
     this.props.fetchTicketTypes()
-    this.props.fetchTicketTags()
+    this.props.getTagsWithPage({ limit: -1 })
     this.props.fetchGroups()
     this.props.fetchAccountsCreateTicket({ type: 'all', limit: 1000 })
     helpers.UI.inputs()
@@ -328,7 +328,7 @@ CreateTicketModal.propTypes = {
   groups: PropTypes.object.isRequired,
   createTicket: PropTypes.func.isRequired,
   fetchTicketTypes: PropTypes.func.isRequired,
-  fetchTicketTags: PropTypes.func.isRequired,
+  getTagsWithPage: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   fetchAccountsCreateTicket: PropTypes.func.isRequired
 }
@@ -338,7 +338,7 @@ const mapStateToProps = state => ({
   viewdata: state.common.viewdata,
   ticketTypes: state.ticketsState.types,
   priorities: state.ticketsState.priorities,
-  ticketTags: state.ticketsState.tags,
+  ticketTags: state.tagsSettings.tags,
   groups: state.groupsState.groups,
   accounts: state.accountsState.accountsCreateTicket
 })
@@ -346,7 +346,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   createTicket,
   fetchTicketTypes,
-  fetchTicketTags,
+  getTagsWithPage,
   fetchGroups,
   fetchAccountsCreateTicket
 })(CreateTicketModal)

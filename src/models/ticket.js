@@ -303,15 +303,21 @@ ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.clearAssignee = function (ownerId, callback) {
-  var self = this
-  self.assignee = undefined
-  var historyItem = {
-    action: 'ticket:set:assignee',
-    description: 'Assignee was cleared',
-    owner: ownerId
-  }
-  self.history.push(historyItem)
-  callback(null, self)
+  const self = this
+  return new Promise((resolve, reject) => {
+    self.assignee = undefined
+    const historyItem = {
+      action: 'ticket:set:assignee',
+      description: 'Assignee was cleared',
+      owner: ownerId
+    }
+
+    self.history.push(historyItem)
+
+    if (typeof callback === 'function') callback(null, self)
+
+    return resolve(self)
+  })
 }
 
 /**

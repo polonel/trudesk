@@ -284,41 +284,6 @@ const eventTicketCreated = require('./events/event_ticket_created')
     })
   })
 
-  emitter.on('ticket:setAssignee', function (data) {
-    settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
-      if (err) return false
-
-      let tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
-      let tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
-      let tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
-
-      if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
-        tpsEnabled = false
-      } else {
-        tpsEnabled = tpsEnabled.value
-        tpsUsername = tpsUsername.value
-        tpsApiKey = tpsApiKey.value
-      }
-
-      if (!tpsEnabled) return
-
-      sendPushNotification(
-        {
-          tpsEnabled: tpsEnabled,
-          tpsUsername: tpsUsername,
-          tpsApiKey: tpsApiKey,
-          hostname: data.hostname
-        },
-        {
-          type: 4,
-          ticketId: data.ticketId,
-          ticketUid: data.ticketUid,
-          assigneeId: data.assigneeId
-        }
-      )
-    })
-  })
-
   emitter.on('ticket:note:added', function (ticket) {
     // Goes to client
     io.sockets.emit('updateNotes', ticket)

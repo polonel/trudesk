@@ -34,8 +34,7 @@ import {
   DELETE_TICKET,
   TICKET_EVENT,
   TRANSFER_TO_THIRDPARTY,
-  FETCH_TICKET_TYPES,
-  FETCH_TICKET_TAGS
+  FETCH_TICKET_TYPES
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
@@ -239,22 +238,6 @@ function * fetchTicketTypes ({ payload }) {
   }
 }
 
-function * fetchTicketTags ({ payload }) {
-  yield put({ type: FETCH_TICKET_TAGS.PENDING })
-  try {
-    const response = yield call(api.tickets.fetchTicketTags, payload)
-    yield put({ type: FETCH_TICKET_TAGS.SUCCESS, response })
-  } catch (error) {
-    const errorText = error.response ? error.response.data.error : error
-    if (error.response && error.response.status !== (401 || 403)) {
-      Log.error(errorText, error)
-      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
-    }
-
-    yield put({ type: FETCH_TICKET_TAGS.ERROR, error })
-  }
-}
-
 export default function * watcher () {
   yield takeLatest(FETCH_TICKETS.ACTION, fetchTickets)
   yield takeLatest(CREATE_TICKET.ACTION, createTicket)
@@ -271,5 +254,4 @@ export default function * watcher () {
   yield takeLatest(CREATE_TAG.ACTION, createTag)
   yield takeLatest(TRANSFER_TO_THIRDPARTY.ACTION, transferToThirdParty)
   yield takeLatest(FETCH_TICKET_TYPES.ACTION, fetchTicketTypes)
-  yield takeLatest(FETCH_TICKET_TAGS.ACTION, fetchTicketTags)
 }

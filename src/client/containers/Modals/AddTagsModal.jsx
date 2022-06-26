@@ -23,7 +23,8 @@ import Log from '../../logger'
 import axios from 'axios'
 import $ from 'jquery'
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
+
+import { TICKETS_UI_TAGS_UPDATE } from 'serverSocket/socketEventConsts'
 
 class AddTagsModal extends React.Component {
   componentDidMount () {
@@ -47,7 +48,7 @@ class AddTagsModal extends React.Component {
         tags: selectedTags
       })
       .then(() => {
-        socket.ui.refreshTicketTags(this.props.ticketId)
+        this.props.socket.emit(TICKETS_UI_TAGS_UPDATE, { ticketId: this.props.ticketId })
         this.closeButton.click()
       })
       .catch(error => {
@@ -125,14 +126,13 @@ AddTagsModal.propTypes = {
   ticketId: PropTypes.string.isRequired,
   currentTags: PropTypes.array,
   tagsSettings: PropTypes.object.isRequired,
-  getTagsWithPage: PropTypes.func.isRequired
+  getTagsWithPage: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
-  tagsSettings: state.tagsSettings
+  tagsSettings: state.tagsSettings,
+  socket: state.shared.socket
 })
 
-export default connect(
-  mapStateToProps,
-  { getTagsWithPage }
-)(AddTagsModal)
+export default connect(mapStateToProps, { getTagsWithPage })(AddTagsModal)

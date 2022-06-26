@@ -23,6 +23,22 @@ import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { showModal } from 'actions/common'
 
+import {
+  TICKETS_UPDATE,
+  TICKETS_UI_GROUP_UPDATE,
+  TICKETS_GROUP_SET,
+  TICKETS_UI_TYPE_UPDATE,
+  TICKETS_TYPE_SET,
+  TICKETS_UI_PRIORITY_UPDATE,
+  TICKETS_PRIORITY_SET,
+  TICKETS_ASSIGNEE_LOAD,
+  TICKETS_ASSIGNEE_UPDATE,
+  TICKETS_UI_DUEDATE_UPDATE,
+  TICKETS_DUEDATE_SET,
+  TICKETS_UI_TAGS_UPDATE,
+  TICKETS_TAGS_SET
+} from 'serverSocket/socketEventConsts'
+
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial'
 import Avatar from 'components/Avatar/Avatar'
 import CommentNotePartial from 'containers/Tickets/CommentNotePartial'
@@ -40,7 +56,7 @@ import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
 import axios from 'axios'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
-import socket from 'lib/socket'
+// import socket from 'lib/socket'
 import UIkit from 'uikit'
 import moment from 'moment'
 import SpinLoader from 'components/SpinLoader'
@@ -65,7 +81,8 @@ const fetchTicket = parent => {
 
 const showPriorityConfirm = () => {
   UIkit.modal.confirm(
-    'Selected Priority does not exist for this ticket type.<br><br><strong>Please select a new priority</strong>',
+    'Selected Priority does not exist for this ticket type. Priority has reset to the default for this type.' +
+      '<br><br><strong>Please select a new priority</strong>',
     () => {},
     { cancelButtonClass: 'uk-hidden' }
   )
@@ -80,6 +97,8 @@ class SingleTicketContainer extends React.Component {
     super(props)
     makeObservable(this)
 
+    this.onUpdateTicket = this.onUpdateTicket.bind(this)
+
     this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this)
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this)
     this.onUpdateAssignee = this.onUpdateAssignee.bind(this)
@@ -91,14 +110,14 @@ class SingleTicketContainer extends React.Component {
   }
 
   componentDidMount () {
-    socket.socket.on('updateComments', this.onSocketUpdateComments)
-    socket.socket.on('updateNotes', this.onUpdateTicketNotes)
-    socket.socket.on('updateAssignee', this.onUpdateAssignee)
-    socket.socket.on('updateTicketType', this.onUpdateTicketType)
-    socket.socket.on('updateTicketPriority', this.onUpdateTicketPriority)
-    socket.socket.on('updateTicketGroup', this.onUpdateTicketGroup)
-    socket.socket.on('updateTicketDueDate', this.onUpdateTicketDueDate)
-    socket.socket.on('updateTicketTags', this.onUpdateTicketTags)
+    // socket.socket.on('updateComments', this.onSocketUpdateComments)
+    // socket.socket.on('updateNotes', this.onUpdateTicketNotes)
+    this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
+    this.props.socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
+    this.props.socket.on(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
+    this.props.socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
+    this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
+    this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
 
     fetchTicket(this)
     this.props.fetchTicketTypes()
@@ -111,16 +130,20 @@ class SingleTicketContainer extends React.Component {
   }
 
   componentWillUnmount () {
-    socket.socket.off('updateComments', this.onSocketUpdateComments)
-    socket.socket.off('updateNotes', this.onUpdateTicketNotes)
-    socket.socket.off('updateAssignee', this.onUpdateAssignee)
-    socket.socket.off('updateTicketType', this.onUpdateTicketType)
-    socket.socket.off('updateTicketPriority', this.onUpdateTicketPriority)
-    socket.socket.off('updateTicketGroup', this.onUpdateTicketGroup)
-    socket.socket.off('updateTicketDueDate', this.onUpdateTicketDueDate)
-    socket.socket.off('updateTicketTags', this.onUpdateTicketTags)
+    // socket.socket.off('updateComments', this.onSocketUpdateComments)
+    // socket.socket.off('updateNotes', this.onUpdateTicketNotes)
+    this.props.socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
+    this.props.socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
+    this.props.socket.off(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
+    this.props.socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
+    this.props.socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
+    this.props.socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
 
     this.props.unloadGroups()
+  }
+
+  onUpdateTicket (data) {
+    console.log(data)
   }
 
   onSocketUpdateComments (data) {
@@ -209,7 +232,8 @@ class SingleTicketContainer extends React.Component {
   }
 
   transferToThirdParty (e) {
-    socket.ui.sendUpdateTicketStatus(this.ticket._id, 3)
+    // Update below
+    // socket.ui.sendUpdateTicketStatus(this.ticket._id, 3)
     this.props.transferToThirdParty({ uid: this.ticket.uid })
   }
 
@@ -287,7 +311,7 @@ class SingleTicketContainer extends React.Component {
                             title='Set Assignee'
                             style={{ float: 'left' }}
                             className='relative no-ajaxy'
-                            onClick={() => socket.socket.emit('updateAssigneeList')}
+                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                           >
                             <PDropdownTrigger target={'assigneeDropdown'}>
                               <Avatar
@@ -351,14 +375,18 @@ class SingleTicketContainer extends React.Component {
                                   const hasPriority = priority !== -1
 
                                   if (!hasPriority) {
-                                    socket.ui.setTicketPriority(
-                                      this.ticket._id,
-                                      type.get('priorities').find(() => true)
-                                    )
+                                    this.props.socket.emit(TICKETS_PRIORITY_SET, {
+                                      _id: this.ticket._id,
+                                      value: type.get('priorities').find(() => true)
+                                    })
+
                                     showPriorityConfirm()
                                   }
 
-                                  socket.ui.setTicketType(this.ticket._id, e.target.value)
+                                  this.props.socket.emit(TICKETS_TYPE_SET, {
+                                    _id: this.ticket._id,
+                                    value: e.target.value
+                                  })
                                 }}
                               >
                                 {mappedTypes &&
@@ -381,7 +409,12 @@ class SingleTicketContainer extends React.Component {
                                 name='tPriority'
                                 id='tPriority'
                                 value={this.ticket.priority._id}
-                                onChange={e => socket.ui.setTicketPriority(this.ticket._id, e.target.value)}
+                                onChange={e =>
+                                  this.props.socket.emit(TICKETS_PRIORITY_SET, {
+                                    _id: this.ticket._id,
+                                    value: e.target.value
+                                  })
+                                }
                               >
                                 {this.ticket.type &&
                                   this.ticket.type.priorities &&
@@ -402,7 +435,10 @@ class SingleTicketContainer extends React.Component {
                             <select
                               value={this.ticket.group._id}
                               onChange={e => {
-                                socket.ui.setTicketGroup(this.ticket._id, e.target.value)
+                                this.props.socket.emit(TICKETS_GROUP_SET, {
+                                  _id: this.ticket._id,
+                                  value: e.target.value
+                                })
                               }}
                             >
                               {mappedGroups &&
@@ -424,7 +460,10 @@ class SingleTicketContainer extends React.Component {
                                 role={'button'}
                                 onClick={e => {
                                   e.preventDefault()
-                                  socket.ui.setTicketDueDate(this.ticket._id, undefined)
+                                  this.props.socket.emit(TICKETS_DUEDATE_SET, {
+                                    _id: this.ticket._id,
+                                    value: undefined
+                                  })
                                 }}
                               >
                                 Clear
@@ -436,7 +475,8 @@ class SingleTicketContainer extends React.Component {
                                   const dueDate = moment(e.target.value, helpers.getShortDateFormat())
                                     .utc()
                                     .toISOString()
-                                  socket.ui.setTicketDueDate(this.ticket._id, dueDate)
+
+                                  this.props.socket.emit(TICKETS_DUEDATE_SET, { _id: this.ticket._id, value: dueDate })
                                 }}
                               />
                             </div>
@@ -793,6 +833,7 @@ SingleTicketContainer.propTypes = {
   ticketId: PropTypes.string.isRequired,
   ticketUid: PropTypes.string.isRequired,
   shared: PropTypes.object.isRequired,
+  socket: PropTypes.object.isRequired,
   common: PropTypes.object.isRequired,
   ticketTypes: PropTypes.object.isRequired,
   fetchTicketTypes: PropTypes.func.isRequired,
@@ -806,6 +847,7 @@ SingleTicketContainer.propTypes = {
 const mapStateToProps = state => ({
   common: state.common.viewdata,
   shared: state.shared,
+  socket: state.shared.socket,
   ticketTypes: state.ticketsState.types,
   groupsState: state.groupsState
 })

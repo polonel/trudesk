@@ -33,7 +33,6 @@ module.exports = function (middleware, router, controllers) {
 
   // Ticket Info
   router.get('/api/v2/tickets/info/types', apiv2Auth, apiv2.tickets.info.types)
-  router.get('/api/v2/tickets/info/tags', apiv2Auth, apiv2.tickets.info.tags)
 
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, canUser('tickets:view'), apiv2.tickets.get)

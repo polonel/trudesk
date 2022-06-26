@@ -108,42 +108,6 @@ define('modules/ui', [
     socket.emit('updateTicketStatus', { ticketId: id, status: status })
   }
 
-  socketUi.clearAssignee = function (id) {
-    socket.emit('clearAssignee', id)
-  }
-
-  socketUi.setTicketType = function (ticketId, typeId) {
-    var payload = {
-      ticketId: ticketId,
-      typeId: typeId
-    }
-
-    socket.emit('setTicketType', payload)
-  }
-  socketUi.setTicketPriority = function (ticketId, priority) {
-    var payload = {
-      ticketId: ticketId,
-      priority: priority
-    }
-
-    socket.emit('setTicketPriority', payload)
-  }
-  socketUi.setTicketGroup = function (ticketId, groupId) {
-    var payload = {
-      ticketId: ticketId,
-      groupId: groupId
-    }
-
-    socket.emit('setTicketGroup', payload)
-  }
-  socketUi.setTicketDueDate = function (ticketId, dueDate) {
-    var payload = {
-      ticketId: ticketId,
-      dueDate: dueDate
-    }
-
-    socket.emit('setTicketDueDate', payload)
-  }
   socketUi.setTicketIssue = function (ticketId, issue, subject) {
     var payload = {
       ticketId: ticketId,

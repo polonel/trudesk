@@ -958,6 +958,11 @@ define([
     })
   }
 
+  helpers.UI.refreshTicketGrid = function () {
+    var $aRefreshTicketGrid = $('a#refreshTicketGrid')
+    if ($aRefreshTicketGrid.length() > 0) $aRefreshTicketGrid.trigger('click')
+  }
+
   helpers.closeNotificationsWindow = function () {
     UIkit.modal('#viewAllNotificationsModal').hide()
   }

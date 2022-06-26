@@ -23,6 +23,8 @@ const TicketTags = require('../../../models/tag')
 var Group = require('../../../models/group')
 var Department = require('../../../models/department')
 var permissions = require('../../../permissions')
+const nconf = require('nconf')
+const request = require('axios')
 
 var ticketsV2 = {}
 
@@ -244,20 +246,23 @@ ticketsV2.permDelete = function (req, res) {
   })
 }
 
-ticketsV2.transferToThirdParty = function (req, res) {
-  var uid = req.params.uid
+ticketsV2.transferToThirdParty = async (req, res) => {
+  const uid = req.params.uid
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
-  Ticket.getTicketByUid(uid, function (err, ticket) {
-    if (err) return apiUtils.sendApiError(res, 400, err.message)
-    if (!ticket) return apiUtils.sendApiError(res, 404, 'Ticket not found')
+  try {
+    const ticket = await Ticket.findOne({ uid })
+    if (!ticket) return apiUtils.sendApiError(res, 400, 'Ticket not found')
 
-    var request = require('axios')
-    var nconf = require('nconf')
-    var thirdParty = nconf.get('thirdParty')
-    var url = thirdParty.url + '/api/v2/tickets'
+    ticket.status = 3
+    await ticket.save()
 
-    var ticketObj = {
+    const request = require('axios')
+    const nconf = require('nconf')
+    const thirdParty = nconf.get('thirdParty')
+    const url = thirdParty.url + '/api/v2/tickets'
+
+    const ticketObj = {
       subject: ticket.subject,
       description: ticket.issue,
       email: ticket.owner.email,
@@ -265,16 +270,11 @@ ticketsV2.transferToThirdParty = function (req, res) {
       priority: 2
     }
 
-    request
-      .post(url, ticketObj, { auth: { username: thirdParty.apikey, password: '1' } })
-      .then(function (response) {
-        return apiUtils.sendApiSuccess(res)
-      })
-      .catch(function (err) {
-        console.log(err)
-        return apiUtils.sendApiError(res, err.response.status, err.response.data.message)
-      })
-  })
+    await request.post(url, ticketObj, { auth: { username: thirdParty.apikey, password: '1' } })
+    return apiUtils.sendApiSuccess(res)
+  } catch (error) {
+    return apiUtils.sendApiError(res, 500, error.message)
+  }
 }
 
 ticketsV2.info = {}

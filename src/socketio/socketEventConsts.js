@@ -23,6 +23,26 @@ exported.ROLES_FLUSH = '$trudesk:roles:flush'
 // TICKETS
 exported.TICKETS_CREATED = '$trudesk:tickets:created'
 exported.TICKETS_UPDATE = '$trudesk:tickets:update'
+// --- SUB TICKET EVENTS
+exported.TICKETS_UI_GROUP_UPDATE = '$trudesk:tickets:ui:group:update'
+exported.TICKETS_GROUP_SET = '$trudesk:tickets:group:set'
+
+exported.TICKETS_UI_TYPE_UPDATE = '$trudesk:tickets:ui:type:update'
+exported.TICKETS_TYPE_SET = '$trudesk:tickets:type:set'
+
+exported.TICKETS_UI_PRIORITY_UPDATE = '$trudesk:tickets:ui:priority:update'
+exported.TICKETS_PRIORITY_SET = '$trudesk:tickets:priority:set'
+
+exported.TICKETS_UI_DUEDATE_UPDATE = '$trudesk:tickets:ui:duedate:update'
+exported.TICKETS_DUEDATE_SET = '$trudesk:tickets:duedate:set'
+
+exported.TICKETS_UI_TAGS_UPDATE = '$trudesk:tickets:ui:tags:update'
+exported.TICKETS_TAGS_SET = '$trudesk:tickets:tags:set'
+
+exported.TICKETS_ASSIGNEE_LOAD = '$trudesk:tickets:assignee:load'
+exported.TICKETS_ASSIGNEE_SET = '$trudesk:tickets:assignee:set'
+exported.TICKETS_ASSIGNEE_CLEAR = '$trudesk:tickets:assignee:clear'
+exported.TICKETS_ASSIGNEE_UPDATE = '$trudesk:tickets:assignee: update'
 
 // NOTIFICATIONS
 exported.NOTIFICATIONS_UPDATE = '$trudesk:notifications:update'

@@ -13,14 +13,16 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
+
+import { TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts'
 
 import Avatar from 'components/Avatar/Avatar'
 import PDropDown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 
 @observer
 class AssigneeDropdownPartial extends React.Component {
@@ -34,11 +36,11 @@ class AssigneeDropdownPartial extends React.Component {
   }
 
   componentDidMount () {
-    socket.socket.on('updateAssigneeList', this.onUpdateAssigneeList)
+    this.props.socket.on(TICKETS_ASSIGNEE_LOAD, this.onUpdateAssigneeList)
   }
 
   componentWillUnmount () {
-    socket.socket.off('updateAssigneeList', this.onUpdateAssigneeList)
+    this.props.socket.off(TICKETS_ASSIGNEE_LOAD, this.onUpdateAssigneeList)
   }
 
   onUpdateAssigneeList (data) {
@@ -61,7 +63,7 @@ class AssigneeDropdownPartial extends React.Component {
             onClick={() => {
               helpers.hideAllpDropDowns()
               if (this.props.onClearClick) this.props.onClearClick()
-              socket.socket.emit('clearAssignee', this.props.ticketId)
+              this.props.socket.emit(TICKETS_ASSIGNEE_CLEAR, this.props.ticketId)
             }}
           >
             Clear Assignee
@@ -75,7 +77,7 @@ class AssigneeDropdownPartial extends React.Component {
               onClick={() => {
                 if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent })
                 helpers.hideAllpDropDowns()
-                socket.socket.emit('setAssignee', { _id: agent._id, ticketId: this.props.ticketId })
+                this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId })
               }}
             >
               <a className='messageNotification no-ajaxy' role='button'>
@@ -101,7 +103,12 @@ class AssigneeDropdownPartial extends React.Component {
 AssigneeDropdownPartial.propTypes = {
   ticketId: PropTypes.string.isRequired,
   onClearClick: PropTypes.func,
-  onAssigneeClick: PropTypes.func
+  onAssigneeClick: PropTypes.func,
+  socket: PropTypes.object.isRequired
 }
 
-export default AssigneeDropdownPartial
+const mapStateToProps = state => ({
+  socket: state.shared.socket
+})
+
+export default connect(mapStateToProps, {})(AssigneeDropdownPartial)

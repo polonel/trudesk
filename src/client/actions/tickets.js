@@ -65,4 +65,3 @@ export const tagsUpdateCurrentPage = createAction(TAGS_UPDATE_CURRENT_PAGE.ACTIO
 export const createTag = createAction(CREATE_TAG.ACTION, ({ name, currentPage }) => ({ name, currentPage }))
 export const transferToThirdParty = createAction(TRANSFER_TO_THIRDPARTY.ACTION, ({ uid }) => ({ uid }))
 export const fetchTicketTypes = createAction(FETCH_TICKET_TYPES.ACTION)
-export const fetchTicketTags = createAction(FETCH_TICKET_TAGS.ACTION)
