@@ -57,6 +57,23 @@ class AddTagsModal extends React.Component {
       })
   }
 
+  onClearClicked () {
+    axios
+      .put(`/api/v1/tickets/${this.props.ticketId}`, {
+        tags: []
+      })
+      .then(() => {
+        $(this.select)
+          .val('')
+          .trigger('chosen:updated')
+        this.props.socket.emit(TICKETS_UI_TAGS_UPDATE, { ticketId: this.props.ticketId })
+      })
+      .catch(error => {
+        Log.error(error)
+        helpers.UI.showSnackbar(error, true)
+      })
+  }
+
   render () {
     const mappedTags =
       this.props.tagsSettings.tags &&
@@ -99,7 +116,14 @@ class AddTagsModal extends React.Component {
               </div>
 
               <div className='left' style={{ marginTop: 15 }}>
-                <Button type={'button'} text={'Clear'} small={true} flat={true} style={'danger'} />
+                <Button
+                  type={'button'}
+                  text={'Clear'}
+                  small={true}
+                  flat={true}
+                  style={'danger'}
+                  onClick={e => this.onClearClicked(e)}
+                />
               </div>
               <div className='right' style={{ marginTop: 15 }}>
                 <Button
