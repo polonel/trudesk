@@ -69,47 +69,52 @@ departmentSchema.statics.getUserDepartments = async function (userId, callback) 
 }
 
 departmentSchema.statics.getDepartmentGroupsOfUser = function (userId, callback) {
-  var self = this
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const teams = await Teams.getTeamsOfUser(userId)
+        const departments = await self.model(COLLECTION).find({ teams: { $in: teams } })
 
-  Teams.getTeamsOfUser(userId, function (err, teams) {
-    if (err) return callback(err)
-
-    return self
-      .model(COLLECTION)
-      .find({ teams: { $in: teams } })
-      .exec(function (err, departments) {
-        if (err) return callback(err)
-
-        var hasAllGroups = _.some(departments, { allGroups: true })
-        var hasPublicGroups = _.some(departments, { publicGroups: true })
+        const hasAllGroups = _.some(departments, { allGroups: true })
+        const hasPublicGroups = _.some(departments, { publicGroups: true })
         if (hasAllGroups) {
-          return Groups.getAllGroups(callback)
+          const allGroups = await Groups.getAllGroups()
+          if (typeof callback === 'function') return callback(null, allGroups)
+
+          return resolve(allGroups)
         } else if (hasPublicGroups) {
-          return Groups.getAllPublicGroups(function (err, publicGroups) {
-            if (err) return callback(err)
-
-            var mapped = departments.map(function (department) {
-              return department.groups
-            })
-            var merged = _.concat(publicGroups, mapped)
-
-            merged = _.flattenDeep(merged)
-            merged = _.uniqBy(merged, function (i) {
-              return i._id
-            })
-
-            return callback(null, merged)
+          const publicGroups = await Groups.getAllPublicGroups()
+          const mapped = departments.map(department => {
+            return department.groups
           })
+
+          let merged = _.concat(publicGroups, mapped)
+          merged = _.flattenDeep(merged)
+          merged = _.uniqBy(merged, i => {
+            return i._id
+          })
+
+          if (typeof callback === 'function') return callback(null, merged)
+
+          return resolve(merged)
         } else {
-          var groups = _.flattenDeep(
+          const groups = _.flattenDeep(
             departments.map(function (department) {
               return department.groups
             })
           )
 
-          return callback(null, groups)
+          if (typeof callback === 'function') return callback(null, groups)
+
+          return resolve(groups)
         }
-      })
+      } catch (error) {
+        if (typeof callback === 'function') return callback(error)
+
+        return reject(error)
+      }
+    })()
   })
 }
 

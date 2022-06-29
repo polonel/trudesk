@@ -16,6 +16,7 @@ import { createAction } from 'redux-actions'
 import {
   INIT_SOCKET,
   UPDATE_SOCKET,
+  SET_SESSION_USER,
   SHOW_MODAL,
   HIDE_MODAL,
   CLEAR_MODAL,
@@ -32,6 +33,8 @@ export const initSocket = createAction(
   () => ({ thunk: true })
 )
 export const updateSocket = createAction(UPDATE_SOCKET.ACTION, payload => payload)
+
+export const setSessionUser = createAction(SET_SESSION_USER.ACTION)
 
 export const showModal = createAction(SHOW_MODAL.ACTION, (modalType, modalProps) => ({ modalType, modalProps }))
 export const hideModal = createAction(HIDE_MODAL.ACTION)

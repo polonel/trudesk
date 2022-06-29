@@ -20,10 +20,15 @@ import {
   FETCH_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
-  UNLOAD_ACCOUNTS
+  UNLOAD_ACCOUNTS,
+  SAVE_PROFILE
 } from 'actions/types'
 
-export const fetchAccounts = createAction(FETCH_ACCOUNTS.ACTION, payload => payload, () => ({ thunk: true }))
+export const fetchAccounts = createAction(
+  FETCH_ACCOUNTS.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
 export const fetchAccountsCreateTicket = createAction(
   FETCH_ACCOUNTS_CREATE_TICKET.ACTION,
   payload => payload,
@@ -33,4 +38,13 @@ export const createAccount = createAction(CREATE_ACCOUNT.ACTION)
 export const saveEditAccount = createAction(SAVE_EDIT_ACCOUNT.ACTION)
 export const deleteAccount = createAction(DELETE_ACCOUNT.ACTION)
 export const enableAccount = createAction(ENABLE_ACCOUNT.ACTION)
-export const unloadAccounts = createAction(UNLOAD_ACCOUNTS.ACTION, payload => payload, () => ({ thunk: true }))
+export const unloadAccounts = createAction(
+  UNLOAD_ACCOUNTS.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
+export const saveProfile = createAction(
+  SAVE_PROFILE.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)

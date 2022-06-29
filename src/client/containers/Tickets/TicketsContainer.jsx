@@ -56,6 +56,7 @@ class TicketsContainer extends React.Component {
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
     this.onTicketDeleted = this.onTicketDeleted.bind(this)
   }
+
   componentDidMount () {
     socket.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     socket.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)

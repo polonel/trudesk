@@ -125,13 +125,30 @@ teamSchema.statics.getTeamsNoPopulate = function (callback) {
 }
 
 teamSchema.statics.getTeamsOfUser = function (userId, callback) {
-  if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUser()')
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(userId)) {
+        if (typeof callback === 'function') callback('Invalid UserId - TeamSchema.GetTeamsOfUser()')
+        return reject(new Error('Invalid UserId - TeamSchema.GetTeamsOfUser()'))
+      }
 
-  var q = this.model(COLLECTION)
-    .find({ members: userId })
-    .sort('name')
+      try {
+        const q = this.model(COLLECTION)
+          .find({ members: userId })
+          .sort('name')
 
-  return q.exec(callback)
+        if (typeof callback === 'function') return q.exec(callback)
+
+        const teams = await q.exec()
+
+        return resolve(teams)
+      } catch (error) {
+        if (typeof callback === 'function') return callback(error)
+
+        return reject(error)
+      }
+    })()
+  })
 }
 
 teamSchema.statics.getTeamsOfUserNoPopulate = function (userId, callback) {

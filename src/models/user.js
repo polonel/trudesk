@@ -60,6 +60,13 @@ var userSchema = mongoose.Schema({
   title: String,
   image: String,
 
+  workNumber: { type: String },
+  mobileNumber: { type: String },
+  companyName: { type: String },
+  facebookUrl: { type: String },
+  linkedinUrl: { type: String },
+  twitterUrl: { type: String },
+
   resetPassHash: { type: String, select: false },
   resetPassExpire: { type: Date, select: false },
   tOTPKey: { type: String, select: false },

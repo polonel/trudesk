@@ -25,6 +25,34 @@ const passwordComplexity = require('../../../settings/passwordComplexity')
 
 const accountsApi = {}
 
+accountsApi.sessionUser = async (req, res) => {
+  if (!req.user) return apiUtil.sendApiError(res, 500, 'Invalid User')
+
+  try {
+    const dbUser = await User.findOne({ _id: req.user._id })
+    if (!dbUser) return apiUtil.sendApiError(res, 404, 'Invalid User')
+
+    let groups = []
+    if (dbUser.role.isAdmin || dbUser.role.isAgent) groups = await Department.getDepartmentGroupsOfUser(dbUser._id)
+    else groups = await User.getAllGroupsOfUser(dbUser._id)
+
+    groups = groups.map(g => {
+      return g._id
+    })
+
+    const clonedUser = _.clone(dbUser._doc)
+    delete clonedUser.__v
+    delete clonedUser.iOSDeviceTokens
+    delete clonedUser.deleted
+    delete clonedUser.hasL2Auth
+    clonedUser.groups = groups
+
+    return res.json(clonedUser)
+  } catch (error) {
+    return apiUtil.sendApiError(res, 500, error.message)
+  }
+}
+
 accountsApi.create = async function (req, res) {
   const postData = req.body
   if (!postData) return apiUtil.sendApiError_InvalidPostData(res)
@@ -327,6 +355,31 @@ accountsApi.update = async function (req, res) {
   } catch (e) {
     const error = { name: e.name, message: e.message }
     return apiUtil.sendApiError(res, 400, error)
+  }
+}
+
+accountsApi.saveProfile = async (req, res) => {
+  const payload = req.body
+  const user = req.user
+
+  console.log(payload)
+  if (payload.username !== user.username || payload._id.toString() !== user._id.toString())
+    return apiUtil.sendApiError(res, 400, 'Invalid User Account')
+
+  try {
+    let dbUser = await User.findOne({ _id: payload._id })
+    if (!dbUser) return apiUtil.sendApiError(res, 404, 'Invalid User Account')
+
+    if (!_.isUndefined(payload.fullname) && !_.isNull(payload.fullname)) dbUser.fullname = payload.fullname
+    if (!_.isUndefined(payload.title) && !_.isNull(payload.title)) dbUser.workNumber = payload.title
+    if (!_.isUndefined(payload.workNumber) && !_.isNull(payload.workNumber)) dbUser.workNumber = payload.workNumber
+    if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber))
+      dbUser.mobileNumber = payload.mobileNumber
+
+    dbUser = await dbUser.save()
+    return apiUtil.sendApiSuccess(res, { user: dbUser })
+  } catch (error) {
+    return apiUtil.sendApiError(res, 500, error.message)
   }
 }
 

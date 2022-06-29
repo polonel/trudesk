@@ -7,22 +7,27 @@
 }
 /* alerts */
 .uk-alert {
-    border: none;
-    background: #1976d2;
-    color: #fff;
+    border: 1px solid rgba(45, 112, 145, 0.3);
+    background: #ebf7fd;
+    color: #2d7091;
     text-shadow: none;
     padding-right: 32px;
     position: relative;
     display: block;
+    border-radius: 3px;
 }
 .uk-alert-success {
-    background: #8bc34a !important;
+    border-color: rgba(100, 145, 48, .3) !important;
+    background: #e1efd0 !important;
+    color: #496a23;
 }
 .uk-alert-danger {
     background: #e53935 !important;
 }
 .uk-alert-warning {
-    background: #ffa000 !important;
+    background: #fffceb !important;
+    color: #e28327;
+    border-color: rgba(226,131,39,.3) !important;
 }
 .uk-alert-info {
     background: #0097a7 !important;

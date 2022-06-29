@@ -15,6 +15,7 @@
 const _ = require('lodash')
 const xss = require('xss')
 const fs = require('fs')
+const winston = require('../../logger')
 const piexifjs = require('piexifjs')
 
 const MAX_FIELD_TEXT_LENGTH = 255
@@ -42,9 +43,13 @@ module.exports.sanitizeFieldPlainText = function (text) {
 }
 
 module.exports.stripExifData = function (path) {
-  const imgData = fs.readFileSync(path).toString('binary')
-  const newImgData = piexifjs.remove(imgData)
-  fs.writeFileSync(path, newImgData, 'binary')
+  try {
+    const imgData = fs.readFileSync(path).toString('binary')
+    const newImgData = piexifjs.remove(imgData)
+    fs.writeFileSync(path, newImgData, 'binary')
+  } catch (e) {
+    winston.warn(e)
+  }
 }
 
 module.exports.sendToSelf = function (socket, method, data) {

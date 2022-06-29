@@ -197,11 +197,23 @@ groupSchema.statics.getAllGroupsNoPopulate = function (callback) {
 }
 
 groupSchema.statics.getAllPublicGroups = function (callback) {
-  var q = this.model(COLLECTION)
-    .find({ public: true })
-    .sort('name')
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      const q = this.model(COLLECTION)
+        .find({ public: true })
+        .sort('name')
 
-  return q.exec(callback)
+      if (typeof callback === 'function') return q.exec(callback)
+
+      try {
+        const groups = await q.exec()
+
+        return resolve(groups)
+      } catch (error) {
+        return reject(error)
+      }
+    })()
+  })
 }
 
 groupSchema.statics.getGroups = async function (groupIds, callback) {

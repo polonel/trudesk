@@ -25,6 +25,7 @@ import GroupsContainer from 'containers/Groups'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
+import ProfileContainer from 'containers/Profile'
 
 export default function (store) {
   if (document.getElementById('tickets-container')) {
@@ -52,6 +53,16 @@ export default function (store) {
     )
 
     ReactDOM.render(SingleTicketContainerWithProvider, document.getElementById('single-ticket-container'))
+  }
+
+  if (document.getElementById('profile-container')) {
+    const ProfileContainerWithProvider = (
+      <Provider store={store}>
+        <ProfileContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(ProfileContainerWithProvider, document.getElementById('profile-container'))
   }
 
   if (document.getElementById('accounts-container')) {

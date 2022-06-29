@@ -14,13 +14,114 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 
+import axios from 'axios'
+
+import { ACCOUNTS_UI_PROFILE_IMAGE_UPDATE } from 'serverSocket/socketEventConsts'
+
+import helpers from 'lib/helpers'
+
 class Avatar extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.overlayRef = React.createRef()
+    this.imageUploadInput = React.createRef()
+  }
+
+  onMouseOver () {
+    if (this.overlayRef.current && this.overlayRef.current.classList.contains('uk-hidden')) {
+      this.overlayRef.current.classList.remove('uk-hidden')
+    }
+  }
+
+  onMouseOut () {
+    if (this.overlayRef.current && !this.overlayRef.current.classList.contains('uk-hidden'))
+      this.overlayRef.current.classList.add('uk-hidden')
+  }
+
+  onUploadImageClicked (e) {
+    e.preventDefault()
+    if (this.imageUploadInput.current) {
+      this.imageUploadInput.current.click('click')
+    }
+  }
+
+  onImageInputChange (e) {
+    e.preventDefault()
+    if (this.imageUploadInput.current.value === '') return
+    const formData = new FormData()
+    const imageFile = e.target.files[0]
+    formData.append('_id', this.props.userId)
+    formData.append('username', this.props.username)
+    formData.append('image', imageFile)
+    axios
+      .post('/accounts/uploadImage', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(res => {
+        if (this.props.socket) this.props.socket.emit(ACCOUNTS_UI_PROFILE_IMAGE_UPDATE, { _id: this.props.userId })
+
+        this.imageUploadInput.current.value = ''
+      })
+      .catch(error => {
+        console.error(error)
+        helpers.UI.showSnackbar(`Error: ${error.message}`, true)
+      })
+  }
+
   render () {
-    const { image, showOnlineBubble, userId, size } = this.props
+    const { image, showOnlineBubble, userId, size, showBorder, enableImageUpload } = this.props
 
     return (
       <Fragment>
-        <div className='relative uk-clearfix uk-float-left uk-display-inline-block'>
+        <div
+          className='relative uk-clearfix uk-float-left uk-display-inline-block'
+          style={{ border: showBorder ? '4px solid rgba(0,0,0,0.1)' : '', borderRadius: '50%' }}
+          onMouseOver={() => this.onMouseOver()}
+          onMouseOut={() => this.onMouseOut()}
+        >
+          {enableImageUpload && (
+            <>
+              <form>
+                <input
+                  ref={this.imageUploadInput}
+                  className={'uk-hidden'}
+                  type='file'
+                  hidden={true}
+                  accept={'image/*'}
+                  onChange={e => this.onImageInputChange(e)}
+                />
+              </form>
+              <div
+                ref={this.overlayRef}
+                className={'uk-hidden'}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: size,
+                  width: size,
+                  background: 'rgba(0,0,0,0.2)',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  zIndex: 100
+                }}
+                onClick={e => this.onUploadImageClicked(e)}
+              >
+                <i className={'material-icons'} style={{ color: '#fff' }}>
+                  edit
+                </i>
+              </div>
+            </>
+          )}
           <img
             className='profile-pic uk-border-circle'
             style={{ height: size, width: size }}
@@ -36,14 +137,20 @@ class Avatar extends React.Component {
 
 Avatar.propTypes = {
   userId: PropTypes.string,
+  username: PropTypes.string, // Required if using enableImageUpload
+  socket: PropTypes.object,
   image: PropTypes.string,
   size: PropTypes.number.isRequired,
-  showOnlineBubble: PropTypes.bool
+  showOnlineBubble: PropTypes.bool,
+  showBorder: PropTypes.bool,
+  enableImageUpload: PropTypes.bool
 }
 
 Avatar.defaultProps = {
   size: 50,
-  showOnlineBubble: true
+  showOnlineBubble: true,
+  showBorder: false,
+  enableImageUpload: false
 }
 
 export default Avatar

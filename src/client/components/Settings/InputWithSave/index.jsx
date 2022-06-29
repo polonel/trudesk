@@ -45,16 +45,6 @@ class InputWithSave extends React.Component {
     }
   }
 
-  // static getDerivedStateFromProps (nextProps, state) {
-  //   if (!state.value) {
-  //     return {
-  //       value: nextProps.value
-  //     }
-  //   }
-  //
-  //   return null
-  // }
-
   onSaveClicked () {
     this.props.updateSetting({ name: this.props.settingName, value: this.value, stateName: this.props.stateName })
   }

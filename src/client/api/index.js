@@ -178,6 +178,12 @@ api.accounts.enableAccount = ({ username }) => {
   })
 }
 
+api.accounts.saveProfile = payload => {
+  return axios.put(`/api/v2/accounts/profile`, payload).then(res => {
+    return res.data
+  })
+}
+
 api.groups = {}
 api.groups.create = payload => {
   return axios.post('/api/v2/groups', payload).then(res => {
@@ -355,6 +361,11 @@ api.settings.buildSass = () => {
 }
 
 api.common = {}
+api.common.getSessionUser = () => {
+  return axios.get('/api/v2/login').then(res => {
+    return res.data
+  })
+}
 api.common.fetchRoles = () => {
   return axios.get('/api/v1/roles').then(res => {
     return res.data

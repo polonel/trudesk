@@ -1852,6 +1852,7 @@ define([
         var $highlighter = $(this)
           .parent()
           .find('.tru-tab-highlighter')
+
         $(this)
           .parent()
           .find('.tru-tab-selector')
@@ -1882,6 +1883,15 @@ define([
         var highlighterPos = $(this).position().left + 'px'
         $highlighter.css('transform', 'translateX(' + highlighterPos + ')')
       })
+
+      // Move highlighter to correct starting pos
+      if ($(element).hasClass('active')) {
+        const $highlighter = $(element)
+          .parent()
+          .find('.tru-tab-highlighter')
+        const highlighterPos = $(element).position().left + 'px'
+        $highlighter.css('transform', 'translateX(' + highlighterPos + ')')
+      }
     }
 
     _.each(tabs, function (i) {

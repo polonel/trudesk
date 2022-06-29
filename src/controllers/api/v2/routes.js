@@ -22,6 +22,7 @@ module.exports = function (middleware, router, controllers) {
   const canUser = middleware.canUser
 
   // Common
+  router.get('/api/v2/login', apiv2Auth, apiv2.accounts.sessionUser)
   router.post('/api/v2/login', controllers.api.v2.common.login)
   router.post('/api/v2/token', controllers.api.v2.common.token)
   router.get('/api/v2/viewdata', middleware.loadCommonData, controllers.api.v2.common.viewData)
@@ -29,6 +30,7 @@ module.exports = function (middleware, router, controllers) {
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
+  router.put('/api/v2/accounts/profile', apiv2Auth, apiv2.accounts.saveProfile)
   router.put('/api/v2/accounts/:username', canUser('accounts:update'), apiv2Auth, apiv2.accounts.update)
 
   // Ticket Info

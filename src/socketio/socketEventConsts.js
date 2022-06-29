@@ -54,6 +54,9 @@ exported.TICKETS_COMMENT_NOTE_SET = '$trudesk:tickets:comment_note:set'
 
 exported.TICKETS_UI_ATTACHMENTS_UPDATE = '$trudesk:tickets:ui:attachments:update'
 
+// ACCOUNTS
+exported.ACCOUNTS_UI_PROFILE_IMAGE_UPDATE = '$trudesk:accounts:ui:profile_image:update'
+
 // NOTIFICATIONS
 exported.NOTIFICATIONS_UPDATE = '$trudesk:notifications:update'
 exported.NOTIFICATIONS_MARK_READ = '$trudesk:notifications:mark_read'

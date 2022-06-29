@@ -44,7 +44,7 @@ const sharedReducer = handleActions(
       }
     },
 
-    [SET_SESSION_USER]: (state, action) => {
+    [SET_SESSION_USER.SUCCESS]: (state, action) => {
       return {
         ...state,
         sessionUser: action.payload.sessionUser

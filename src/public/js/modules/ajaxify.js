@@ -234,6 +234,8 @@ define('modules/ajaxify', [
               window.react.dom.unmountComponentAtNode(document.getElementById('single-ticket-container'))
             if (document.getElementById('settings-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('settings-container'))
+            if (document.getElementById('profile-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('profile-container'))
             if (document.getElementById('accounts-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('accounts-container'))
             if (document.getElementById('accounts-import-container'))

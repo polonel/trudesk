@@ -21,7 +21,8 @@ import {
   FETCH_ACCOUNTS_CREATE_TICKET,
   HIDE_MODAL,
   SAVE_EDIT_ACCOUNT,
-  UNLOAD_ACCOUNTS
+  UNLOAD_ACCOUNTS,
+  SAVE_PROFILE
 } from 'actions/types'
 
 import Log from '../../logger'
@@ -123,6 +124,21 @@ function * unloadThunk ({ payload, meta }) {
   }
 }
 
+function * saveProfile ({ payload, meta }) {
+  try {
+    const response = yield call(api.accounts.saveProfile, payload)
+    yield put({ type: SAVE_PROFILE.SUCCESS, response, meta })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: SAVE_PROFILE.ERROR, error })
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
@@ -131,4 +147,5 @@ export default function * watcher () {
   yield takeEvery(DELETE_ACCOUNT.ACTION, deleteAccount)
   yield takeEvery(ENABLE_ACCOUNT.ACTION, enableAccount)
   yield takeLatest(UNLOAD_ACCOUNTS.ACTION, unloadThunk)
+  yield takeLatest(SAVE_PROFILE.ACTION, saveProfile)
 }

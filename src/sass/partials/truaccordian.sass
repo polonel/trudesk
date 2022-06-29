@@ -1,0 +1,52 @@
+.truaccordion-wrapper
+  margin-bottom: 10px
+  &.expanded
+    .truaccordion-header
+      border-bottom-left-radius: 0
+      border-bottom-right-radius: 0
+      .arrow
+        transform: rotate(90deg) !important
+
+    .truaccordion-content
+      transform: scaleY(1)
+
+  .truaccordion-header
+    display: block
+    position: relative
+    box-sizing: border-box
+    padding: 25px
+    border: 1px solid $page_content_border_color
+    border-radius: 5px
+    cursor: pointer
+    &:hover
+      border-color: rgba(0,0,0,0.5)
+
+    .truaccordion-header-content
+      display: flex
+      box-sizing: border-box
+      direction: ltr
+
+      .arrow
+        height: 20px
+        transition-duration: 0.3s
+        transition-property: transform
+        transform: rotate(0deg)
+
+    h1,h2,h3,h4,h5,h6
+      box-sizing: border-box
+      -webkit-flex-grow: 1
+      flex-grow: 1
+      font-weight: 500
+      margin: 0
+
+  .truaccordion-content
+    background-color: $page_content_bg
+    transform-origin: center top
+    transition: transform 300ms ease-in-out 0s, color 300ms ease-in-out 0s
+    transform: scaleY(0)
+
+    .truaccordion-content-inner
+      border: 1px solid rgba(0,0,0,0.15)
+      border-top: none
+      padding: 25px
+      margin: 0

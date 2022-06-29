@@ -28,7 +28,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
 
     if (!window.react.redux.store.getState().shared.sessionUser)
       window.react.redux.store.dispatch({
-        type: 'SET_SESSION_USER',
+        type: 'SET_SESSION_USER_SUCCESS',
         payload: {
           sessionUser: window.trudeskSessionService.getUser()
         }
@@ -38,7 +38,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/dashboard',
       'pages/messages',
       'pages/accountsImport',
-      'pages/profile',
+      // 'pages/profile',
       'pages/reports',
       'pages/reportsBreakdown',
       'pages/notices',
@@ -47,7 +47,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/logs',
 
       'modules/ajaximgupload'
-    ], function (a, b, c, e, f, g, h, i, j, k, l, m) {
+    ], function (a, b, e, f, g, h, i, j, k, l, m) {
       async.parallel(
         [
           function (done) {
@@ -56,9 +56,9 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
           function (done) {
             b.init(done)
           },
-          function (done) {
-            c.init(done)
-          },
+          // function (done) {
+          //   c.init(done)
+          // },
           function (done) {
             e.init(done)
           },

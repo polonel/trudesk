@@ -15,7 +15,7 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 
 import api from '../../api'
-import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, UPDATE_SOCKET } from 'actions/types'
+import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, SET_SESSION_USER, UPDATE_SOCKET } from 'actions/types'
 
 import Log from '../../logger'
 import helpers from 'lib/helpers'
@@ -40,6 +40,21 @@ function * updateSocket ({ payload }) {
   } catch (error) {
     Log.error(error)
     yield put({ type: UPDATE_SOCKET.ERROR, error })
+  }
+}
+
+function * setSessionUser ({ payload }) {
+  try {
+    const response = yield call(api.common.getSessionUser, payload)
+    yield put({ type: SET_SESSION_USER.SUCCESS, payload: { sessionUser: response } })
+  } catch (error) {
+    console.log(error)
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+    }
+
+    yield put({ type: SET_SESSION_USER.ERROR, error })
   }
 }
 
@@ -72,6 +87,7 @@ function * fetchViewData ({ payload, meta }) {
 export default function * watcher () {
   yield takeLatest(INIT_SOCKET.ACTION, initSocket)
   yield takeLatest(UPDATE_SOCKET.ACTION, updateSocket)
+  yield takeLatest(SET_SESSION_USER.ACTION, setSessionUser)
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
   yield takeLatest(FETCH_VIEWDATA.ACTION, fetchViewData)
 }

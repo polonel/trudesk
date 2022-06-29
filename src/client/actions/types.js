@@ -23,7 +23,7 @@ export const HIDE_MODAL = defineAction('HIDE_MODAL')
 export const CLEAR_MODAL = defineAction('CLEAR_MODAL')
 export const SHOW_NOTICE = defineAction('SHOW_NOTICE', [SUCCESS])
 export const CLEAR_NOTICE = defineAction('CLEAR_NOTICE')
-export const SET_SESSION_USER = defineAction('SET_SESSION_USER')
+export const SET_SESSION_USER = defineAction('SET_SESSION_USER', [SUCCESS, PENDING, ERROR])
 export const FETCH_ROLES = defineAction('FETCH_ROLES', [SUCCESS, ERROR])
 export const UPDATE_ROLE_ORDER = defineAction('UPDATE_ROLE_ORDER', [SUCCESS, ERROR])
 export const FETCH_VIEWDATA = defineAction('FETCH_VIEWDATA', [SUCCESS, PENDING, ERROR])
@@ -61,6 +61,7 @@ export const SAVE_EDIT_ACCOUNT = defineAction('SAVE_EDIT_ACCOUNT', [PENDING, SUC
 export const DELETE_ACCOUNT = defineAction('DELETE_ACCOUNT', [PENDING, SUCCESS, ERROR])
 export const ENABLE_ACCOUNT = defineAction('ENABLE_ACCOUNT', [SUCCESS, ERROR])
 export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
+export const SAVE_PROFILE = defineAction('SAVE_PROFILE', [SUCCESS, PENDING, ERROR])
 
 // Groups
 export const FETCH_GROUPS = defineAction('FETCH_GROUPS', [PENDING, SUCCESS, ERROR])

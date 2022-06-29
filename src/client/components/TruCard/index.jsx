@@ -17,13 +17,14 @@ import PropTypes from 'prop-types'
 import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import Dropdown from 'components/Dropdown'
 import SpinLoader from 'components/SpinLoader'
+import clsx from 'clsx'
 
 class TruCard extends React.Component {
   render () {
     return (
       <div className={'tru-card-wrapper uk-position-relative'}>
         {this.props.loaderActive && <SpinLoader active={this.props.loaderActive} />}
-        <div className={'tru-card tru-card-hover'}>
+        <div className={clsx('tru-card', this.props.hover && 'tru-card-hover')}>
           <div className={'tru-card-head ' + (this.props.extraHeadClass || '')}>
             {this.props.menu && (
               <div className={'tru-card-head-menu'}>
@@ -38,10 +39,12 @@ class TruCard extends React.Component {
               </div>
             )}
             {/* HEADER TEXT */}
-            <div className={'uk-text-center'}>{this.props.header}</div>
+            {this.props.header && <div className={'uk-text-center'}>{this.props.header}</div>}
           </div>
           {/* Tru Card Content */}
-          <div className={'tru-card-content ' + (this.props.extraContentClass || '')}>{this.props.content}</div>
+          <div className={'tru-card-content uk-clearfix' + (this.props.extraContentClass || '')}>
+            {this.props.content}
+          </div>
         </div>
       </div>
     )
@@ -50,15 +53,17 @@ class TruCard extends React.Component {
 
 TruCard.propTypes = {
   menu: PropTypes.arrayOf(PropTypes.element),
-  header: PropTypes.element.isRequired,
+  header: PropTypes.element,
   extraHeadClass: PropTypes.string,
   extraContentClass: PropTypes.string,
   content: PropTypes.element.isRequired,
-  loaderActive: PropTypes.bool
+  loaderActive: PropTypes.bool,
+  hover: PropTypes.bool
 }
 
 TruCard.defaultProps = {
-  loaderActive: false
+  loaderActive: false,
+  hover: true
 }
 
 export default TruCard
