@@ -50,7 +50,7 @@ accountsApi.create = async function (req, res) {
     let groups = []
     if (postData.groups) {
       groups = await Group.getGroups(postData.groups)
-      for (const group in groups) {
+      for (const group of groups) {
         await group.addMember(savedId)
         await group.save()
       }
