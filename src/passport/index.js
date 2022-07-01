@@ -84,6 +84,21 @@ module.exports = function () {
   )
 
   passport.use(
+    'totp-verify',
+    new TotpStrategy(
+      {
+        window: 2
+      },
+      function (user, done) {
+        if (!user.tOTPKey) return done(false)
+        if (!user.tOTPPeriod) user.tOTPPeriod = 30
+
+        return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod)
+      }
+    )
+  )
+
+  passport.use(
     'jwt',
     new JwtStrategy(
       {

@@ -19,6 +19,7 @@ module.exports = function (middleware, router, controllers) {
   const isAdmin = middleware.isAdmin
   const isAgent = middleware.isAgent
   const isAgentOrAdmin = middleware.isAgentOrAdmin
+  const csrfCheck = middleware.csrfCheck
   const canUser = middleware.canUser
 
   // Common
@@ -30,8 +31,12 @@ module.exports = function (middleware, router, controllers) {
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
-  router.put('/api/v2/accounts/profile', apiv2Auth, apiv2.accounts.saveProfile)
-  router.put('/api/v2/accounts/:username', canUser('accounts:update'), apiv2Auth, apiv2.accounts.update)
+  router.put('/api/v2/accounts/profile', apiv2Auth, csrfCheck, apiv2.accounts.saveProfile)
+  router.post('/api/v2/accounts/profile/mfa', apiv2Auth, csrfCheck, apiv2.accounts.generateMFA)
+  router.post('/api/v2/accounts/profile/mfa/verify', apiv2Auth, csrfCheck, apiv2.accounts.verifyMFA)
+  router.post('/api/v2/accounts/profile/mfa/disable', apiv2Auth, csrfCheck, apiv2.accounts.disableMFA)
+  router.post('/api/v2/accounts/profile/update-password', apiv2Auth, csrfCheck, apiv2.accounts.updatePassword)
+  router.put('/api/v2/accounts/:username', apiv2Auth, canUser('accounts:update'), apiv2.accounts.update)
 
   // Ticket Info
   router.get('/api/v2/tickets/info/types', apiv2Auth, apiv2.tickets.info.types)

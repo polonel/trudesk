@@ -167,6 +167,7 @@ mainController.l2AuthPost = function (req, res, next) {
   if (!req.user) {
     return res.redirect('/')
   }
+
   passport.authenticate('totp', function (err, success) {
     if (err) {
       winston.error(err)

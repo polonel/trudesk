@@ -22,7 +22,8 @@ import {
   HIDE_MODAL,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS,
-  SAVE_PROFILE
+  SAVE_PROFILE,
+  GEN_MFA
 } from 'actions/types'
 
 import Log from '../../logger'
@@ -139,6 +140,21 @@ function * saveProfile ({ payload, meta }) {
   }
 }
 
+function * genMFA ({ payload, meta }) {
+  try {
+    const response = yield call(api.accounts.generateMFA, payload)
+    yield put({ type: GEN_MFA.SUCCESS, payload: response, meta })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: GEN_MFA.ERROR, error })
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
@@ -148,4 +164,5 @@ export default function * watcher () {
   yield takeEvery(ENABLE_ACCOUNT.ACTION, enableAccount)
   yield takeLatest(UNLOAD_ACCOUNTS.ACTION, unloadThunk)
   yield takeLatest(SAVE_PROFILE.ACTION, saveProfile)
+  yield takeLatest(GEN_MFA.ACTION, genMFA)
 }

@@ -19,8 +19,10 @@ class QRCode extends React.Component {
   }
 
   render () {
+    let css = {}
+    if (this.props.css) css = this.props.css
     return (
-      <div>
+      <div style={css}>
         <div ref={this.qrcodeDiv}></div>
       </div>
     )
@@ -29,7 +31,8 @@ class QRCode extends React.Component {
 
 QRCode.propTypes = {
   code: PropTypes.string.isRequired,
-  size: PropTypes.number
+  size: PropTypes.number,
+  css: PropTypes.object
 }
 
 QRCode.defaultProps = {

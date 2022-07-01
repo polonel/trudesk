@@ -21,7 +21,8 @@ import {
   FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS,
-  SAVE_PROFILE
+  SAVE_PROFILE,
+  GEN_MFA
 } from 'actions/types'
 
 export const fetchAccounts = createAction(
@@ -45,6 +46,12 @@ export const unloadAccounts = createAction(
 )
 export const saveProfile = createAction(
   SAVE_PROFILE.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
+
+export const genMFA = createAction(
+  GEN_MFA.ACTION,
   payload => payload,
   () => ({ thunk: true })
 )

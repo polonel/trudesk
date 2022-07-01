@@ -676,6 +676,8 @@ viewController.getOverdueSetting = function (request, callback) {
 }
 
 viewController.getShowTourSetting = function (request, callback) {
+  if (!request.user) return callback('Invalid User')
+
   const settingSchema = require('../../models/setting')
   settingSchema.getSettingByName('showTour:enable', function (err, data) {
     if (err) {

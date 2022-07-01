@@ -41,6 +41,7 @@ import EditDepartmentModal from './EditDepartmentModal'
 import CreateNoticeModal from 'containers/Modals/CreateNoticeModal'
 import EditNoticeModal from 'containers/Modals/EditNoticeModal'
 import LinkWarningModal from 'containers/Modals/LinkWarningModal'
+import PasswordPromptModal from 'containers/Modals/PasswordPromptModal'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -66,7 +67,8 @@ const MODAL_COMPONENTS = {
   EDIT_DEPARTMENT: EditDepartmentModal,
   CREATE_NOTICE: CreateNoticeModal,
   EDIT_NOTICE: EditNoticeModal,
-  LINK_WARNING: LinkWarningModal
+  LINK_WARNING: LinkWarningModal,
+  PASSWORD_PROMPT: PasswordPromptModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {

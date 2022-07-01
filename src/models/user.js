@@ -147,30 +147,34 @@ userSchema.methods.removeAccessToken = function (callback) {
 }
 
 userSchema.methods.generateL2Auth = function (callback) {
-  var user = this
-  if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
-    var chance = new Chance()
-    var base32 = require('thirty-two')
+  const user = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
+        const chance = new Chance()
+        const base32 = require('thirty-two')
 
-    var genOTPKey = chance.string({
-      length: 7,
-      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'
-    })
-    var base32GenOTPKey = base32
-      .encode(genOTPKey)
-      .toString()
-      .replace(/=/g, '')
+        const genOTPKey = chance.string({
+          length: 7,
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'
+        })
 
-    user.tOTPKey = base32GenOTPKey
-    user.hasL2Auth = true
-    user.save(function (err) {
-      if (err) return callback(err)
+        const base32GenOTPKey = base32
+          .encode(genOTPKey)
+          .toString()
+          .replace(/=/g, '')
 
-      return callback(null, base32GenOTPKey)
-    })
-  } else {
-    return callback()
-  }
+        if (typeof callback === 'function') return callback(null, base32GenOTPKey)
+
+        return resolve(base32GenOTPKey)
+      } else {
+        const error = new Error('FATAL: Key already assigned!')
+        if (typeof callback === 'function') return callback(error)
+
+        return reject(error)
+      }
+    })()
+  })
 }
 
 userSchema.methods.removeL2Auth = function (callback) {

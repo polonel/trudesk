@@ -23,16 +23,23 @@ class Input extends React.Component {
   }
 
   render () {
-    const { type, defaultValue } = this.props
+    const { name, type, defaultValue } = this.props
     return (
       <div>
-        <input className={'md-input'} type={type} defaultValue={defaultValue} onChange={e => this.handleChange(e)} />
+        <input
+          className={'md-input'}
+          name={name}
+          type={type}
+          defaultValue={defaultValue}
+          onChange={e => this.handleChange(e)}
+        />
       </div>
     )
   }
 }
 
 Input.propTypes = {
+  name: PropTypes.string,
   type: PropTypes.string,
   defaultValue: PropTypes.string,
   onChange: PropTypes.func

@@ -15,8 +15,10 @@
 import axios from 'axios'
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+axios.defaults.headers['CSRF-TOKEN'] = token
 
-let api = {}
+const api = {}
 
 api.tickets = {}
 api.tickets.getWithPage = payload => {
@@ -180,6 +182,11 @@ api.accounts.enableAccount = ({ username }) => {
 
 api.accounts.saveProfile = payload => {
   return axios.put(`/api/v2/accounts/profile`, payload).then(res => {
+    return res.data
+  })
+}
+api.accounts.generateMFA = payload => {
+  return axios.post(`/api/v2/accounts/profile/mfa`, payload).then(res => {
     return res.data
   })
 }

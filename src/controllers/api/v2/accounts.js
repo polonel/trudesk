@@ -22,6 +22,8 @@ const Group = require('../../../models/group')
 const Team = require('../../../models/team')
 const Department = require('../../../models/department')
 const passwordComplexity = require('../../../settings/passwordComplexity')
+const SettingsUtil = require('../../../settings/settingsUtil')
+const Session = require('../../../models/session')
 
 const accountsApi = {}
 
@@ -44,7 +46,6 @@ accountsApi.sessionUser = async (req, res) => {
     delete clonedUser.__v
     delete clonedUser.iOSDeviceTokens
     delete clonedUser.deleted
-    delete clonedUser.hasL2Auth
     clonedUser.groups = groups
 
     return res.json(clonedUser)
@@ -78,7 +79,7 @@ accountsApi.create = async function (req, res) {
     let groups = []
     if (postData.groups) {
       groups = await Group.getGroups(postData.groups)
-      for (const group in groups) {
+      for (const group of groups) {
         await group.addMember(savedId)
         await group.save()
       }
@@ -362,7 +363,6 @@ accountsApi.saveProfile = async (req, res) => {
   const payload = req.body
   const user = req.user
 
-  console.log(payload)
   if (payload.username !== user.username || payload._id.toString() !== user._id.toString())
     return apiUtil.sendApiError(res, 400, 'Invalid User Account')
 
@@ -380,6 +380,115 @@ accountsApi.saveProfile = async (req, res) => {
     return apiUtil.sendApiSuccess(res, { user: dbUser })
   } catch (error) {
     return apiUtil.sendApiError(res, 500, error.message)
+  }
+}
+
+accountsApi.generateMFA = async (req, res) => {
+  const payload = req.body
+  const user = req.user
+
+  if (payload.username !== user.username || payload._id.toString() !== user._id.toString())
+    return apiUtil.sendApiError(res, 400, 'Invalid User Account')
+
+  try {
+    const dbUser = await User.findOne({ _id: payload._id })
+    if (!dbUser) return apiUtil.sendApiError(res, 404, 'Invalid User Account')
+
+    if (!dbUser.hasL2Auth) {
+      const key = await dbUser.generateL2Auth()
+      const uri = `otpauth://totp/Trudesk:${dbUser.username}-${req.hostname}?secret=${key}&issuer=Trudesk`
+
+      return apiUtil.sendApiSuccess(res, { key, uri })
+    } else {
+      return apiUtil.sendApiError(res, 400, 'Invalid Account')
+    }
+  } catch (e) {
+    return apiUtil.sendApiError(res, 500, e)
+  }
+}
+
+accountsApi.verifyMFA = async (req, res) => {
+  const payload = req.body
+  if (!payload.tOTPKey) return apiUtil.sendApiError(res, 400, 'Invalid Verification')
+
+  req.user.tOTPKey = payload.tOTPKey
+
+  const passport = require('../../../passport')
+  passport().authenticate('totp-verify', (err, success) => {
+    if (err || !success) return apiUtil.sendApiError(res, 400, 'Invalid Verification')
+
+    User.findOne({ _id: req.user._id }, function (err, user) {
+      if (err) return apiUtil.sendApiError(res, 404, 'Invalid Verification')
+
+      user.tOTPKey = req.user.tOTPKey
+      user.tOTPPeriod = 30
+      user.hasL2Auth = true
+
+      user.save(function (err) {
+        if (err) return apiUtil.sendApiError(res, 500, err.message)
+
+        return apiUtil.sendApiSuccess(res)
+      })
+    })
+  })(req, res)
+}
+
+accountsApi.disableMFA = async (req, res) => {
+  const payload = req.body
+  if (!payload.confirmPassword) return apiUtil.sendApiError(res, 400, 'Invalid Credentials')
+
+  try {
+    let user = await User.findOne({ _id: req.user }, '+password')
+    if (!user) return apiUtil.sendApiError(res, 400, 'Invalid Account')
+
+    if (!User.validate(payload.confirmPassword, user.password))
+      return apiUtil.sendApiError(res, 400, 'Invalid Credentials')
+
+    user.tOTPKey = null
+    user.tOTPPeriod = null
+    user.hasL2Auth = false
+
+    user = await user.save()
+    return apiUtil.sendApiSuccess(res)
+  } catch (e) {
+    return apiUtil.sendApiError(res, 500, e.message)
+  }
+}
+
+accountsApi.updatePassword = async (req, res) => {
+  const payload = req.body
+  const user = req.user
+  if (!payload.currentPassword || !payload.newPassword || !payload.confirmPassword)
+    return apiUtil.sendApiError(res, 400, 'Invalid Post Data')
+
+  if (payload.newPassword !== payload.confirmPassword) return apiUtil.sendApiError(res, 400, 'Invalid Post Data')
+
+  try {
+    let dbUser = await User.findOne({ _id: user._id }, '+password')
+    if (!dbUser) return apiUtil.sendApiError(res, 400, 'Invalid User')
+
+    if (!User.validate(payload.currentPassword, dbUser.password))
+      return apiUtil.sendApiError(res, 400, 'Invalid Credentials')
+
+    // SETTINGS
+    const SettingsUtil = require('../../../settings/settingsUtil')
+    const settingsContent = await SettingsUtil.getSettings()
+    const settings = settingsContent.data.settings
+    const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
+
+    if (passwordComplexityEnabled && !passwordComplexity.validate(payload.newPassword))
+      throw new Error('Password does not meet requirements')
+
+    dbUser.password = payload.newPassword
+
+    dbUser = await dbUser.save()
+
+    const Session = require('../../../models/session')
+    await Session.destroy(dbUser._id)
+
+    return apiUtil.sendApiSuccess(res, {})
+  } catch (err) {
+    return apiUtil.sendApiError(res, 500, err.message)
   }
 }
 

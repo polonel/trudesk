@@ -62,6 +62,7 @@ export const DELETE_ACCOUNT = defineAction('DELETE_ACCOUNT', [PENDING, SUCCESS, 
 export const ENABLE_ACCOUNT = defineAction('ENABLE_ACCOUNT', [SUCCESS, ERROR])
 export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
 export const SAVE_PROFILE = defineAction('SAVE_PROFILE', [SUCCESS, PENDING, ERROR])
+export const GEN_MFA = defineAction('GEN_MFA', [SUCCESS, PENDING, ERROR])
 
 // Groups
 export const FETCH_GROUPS = defineAction('FETCH_GROUPS', [PENDING, SUCCESS, ERROR])

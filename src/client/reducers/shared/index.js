@@ -15,10 +15,19 @@
 import { handleActions } from 'redux-actions'
 import { fromJS, List, Map } from 'immutable'
 
-import { SET_SESSION_USER, FETCH_ROLES, UPDATE_ROLE_ORDER, SHOW_NOTICE, CLEAR_NOTICE, INIT_SOCKET } from 'actions/types'
+import {
+  SET_SESSION_USER,
+  FETCH_ROLES,
+  UPDATE_ROLE_ORDER,
+  SHOW_NOTICE,
+  CLEAR_NOTICE,
+  INIT_SOCKET,
+  GEN_MFA
+} from 'actions/types'
 
 const initialState = {
   sessionUser: null,
+  mfa: Map({}),
   roles: List([]),
   roleOrder: Map({}),
   notice: null,
@@ -48,6 +57,13 @@ const sharedReducer = handleActions(
       return {
         ...state,
         sessionUser: action.payload.sessionUser
+      }
+    },
+
+    [GEN_MFA.SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        mfa: fromJS(action.payload)
       }
     },
 

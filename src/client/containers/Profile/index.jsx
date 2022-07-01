@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
+import axios from 'axios'
 
-import { saveProfile } from 'actions/accounts'
-import { setSessionUser } from 'actions/common'
+import { saveProfile, genMFA } from 'actions/accounts'
+import { showModal, hideModal, setSessionUser } from 'actions/common'
 
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
@@ -20,6 +21,8 @@ import TruTabSection from 'components/TruTabs/TruTabSection'
 import Input from 'components/Input'
 import QRCode from 'components/QRCode'
 import TruAccordion from 'components/TruAccordion'
+
+import helpers from 'lib/helpers'
 
 @observer
 class ProfileContainer extends React.Component {
@@ -39,6 +42,12 @@ class ProfileContainer extends React.Component {
   @observable currentPassword = null
   @observable newPassword = null
   @observable confirmPassword = null
+  // -- Two Factor
+  @observable l2Key = null
+  @observable l2URI = null
+  @observable l2Step2 = null
+  @observable l2ShowCantSeeQR = null
+  @observable l2VerifyText = null
 
   constructor (props) {
     super(props)
@@ -84,6 +93,77 @@ class ProfileContainer extends React.Component {
 
   onUpdatePasswordClicked = e => {
     e.preventDefault()
+
+    axios
+      .post('/api/v2/accounts/profile/update-password', {
+        currentPassword: this.currentPassword,
+        newPassword: this.newPassword,
+        confirmPassword: this.confirmPassword
+      })
+      .then(res => {
+        if (res.data && res.data.success) {
+          helpers.UI.showSnackbar('Password Updated Successfully')
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000)
+        }
+      })
+      .catch(error => {
+        let errorMsg = 'Invalid Request'
+        if (error && error.response && error.response.data && error.response.data.error)
+          errorMsg = error.response.data.error
+
+        helpers.UI.showSnackbar(errorMsg, true)
+      })
+  }
+
+  onEnableMFAClicked = e => {
+    e.preventDefault()
+    this.props
+      .genMFA({
+        _id: this.props.sessionUser._id,
+        username: this.props.sessionUser.username
+      })
+      .then(res => {
+        this.l2Key = res.key
+        this.l2URI = res.uri
+        this.l2Step2 = true
+      })
+  }
+
+  onVerifyMFAClicked = e => {
+    e.preventDefault()
+    axios
+      .post('/api/v2/accounts/profile/mfa/verify', {
+        tOTPKey: this.l2Key,
+        code: this.l2VerifyText
+      })
+      .then(res => {
+        if (res.data && res.data.success) {
+          // Refresh Session User
+          this.props.setSessionUser()
+          this.l2Step2 = null
+          this.l2ShowCantSeeQR = null
+        }
+      })
+      .catch(e => {
+        if (e.response && e.response.data && e.response.data.error) {
+          helpers.UI.showSnackbar(e.response.data.error, true)
+        }
+      })
+  }
+
+  onDisableMFAClicked = e => {
+    e.preventDefault()
+    const onVerifyComplete = success => {
+      if (success) {
+        this.l2Step2 = null
+        this.l2ShowCantSeeQR = null
+        this.props.setSessionUser()
+      }
+    }
+
+    this.props.showModal('PASSWORD_PROMPT', { user: this.props.sessionUser, onVerifyComplete })
   }
 
   render () {
@@ -119,11 +199,6 @@ class ProfileContainer extends React.Component {
     return (
       <>
         <PageTitle title={'Profile'} />
-        {/*<QRCode*/}
-        {/*  code={*/}
-        {/*    'otpauth://totp/trudesk.granvillecounty.org-chris.brame:trudesk.granvillecounty.org-chris.brame?secret=KJJFEU22JBCA&issuer=Trudesk'*/}
-        {/*  }*/}
-        {/*/>*/}
         <PageContent>
           <TruCard
             header={<div />}
@@ -189,10 +264,10 @@ class ProfileContainer extends React.Component {
               <div>
                 <TruTabWrapper style={{ padding: '0' }}>
                   <TruTabSelectors showTrack={true}>
-                    <TruTabSelector selectorId={0} label={'Profile'} active={false} />
-                    <TruTabSelector selectorId={1} label={'Security'} active={true} />
+                    <TruTabSelector selectorId={0} label={'Profile'} active={true} />
+                    <TruTabSelector selectorId={1} label={'Security'} />
                   </TruTabSelectors>
-                  <TruTabSection sectionId={0} active={false} style={{ minHeight: 480 }}>
+                  <TruTabSection sectionId={0} active={true} style={{ minHeight: 480 }}>
                     <div style={{ maxWidth: 900, padding: '10px 25px' }}>
                       <h4 style={{ marginBottom: 15 }}>Work Information</h4>
                       <div style={{ display: 'flex' }}>
@@ -273,46 +348,177 @@ class ProfileContainer extends React.Component {
                       )}
                     </div>
                   </TruTabSection>
-                  <TruTabSection sectionId={1} style={{ minHeight: 480 }} active={true}>
+                  <TruTabSection sectionId={1} style={{ minHeight: 480 }}>
                     <div style={{ maxWidth: 600, padding: '25px 0' }}>
                       <TruAccordion
                         headerContent={'Change Password'}
                         content={
                           <div>
-                            <div
-                              className={'uk-alert uk-alert-warning'}
-                              style={{ display: 'flex', alignItems: 'center' }}
-                            >
-                              <i className='material-icons mr-10' style={{ opacity: 0.5 }}>
-                                info
-                              </i>
-                              <p style={{ lineHeight: '18px' }}>
-                                After changing your password, you will be logged out of all sessions.
-                              </p>
-                            </div>
-                            <div>
-                              <div className={'uk-margin-medium-bottom'}>
-                                <label>Current Password</label>
-                                <Input type={'password'} onChange={v => (this.currentPassword = v)} />
+                            <form onSubmit={e => this.onUpdatePasswordClicked(e)}>
+                              <div
+                                className={'uk-alert uk-alert-warning'}
+                                style={{ display: 'flex', alignItems: 'center' }}
+                              >
+                                <i className='material-icons mr-10' style={{ opacity: 0.5 }}>
+                                  info
+                                </i>
+                                <p style={{ lineHeight: '18px' }}>
+                                  After changing your password, you will be logged out of all sessions.
+                                </p>
                               </div>
-                              <div className={'uk-margin-medium-bottom'}>
-                                <label>New Password</label>
-                                <Input type={'password'} onChange={v => (this.newPassword = v)} />
+                              <div>
+                                <div className={'uk-margin-medium-bottom'}>
+                                  <label>Current Password</label>
+                                  <Input type={'password'} onChange={v => (this.currentPassword = v)} />
+                                </div>
+                                <div className={'uk-margin-medium-bottom'}>
+                                  <label>New Password</label>
+                                  <Input type={'password'} onChange={v => (this.newPassword = v)} />
+                                </div>
+                                <div className={'uk-margin-medium-bottom'}>
+                                  <label>Confirm Password</label>
+                                  <Input type={'password'} onChange={v => (this.confirmPassword = v)} />
+                                </div>
                               </div>
-                              <div className={'uk-margin-medium-bottom'}>
-                                <label>Confirm Password</label>
-                                <Input type={'password'} onChange={v => (this.confirmPassword = v)} />
+                              <div>
+                                <Button
+                                  type={'submit'}
+                                  text={'Update Password'}
+                                  style={'primary'}
+                                  small={true}
+                                  extraClass={'uk-width-1-1'}
+                                  onClick={e => this.onUpdatePasswordClicked(e)}
+                                />
                               </div>
-                            </div>
+                            </form>
                           </div>
                         }
                       />
                       <TruAccordion
-                        startExpanded={true}
                         headerContent={'Two-Factor Authentication'}
                         content={
                           <div>
-                            <h4 style={{ fontWeight: 500 }}>Two-factor authentication is not enabled yet</h4>
+                            {!this.props.sessionUser.hasL2Auth && (
+                              <div>
+                                {!this.l2Step2 && (
+                                  <div>
+                                    <h4 style={{ fontWeight: 500 }}>Two-factor authentication is not enabled yet</h4>
+                                    <p style={{ fontSize: '12px', fontWeight: 400 }}>
+                                      Enabling two-factor authentication adds an extra layer of security to your
+                                      accounts. Once enabled, you will be required to enter both your password and an
+                                      authentication code in order to sign into your account. After you successfully
+                                      enable two-factor authentication, you will not be able to login unless you enter
+                                      the correct authentication code.
+                                    </p>
+                                    <div>
+                                      <Button
+                                        text={'Enable'}
+                                        style={'primary'}
+                                        small={true}
+                                        waves={true}
+                                        onClick={e => this.onEnableMFAClicked(e)}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                                {this.l2Step2 && (
+                                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div style={{ width: 400 }}>
+                                      <div style={{ display: 'flex', marginTop: 15, flexDirection: 'column' }}>
+                                        <p style={{ fontWeight: 500, marginBottom: 40 }}>
+                                          Scan the QR code below using any authenticator app such as Authy, Google
+                                          Authenticator, LastPass Authenticator, Microsoft Authenticator
+                                        </p>
+                                        <div style={{ alignSelf: 'center', marginBottom: 40 }}>
+                                          <div>
+                                            <QRCode
+                                              size={180}
+                                              code={this.l2URI || 'INVALID_CODE'}
+                                              css={{ marginBottom: 5 }}
+                                            />
+                                            <a
+                                              href='#'
+                                              style={{
+                                                display: 'inline-block',
+                                                fontSize: '12px',
+                                                width: '100%',
+                                                textAlign: 'right'
+                                              }}
+                                              onClick={e => {
+                                                e.preventDefault()
+                                                this.l2ShowCantSeeQR = true
+                                              }}
+                                            >
+                                              Can&apos;t scan the QR code?
+                                            </a>
+                                          </div>
+                                        </div>
+                                        {this.l2ShowCantSeeQR && (
+                                          <div style={{ alignSelf: 'center', marginBottom: 15 }}>
+                                            <p style={{ fontSize: '13px' }}>
+                                              If you are unable to scan the QR code, open the authenticator app and
+                                              select the option that allows you to enter the below key manually.
+                                            </p>
+                                            <p style={{ textAlign: 'center' }}>
+                                              <span
+                                                style={{
+                                                  display: 'inline-block',
+                                                  padding: '5px 25px',
+                                                  background: 'white',
+                                                  color: 'black',
+                                                  fontWeight: 500,
+                                                  border: '1px solid rgba(0,0,0,0.1)'
+                                                }}
+                                              >
+                                                {this.l2Key}
+                                              </span>
+                                            </p>
+                                          </div>
+                                        )}
+                                        <p style={{ fontWeight: 500 }}>
+                                          After scanning the QR code, enter the 6-digit verification code below to
+                                          activate two-factor authentication on your account.
+                                        </p>
+                                        <label>Verification Code</label>
+                                        <Input type={'text'} onChange={val => (this.l2VerifyText = val)} />
+                                        <div style={{ marginTop: 25 }}>
+                                          <Button
+                                            text={'Verify and continue'}
+                                            style={'primary'}
+                                            small={true}
+                                            waves={true}
+                                            extraClass={'uk-width-1-1'}
+                                            onClick={e => this.onVerifyMFAClicked(e)}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {this.props.sessionUser.hasL2Auth && (
+                              <div>
+                                <h4 style={{ fontWeight: 500 }}>
+                                  Two-factor authentication is{' '}
+                                  <span className={'uk-text-success'} style={{ fontWeight: 600 }}>
+                                    enabled
+                                  </span>
+                                </h4>
+                                <p style={{ fontSize: '12px' }}>
+                                  By disabling two-factor authentication, your account will be protected with only your
+                                  password.
+                                </p>
+                                <div>
+                                  <Button
+                                    text={'Disable'}
+                                    style={'danger'}
+                                    small={true}
+                                    onClick={e => this.onDisableMFAClicked(e)}
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
                         }
                       />
@@ -332,7 +538,10 @@ ProfileContainer.propTypes = {
   sessionUser: PropTypes.object,
   setSessionUser: PropTypes.func.isRequired,
   socket: PropTypes.object.isRequired,
-  saveProfile: PropTypes.func.isRequired
+  showModal: PropTypes.func.isRequired,
+  hideModal: PropTypes.func.isRequired,
+  saveProfile: PropTypes.func.isRequired,
+  genMFA: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -340,4 +549,4 @@ const mapStateToProps = state => ({
   socket: state.shared.socket
 })
 
-export default connect(mapStateToProps, { saveProfile, setSessionUser })(ProfileContainer)
+export default connect(mapStateToProps, { showModal, hideModal, saveProfile, setSessionUser, genMFA })(ProfileContainer)
