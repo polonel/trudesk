@@ -19,6 +19,7 @@ import common from './shared/common'
 import modal from './shared/modalReducer'
 import sidebar from './sidebarReducer'
 import settings from './settings'
+import dashboardState from './dashboardReducer'
 import ticketsState from './ticketsReducer'
 import tagsSettings from './tagsReducer'
 import accountsState from './accountsReducer'
@@ -50,6 +51,7 @@ const IndexReducer = combineReducers({
   searchState,
   modal,
   sidebar,
+  dashboardState,
   ticketsState,
   accountsState,
   groupsState,

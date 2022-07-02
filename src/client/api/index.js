@@ -20,6 +20,31 @@ axios.defaults.headers['CSRF-TOKEN'] = token
 
 const api = {}
 
+api.dashboard = {}
+api.dashboard.getData = payload => {
+  const timespan = payload.timespan || 30
+  return axios.get(`/api/v1/tickets/stats/${timespan}`).then(res => {
+    return res.data
+  })
+}
+api.dashboard.getTopGroups = payload => {
+  const timespan = payload.timespan || 30
+  return axios.get(`/api/v1/tickets/count/topgroups/${timespan}`).then(res => {
+    return res.data
+  })
+}
+api.dashboard.getTopTags = payload => {
+  const timespan = payload.timespan || 30
+  return axios.get(`/api/v1/tickets/count/tags/${timespan}`).then(res => {
+    return res.data
+  })
+}
+api.dashboard.getOverdueTickets = () => {
+  return axios.get('/api/v1/tickets/overdue').then(res => {
+    return res.data
+  })
+}
+
 api.tickets = {}
 api.tickets.getWithPage = payload => {
   const limit = payload.limit ? payload.limit : 50

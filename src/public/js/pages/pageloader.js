@@ -34,20 +34,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
         }
       })
 
-    require([
-      'pages/dashboard',
-      'pages/messages',
-      'pages/accountsImport',
-      // 'pages/profile',
-      'pages/reports',
-      'pages/reportsBreakdown',
-      'pages/notices',
-      'pages/createNotice',
-      'pages/plugins',
-      'pages/logs',
-
-      'modules/ajaximgupload'
-    ], function (a, b, e, f, g, h, i, j, k, l, m) {
+    require(['pages/messages', 'pages/reportsBreakdown', 'pages/logs', 'modules/ajaximgupload'], function (a, b, c, d) {
       async.parallel(
         [
           function (done) {
@@ -56,32 +43,11 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
           function (done) {
             b.init(done)
           },
-          // function (done) {
-          //   c.init(done)
-          // },
           function (done) {
-            e.init(done)
+            c.init(done)
           },
           function (done) {
-            f.init(done)
-          },
-          function (done) {
-            g.init(done)
-          },
-          function (done) {
-            h.init(done)
-          },
-          // function (done) {
-          //   i.init(done)
-          // },
-          function (done) {
-            j.init(done)
-          },
-          function (done) {
-            k.init(done)
-          },
-          function (done) {
-            l.init()
+            d.init()
 
             return done()
           }

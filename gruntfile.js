@@ -71,7 +71,9 @@ module.exports = function (grunt) {
             'src/public/js/vendor/shepherd/css/shepherd-theme-square.css',
             'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css',
             'src/public/js/vendor/easymde/dist/easymde.min.css',
-            'src/public/js/vendor/grapesjs/css/grapes.min.css'
+            'src/public/js/vendor/grapesjs/css/grapes.min.css',
+            'node_modules/react-grid-layout/css/styles.css',
+            'node_modules/react-resizable/css/styles.css'
           ]
         }
       },

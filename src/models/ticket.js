@@ -733,21 +733,36 @@ ticketSchema.statics.getAll = function (callback) {
 }
 
 ticketSchema.statics.getForCache = function (callback) {
-  var self = this
-  var t365 = moment
-    .utc()
-    .hour(23)
-    .minute(59)
-    .second(59)
-    .subtract(365, 'd')
-    .toDate()
-  self
-    .model(COLLECTION)
-    .find({ date: { $gte: t365 }, deleted: false })
-    .select('_id uid date status history comments assignee owner tags')
-    .sort('date')
-    .lean()
-    .exec(callback)
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const t365 = moment
+          .utc()
+          .hour(23)
+          .minute(59)
+          .second(50)
+          .subtract(365, 'd')
+          .toDate()
+
+        const query = self
+          .model(COLLECTION)
+          .find({ date: { $gte: t365 }, deleted: false })
+          .sort('date')
+          .lean()
+
+        if (typeof callback === 'function') return query.exec(callback)
+
+        const results = await query.exec()
+
+        return resolve(results)
+      } catch (err) {
+        if (typeof callback === 'function') return callback(err)
+
+        return reject(err)
+      }
+    })()
+  })
 }
 
 ticketSchema.statics.getAllNoPopulate = function (callback) {

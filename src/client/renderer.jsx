@@ -16,6 +16,7 @@ import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
 
+import DashboardContainer from 'containers/Dashboard'
 import TicketsContainer from 'containers/Tickets/TicketsContainer'
 import SingleTicketContainer from 'containers/Tickets/SingleTicketContainer'
 import SettingsContainer from 'containers/Settings/SettingsContainer'
@@ -28,6 +29,16 @@ import NoticeContainer from 'containers/Notice/NoticeContainer'
 import ProfileContainer from 'containers/Profile'
 
 export default function (store) {
+  if (document.getElementById('dashboard-container')) {
+    const DashboardContainerWithProvider = (
+      <Provider store={store}>
+        <DashboardContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(DashboardContainerWithProvider, document.getElementById('dashboard-container'))
+  }
+
   if (document.getElementById('tickets-container')) {
     const view = document.getElementById('tickets-container').getAttribute('data-view')
     const page = document.getElementById('tickets-container').getAttribute('data-page')

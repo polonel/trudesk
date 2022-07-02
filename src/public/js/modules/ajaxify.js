@@ -228,6 +228,8 @@ define('modules/ajaxify', [
 
             // Manually Unload React components from renders
             // This will be removed once angular and ajaxy are gone (react-router will Replace)
+            if (document.getElementById('dashboard-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('dashboard-container'))
             if (document.getElementById('tickets-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('tickets-container'))
             if (document.getElementById('single-ticket-container'))
