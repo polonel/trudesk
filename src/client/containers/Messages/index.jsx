@@ -29,6 +29,7 @@ import GridItem from 'components/Grid/GridItem'
 import UIKit from 'uikit'
 import $ from 'jquery'
 import helpers from 'lib/helpers'
+import Avatar from 'components/Avatar/Avatar'
 
 @observer
 class MessagesContainer extends React.Component {
@@ -269,6 +270,7 @@ class MessagesContainer extends React.Component {
             <div id={'conversationList'} className='page-content-left noborder full-height'>
               <ul className='message-items scrollable'>
                 {this.props.messagesState.conversations.map(convo => {
+                  const partnerId = convo.get('partner').get('_id')
                   const partnerImage = convo.get('partner').get('image') || 'defaultProfile.jpg'
                   const updatedDate = helpers.getCalendarDate(convo.get('updatedAt'))
                   const isCurrentConversation = !!(
@@ -283,17 +285,7 @@ class MessagesContainer extends React.Component {
                       data-conversation-id={convo.get('_id')} // Used for ContextMenu
                       onClick={() => this.onConversationClicked(convo.get('_id'))}
                     >
-                      <div className='profile-pic'>
-                        <img
-                          src={`/uploads/users/${partnerImage}`}
-                          className={'uk-border-circle profileImage'}
-                          alt={convo.get('partner').get('fullname')}
-                        />
-                        <span
-                          className='user-offline uk-border-circle'
-                          data-user-status-id={convo.get('partner').get('_id')}
-                        />
-                      </div>
+                      <Avatar userId={partnerId} image={partnerImage} />
                       <div className='convo-info'>
                         <span className='message-from'>{convo.get('partner').get('fullname')}</span>
                         <span className='message-date'>{updatedDate}</span>

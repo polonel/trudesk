@@ -168,25 +168,25 @@ function updateUsers () {
 }
 
 function updateOnlineBubbles () {
-  var sortedUserList = _.fromPairs(
+  const sortedUserList = _.fromPairs(
     _.sortBy(_.toPairs(sharedVars.usersOnline), function (o) {
       return o[0]
     })
   )
-  var sortedIdleList = _.fromPairs(
+  const sortedIdleList = _.fromPairs(
     _.sortBy(_.toPairs(sharedVars.idleUsers), function (o) {
       return o[0]
     })
   )
 
-  utils.sendToAllConnectedClients(io, '$trudesk:chat:updateOnlineBubbles', {
+  utils.sendToAllConnectedClients(io, socketEventConst.UI_ONLINE_STATUS_UPDATE, {
     sortedUserList: sortedUserList,
     sortedIdleList: sortedIdleList
   })
 }
 
 events.updateOnlineBubbles = function (socket) {
-  socket.on('$trudesk:chat:updateOnlineBubbles', function () {
+  socket.on(socketEventConst.UI_ONLINE_STATUS_UPDATE, function () {
     updateOnlineBubbles()
   })
 }
@@ -497,13 +497,11 @@ events.onChatStopTyping = function (socket) {
 }
 
 function joinChatServer (socket) {
-  var user = socket.request.user
-  var exists = false
+  const user = socket.request.user
+  let exists = false
   if (sharedVars.usersOnline.hasOwnProperty(user.username.toLowerCase())) {
     exists = true
   }
-
-  var sortedUserList
 
   if (!exists) {
     if (user.username.length !== 0) {
@@ -529,14 +527,16 @@ function joinChatServer (socket) {
 
     spawnOpenChatWindows(socket, user._id)
   }
+
+  updateOnlineBubbles()
 }
 
 events.onDisconnect = function (socket) {
   socket.on('disconnect', function (reason) {
-    var user = socket.request.user
+    const user = socket.request.user
 
     if (!_.isUndefined(sharedVars.usersOnline[user.username])) {
-      var userSockets = sharedVars.usersOnline[user.username].sockets
+      const userSockets = sharedVars.usersOnline[user.username].sockets
 
       if (_.size(userSockets) < 2) {
         delete sharedVars.usersOnline[user.username]
@@ -544,12 +544,12 @@ events.onDisconnect = function (socket) {
         sharedVars.usersOnline[user.username].sockets = _.without(userSockets, socket.id)
       }
 
-      var o = _.findKey(sharedVars.sockets, { id: socket.id })
+      const o = _.findKey(sharedVars.sockets, { id: socket.id })
       sharedVars.sockets = _.without(sharedVars.sockets, o)
     }
 
     if (!_.isUndefined(sharedVars.idleUsers[user.username])) {
-      var idleSockets = sharedVars.idleUsers[user.username].sockets
+      const idleSockets = sharedVars.idleUsers[user.username].sockets
 
       if (_.size(idleSockets) < 2) {
         delete sharedVars.idleUsers[user.username]
@@ -557,7 +557,7 @@ events.onDisconnect = function (socket) {
         sharedVars.idleUsers[user.username].sockets = _.without(idleSockets, socket.id)
       }
 
-      var i = _.findKey(sharedVars.sockets, { id: socket.id })
+      const i = _.findKey(sharedVars.sockets, { id: socket.id })
       sharedVars.sockets = _.without(sharedVars.sockets, i)
     }
 
@@ -570,7 +570,7 @@ events.onDisconnect = function (socket) {
       }
     })
 
-    updateOnlineBubbles()
+    // updateOnlineBubbles()
 
     if (reason === 'transport error') {
       reason = 'client terminated'

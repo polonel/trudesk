@@ -13,10 +13,12 @@
 
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { some } from 'lodash'
 
 import axios from 'axios'
 
-import { ACCOUNTS_UI_PROFILE_IMAGE_UPDATE } from 'serverSocket/socketEventConsts'
+import { ACCOUNTS_UI_PROFILE_IMAGE_UPDATE, UI_ONLINE_STATUS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import helpers from 'lib/helpers'
 
@@ -24,8 +26,53 @@ class Avatar extends React.Component {
   constructor (props) {
     super(props)
 
+    this.onlineBubbleRef = React.createRef()
     this.overlayRef = React.createRef()
     this.imageUploadInput = React.createRef()
+
+    this.onOnlineStatusUpdate = this.onOnlineStatusUpdate.bind(this)
+  }
+
+  componentDidMount () {
+    if (this.props.showOnlineBubble && this.props.userId)
+      this.props.socket.on(UI_ONLINE_STATUS_UPDATE, this.onOnlineStatusUpdate)
+  }
+
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (!prevProps.showOnlineBubble && this.props.showOnlineBubble && this.props.userId) {
+      // Let's release the event just in case, so we don't double bind.
+      this.props.socket.off(UI_ONLINE_STATUS_UPDATE, this.onOnlineStatusUpdate)
+      this.props.socket.on(UI_ONLINE_STATUS_UPDATE, this.onOnlineStatusUpdate)
+    }
+  }
+
+  componentWillUnmount () {
+    this.props.socket.off(UI_ONLINE_STATUS_UPDATE, this.onOnlineStatusUpdate)
+  }
+
+  onOnlineStatusUpdate (data) {
+    if (this.onlineBubbleRef.current && this.props.userId) {
+      const bubble = this.onlineBubbleRef.current
+      bubble.classList.remove('user-online')
+      bubble.classList.remove('user-idle')
+      bubble.classList.add('user-offline')
+
+      const onlineUserList = data.sortedUserList
+      const idleUserList = data.sortedIdleList
+
+      const isOnline = some(onlineUserList, val => val.user._id.toString() === this.props.userId.toString())
+      const isIdle = some(idleUserList, val => val.user._id.toString() === this.props.userId.toString())
+
+      if (isOnline) {
+        bubble.classList.remove('user-offline')
+        bubble.classList.remove('user-idle')
+        bubble.classList.add('user-online')
+      } else if (isIdle) {
+        bubble.classList.remove('user-offline')
+        bubble.classList.remove('user-online')
+        bubble.classList.add('user-idle')
+      }
+    }
   }
 
   onMouseOver () {
@@ -128,7 +175,7 @@ class Avatar extends React.Component {
             src={`/uploads/users/${image || 'defaultProfile.jpg'}`}
             alt=''
           />
-          {showOnlineBubble && <span className='user-offline uk-border-circle' data-user-status-id={userId} />}
+          {showOnlineBubble && <span ref={this.onlineBubbleRef} className='user-offline uk-border-circle' />}
         </div>
       </Fragment>
     )
@@ -138,7 +185,7 @@ class Avatar extends React.Component {
 Avatar.propTypes = {
   userId: PropTypes.string,
   username: PropTypes.string, // Required if using enableImageUpload
-  socket: PropTypes.object,
+  socket: PropTypes.object.isRequired,
   image: PropTypes.string,
   size: PropTypes.number.isRequired,
   showOnlineBubble: PropTypes.bool,
@@ -153,4 +200,8 @@ Avatar.defaultProps = {
   enableImageUpload: false
 }
 
-export default Avatar
+const mapStateToProps = state => ({
+  socket: state.shared.socket
+})
+
+export default connect(mapStateToProps, {})(Avatar)
