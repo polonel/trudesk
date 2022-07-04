@@ -19,6 +19,7 @@ var userSchema = require('../models/user')
 
 var sharedVars = require('./index').shared
 var sharedUtils = require('./index').utils
+const socketEventConst = require('./socketEventConsts')
 
 var events = {}
 
@@ -350,22 +351,16 @@ events.saveChatWindow = function (socket) {
 }
 
 events.onChatMessage = function (socket) {
-  socket.on('chatMessage', function (data) {
-    var to = data.to
-    var from = data.from
-    var od = data.type
-    if (data.type === 's') {
-      data.type = 'r'
-    } else {
-      data.type = 's'
-    }
+  socket.on(socketEventConst.MESSAGES_SEND, function (data) {
+    const to = data.to
+    const from = data.from
 
-    var userSchema = require('../models/user')
+    const User = require('../models/user')
 
     async.parallel(
       [
         function (next) {
-          userSchema.getUser(to, function (err, toUser) {
+          User.getUser(to, function (err, toUser) {
             if (err) return next(err)
             if (!toUser) return next('User Not Found!')
 
@@ -375,7 +370,7 @@ events.onChatMessage = function (socket) {
           })
         },
         function (next) {
-          userSchema.getUser(from, function (err, fromUser) {
+          User.getUser(from, function (err, fromUser) {
             if (err) return next(err)
             if (!fromUser) return next('User Not Found')
 
@@ -386,23 +381,36 @@ events.onChatMessage = function (socket) {
         }
       ],
       function (err) {
-        if (err) return utils.sendToSelf(socket, 'chatMessage', { message: err })
+        if (err) return utils.sendToSelf(socket, socketEventConst.MESSAGES_UI_RECEIVE, { message: err })
 
-        utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, data.toUser.username, 'chatMessage', data)
-        data.type = od
-        utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, data.fromUser.username, 'chatMessage', data)
+        console.log(data)
+        utils.sendToUser(
+          sharedVars.sockets,
+          sharedVars.usersOnline,
+          data.toUser.username,
+          socketEventConst.MESSAGES_UI_RECEIVE,
+          data
+        )
+
+        utils.sendToUser(
+          sharedVars.sockets,
+          sharedVars.usersOnline,
+          data.fromUser.username,
+          socketEventConst.MESSAGES_UI_RECEIVE,
+          data
+        )
       }
     )
   })
 }
 
 events.onChatTyping = function (socket) {
-  socket.on('chatTyping', function (data) {
-    var to = data.to
-    var from = data.from
+  socket.on(socketEventConst.MESSAGES_USER_TYPING, function (data) {
+    const to = data.to
+    const from = data.from
 
-    var user = null
-    var fromUser = null
+    let user = null
+    let fromUser = null
 
     _.find(sharedVars.usersOnline, function (v) {
       if (String(v.user._id) === String(to)) {
@@ -421,14 +429,20 @@ events.onChatTyping = function (socket) {
     data.toUser = user
     data.fromUser = fromUser
 
-    utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, user.username, 'chatTyping', data)
+    utils.sendToUser(
+      sharedVars.sockets,
+      sharedVars.usersOnline,
+      user.username,
+      socketEventConst.MESSAGES_UI_USER_TYPING,
+      data
+    )
   })
 }
 
 events.onChatStopTyping = function (socket) {
-  socket.on('chatStopTyping', function (data) {
-    var to = data.to
-    var user = null
+  socket.on(socketEventConst.MESSAGES_USER_STOP_TYPING, function (data) {
+    const to = data.to
+    let user = null
 
     _.find(sharedVars.usersOnline, function (v) {
       if (String(v.user._id) === String(to)) {
@@ -442,7 +456,13 @@ events.onChatStopTyping = function (socket) {
 
     data.toUser = user
 
-    utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, user.username, 'chatStopTyping', data)
+    utils.sendToUser(
+      sharedVars.sockets,
+      sharedVars.usersOnline,
+      user.username,
+      socketEventConst.MESSAGES_UI_USER_STOP_TYPING,
+      data
+    )
   })
 }
 

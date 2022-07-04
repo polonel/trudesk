@@ -52,7 +52,7 @@ define('modules/ajaxify', [
     helpers.UI.cardShow()
     helpers.countUpMe()
 
-    var event = _.debounce(function () {
+    const event = _.debounce(function () {
       $.event.trigger('$trudesk:ready')
     }, 100)
 
@@ -60,9 +60,9 @@ define('modules/ajaxify', [
   })
 
   // Prepare our Variables
-  var History = window.History
+  const History = window.History
 
-  var document = window.document
+  const document = window.document
 
   // Check to see if History.js is enabled for our Browser
   if (!History.enabled) {
@@ -250,6 +250,8 @@ define('modules/ajaxify', [
               window.react.dom.unmountComponentAtNode(document.getElementById('departments-container'))
             if (document.getElementById('notices-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('notices-container'))
+            if (document.getElementById('messages-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('messages-container'))
 
             // if (document.getElementById('modal-wrapper'))
             //   window.react.dom.unmountComponentAtNode(document.getElementById('modal-wrapper'))

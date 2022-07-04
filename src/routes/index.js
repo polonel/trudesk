@@ -223,12 +223,7 @@ function mainRoutes (router, middleware, controllers) {
     },
     controllers.messages.get
   )
-  router.get(
-    '/messages/:convoid',
-    middleware.redirectToLogin,
-    middleware.loadCommonData,
-    controllers.messages.getConversation
-  )
+  router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.view)
 
   // Accounts
   router.get(

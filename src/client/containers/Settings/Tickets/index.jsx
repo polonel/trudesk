@@ -125,6 +125,15 @@ class TicketsSettings extends React.Component {
     })
   }
 
+  onPlayNewTicketSoundChange (e) {
+    this.props.updateSetting({
+      name: 'playNewTicketSound:enable',
+      value: e.target.checked,
+      stateName: 'playNewTicketSound',
+      noSnackbar: true
+    })
+  }
+
   showModal (e, modal, props) {
     e.preventDefault()
     this.props.showModal(modal, props)
@@ -277,6 +286,22 @@ class TicketsSettings extends React.Component {
             />
           }
         />
+        {/* TODO: MOVE TO USER PREFS WHEN IMPL */}
+        {/*<SettingItem*/}
+        {/*  title={'Play New Ticket Sound'}*/}
+        {/*  subtitle={'Enable/Disable playing an audio notification when a new ticket is submitted.'}*/}
+        {/*  tooltip={'[GLOBAL] This setting applies to all users.'}*/}
+        {/*  component={*/}
+        {/*    <EnableSwitch*/}
+        {/*      stateName={'playNewTicketSound'}*/}
+        {/*      label={'Enable'}*/}
+        {/*      checked={this.getSetting('playNewTicketSound')}*/}
+        {/*      onChange={e => {*/}
+        {/*        this.onPlayNewTicketSoundChange(e)*/}
+        {/*      }}*/}
+        {/*    />*/}
+        {/*  }*/}
+        {/*/>*/}
         <SettingItem
           title={'Minimum Subject Length'}
           subtitle={'Minimum character limit for ticket subject'}
@@ -494,7 +519,6 @@ const mapStateToProps = state => ({
   tagsSettings: state.tagsSettings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting, getTagsWithPage, tagsUpdateCurrentPage, showModal }
-)(TicketsSettings)
+export default connect(mapStateToProps, { updateSetting, getTagsWithPage, tagsUpdateCurrentPage, showModal })(
+  TicketsSettings
+)

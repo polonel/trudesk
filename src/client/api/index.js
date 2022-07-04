@@ -288,6 +288,23 @@ api.departments.delete = ({ _id }) => {
   })
 }
 
+api.messages = {}
+api.messages.getConversations = payload => {
+  return axios.get('/api/v2/messages/conversations').then(res => {
+    return res.data
+  })
+}
+api.messages.getSingleConversation = ({ _id }) => {
+  return axios.get(`/api/v2/messages/conversations/${_id}`).then(res => {
+    return res.data
+  })
+}
+api.messages.send = payload => {
+  return axios.post('/api/v1/messages/send', payload).then(res => {
+    return res.data
+  })
+}
+
 api.notices = {}
 api.notices.create = payload => {
   return axios.post('/api/v2/notices', payload).then(res => {

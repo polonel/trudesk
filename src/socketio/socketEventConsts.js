@@ -62,4 +62,10 @@ exported.NOTIFICATIONS_UPDATE = '$trudesk:notifications:update'
 exported.NOTIFICATIONS_MARK_READ = '$trudesk:notifications:mark_read'
 exported.NOTIFICATIONS_CLEAR = '$trudesk:notifications:clear'
 
+// MESSAGES
+exported.MESSAGES_SEND = '$trudesk:messages:send'
+exported.MESSAGES_UI_RECEIVE = '$trudesk:messages:ui:receive'
+exported.MESSAGES_USER_TYPING = '$trudesk:messages:user_typing'
+exported.MESSAGES_UI_USER_TYPING = '$trudesk:messages:ui:user_typing'
+
 module.exports = exported

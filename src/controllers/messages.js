@@ -21,6 +21,17 @@ const messagesController = {}
 
 messagesController.content = {}
 
+messagesController.view = (req, res) => {
+  const content = {}
+  content.title = 'Messages'
+  content.nav = 'messages'
+  content.data = {}
+  content.data.common = req.viewdata
+  if (req.params.convoid) content.data.conversationId = req.params.convoid
+
+  return res.render('messages', content)
+}
+
 messagesController.get = function (req, res) {
   const content = {}
   content.title = 'Messages'

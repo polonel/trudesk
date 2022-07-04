@@ -19,11 +19,9 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
   helpers,
   UIKit
 ) {
-  var chatClient = {}
-
-  var socket
-
-  var loggedInAccount
+  const chatClient = {}
+  let socket
+  let loggedInAccount
 
   chatClient.init = function (sock) {
     loggedInAccount = window.trudeskSessionService.getUser()
@@ -126,24 +124,17 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
       }
     })
 
-    socket.removeAllListeners('chatMessage')
-    socket.on('chatMessage', function (data) {
-      var type = data.type
-      var to = data.to
-      var from = data.from
-      var chatBox = ''
-
-      var chatMessage = ''
-
-      var chatMessageList = ''
-
-      var scroller = ''
-
-      var selector = ''
+    socket.removeAllListeners('$trudesk:messages:ui:receive')
+    socket.on('$trudesk:messages:ui:receive', function (data) {
+      console.log(data)
+      const type = data.message.owner._id.toString() === loggedInAccount._id.toString() ? 's' : 'r'
+      const to = data.to
+      const from = data.from
+      let chatBox, chatMessage, chatMessageList, scroller, selector
 
       if (type === 's') {
         chatBox = $('.chat-box[data-chat-userid="' + to + '"]')
-        chatMessage = createChatMessageDiv(data.message)
+        chatMessage = createChatMessageDiv(data.message.body)
         chatMessageList = chatBox.find('.chat-message-list:first')
         scroller = chatBox.find('.chat-box-messages')
         chatMessageList.append(chatMessage)
@@ -159,7 +150,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
             helpers.scrollToBottom(scroller)
           })
         } else {
-          chatMessage = createChatMessageFromUser(data.fromUser, data.message)
+          chatMessage = createChatMessageFromUser(data.fromUser, data.message.body)
           chatMessageList = chatBox.find('.chat-message-list:first')
           chatMessageList.append(chatMessage)
           scroller = chatBox.find('.chat-box-messages')
@@ -175,8 +166,8 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
       $('body').ajaxify()
     })
 
-    socket.removeAllListeners('chatTyping')
-    socket.on('chatTyping', function (data) {
+    socket.removeAllListeners('$trudesk:messages:ui:user_typing')
+    socket.on('$trudesk:messages:ui:user_typing', function (data) {
       $.event.trigger('$trudesk:chat:typing', data)
       var chatBox = $('div[data-conversation-id="' + data.cid + '"]')
       var isTypingDiv = chatBox.find('.user-is-typing-wrapper')

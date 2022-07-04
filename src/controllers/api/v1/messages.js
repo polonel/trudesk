@@ -217,7 +217,7 @@ apiMessages.send = function (req, res) {
       function (user, convo, done) {
         const Message = new MessageSchema({
           conversation: convo._id,
-          owner: user._id,
+          owner: user,
           body: message
         })
 

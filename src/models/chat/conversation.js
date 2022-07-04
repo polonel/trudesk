@@ -69,27 +69,59 @@ conversationSchema.statics.getConversations = function (userId, callback) {
 }
 
 conversationSchema.statics.getConversation = function (convoId, callback) {
-  return this.model(COLLECTION)
-    .findOne({ _id: convoId })
-    .populate({
-      path: 'participants',
-      select: '_id username fullname email title image lastOnline'
-    })
-    .exec(callback)
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const query = self
+          .model(COLLECTION)
+          .findOne({ _id: convoId })
+          .populate({
+            path: 'participants',
+            select: '_id username fullname email title image lastOnline'
+          })
+
+        if (typeof callback === 'function') return query.exec(callback)
+
+        const results = await query.exec()
+
+        return resolve(results)
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
+        return reject(e)
+      }
+    })()
+  })
 }
 
 conversationSchema.statics.getConversationsWithLimit = function (userId, limit, callback) {
-  // if (!_.isArray(userId)) userId = [userId];
-  var l = !_.isUndefined(limit) ? limit : 1000
-  return this.model(COLLECTION)
-    .find({ participants: userId })
-    .sort('-updatedAt')
-    .limit(l)
-    .populate({
-      path: 'participants',
-      select: 'username fullname email title image lastOnline'
-    })
-    .exec(callback)
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const l = limit || 1000
+        const query = self
+          .model(COLLECTION)
+          .find({ participants: userId })
+          .sort('-updatedAt')
+          .limit(l)
+          .populate({
+            path: 'participants',
+            select: 'username fullname email title image lastOnline'
+          })
+
+        if (typeof callback === 'function') return query.exec(callback)
+
+        const results = await query.exec()
+
+        return resolve(results)
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
+
+        return reject(e)
+      }
+    })()
+  })
 }
 
 module.exports = mongoose.model(COLLECTION, conversationSchema)

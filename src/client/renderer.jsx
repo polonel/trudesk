@@ -27,6 +27,7 @@ import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
 import ProfileContainer from 'containers/Profile'
+import MessagesContainer from 'containers/Messages'
 
 export default function (store) {
   if (document.getElementById('dashboard-container')) {
@@ -126,6 +127,17 @@ export default function (store) {
     )
 
     ReactDOM.render(TeamsContainerWithProvider, document.getElementById('departments-container'))
+  }
+
+  if (document.getElementById('messages-container')) {
+    const conversation = document.getElementById('messages-container').getAttribute('data-conversation-id')
+    const MessagesContainterWithProvider = (
+      <Provider store={store}>
+        <MessagesContainer initialConversation={conversation} />
+      </Provider>
+    )
+
+    ReactDOM.render(MessagesContainterWithProvider, document.getElementById('messages-container'))
   }
 
   if (document.getElementById('notices-container')) {

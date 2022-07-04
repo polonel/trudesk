@@ -116,6 +116,7 @@ util.getSettings = async callback => {
         s.allowAgentUserTickets = parseSetting(settings, 'allowAgentUserTickets:enable', false)
         s.allowPublicTickets = parseSetting(settings, 'allowPublicTickets:enable', false)
         s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false)
+        s.playNewTicketSound = parseSetting(settings, 'playNewTicketSound:enable', true)
 
         s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '')
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)

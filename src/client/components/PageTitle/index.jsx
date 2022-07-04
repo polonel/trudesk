@@ -14,13 +14,23 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 
 class PageTitle extends React.Component {
   render () {
-    const { title, rightComponent, shadow } = this.props
+    const { title, rightComponent, shadow, hideBorderBottom, extraClasses } = this.props
     return (
-      <div className={'nopadding'}>
-        <div className={'uk-width-1-1 page-title dt-borderBottom pl-25 uk-clearfix' + (!shadow ? ' noshadow' : '')}>
+      <div className={clsx('nopadding', extraClasses)}>
+        <div
+          className={clsx(
+            'uk-width-1-1',
+            'page-title',
+            'pl-25',
+            'uk-clearfix',
+            hideBorderBottom ? 'nbb' : 'dt-borderBottom',
+            !shadow && 'noshadow'
+          )}
+        >
           <p className={'uk-float-left'}>{title}</p>
           <div className={'uk-float-right uk-clearfix uk-width-1-2'}>{rightComponent}</div>
         </div>
@@ -32,11 +42,14 @@ class PageTitle extends React.Component {
 PageTitle.propTypes = {
   title: PropTypes.string.isRequired,
   shadow: PropTypes.bool,
+  hideBorderBottom: PropTypes.bool,
+  extraClasses: PropTypes.string,
   rightComponent: PropTypes.element
 }
 
 PageTitle.defaultProps = {
-  shadow: false
+  shadow: false,
+  hideBorderBottom: false
 }
 
 export default PageTitle

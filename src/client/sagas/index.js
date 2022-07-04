@@ -23,6 +23,7 @@ import TeamSaga from './teams'
 import DepartmentSaga from './departments'
 import NoticeSage from './notices'
 import SearchSaga from './search'
+import MessagesSaga from './messages'
 
 export default function * IndexSagas () {
   yield all([
@@ -35,6 +36,7 @@ export default function * IndexSagas () {
     TeamSaga(),
     DepartmentSaga(),
     NoticeSage(),
-    SearchSaga()
+    SearchSaga(),
+    MessagesSaga()
   ])
 }

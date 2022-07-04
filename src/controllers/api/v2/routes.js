@@ -78,6 +78,9 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/notices/clear', apiv2Auth, canUser('notices:deactivate'), apiv2.notices.clear)
   router.delete('/api/v2/notices/:id', apiv2Auth, canUser('notices:delete'), apiv2.notices.delete)
 
+  router.get('/api/v2/messages/conversations', apiv2Auth, apiv2.messages.getConversations)
+  router.get('/api/v2/messages/conversations/:id', apiv2Auth, apiv2.messages.single)
+
   // ElasticSearch
   router.get('/api/v2/es/search', middleware.api, apiv2.elasticsearch.search)
   router.get('/api/v2/es/rebuild', apiv2Auth, isAdmin, apiv2.elasticsearch.rebuild)

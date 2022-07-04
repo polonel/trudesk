@@ -78,6 +78,17 @@ viewController.getData = function (request, cb) {
         async.parallel(
           [
             function (done) {
+              settingSchema.getSetting('playNewTicketSound:enable', function (err, setting) {
+                if (!err && setting && !_.isUndefined(setting.value)) {
+                  viewdata.ticketSettings.playNewTicketSound = setting.value
+                } else {
+                  viewdata.ticketSettings.playNewTicketSound = true
+                }
+              })
+
+              return done()
+            },
+            function (done) {
               settingSchema.getSetting('ticket:minlength:subject', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.ticketSettings.minSubject = setting.value

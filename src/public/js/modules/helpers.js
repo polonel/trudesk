@@ -1524,6 +1524,18 @@ define([
     return 'MMM DD, YYYY'
   }
 
+  helpers.getTimeFormat = function () {
+    if (window.trudeskSettingsService) {
+      return window.trudeskSettingsService.getSettings().timeFormat.value
+    }
+
+    return 'hh:mma'
+  }
+
+  helpers.getShortDateWithTimeFormat = function () {
+    return `${helpers.getShortDateFormat()} ${helpers.getTimeFormat()}`
+  }
+
   helpers.formatDate = function (date, format) {
     var timezone = this.getTimezone()
     if (!timezone) {

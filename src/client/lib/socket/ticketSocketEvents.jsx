@@ -5,17 +5,23 @@ import helpers from 'lib/helpers'
 
 const TicketSocketEvents = () => {
   const socket = useSelector(state => state.shared.socket)
+  const viewdata = useSelector(state => state.common.viewdata)
 
   useEffect(() => {
     if (socket) {
       ticketCreated()
     }
-  }, [socket])
+  }, [socket, viewdata])
 
   const ticketCreated = () => {
     socket.removeAllListeners(TICKETS_CREATED)
     socket.on(TICKETS_CREATED, ticket => {
-      helpers.UI.playSound('TICKET_CREATED')
+      if (viewdata) {
+        if (viewdata.get('ticketSettings') && viewdata.get('ticketSettings').get('playNewTicketSound'))
+          helpers.UI.playSound('TICKET_CREATED')
+      } else {
+        helpers.UI.playSound('TICKET_CREATED')
+      }
     })
   }
 
