@@ -357,6 +357,17 @@ events.onChatMessage = function (socket) {
 
     const User = require('../models/user')
 
+    data.message.owner = {
+      _id: data.message.owner._id,
+      email: data.message.owner.email,
+      username: data.message.owner.username,
+      fullname: data.message.owner.fullname,
+      image: data.message.owner.image,
+      title: data.message.owner.title,
+      lastOnline: data.message.owner.lastOnline,
+      id: data.message.owner._id
+    }
+
     async.parallel(
       [
         function (next) {
@@ -364,7 +375,17 @@ events.onChatMessage = function (socket) {
             if (err) return next(err)
             if (!toUser) return next('User Not Found!')
 
-            data.toUser = toUser
+            // Strip
+            data.toUser = {
+              _id: toUser._id,
+              email: toUser.email,
+              username: toUser.username,
+              fullname: toUser.fullname,
+              image: toUser.image,
+              title: toUser.title,
+              lastOnline: toUser.lastOnline,
+              id: toUser._id
+            }
 
             return next()
           })
@@ -374,7 +395,17 @@ events.onChatMessage = function (socket) {
             if (err) return next(err)
             if (!fromUser) return next('User Not Found')
 
-            data.fromUser = fromUser
+            // Strip
+            data.fromUser = {
+              _id: fromUser._id,
+              email: fromUser.email,
+              username: fromUser.username,
+              fullname: fromUser.fullname,
+              image: fromUser.image,
+              title: fromUser.title,
+              lastOnline: fromUser.lastOnline,
+              id: fromUser._id
+            }
 
             return next()
           })
@@ -383,7 +414,6 @@ events.onChatMessage = function (socket) {
       function (err) {
         if (err) return utils.sendToSelf(socket, socketEventConst.MESSAGES_UI_RECEIVE, { message: err })
 
-        console.log(data)
         utils.sendToUser(
           sharedVars.sockets,
           sharedVars.usersOnline,

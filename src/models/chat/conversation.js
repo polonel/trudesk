@@ -76,10 +76,7 @@ conversationSchema.statics.getConversation = function (convoId, callback) {
         const query = self
           .model(COLLECTION)
           .findOne({ _id: convoId })
-          .populate({
-            path: 'participants',
-            select: '_id username fullname email title image lastOnline'
-          })
+          .populate('participants', '_id username fullname email title image lastOnline')
 
         if (typeof callback === 'function') return query.exec(callback)
 

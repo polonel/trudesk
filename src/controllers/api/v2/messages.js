@@ -38,6 +38,8 @@ apiMessages.getConversations = async (req, res) => {
         if (participant._id.toString() !== req.user._id.toString()) {
           convoObject.partner = participant
         }
+
+        delete participant.role
       }
 
       recentMessage = _.first(recentMessage)
@@ -70,12 +72,12 @@ apiMessages.single = async (req, res) => {
     if (!conversation) return apiUtils.sendApiError(res, 404, 'Conversation not found')
 
     conversation = conversation.toObject()
-    let isPart = false
+    let isParticipant = false
     for (const participant of conversation.participants) {
-      if (participant._id.toString() === req.user._id.toString()) isPart = true
+      if (participant._id.toString() === req.user._id.toString()) isParticipant = true
     }
 
-    if (!isPart) return apiUtils.sendApiError(res, 400, 'Invalid')
+    if (!isParticipant) return apiUtils.sendApiError(res, 400, 'Invalid')
 
     const convoMessages = await Message.getConversationWithObject({
       cid: conversation._id,
@@ -83,8 +85,15 @@ apiMessages.single = async (req, res) => {
       requestingUser: req.user
     })
 
+    // Clear the role. It's not needed
+    for (const message of convoMessages) {
+      message.owner.role = undefined
+    }
+
     for (const participant of conversation.participants) {
       if (participant._id.toString() !== req.user._id.toString()) conversation.partner = participant
+
+      delete participant.role
     }
 
     conversation.requestingUserMeta =
