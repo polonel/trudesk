@@ -38,7 +38,6 @@ import DropdownItem from 'components/Dropdown/DropdownItem'
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
 
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 import anime from 'animejs'
 import moment from 'moment-timezone'
 import SearchResults from 'components/SearchResults'
@@ -58,9 +57,9 @@ class TicketsContainer extends React.Component {
   }
 
   componentDidMount () {
-    socket.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
-    socket.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
-    socket.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
+    this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
+    this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
+    this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
 
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
@@ -95,9 +94,9 @@ class TicketsContainer extends React.Component {
     anime.remove('tr.overdue td')
     this.timeline = null
     this.props.unloadTickets()
-    socket.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
-    socket.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
-    socket.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
+    this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
+    this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
+    this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
   }
 
   onTicketCreated (ticket) {
@@ -447,6 +446,7 @@ class TicketsContainer extends React.Component {
 }
 
 TicketsContainer.propTypes = {
+  socket: PropTypes.object.isRequired,
   view: PropTypes.string.isRequired,
   page: PropTypes.string.isRequired,
   prevPage: PropTypes.number.isRequired,
@@ -480,7 +480,8 @@ const mapStateToProps = state => ({
   prevPage: state.ticketsState.prevPage,
   nextPage: state.ticketsState.nextPage,
   loading: state.ticketsState.loading,
-  common: state.common
+  common: state.common,
+  socket: state.shared.socket
 })
 
 export default connect(mapStateToProps, {

@@ -18,6 +18,7 @@ import { connect } from 'react-redux'
 import { hideModal } from 'actions/common'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
+import { getTagsWithPage, fetchTicketTypes } from 'actions/tickets'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import SingleSelect from 'components/SingleSelect'
@@ -34,6 +35,8 @@ class FilterTicketsModal extends React.Component {
     helpers.UI.inputs()
     this.props.fetchGroups()
     this.props.fetchAccounts({ page: 0, limit: -1, type: 'agents', showDeleted: false })
+    this.props.getTagsWithPage({ limit: -1 })
+    this.props.fetchTicketTypes()
   }
 
   componentDidUpdate () {
@@ -94,13 +97,17 @@ class FilterTicketsModal extends React.Component {
       { text: 'Closed', value: '3' }
     ]
 
-    const tags = this.props.common.ticketTags.map(t => {
-      return { text: t.name, value: t._id }
-    })
+    const tags = this.props.ticketTags
+      .map(t => {
+        return { text: t.get('name'), value: t.get('_id') }
+      })
+      .toArray()
 
-    const types = this.props.common.ticketTypes.map(t => {
-      return { text: t.name, value: t._id }
-    })
+    const types = this.props.ticketTypes
+      .map(t => {
+        return { text: t.get('name'), value: t.get('_id') }
+      })
+      .toArray()
 
     const groups = this.props.groupsState.groups
       .map(g => {
@@ -204,23 +211,34 @@ class FilterTicketsModal extends React.Component {
 }
 
 FilterTicketsModal.propTypes = {
-  common: PropTypes.object.isRequired,
+  viewdata: PropTypes.object.isRequired,
   groupsState: PropTypes.object.isRequired,
   accountsState: PropTypes.object.isRequired,
   hideModal: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
   fetchAccounts: PropTypes.func.isRequired,
-  unloadAccounts: PropTypes.func.isRequired
+  unloadAccounts: PropTypes.func.isRequired,
+  getTagsWithPage: PropTypes.func.isRequired,
+  ticketTags: PropTypes.object.isRequired,
+  fetchTicketTypes: PropTypes.func.isRequired,
+  ticketTypes: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
-  common: state.common,
+  viewdata: state.common.viewdata,
   groupsState: state.groupsState,
-  accountsState: state.accountsState
+  accountsState: state.accountsState,
+  ticketTags: state.tagsSettings.tags,
+  ticketTypes: state.ticketsState.types
 })
 
-export default connect(
-  mapStateToProps,
-  { hideModal, fetchGroups, unloadGroups, fetchAccounts, unloadAccounts }
-)(FilterTicketsModal)
+export default connect(mapStateToProps, {
+  hideModal,
+  fetchGroups,
+  unloadGroups,
+  fetchAccounts,
+  unloadAccounts,
+  getTagsWithPage,
+  fetchTicketTypes
+})(FilterTicketsModal)
