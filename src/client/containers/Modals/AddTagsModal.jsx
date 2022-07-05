@@ -16,6 +16,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import { getTagsWithPage } from 'actions/tickets'
+import { showModal, hideModal } from 'actions/common'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import Button from 'components/Button'
@@ -37,6 +38,14 @@ class AddTagsModal extends React.Component {
       $(this.select).val(this.props.currentTags)
 
     $(this.select).trigger('chosen:updated')
+  }
+
+  onCreateTagClicked (e) {
+    e.preventDefault()
+    this.props.hideModal()
+    setTimeout(() => {
+      this.props.showModal('CREATE_TAG')
+    }, 300)
   }
 
   onSubmit (e) {
@@ -108,7 +117,7 @@ class AddTagsModal extends React.Component {
                     </option>
                   ))}
                 </select>
-                <button type='button' style={{ borderRadius: 0 }}>
+                <button type='button' style={{ borderRadius: 0 }} onClick={e => this.onCreateTagClicked(e)}>
                   <i className='material-icons' style={{ marginRight: 0 }}>
                     add
                   </i>
@@ -151,7 +160,9 @@ AddTagsModal.propTypes = {
   currentTags: PropTypes.array,
   tagsSettings: PropTypes.object.isRequired,
   getTagsWithPage: PropTypes.func.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  showModal: PropTypes.func.isRequired,
+  hideModal: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -159,4 +170,4 @@ const mapStateToProps = state => ({
   socket: state.shared.socket
 })
 
-export default connect(mapStateToProps, { getTagsWithPage })(AddTagsModal)
+export default connect(mapStateToProps, { getTagsWithPage, showModal, hideModal })(AddTagsModal)
