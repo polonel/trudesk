@@ -263,18 +263,18 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview)
   router.get('/reports/overview', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview)
   router.get('/reports/generate', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.generate)
-  router.get(
-    '/reports/breakdown/group',
-    middleware.redirectToLogin,
-    middleware.loadCommonData,
-    controllers.reports.breakdownGroup
-  )
-  router.get(
-    '/reports/breakdown/user',
-    middleware.redirectToLogin,
-    middleware.loadCommonData,
-    controllers.reports.breakdownUser
-  )
+  // router.get(
+  //   '/reports/breakdown/group',
+  //   middleware.redirectToLogin,
+  //   middleware.loadCommonData,
+  //   controllers.reports.breakdownGroup
+  // )
+  // router.get(
+  //   '/reports/breakdown/user',
+  //   middleware.redirectToLogin,
+  //   middleware.loadCommonData,
+  //   controllers.reports.breakdownUser
+  // )
 
   // Notices
   router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get)
