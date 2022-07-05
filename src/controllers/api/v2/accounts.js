@@ -36,7 +36,7 @@ accountsApi.sessionUser = async (req, res) => {
 
     let groups = []
     if (dbUser.role.isAdmin || dbUser.role.isAgent) groups = await Department.getDepartmentGroupsOfUser(dbUser._id)
-    else groups = await User.getAllGroupsOfUser(dbUser._id)
+    else groups = await Group.getAllGroupsOfUser(dbUser._id)
 
     groups = groups.map(g => {
       return g._id
