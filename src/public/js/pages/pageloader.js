@@ -13,7 +13,7 @@
  */
 
 define('pages/pageloader', ['async', 'jquery'], function (async, $) {
-  var pageLoader = {}
+  const pageLoader = {}
   pageLoader.init = function (callback) {
     // Called to render component on ajax page load
     window.react.renderer(window.react.redux.store)
@@ -26,13 +26,13 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       }
     })
 
-    if (!window.react.redux.store.getState().shared.sessionUser)
-      window.react.redux.store.dispatch({
-        type: 'SET_SESSION_USER_SUCCESS',
-        payload: {
-          sessionUser: window.trudeskSessionService.getUser()
-        }
-      })
+    // if (!window.react.redux.store.getState().shared.sessionUser)
+    //   window.react.redux.store.dispatch({
+    //     type: 'SET_SESSION_USER_SUCCESS',
+    //     payload: {
+    //       sessionUser: window.trudeskSessionService.getUser()
+    //     }
+    //   })
 
     require(['pages/messages', 'pages/reportsBreakdown', 'pages/logs', 'modules/ajaximgupload'], function (a, b, c, d) {
       async.parallel(

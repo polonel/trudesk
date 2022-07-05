@@ -126,7 +126,6 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
 
     socket.removeAllListeners('$trudesk:messages:ui:receive')
     socket.on('$trudesk:messages:ui:receive', function (data) {
-      console.log(data)
       const type = data.message.owner._id.toString() === loggedInAccount._id.toString() ? 's' : 'r'
       const to = data.to
       const from = data.from

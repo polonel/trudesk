@@ -12795,6 +12795,11 @@ react-html-parser@2.0.2:
   dependencies:
     htmlparser2 "^3.9.0"
 
+react-idle-timer@5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.4.0.tgz#82d3fb41c3bafe053a09b01ebac168a18f16d273"
+  integrity sha512-ijBUM+4d83Z3Bg5bvUppR6N0ZuFwwho8GnWpRRv4viHloLs/44ePc+CeVUgDiuOD604T+nwBYu/7gvEZizXeug==
+
 react-infinite-scroller@1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/react-infinite-scroller/-/react-infinite-scroller-1.2.5.tgz#9c3d4ed24ad42b0be4ed7567fe03fcf60d1dc86a"

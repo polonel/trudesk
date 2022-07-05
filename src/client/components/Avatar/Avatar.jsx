@@ -63,14 +63,14 @@ class Avatar extends React.Component {
       const isOnline = some(onlineUserList, val => val.user._id.toString() === this.props.userId.toString())
       const isIdle = some(idleUserList, val => val.user._id.toString() === this.props.userId.toString())
 
-      if (isOnline) {
-        bubble.classList.remove('user-offline')
-        bubble.classList.remove('user-idle')
-        bubble.classList.add('user-online')
-      } else if (isIdle) {
+      if (isIdle) {
         bubble.classList.remove('user-offline')
         bubble.classList.remove('user-online')
         bubble.classList.add('user-idle')
+      } else if (isOnline) {
+        bubble.classList.remove('user-offline')
+        bubble.classList.remove('user-idle')
+        bubble.classList.add('user-online')
       }
     }
   }

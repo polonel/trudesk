@@ -18,7 +18,6 @@ import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import { size } from 'lodash'
-import clsx from 'clsx'
 
 import { fetchViewData, showModal, hideModal, showNotice, clearNotice } from 'actions/common'
 
@@ -144,8 +143,8 @@ class TopbarContainer extends React.Component {
   }
 
   render () {
-    const { viewdata, sessionUser } = this.props
-    if (this.props.loadingViewData) return <div />
+    const { loadingViewData, viewdata, sessionUser } = this.props
+    if (loadingViewData || !sessionUser) return <div />
     return (
       <div>
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}

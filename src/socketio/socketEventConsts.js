@@ -16,6 +16,7 @@ const exported = {}
 
 // GLOBAL
 exported.UI_ONLINE_STATUS_UPDATE = '$trudesk:global:ui:online_status:update'
+exported.UI_ONLINE_STATUS_SET = '$trudesk:global:ui:online_status:set'
 exported.USERS_UPDATE = '$trudesk:users:update'
 
 // ROLES

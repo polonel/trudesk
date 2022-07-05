@@ -41,10 +41,10 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
 
         require(['angularjs/main'], function () {
           // Static Bootstraps
-          angular.bootstrap($('.top-bar'), ['trudesk'])
+          // angular.bootstrap($('.top-bar'), ['trudesk'])
 
           // Dynamic Bootstrap
-          angular.bootstrap($('#page-content'), ['trudesk'])
+          // angular.bootstrap($('#page-content'), ['trudesk'])
 
           require([
             'underscore',
@@ -56,8 +56,7 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
             'fastclick',
             'placeholder',
             'pace',
-            'easypiechart',
-            'idletimer'
+            'easypiechart'
           ], function (_, nav, socket) {
             // React Bootstrap
             require('../../client/app.jsx')
@@ -67,22 +66,10 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
               pl.init(function () {
                 nav.init()
 
-                var $event = _.debounce(function () {
+                const $event = _.debounce(function () {
                   helpers.hideLoader(1000)
-                  helpers.countUpMe()
-                  helpers.UI.cardShow()
-
-                  // 5min idle timer
-                  var idleTime = 5 * 60 * 1000
-
-                  $(document).idleTimer(idleTime)
-                  $(document).on('idle.idleTimer', function () {
-                    socket.chat.setUserIdle()
-                  })
-
-                  $(document).on('active.idleTimer', function () {
-                    socket.chat.setUserActive()
-                  })
+                  // helpers.countUpMe()
+                  // helpers.UI.cardShow()
 
                   $.event.trigger('$trudesk:ready', window)
                 }, 100)

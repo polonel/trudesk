@@ -24,8 +24,7 @@ const socketEventConst = require('./socketEventConsts')
 var events = {}
 
 function register (socket) {
-  events.onSetUserIdle(socket)
-  events.onSetUserActive(socket)
+  events.onSetUserOnlineStatus(socket)
   events.onUpdateUsers(socket)
   events.updateOnlineBubbles(socket)
   events.updateConversationsNotifications(socket)
@@ -51,42 +50,38 @@ function eventLoop () {
 events.onUpdateUsers = function (socket) {
   socket.on('updateUsers', updateUsers)
 }
+events.onSetUserOnlineStatus = function (socket) {
+  socket.on(socketEventConst.UI_ONLINE_STATUS_SET, data => {
+    const state = data.state
+    const user = socket.request.user
+    let exists = false
 
-events.onSetUserIdle = function (socket) {
-  socket.on('$trudesk:setUserIdle', function () {
-    var user = socket.request.user
-    var exists = false
-    if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase())) {
-      exists = true
-    }
+    if (state === 'idle') {
+      if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase())) exists = true
 
-    if (!exists) {
-      if (user.username.length !== 0) {
-        sharedVars.idleUsers[user.username.toLowerCase()] = {
-          sockets: [socket.id],
-          user: user
+      if (!exists) {
+        if (user.username.length !== 0) {
+          sharedVars.idleUsers[user.username.toLowerCase()] = {
+            sockets: [socket.id],
+            user
+          }
+
+          updateOnlineBubbles()
         }
+      } else {
+        const idleUser = sharedVars.idleUsers[user.username.toLowerCase()]
+        if (!_.isUndefined(idleUser)) {
+          idleUser.sockets.push(socket.id)
+
+          updateOnlineBubbles()
+        }
+      }
+    } else if (state === 'active') {
+      if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase())) {
+        delete sharedVars.idleUsers[user.username.toLowerCase()]
 
         updateOnlineBubbles()
       }
-    } else {
-      var idleUser = sharedVars.idleUsers[user.username.toLowerCase()]
-      if (!_.isUndefined(idleUser)) {
-        idleUser.sockets.push(socket.id)
-
-        updateOnlineBubbles()
-      }
-    }
-  })
-}
-
-events.onSetUserActive = function (socket) {
-  socket.on('$trudesk:setUserActive', function () {
-    var user = socket.request.user
-    if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase())) {
-      delete sharedVars.idleUsers[user.username.toLowerCase()]
-
-      updateOnlineBubbles()
     }
   })
 }

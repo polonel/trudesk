@@ -11,6 +11,10 @@ const TicketSocketEvents = () => {
     if (socket) {
       ticketCreated()
     }
+
+    return function cleanup () {
+      if (socket) socket.removeAllListeners(TICKETS_CREATED)
+    }
   }, [socket, viewdata])
 
   const ticketCreated = () => {

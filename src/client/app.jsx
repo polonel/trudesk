@@ -26,8 +26,8 @@ import Sidebar from './components/Nav/Sidebar/index.jsx'
 import ModalRoot from './containers/Modals'
 import renderer from './renderer'
 
-import $ from 'jquery'
 import SocketGlobal from 'containers/Global/SocketGlobal'
+import SessionLoader from 'lib2/sessionLoader'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -50,6 +50,21 @@ window.react.redux = { store }
 
 sagaMiddleware.run(IndexSagas)
 
+// Mount Globals
+if (document.getElementById('globals')) {
+  const GlobalsRoot = (
+    <Provider store={store}>
+      <>
+        <SingletonHooksContainer />
+        <SessionLoader />
+        <SocketGlobal />
+      </>
+    </Provider>
+  )
+
+  ReactDOM.render(GlobalsRoot, document.getElementById('globals'))
+}
+
 const sidebarWithProvider = (
   <Provider store={store}>
     <Sidebar />
@@ -70,11 +85,7 @@ if (document.getElementById('modal-wrapper')) {
 if (document.getElementById('topbar')) {
   const TopbarRoot = (
     <Provider store={store}>
-      <>
-        <SingletonHooksContainer />
-        <SocketGlobal />
-        <TopbarContainer />
-      </>
+      <TopbarContainer />
     </Provider>
   )
 

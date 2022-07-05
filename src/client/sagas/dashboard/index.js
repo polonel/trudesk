@@ -61,7 +61,6 @@ function * fetchDashboardTopTags ({ payload }) {
   yield put({ type: FETCH_DASHBOARD_TOP_TAGS.PENDING })
   try {
     const response = yield call(api.dashboard.getTopTags, payload)
-    console.log(response)
     yield put({ type: FETCH_DASHBOARD_TOP_TAGS.SUCCESS, response })
   } catch (error) {
     const errorText = error.response ? error.response.data.error : error
@@ -78,7 +77,6 @@ function * fetchDashboardOverdueTickets ({ payload }) {
   yield put({ type: FETCH_DASHBOARD_OVERDUE_TICKETS.PENDING })
   try {
     const response = yield call(api.dashboard.getOverdueTickets, payload)
-    console.log(response)
     yield put({ type: FETCH_DASHBOARD_OVERDUE_TICKETS.SUCCESS, response })
   } catch (error) {
     const errorText = error.response ? error.response.data.error : error
