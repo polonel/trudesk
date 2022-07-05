@@ -15,6 +15,7 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { some } from 'lodash'
+import clsx from 'clsx'
 
 import axios from 'axios'
 
@@ -119,13 +120,37 @@ class Avatar extends React.Component {
   }
 
   render () {
-    const { image, showOnlineBubble, userId, size, showBorder, enableImageUpload } = this.props
+    const {
+      style,
+      image,
+      showOnlineBubble,
+      overrideBubbleSize,
+      showLargerBubble,
+      size,
+      showBorder,
+      borderColor,
+      enableImageUpload
+    } = this.props
+
+    let wrapperStyle = { borderRadius: '50%' }
+    if (showBorder) {
+      wrapperStyle.borderWidth = 4
+      wrapperStyle.borderStyle = 'solid'
+      wrapperStyle.borderColor = 'rgba(0,0,0,0.1)'
+    }
+    if (borderColor) wrapperStyle.borderColor = borderColor
+
+    if (style) wrapperStyle = { ...wrapperStyle, ...style }
+
+    let bubbleSize = size < 50 ? Math.round(size / 2) : 17
+    if (overrideBubbleSize) bubbleSize = overrideBubbleSize
+    if (showLargerBubble) bubbleSize = 25
 
     return (
       <Fragment>
         <div
           className='relative uk-clearfix uk-float-left uk-display-inline-block'
-          style={{ border: showBorder ? '4px solid rgba(0,0,0,0.1)' : '', borderRadius: '50%' }}
+          style={wrapperStyle}
           onMouseOver={() => this.onMouseOver()}
           onMouseOut={() => this.onMouseOut()}
         >
@@ -175,7 +200,13 @@ class Avatar extends React.Component {
             src={`/uploads/users/${image || 'defaultProfile.jpg'}`}
             alt=''
           />
-          {showOnlineBubble && <span ref={this.onlineBubbleRef} className='user-offline uk-border-circle' />}
+          {showOnlineBubble && (
+            <span
+              ref={this.onlineBubbleRef}
+              className={clsx(showLargerBubble && 'user-status-large', 'user-offline', 'uk-border-circle')}
+              style={{ height: bubbleSize, width: bubbleSize }}
+            />
+          )}
         </div>
       </Fragment>
     )
@@ -190,14 +221,19 @@ Avatar.propTypes = {
   size: PropTypes.number.isRequired,
   showOnlineBubble: PropTypes.bool,
   showBorder: PropTypes.bool,
-  enableImageUpload: PropTypes.bool
+  borderColor: PropTypes.string,
+  enableImageUpload: PropTypes.bool,
+  style: PropTypes.object,
+  overrideBubbleSize: PropTypes.number,
+  showLargerBubble: PropTypes.bool
 }
 
 Avatar.defaultProps = {
   size: 50,
   showOnlineBubble: true,
   showBorder: false,
-  enableImageUpload: false
+  enableImageUpload: false,
+  showLargerBubble: false
 }
 
 const mapStateToProps = state => ({

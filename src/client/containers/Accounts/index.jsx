@@ -21,6 +21,7 @@ import { makeObservable, observable } from 'mobx'
 import { showModal } from 'actions/common'
 import { fetchAccounts, deleteAccount, enableAccount, unloadAccounts } from 'actions/accounts'
 
+import Avatar from 'components/Avatar/Avatar'
 import TruCard from 'components/TruCard'
 import PageTitle from 'components/PageTitle'
 import Grid from 'components/Grid'
@@ -144,10 +145,14 @@ class AccountsContainer extends React.Component {
               header={
                 <div>
                   <div className='account-image relative uk-display-inline-block'>
-                    <img src={`/uploads/users/${userImage}`} alt='ProfilePic' className={'tru-card-head-avatar'} />
-                    <span
-                      data-user-status-id={user.get('_id')}
-                      className='user-status-large user-offline uk-border-circle'
+                    <Avatar
+                      size={82}
+                      userId={user.get('_id')}
+                      image={userImage}
+                      style={{ marginTop: 10 }}
+                      showBorder={true}
+                      borderColor={'#ffffff'}
+                      showLargerBubble={true}
                     />
                   </div>
                   <h3 className='tru-card-head-text uk-text-center'>

@@ -23,6 +23,7 @@ import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
 
 import helpers from 'lib/helpers'
+import Avatar from 'components/Avatar/Avatar'
 import Button from 'components/Button'
 import UIKit from 'uikit'
 import Table from 'components/Table'
@@ -107,17 +108,7 @@ class TeamsContainer extends React.Component {
                       data-uk-tooltip={'{pos: "bottom"}'}
                       title={user.get('fullname')}
                     >
-                      <img
-                        style={{ width: 25, height: 25, marginRight: 5 }}
-                        className={'round'}
-                        src={`/uploads/users/${profilePic}`}
-                        alt={user.get('fullname')}
-                      />
-                      <span
-                        data-user-status-id={user.get('_id')}
-                        className='user-offline uk-border-circle'
-                        style={{ width: 13, height: 13 }}
-                      />
+                      <Avatar image={profilePic} userId={user.get('_id')} size={25} style={{ marginRight: 5 }} />
                     </div>
                   )
                 })}
@@ -197,7 +188,4 @@ const mapStateToProps = state => ({
   teamsState: state.teamsState
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchTeams, unloadTeams, deleteTeam, showModal }
-)(TeamsContainer)
+export default connect(mapStateToProps, { fetchTeams, unloadTeams, deleteTeam, showModal })(TeamsContainer)

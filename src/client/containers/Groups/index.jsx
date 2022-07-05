@@ -19,6 +19,7 @@ import { connect } from 'react-redux'
 import { fetchGroups, deleteGroup } from 'actions/groups'
 import { showModal } from 'actions/common'
 
+import Avatar from 'components/Avatar/Avatar'
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
 import Button from 'components/Button'
@@ -89,17 +90,7 @@ class GroupsContainer extends React.Component {
                       data-uk-tooltip={'{pos: "bottom"}'}
                       title={user.get('fullname')}
                     >
-                      <img
-                        style={{ width: 25, height: 25, marginRight: 5 }}
-                        className={'round'}
-                        src={`/uploads/users/${profilePic}`}
-                        alt={user.get('fullname')}
-                      />
-                      <span
-                        data-user-status-id={user.get('_id')}
-                        className='user-offline uk-border-circle'
-                        style={{ width: 13, height: 13 }}
-                      />
+                      <Avatar size={25} style={{ marginRight: 5 }} image={profilePic} userId={user.get('_id')} />
                     </div>
                   )
                 })}
@@ -171,7 +162,4 @@ const mapStateToProps = state => ({
   groups: state.groupsState.groups
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchGroups, deleteGroup, showModal }
-)(GroupsContainer)
+export default connect(mapStateToProps, { fetchGroups, deleteGroup, showModal })(GroupsContainer)
