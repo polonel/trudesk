@@ -1,6 +1,9 @@
 # Logs
 *.log
 
+#compressed files
+*.gz
+
 # Runtime data
 pids
 *.pid

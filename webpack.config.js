@@ -1,8 +1,8 @@
-var path = require('path')
-var webpack = require('webpack')
-var MiniCssExtractPlugin = require('mini-css-extract-plugin')
-var TerserPlugin = require('terser-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path')
+const webpack = require('webpack')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -40,8 +40,6 @@ module.exports = {
       moment_timezone: 'vendor/moment/moment-timezone-with-data',
       uikit: 'vendor/uikit/js/uikit_combined.min',
       modernizr: 'vendor/modernizr/modernizr',
-      fastclick: 'vendor/fastclick/fastclick',
-      placeholder: 'vendor/placeholder/placeholder',
       underscore: 'vendor/underscore/underscore',
       history: 'vendor/history/jquery.history',
       app: 'app',
@@ -72,7 +70,6 @@ module.exports = {
       waves: 'vendor/waves/waves',
       isinview: 'plugins/jquery.isinview',
       jquery_docsize: 'plugins/jquery.documentsize',
-      idletimer: 'plugins/jquery.idletimer.js',
       jquery_steps: 'plugins/jquery.steps',
       jquery_actual: 'plugins/jquery.actual',
       formvalidator: 'vendor/formvalidator/jquery.form-validator',
@@ -196,9 +193,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'app.min.css'
     }),
-    new HtmlWebpackPlugin({
-      template: 'src/client/index.html'
-    })
+    new CompressionPlugin()
   ],
   performance: {
     hints: 'warning',

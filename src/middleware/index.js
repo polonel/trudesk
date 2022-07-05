@@ -15,6 +15,7 @@
 const path = require('path')
 const async = require('async')
 const express = require('express')
+const expressStaticGzip = require('express-static-gzip')
 const mongoose = require('mongoose')
 const APC = require('@handlebars/allow-prototype-access')
 const HandleBars = require('handlebars')
@@ -55,7 +56,8 @@ module.exports = function (app, db, callback) {
   app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
-  app.use(express.static(path.join(__dirname, '../../public')))
+  if (process.env.NODE_ENV === 'production') app.use(expressStaticGzip(path.join(__dirname, '../../public')))
+  else app.use(express.static(path.join(__dirname, '../../public')))
 
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
