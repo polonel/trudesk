@@ -14,70 +14,44 @@
 
 global.react = {} // Global react var for calling state outside react.
 
-require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function ($, helpers, angular, async) {
+require(['jquery', 'modules/helpers', 'async', 'singleton/sessionSingleton', 'singleton/settingsSingleton'], function (
+  $,
+  helpers,
+  async,
+  SessionService,
+  SettingsService
+) {
   helpers.init()
 
-  angular.element(document).ready(function () {
+  $(document).ready(function () {
     // Call the Session service before bootstrapping.
     // Allowing the SessionUser to be populated before the controllers have access.
     async.parallel(
       [
         function (done) {
-          angular
-            .injector(['ng', 'trudesk.services.session'])
-            .get('SessionService')
-            .init(done)
+          SessionService.init(done)
         },
         function (done) {
-          angular
-            .injector(['ng', 'trudesk.services.settings'])
-            .get('SettingsService')
-            .init(done)
+          SettingsService.init(done)
         }
       ],
       function (err) {
         if (err) console.log(err)
         if (err) throw new Error(err)
 
-        require(['angularjs/main'], function () {
-          // Static Bootstraps
-          // angular.bootstrap($('.top-bar'), ['trudesk'])
+        require(['underscore', 'modules/navigation', 'uikit', 'modules/ajaxify', 'pace'], function (_, nav) {
+          // React Bootstrap
+          require('../../client/app.jsx')
 
-          // Dynamic Bootstrap
-          // angular.bootstrap($('#page-content'), ['trudesk'])
+          nav.init()
 
-          require([
-            'underscore',
-            'modules/navigation',
-            'modules/socket',
-            'uikit',
-            'modules/ajaxify',
-            'modernizr',
-            'fastclick',
-            'placeholder',
-            'pace',
-            'easypiechart'
-          ], function (_, nav, socket) {
-            // React Bootstrap
-            require('../../client/app.jsx')
+          const $event = _.debounce(() => {
+            helpers.hideLoader(1000)
 
-            // Page loading (init)
-            require(['pages/pageloader'], function (pl) {
-              pl.init(function () {
-                nav.init()
+            $.event.trigger('$trudesk:ready', window)
+          }, 100)
 
-                const $event = _.debounce(function () {
-                  helpers.hideLoader(1000)
-                  // helpers.countUpMe()
-                  // helpers.UI.cardShow()
-
-                  $.event.trigger('$trudesk:ready', window)
-                }, 100)
-
-                $event()
-              })
-            })
-          })
+          $event()
         })
       }
     )

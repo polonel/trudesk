@@ -69,8 +69,27 @@ class ProfileContainer extends React.Component {
     }
   }
 
+  _validateEmail (email) {
+    return email
+      .toString()
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+  }
+
   onSaveProfileClicked = e => {
     e.preventDefault()
+    if ((this.fullname && this.fullname.length) > 25 || (this.email && this.email.length > 25)) {
+      helpers.UI.showSnackbar('Field length too long', true)
+      return
+    }
+
+    if (!this._validateEmail(this.email)) {
+      helpers.UI.showSnackbar('Invalid Email', true)
+      return
+    }
+
     this.props
       .saveProfile({
         _id: this.props.sessionUser._id,
@@ -93,6 +112,16 @@ class ProfileContainer extends React.Component {
 
   onUpdatePasswordClicked = e => {
     e.preventDefault()
+
+    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+      helpers.UI.showSnackbar('Invalid Form Data')
+      return
+    }
+
+    if (this.currentPassword.length > 255 || this.newPassword.length > 255 || this.confirmPassword.length > 255) {
+      helpers.UI.showSnackbar('Password length is too long')
+      return
+    }
 
     axios
       .post('/api/v2/accounts/profile/update-password', {

@@ -46,7 +46,7 @@ class SearchResults extends React.Component {
   static toggleAnimation (forceState, state) {
     const animateItems = $('.search-results-container')
     const docElemStyle = document.documentElement.style
-    const transitionProp = angular.isString(docElemStyle.transition) ? 'transition' : 'WebkitTransition'
+    const transitionProp = typeof docElemStyle.transition === 'string' ? 'transition' : 'WebkitTransition'
 
     for (let i = 0; i < animateItems.length; i++) {
       const item = animateItems[i]
@@ -118,9 +118,4 @@ const mapStateToProps = state => ({
   error: state.searchState.error
 })
 
-export default connect(
-  mapStateToProps,
-  { unloadSearchResults },
-  null,
-  { forwardRef: true }
-)(SearchResults)
+export default connect(mapStateToProps, { unloadSearchResults }, null, { forwardRef: true })(SearchResults)

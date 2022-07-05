@@ -12,27 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('modules/ajaxify', [
-  'jquery',
-  'underscore',
-  'angular',
-  'modules/helpers',
-  'modules/navigation',
-  'pages/pageloader',
-  'modules/socket',
-  'history'
-], function ($, _, angular, helpers, nav, pageLoader, socketClient) {
+define('modules/ajaxify', ['jquery', 'underscore', 'modules/helpers', 'modules/navigation', 'history'], function (
+  $,
+  _,
+  helpers,
+  nav
+) {
   $(window).on('statechangecomplete', function () {
-    // Global
-    var $ele = $('#page-content')
-    $ele.ready(function () {
-      angular.bootstrap($ele, ['trudesk'])
-    })
-
-    socketClient.ui.init(socketClient.socket)
-    socketClient.chat.getOpenWindows()
-    socketClient.chat.updateOnlineBubbles()
-
     // Remove Rogue Tethers
     $('body > .side-nav-sub.tether-element').each(function () {
       $(this).remove()
@@ -45,12 +31,19 @@ define('modules/ajaxify', [
 
     nav.init()
 
-    // Page Loader
-    pageLoader.init()
+    // Update react nav on ajaxy request
+    window.react.renderer(window.react.redux.store)
+    window.react.redux.store.dispatch({
+      type: 'NAV_CHANGE',
+      payload: {
+        activeItem: $('#__sidebar_route').text(),
+        activeSubItem: $('#__sidebar_sub_route').text(),
+        sessionUser: window.trudeskSessionService.getUser()
+      }
+    })
 
     // Load UI Animations Load
-    helpers.UI.cardShow()
-    helpers.countUpMe()
+    // helpers.UI.cardShow()
 
     const event = _.debounce(function () {
       $.event.trigger('$trudesk:ready')
@@ -59,7 +52,7 @@ define('modules/ajaxify', [
     event()
   })
 
-  // Prepare our Variables
+  // Prepare our constiables
   const History = window.History
 
   const document = window.document
@@ -71,30 +64,17 @@ define('modules/ajaxify', [
 
   // Wait for Document
   $(function () {
-    // Prepare Variables
-    var /* Application Specific Variables */
-      contentSelector = '.wrapper > .ajaxyContent:first'
+    // Prepare constiables
+    const contentSelector = '.wrapper > .ajaxyContent:first'
+    let $content = $(contentSelector).filter(':first')
+    const contentNode = $content.get(0)
+    const completedEventName = 'statechangecomplete'
 
-    var $content = $(contentSelector).filter(':first')
+    const $window = $(window)
+    const $body = $(document.body)
+    const rootUrl = History.getRootUrl()
 
-    var contentNode = $content.get(0)
-
-    // $menu = $('.sidebar > .side-nav').filter(':first'),
-    // activeClass = 'active',
-    // activeSelector = '.active',
-    // menuChildrenSelector = '> li,> ul > li,> li > ul > li',
-
-    var completedEventName = 'statechangecomplete'
-
-    /* Application Generic Variables */
-
-    var $window = $(window)
-
-    var $body = $(document.body)
-
-    var rootUrl = History.getRootUrl()
-
-    var scrollOptions = {
+    const scrollOptions = {
       duration: 800,
       easing: 'swing'
     }
@@ -107,23 +87,18 @@ define('modules/ajaxify', [
     // Internal Helper
     $.expr[':'].internal = function (obj) {
       // Prepare
-      var $this = $(obj)
-
-      var url = $this.attr('href') || ''
-
-      var isInternalLink
-
-      // Check link
-      isInternalLink = url.substring(0, rootUrl.length) === rootUrl || url.indexOf(':') === -1
+      const $this = $(obj)
+      const url = $this.attr('href') || ''
+      const isInternalLink = url.substring(0, rootUrl.length) === rootUrl || url.indexOf(':') === -1
 
       // Ignore or Keep
       return isInternalLink
     }
 
     // HTML Helper
-    var documentHtml = function (html) {
+    const documentHtml = function (html) {
       // Prepare
-      var result = String(html)
+      const result = String(html)
         .replace(/<!DOCTYPE[^>]*>/i, '')
         .replace(/<(html|head|body|title|meta|script)([\s>])/gi, '<div class="document-$1"$2')
         .replace(/<\/(html|head|body|title|meta|script)>/gi, '</div>')
@@ -135,7 +110,7 @@ define('modules/ajaxify', [
     // Ajaxify Helper
     $.fn.ajaxify = function () {
       // Prepare
-      var $this = $(this)
+      const $this = $(this)
 
       // Ajaxify
       $this
@@ -143,11 +118,11 @@ define('modules/ajaxify', [
         .addClass('ajaxify-bound')
         .on('click', function (event) {
           // Prepare
-          var $this = $(this)
+          const $this = $(this)
 
-          var url = $this.attr('href')
+          const url = $this.attr('href')
 
-          var title = $this.attr('title') || null
+          const title = $this.attr('title') || null
 
           // Continue as normal for cmd clicks etc
           if (event.which === 2 || event.metaKey) return true
@@ -167,10 +142,10 @@ define('modules/ajaxify', [
 
     // Hook into State Changes
     $window.bind('statechange', function () {
-      // Prepare Variables
-      var State = History.getState()
-      var url = State.url
-      var relativeUrl = url.replace(rootUrl, '')
+      // Prepare constiables
+      const State = History.getState()
+      const url = State.url
+      const relativeUrl = url.replace(rootUrl, '')
 
       // Set Loading
       $body.addClass('loading')
@@ -186,48 +161,29 @@ define('modules/ajaxify', [
         url: url,
         success: function (data) {
           // Prepare
-          var $data = $(documentHtml(data))
-          var $dataBody = $data.find('.document-body:first')
-          var $dataContent = $dataBody.find(contentSelector).filter(':first')
+          const $data = $(documentHtml(data))
+          const $dataBody = $data.find('.document-body:first')
+          const $dataContent = $dataBody.find(contentSelector).filter(':first')
 
-          var contentHtml
-          var $scripts
-
-          // Fetch the scripts
-          $scripts = $dataContent.find('.document-script')
+          const $scripts = $dataContent.find('.document-script')
           if ($scripts.length) {
             $scripts.detach()
           }
 
           // Fetch the content
-          contentHtml = $dataContent.html()
+          const contentHtml = $dataContent.html()
           if (!contentHtml) {
             document.location.href = url
             return false
           }
 
-          // Update the menu -- Custom to close submenu and add classes
-          // This is not needed because I am settin the menu active on the node.js route (Controller)
-          // $menuChildren = $menu.find(menuChildrenSelector);
-          // $menuChildren.filter(activeSelector).removeClass(activeClass);
-          // $menuChildren = $menuChildren.has(
-          //             'a[href^="'+relativeUrl+'"],' +
-          //             'a[href^="/'+relativeUrl+'"],' +
-          //             'a[href^="'+url+'"]' +
-          //             'a[data-url^="'+relativeUrl+'"]'
-          //
-          // );
-
-          //                    if ( $menuChildren.length === 1 ) { $menuChildren.addClass(activeClass); }
-
           // This fixes showing the overflow on scrollers when removing them before page load
           $('#page-content').animate({ opacity: 0 }, 0, function () {
             // Memory Leak Fix- Remove events before destroying content;
-            var $oldContent = $('#page-content')
+            let $oldContent = $('#page-content')
             $oldContent.find('*').off('click click.chosen mouseup mousemove mousedown change')
 
             // Manually Unload React components from renders
-            // This will be removed once angular and ajaxy are gone (react-router will Replace)
             if (document.getElementById('dashboard-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('dashboard-container'))
             if (document.getElementById('tickets-container'))
@@ -281,9 +237,9 @@ define('modules/ajaxify', [
 
             // Add the scripts
             $scripts.each(function () {
-              var $script = $(this)
-              var scriptText = $script.text()
-              var scriptNode = document.createElement('script')
+              const $script = $(this)
+              const scriptText = $script.text()
+              const scriptNode = document.createElement('script')
               if ($script.attr('src')) {
                 if (!$script[0].async) scriptNode.async = false
                 scriptNode.src = $script.attr('src')
@@ -291,8 +247,6 @@ define('modules/ajaxify', [
               scriptNode.appendChild(document.createTextNode(scriptText))
               contentNode.appendChild(scriptNode)
             })
-
-            // helpers.removeAllScrollers();
 
             // Complete the change
             if ($body.ScrollTo || false)

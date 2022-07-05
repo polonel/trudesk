@@ -17,24 +17,6 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
 
   navigation.init = function () {
     this.notifications()
-    this.flashMessageClose()
-  }
-
-  navigation.flashMessageClose = function () {
-    var flashMessage = $('.flash-message').find('.close')
-    flashMessage.off('click', closeFlash)
-    flashMessage.on('click', closeFlash)
-  }
-
-  function closeFlash (e) {
-    var self = $(this)
-    var flashMessage = self.parent()
-
-    flashMessage.slideUp(250, function () {
-      helpers.resizeAll()
-    })
-
-    e.preventDefault()
   }
 
   navigation.notifications = function () {

@@ -11,10 +11,6 @@ module.exports = {
     vendor: [
       'jquery',
       'jquery_custom',
-      'angular',
-      'angularRoute',
-      'angularCookies',
-      'angularSanitize',
       'datatables',
       'dt_responsive',
       'dt_grouping',
@@ -40,10 +36,6 @@ module.exports = {
       jquery_scrollTo: 'vendor/jquery/jquery.scrollTo.min',
       jscookie: 'vendor/jscookie/js.cookie',
       easing: 'vendor/jquery/jquery.easing',
-      angular: 'vendor/angular/angular.min',
-      angularRoute: 'vendor/angular/angular-route.min',
-      angularCookies: 'vendor/angular/angular-cookies.min',
-      angularSanitize: 'vendor/angular/angular-sanitize.min',
       moment: 'vendor/moment/moment',
       moment_timezone: 'vendor/moment/moment-timezone-with-data',
       uikit: 'vendor/uikit/js/uikit_combined.min',
@@ -115,7 +107,6 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /angular\.min\.js/, loader: 'exports-loader', options: { type: 'commonjs', exports: 'single angular' } },
       {
         test: /uikit_combined\.min\.js/,
         loader: 'exports-loader',
