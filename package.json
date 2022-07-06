@@ -82,7 +82,7 @@
     "node-sass": "7.0.1",
     "nodemailer": "6.7.2",
     "object-hash": "2.2.0",
-    "passport": "0.5.2",
+    "passport": "0.6.0",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
