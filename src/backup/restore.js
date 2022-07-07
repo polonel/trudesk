@@ -134,7 +134,7 @@ function runRestore (file, callback) {
   }
 
   const options = {
-    keepAlive: 0,
+    keepAlive: true,
     connectTimeoutMS: 5000
   }
   database.init(

@@ -61,7 +61,7 @@ if (!mongoConnectionUri.username) {
 if (process.env.TD_MONGODB_URI) CONNECTION_URI = process.env.TD_MONGODB_URI
 
 let options = {
-  keepAlive: 1,
+  keepAlive: true,
   connectTimeoutMS: 30000
 }
 
