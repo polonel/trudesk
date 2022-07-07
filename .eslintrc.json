@@ -1,5 +1,5 @@
 {
-  "plugins": ["import", "prettier", "standard"],
+  "plugins": ["import", "prettier"],
   "extends": ["standard", "prettier"],
   "root": true,
   "parser": "@babel/eslint-parser",
