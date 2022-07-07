@@ -279,6 +279,8 @@ accountsApi.update = async function (req, res) {
     if (!_.isUndefined(postData.title) && postData.title.length > 0) user.title = postData.title
     if (!_.isUndefined(postData.role) && postData.role.length > 0) user.role = postData.role
 
+    if (!_.isUndefined(postData.preferences)) user.preferences = { ...user.preferences, ...postData.preferences }
+
     user = await user.save()
     const populatedUser = await user.populate('role')
     const resUser = apiUtil.stripUserFields(populatedUser)

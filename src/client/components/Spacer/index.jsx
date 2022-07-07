@@ -5,7 +5,7 @@ class Spacer extends React.Component {
   render () {
     return (
       <div style={{ display: 'block', marginTop: this.props.top, marginBottom: this.props.bottom }}>
-        {this.props.showBorder && <hr style={{ display: 'block', height: this.props.borderSize }} />}
+        {this.props.showBorder && <hr style={{ display: 'block', margin: 0, height: this.props.borderSize }} />}
       </div>
     )
   }

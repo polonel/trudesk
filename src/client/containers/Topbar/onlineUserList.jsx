@@ -22,7 +22,6 @@ import { isUndefined } from 'lodash'
 import OffCanvas from 'components/OffCanvas'
 
 import UIkit from 'uikit'
-import socket from 'lib/socket'
 
 @observer
 class OnlineUserListPartial extends React.Component {
@@ -37,11 +36,11 @@ class OnlineUserListPartial extends React.Component {
   }
 
   componentDidMount () {
-    socket.socket.on('updateUsers', this.onSocketUpdateUsers)
+    this.props.socket.on('updateUsers', this.onSocketUpdateUsers)
   }
 
   componentWillUnmount () {
-    socket.socket.off('updateUsers', this.onSocketUpdateUsers)
+    this.props.socket.off('updateUsers', this.onSocketUpdateUsers)
   }
 
   onSocketUpdateUsers (data) {
@@ -54,7 +53,7 @@ class OnlineUserListPartial extends React.Component {
 
   static onUserClicked (e, id) {
     e.preventDefault()
-    socket.socket.emit('spawnChatWindow', id)
+    this.props.socket.emit('spawnChatWindow', id)
     UIkit.offcanvas.hide()
   }
 
@@ -96,7 +95,7 @@ class OnlineUserListPartial extends React.Component {
             <div className='online-list-wrapper'>
               <ul className='online-list'>
                 {entries(this.activeUsers).map(([key, value]) => {
-                  if (this.props.sessionUser && value.user._id === this.props.sessionUser._id) return
+                  if (this.props.sessionUser && value.user._id === this.props.sessionUser._id) return null
                   const image = value.user.image || 'defaultProfile.jpg'
                   const isAgentOrAdmin = value.user.role.isAdmin || value.user.role.isAgent
                   return (
@@ -129,7 +128,7 @@ class OnlineUserListPartial extends React.Component {
             </div>
             <ul className='user-list'>
               {users.map(user => {
-                if (this.props.sessionUser && user._id === this.props.sessionUser._id) return
+                if (this.props.sessionUser && user._id === this.props.sessionUser._id) return null
                 const image = user.get('image') || 'defaultProfile.jpg'
                 return (
                   <li key={user.get('_id')} data-search-term={user.get('fullname').toLowerCase()}>
@@ -163,9 +162,10 @@ class OnlineUserListPartial extends React.Component {
 }
 
 OnlineUserListPartial.propTypes = {
-  sessionUser: PropTypes.object,
+  sessionUser: PropTypes.object.isRequired,
   timezone: PropTypes.string.isRequired,
-  users: PropTypes.array.isRequired
+  users: PropTypes.array.isRequired,
+  socket: PropTypes.object.isRequired
 }
 
 export default OnlineUserListPartial

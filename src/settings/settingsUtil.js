@@ -118,7 +118,7 @@ util.getSettings = async callback => {
         s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false)
         s.playNewTicketSound = parseSetting(settings, 'playNewTicketSound:enable', true)
 
-        s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '')
+        s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', ' ')
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)
 
         s.maintenanceMode = parseSetting(settings, 'maintenanceMode:enable', false)

@@ -16,10 +16,10 @@
 .top-bar
   background: $topbar_bg
   height: 65px
-  line-height: 65px
   .title-area
     .logo
       height: 65px
+      line-height: 65px
       svg
         height: 65px
         path
@@ -128,9 +128,8 @@
   font-family: $fontFamily
   font-size: 18px
   color: $topbar_text_color !important
-  //background: url("/img/midDots.png") no-repeat
-  //background-position: 0 50%
-  span
+
+  span:not(.user-online-status)
     display: inline-block
     margin: 0 20px 0 0
     color: $topbar_text_color !important
@@ -156,7 +155,7 @@
   z-index: 99999
   width: 300px !important
   height: auto !important
-  background: lighten($page_content_right_bg, 10%)
+  background: lighten($page_content_right_bg, 5%)
   border: 1px solid rgba(0,0,0,0.2)
   //padding: 10px
   position: relative
@@ -191,6 +190,11 @@
     &:after
       left: 25px
 
+  &.p-dropdown-hide-arrow
+    &:before,
+    &:after
+      display: none
+      visibility: hidden
 
   &.pDropOpen
     visibility: visible
@@ -203,6 +207,9 @@
     margin: 0
     padding: 0
     font-size: 12px
+
+  a
+    color: automatic-link-custom-color(lighten($page_content_right_bg, 10%), $accent_blue)
 
   .actions
     width: 100%

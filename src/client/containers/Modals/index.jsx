@@ -42,6 +42,7 @@ import CreateNoticeModal from 'containers/Modals/CreateNoticeModal'
 import EditNoticeModal from 'containers/Modals/EditNoticeModal'
 import LinkWarningModal from 'containers/Modals/LinkWarningModal'
 import PasswordPromptModal from 'containers/Modals/PasswordPromptModal'
+import PrivacyPolicyModal from 'containers/Modals/PrivacyPolicyModal'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -68,7 +69,8 @@ const MODAL_COMPONENTS = {
   CREATE_NOTICE: CreateNoticeModal,
   EDIT_NOTICE: EditNoticeModal,
   LINK_WARNING: LinkWarningModal,
-  PASSWORD_PROMPT: PasswordPromptModal
+  PASSWORD_PROMPT: PasswordPromptModal,
+  PRIVACY_POLICY: PrivacyPolicyModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {

@@ -36,7 +36,11 @@ export const fetchAccountsCreateTicket = createAction(
   () => ({ thunk: true })
 )
 export const createAccount = createAction(CREATE_ACCOUNT.ACTION)
-export const saveEditAccount = createAction(SAVE_EDIT_ACCOUNT.ACTION)
+export const saveEditAccount = createAction(
+  SAVE_EDIT_ACCOUNT.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
 export const deleteAccount = createAction(DELETE_ACCOUNT.ACTION)
 export const enableAccount = createAction(ENABLE_ACCOUNT.ACTION)
 export const unloadAccounts = createAction(

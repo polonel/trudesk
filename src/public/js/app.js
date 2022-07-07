@@ -39,7 +39,7 @@ require(['jquery', 'modules/helpers', 'async', 'singleton/sessionSingleton', 'si
         if (err) console.log(err)
         if (err) throw new Error(err)
 
-        require(['underscore', 'modules/navigation', 'uikit', 'modules/ajaxify', 'pace'], function (_, nav) {
+        require(['lodash', 'uikit', 'modules/ajaxify', 'pace'], function (_, nav) {
           // React Bootstrap
           require('../../client/app.jsx')
 
@@ -48,7 +48,7 @@ require(['jquery', 'modules/helpers', 'async', 'singleton/sessionSingleton', 'si
           const $event = _.debounce(() => {
             helpers.hideLoader(1000)
 
-            $.event.trigger('$trudesk:ready', window)
+            $.event.trigger('trudesk:ready', window)
           }, 100)
 
           $event()

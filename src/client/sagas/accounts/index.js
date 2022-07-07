@@ -73,12 +73,12 @@ function * createAccount ({ payload }) {
   }
 }
 
-function * saveEditAccount ({ payload }) {
+function * saveEditAccount ({ payload, meta }) {
   try {
     const response = yield call(api.accounts.updateUser, payload)
-    yield put({ type: SAVE_EDIT_ACCOUNT.SUCCESS, response })
+    yield put({ type: SAVE_EDIT_ACCOUNT.SUCCESS, response, meta })
     yield put({ type: HIDE_MODAL.ACTION })
-    helpers.UI.showSnackbar('Account updated successfully')
+    if (!payload.hideSnackbar) helpers.UI.showSnackbar('Account updated successfully')
   } catch (error) {
     let errorText = ''
     if (error.response) errorText = error.response.data.error

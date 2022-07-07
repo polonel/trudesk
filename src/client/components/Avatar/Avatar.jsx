@@ -203,7 +203,12 @@ class Avatar extends React.Component {
           {showOnlineBubble && (
             <span
               ref={this.onlineBubbleRef}
-              className={clsx(showLargerBubble && 'user-status-large', 'user-offline', 'uk-border-circle')}
+              className={clsx(
+                'user-online-status',
+                showLargerBubble && 'user-status-large',
+                'user-offline',
+                'uk-border-circle'
+              )}
               style={{ height: bubbleSize, width: bubbleSize }}
             />
           )}

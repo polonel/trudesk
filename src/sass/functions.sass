@@ -33,6 +33,12 @@
   @else
     @return lighten($accent_color, 10%)
 
+@function automatic-link-custom-color($bgColor, $linkColor)
+  @if (lightness($bgColor) > 50 and lightness($linkColor) > 75)
+    @return darken($linkColor, 35%)
+  @else
+    @return lighten($linkColor, 10%)
+
 @function pre-color($bgColor)
   @if (lightness($bgColor) > 50)
     @return darken($bgColor, 5%)

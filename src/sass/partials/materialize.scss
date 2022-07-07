@@ -63,41 +63,40 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
 
 .md-switch label {
   cursor: pointer;
+  display: inline-block;
 }
 
-.md-switch label input[type=checkbox]{
+.md-switch input[type=checkbox]{
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-.md-switch label input[type=checkbox]:checked + .lever {
+.md-switch input[type=checkbox]:checked + .lever {
   background-color: lighten(#E74C3C, 15%);
 }
 
-.md-switch label input[type=checkbox]:checked + .lever:after {
+.md-switch input[type=checkbox]:checked + .lever:after {
   background-color: #E74C3C;
 }
 
-.md-switch.md-blue label input[type=checkbox]:checked + .lever {
+.md-switch.md-blue input[type=checkbox]:checked + .lever {
   background-color: lighten(#2196f3, 15%);
 }
 
-.md-switch.md-blue label input[type=checkbox]:checked + .lever:after {
+.md-switch.md-blue input[type=checkbox]:checked + .lever:after {
   background-color: #2196f3;
 }
 
-.md-switch.md-green label input[type=checkbox]:checked + .lever {
+.md-switch.md-green input[type=checkbox]:checked + .lever {
   background-color: lighten($accent_success, 15%);
 }
 
-.md-switch.md-green label input[type=checkbox]:checked + .lever:after {
+.md-switch.md-green input[type=checkbox]:checked + .lever:after {
   background-color: $accent_success;
 }
 
-
-
-.md-switch label .lever {
+.md-switch .lever {
   content: "";
   display: inline-block;
   position: relative;
@@ -109,9 +108,10 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   transition: background 0.3s ease;
   vertical-align: middle;
   margin: 0 16px;
+  cursor: pointer;
 }
 
-.md-switch label .lever:after {
+.md-switch .lever:after {
   content: "";
   position: absolute;
   display: inline-block;
@@ -134,7 +134,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   box-shadow: 0 1px 3px 1px rgba(0,0,0,.4), 0 0 0 15px rgba(0, 0, 0, .08);
 }
 
-.md-switch label input[type=checkbox]:checked + .lever:after {
+.md-switch input[type=checkbox]:checked + .lever:after {
   left: 24px;
 }
 
@@ -142,8 +142,8 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-switch input[type=checkbox][disabled] + .lever{
   cursor: default;
 }
-.md-switch label input[type=checkbox][disabled] + .lever:after,
-.md-switch label input[type=checkbox][disabled]:checked + .lever:after {
+.md-switch input[type=checkbox][disabled] + .lever:after,
+.md-switch input[type=checkbox][disabled]:checked + .lever:after {
   background-color: #ccc;
 }
 
