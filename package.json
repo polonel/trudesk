@@ -23,7 +23,7 @@
     "@elastic/elasticsearch": "8.2.1",
     "@handlebars/allow-prototype-access": "1.0.5",
     "adm-zip": "0.5.9",
-    "animejs": "3.2.1",
+    "animejs": "3.0.1",
     "ansi_up": "5.1.0",
     "archiver": "5.3.1",
     "async": "3.2.4",

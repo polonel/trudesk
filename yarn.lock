@@ -4075,10 +4075,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"animejs@npm:3.2.1":
-  version: 3.2.1
-  resolution: "animejs@npm:3.2.1"
-  checksum: 6939171bed17d6b28307747e564d33e93312c26169b98498c833117d86f174ce7a318469bfd81716c223860a6d13bd76b761e79e765b86b2a2f851963caaa851
+"animejs@npm:3.0.1":
+  version: 3.0.1
+  resolution: "animejs@npm:3.0.1"
+  checksum: 3d65497ca11c8e9ae221a34d77d7841d36593db5660e5a1f0654560a55bdeeb26e37187b8086c463209bb1dc18c0e117ddd4d9e5176ed924ba4fa02779addafa
   languageName: node
   linkType: hard
 
@@ -21930,7 +21930,7 @@ __metadata:
     "@semantic-release/git": 10.0.1
     "@semantic-release/npm": 9.0.1
     adm-zip: 0.5.9
-    animejs: 3.2.1
+    animejs: 3.0.1
     ansi_up: 5.1.0
     archiver: 5.3.1
     async: 3.2.4
