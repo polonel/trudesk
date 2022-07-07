@@ -53,9 +53,10 @@ class AssigneeDropdownPartial extends React.Component {
         ref={this.props.forwardedRef}
         title={'Select Assignee'}
         id={'assigneeDropdown'}
+        className={'opt-ignore-notice'}
         override={true}
         leftArrow={true}
-        topOffset={105}
+        topOffset={75}
         leftOffset={35}
         minHeight={215}
         rightComponent={
