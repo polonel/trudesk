@@ -197,6 +197,9 @@
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.10.0"
   },
+  "resolutions": {
+    "npm/chalk": "^4.1.2"
+  },
   "release": {
     "prepare": [
       "@semantic-release/changelog",
