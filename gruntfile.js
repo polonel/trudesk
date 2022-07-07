@@ -125,9 +125,9 @@ module.exports = function (grunt) {
     },
 
     shell: {
-      webpackWatch: 'npm run webpackwatch',
-      webpackDev: 'npm run webpackdev',
-      webpackDist: 'npm run webpackdist'
+      webpackWatch: 'yarn run webpackwatch',
+      webpackDev: 'yarn run webpackdev',
+      webpackDist: 'yarn run webpackdist'
     }
   })
 
