@@ -23,6 +23,7 @@ import QRCode from 'components/QRCode'
 import TruAccordion from 'components/TruAccordion'
 
 import helpers from 'lib/helpers'
+import RGrid from 'components/RGrid'
 
 @observer
 class ProfileContainer extends React.Component {
@@ -196,6 +197,14 @@ class ProfileContainer extends React.Component {
   }
 
   render () {
+    // return (
+    //   <div>
+    //     <PageTitle title={'Dashboard'} />
+    //     <PageContent>
+    //       <RGrid />
+    //     </PageContent>
+    //   </div>
+    // )
     if (!this.props.sessionUser) return <div />
 
     const InfoItem = ({ label, prop, paddingLeft, paddingRight, isRequired, onUpdate }) => {

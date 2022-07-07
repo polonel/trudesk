@@ -15,14 +15,13 @@
 define('pages/messages', [
   'jquery',
   'underscore',
-  'angular',
   'uikit',
   'moment',
   'modules/helpers',
   'modules/socket',
   'history',
   'isinview'
-], function ($, _, angular, UIKit, moment, helpers) {
+], function ($, _, UIKit, moment, helpers) {
   const messagesPage = {}
 
   messagesPage.init = function (callback) {
@@ -320,16 +319,16 @@ define('pages/messages', [
               recentMessage: message.owner.fullname + ': ' + message.body
             })
 
-            const $injector = angular.injector(['ng', 'trudesk'])
-            $injector.invoke([
-              '$compile',
-              '$rootScope',
-              function ($compile, $rootScope) {
-                const $scope = convoUL.prepend(newLI).scope()
-                $compile(convoUL)($scope || $rootScope)
-                $rootScope.$digest()
-              }
-            ])
+            // const $injector = angular.injector(['ng', 'trudesk'])
+            // $injector.invoke([
+            //   '$compile',
+            //   '$rootScope',
+            //   function ($compile, $rootScope) {
+            //     const $scope = convoUL.prepend(newLI).scope()
+            //     $compile(convoUL)($scope || $rootScope)
+            //     $rootScope.$digest()
+            //   }
+            // ])
           }
         }
 

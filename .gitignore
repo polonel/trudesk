@@ -4,6 +4,9 @@
 #compressed files
 *.gz
 
+# Yarn Cache
+.yarn
+
 # Runtime data
 pids
 *.pid

@@ -19,7 +19,6 @@
     "complexity": ["error", 20]
   },
   "globals": {
-    "angular": true,
     "define": true,
     "requirejs": true,
     "MG": true,

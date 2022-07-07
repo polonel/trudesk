@@ -1,6 +1,7 @@
 import React, { createRef } from 'react'
 import PropTypes from 'prop-types'
 import { union } from 'lodash'
+import { connect } from 'react-redux'
 import clsx from 'clsx'
 
 import velocity from 'velocity'
@@ -9,7 +10,6 @@ import 'jquery_steps'
 import 'jquery_actual'
 import $ from 'jquery'
 import UIKit from 'uikit'
-import socket from 'lib/socket'
 
 class StepWizard extends React.Component {
   constructor (props) {
@@ -31,11 +31,11 @@ class StepWizard extends React.Component {
   componentDidMount () {
     this.init()
 
-    socket.socket.on('$trudesk:accounts:import:onStatusChange', this.onImportStatusChange)
+    this.props.socket.on('$trudesk:accounts:import:onStatusChange', this.onImportStatusChange)
   }
 
   componentWillUnmount () {
-    socket.socket.removeAllListeners('$trudesk:accounts:import:onStatusChange')
+    this.props.socket.removeAllListeners('$trudesk:accounts:import:onStatusChange')
   }
 
   onImportStatusChange = data => {
@@ -94,7 +94,7 @@ class StepWizard extends React.Component {
 
           setTimeout(() => {
             // Importing...
-            socket.accountsImporter.sendAccountData('csv', this.addedUsers, this.updatedUsers)
+            this.props.socket.emit('$trudesk:accounts:importer:send_csv')
           }, 1000)
         }
 
@@ -329,6 +329,7 @@ class StepWizard extends React.Component {
 }
 
 StepWizard.propTypes = {
+  socket: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string.isRequired,
   cancelButtonText: PropTypes.string,
@@ -340,4 +341,8 @@ StepWizard.defaultProps = {
   onCancelClicked: () => {}
 }
 
-export default StepWizard
+const mapStateToProps = state => ({
+  socket: state.shared.socket
+})
+
+export default connect(mapStateToProps, {})(StepWizard)
