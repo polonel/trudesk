@@ -18,6 +18,9 @@ import PropTypes from 'prop-types'
 import Log from '../../logger'
 
 import $ from 'jquery'
+import ReactMarkdown from 'react-markdown'
+import gfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 import toMarkdown from 'tomarkdown'
 import Easymde from 'easymde'
 
@@ -109,7 +112,7 @@ class EasyMDE extends React.Component {
   static getDerivedStateFromProps (nextProps, state) {
     if (typeof nextProps.defaultValue !== 'undefined') {
       if (!state.loaded && nextProps.defaultValue !== state.value)
-        return { value: toMarkdown(nextProps.defaultValue), loaded: true }
+        return { value: toMarkdown(nextProps.defaultValue).replace(/\\n/gi, '\n'), loaded: true }
     }
 
     return null

@@ -17,7 +17,6 @@ import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
 
 import helpers from 'lib/helpers'
-// import socket from 'lib/socket'
 
 const setupImages = parent => {
   const imagesEl = parent.body.querySelectorAll('img:not(.hasLinked)')

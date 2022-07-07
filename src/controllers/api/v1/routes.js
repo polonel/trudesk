@@ -31,6 +31,7 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v1/login', apiCtrl.common.login)
   router.get('/api/v1/login', apiv1, apiCtrl.common.getLoggedInUser)
   router.get('/api/v1/logout', apiv1, apiCtrl.common.logout)
+  router.get('/api/v1/privacypolicy', apiCtrl.common.privacyPolicy)
 
   // Roles
   router.get('/api/v1/roles', apiv1, apiCtrl.roles.get)

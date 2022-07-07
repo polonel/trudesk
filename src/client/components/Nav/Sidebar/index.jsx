@@ -20,7 +20,7 @@ import NavSeparator from 'components/Nav/NavSeperator'
 import Submenu from 'components/Nav/Submenu'
 import SubmenuItem from 'components/Nav/SubmenuItem'
 
-import { updateNavChange } from '../../../actions/nav'
+import { updateNavChange } from 'actions/nav'
 
 import Helpers from 'lib/helpers'
 
@@ -30,11 +30,15 @@ class Sidebar extends React.Component {
   }
 
   componentDidMount () {
-    Helpers.UI.getPlugins((err, result) => {
-      if (!err && result.plugins) {
-        this.setState({ plugins: result.plugins })
-      }
-    })
+    // Helpers.UI.getPlugins((err, result) => {
+    //   if (!err && result.plugins) {
+    //     this.setState({ plugins: result.plugins })
+    //   }
+    // })
+    const sidebarRoute = document.getElementById('__sidebar_route').innerText
+    const sidebarSubRoute = document.getElementById('__sidebar_sub_route').innerText
+
+    this.props.updateNavChange({ activeItem: sidebarRoute, activeSubItem: sidebarSubRoute })
   }
 
   componentDidUpdate () {
@@ -77,6 +81,7 @@ class Sidebar extends React.Component {
 
   render () {
     const { activeItem, activeSubItem, sessionUser } = this.props
+
     return (
       <div
         className={'sidebar nopadding'}

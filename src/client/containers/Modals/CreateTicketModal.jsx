@@ -26,7 +26,6 @@ import { fetchAccountsCreateTicket } from 'actions/accounts'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import Grid from 'components/Grid'
@@ -105,7 +104,7 @@ class CreateTicketModal extends React.Component {
     e.preventDefault()
     const $form = $(e.target)
 
-    let data = {}
+    const data = {}
     if (this.issueText.length < 1) return
     const allowAgentUserTickets =
       this.props.viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
@@ -140,7 +139,7 @@ class CreateTicketModal extends React.Component {
     data.tags = this.tagSelect.value
     data.priority = this.selectedPriority
     data.issue = this.issueMde.easymde.value()
-    data.socketid = socket.ui.socket.io.engine.id
+    data.socketid = this.props.socket.io.engine.id
 
     this.props.createTicket(data)
   }
@@ -320,6 +319,7 @@ class CreateTicketModal extends React.Component {
 
 CreateTicketModal.propTypes = {
   shared: PropTypes.object.isRequired,
+  socket: PropTypes.object.isRequired,
   viewdata: PropTypes.object.isRequired,
   ticketTypes: PropTypes.object.isRequired,
   priorities: PropTypes.object.isRequired,
@@ -335,6 +335,7 @@ CreateTicketModal.propTypes = {
 
 const mapStateToProps = state => ({
   shared: state.shared,
+  socket: state.shared.socket,
   viewdata: state.common.viewdata,
   ticketTypes: state.ticketsState.types,
   priorities: state.ticketsState.priorities,

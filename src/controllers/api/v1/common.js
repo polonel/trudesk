@@ -12,11 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var winston = require('winston')
+const _ = require('lodash')
+const async = require('async')
+const winston = require('../../../logger')
 
-var commonV1 = {}
+const commonV1 = {}
 
 /**
  * Preforms login with username/password and adds
@@ -133,6 +133,18 @@ commonV1.logout = function (req, res) {
       return res.status(200).json({ success: true })
     }
   )
+}
+
+commonV1.privacyPolicy = async (req, res) => {
+  const SettingsUtil = require('../../../settings/settingsUtil')
+  try {
+    const results = await SettingsUtil.getSettings()
+
+    return res.json({ success: true, privacyPolicy: results.data.settings.privacyPolicy.value })
+  } catch (err) {
+    winston.warn(err)
+    return res.status(500).json({ success: false, error: err })
+  }
 }
 
 module.exports = commonV1

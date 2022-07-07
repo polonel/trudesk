@@ -38,6 +38,7 @@ class LegalSettingsContainer extends React.Component {
 
   onSavePrivacyPolicyClicked (e) {
     e.preventDefault()
+    console.log(this.state.privacyPolicy)
     this.props
       .updateSetting({
         stateName: 'privacyPolicy',
@@ -87,7 +88,4 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting }
-)(LegalSettingsContainer)
+export default connect(mapStateToProps, { updateSetting })(LegalSettingsContainer)

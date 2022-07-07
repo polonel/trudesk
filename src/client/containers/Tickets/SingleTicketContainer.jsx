@@ -232,8 +232,6 @@ class SingleTicketContainer extends React.Component {
   }
 
   transferToThirdParty (e) {
-    // Update below
-    // socket.ui.sendUpdateTicketStatus(this.ticket._id, 3)
     this.props.transferToThirdParty({ uid: this.ticket.uid })
   }
 
@@ -713,12 +711,21 @@ class SingleTicketContainer extends React.Component {
                                       showSubject: false,
                                       text: comment.comment,
                                       onPrimaryClick: data => {
-                                        socket.ui.setCommentText(this.ticket._id, comment._id, data.text)
+                                        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
+                                          _id: this.ticket._id,
+                                          item: comment._id,
+                                          isNote: comment.isNote,
+                                          value: data.text
+                                        })
                                       }
                                     })
                                   }}
                                   onRemoveClick={() => {
-                                    socket.ui.removeComment(this.ticket._id, comment._id)
+                                    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
+                                      _id: this.ticket._id,
+                                      value: comment._id,
+                                      isNote: comment.isNote
+                                    })
                                   }}
                                 />
                               ))}
@@ -742,12 +749,21 @@ class SingleTicketContainer extends React.Component {
                                       showSubject: false,
                                       text: note.note,
                                       onPrimaryClick: data => {
-                                        socket.ui.setNoteText(this.ticket._id, note._id, data.text)
+                                        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
+                                          _id: this.ticket._id,
+                                          item: note._id,
+                                          isNote: note.isNote,
+                                          value: data.text
+                                        })
                                       }
                                     })
                                   }}
                                   onRemoveClick={() => {
-                                    socket.ui.removeNote(this.ticket._id, note._id)
+                                    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
+                                      _id: this.ticket._id,
+                                      value: note._id,
+                                      isNote: note.isNote
+                                    })
                                   }}
                                 />
                               ))}
