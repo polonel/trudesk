@@ -28,6 +28,8 @@ import renderer from './renderer'
 
 import SocketGlobal from 'containers/Global/SocketGlobal'
 import SessionLoader from 'lib2/sessionLoader'
+import HotKeysGlobal from 'containers/Global/HotKeysGlobal'
+import BackupRestoreOverlay from 'containers/Global/BackupRestoreOverlay'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -58,6 +60,9 @@ if (document.getElementById('globals')) {
         <SingletonHooksContainer />
         <SessionLoader />
         <SocketGlobal />
+        <HotKeysGlobal />
+
+        <BackupRestoreOverlay />
       </>
     </Provider>
   )
