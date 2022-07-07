@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
+import React, { createRef } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
@@ -22,26 +22,25 @@ import { size } from 'lodash'
 import { fetchViewData, showModal, hideModal, showNotice, clearNotice } from 'actions/common'
 
 import Avatar from 'components/Avatar/Avatar'
-import Dropdown from 'components/Dropdown'
-import DropdownItem from 'components/Dropdown/DropdownItem'
-import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
-import DropdownHeader from 'components/Dropdown/DropdownHeader'
-import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
 import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger'
 import NoticeBanner from 'components/NoticeBanner'
 import NotificationsDropdownPartial from './notificationsDropdown'
 
-import socket from 'lib/socket'
+import ProfileDropdownPartial from 'containers/Topbar/profileDropdown'
 import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown'
 import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
-import { NOTIFICATIONS_UPDATE, USERS_UPDATE } from 'serverSocket/socketEventConsts'
+import { NOTIFICATIONS_UPDATE, USERS_UPDATE, NOTICE_UI_SHOW, NOTICE_UI_CLEAR } from 'serverSocket/socketEventConsts'
 
 @observer
 class TopbarContainer extends React.Component {
+  conversationsDropdownPartial = createRef()
+  notificationsDropdownPartial = createRef()
+  profileDropdownPartial = createRef()
+
   @observable notificationCount = 0
   @observable activeUserCount = 0
 
@@ -60,20 +59,18 @@ class TopbarContainer extends React.Component {
 
   componentDidMount () {
     this.props.fetchViewData().then(() => {
-      this.showNotice(this.props.viewdata.get('notice'), this.props.viewdata.get('noticeCookieName'))
+      if (this.props.viewdata.get('notice'))
+        this.showNotice(this.props.viewdata.get('notice').toJS(), this.props.viewdata.get('noticeCookieName'))
     })
 
     this.props.socket.on(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
     this.props.socket.on(USERS_UPDATE, this.onSocketUpdateUsers)
-    this.props.socket.on('$trudesk:notice:show', this.onSocketShowNotice)
-    this.props.socket.on('updateClearNotice', this.onSocketClearNotice)
+    this.props.socket.on(NOTICE_UI_SHOW, this.onSocketShowNotice)
+    this.props.socket.on(NOTICE_UI_CLEAR, this.onSocketClearNotice)
 
     // Call for an update on Mount
     this.props.socket.emit(NOTIFICATIONS_UPDATE)
     this.props.socket.emit(USERS_UPDATE)
-
-    // socket.ui.updateNotifications()
-    // socket.ui.updateUsers()
 
     // this.shouldShowBanner()
   }
@@ -81,8 +78,8 @@ class TopbarContainer extends React.Component {
   componentWillUnmount () {
     this.props.socket.off(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
     this.props.socket.off(USERS_UPDATE, this.onSocketUpdateUsers)
-    this.props.socket.off('$trudesk:notice:show', this.onSocketShowNotice)
-    this.props.socket.off('updateClearNotice', this.onSocketClearNotice)
+    this.props.socket.off(NOTICE_UI_SHOW, this.onSocketShowNotice)
+    this.props.socket.off(NOTICE_UI_CLEAR, this.onSocketClearNotice)
   }
 
   shouldShowBanner () {
@@ -98,12 +95,13 @@ class TopbarContainer extends React.Component {
   showNotice (notice, cookieName) {
     // We Will move this sooner or later to somewhere more appropriate
     this.props.showNotice(notice)
+
     if (cookieName) {
       const showNoticeWindow = Cookies.get(cookieName) !== 'false'
       if (showNoticeWindow)
         this.props.showModal('NOTICE_ALERT', {
           modalTag: 'NOTICE_ALERT',
-          notice: notice,
+          notice,
           noticeCookieName: cookieName,
           shortDateFormat: this.props.viewdata.get('shortDateFormat'),
           timeFormat: this.props.viewdata.get('timeFormat')
@@ -138,8 +136,6 @@ class TopbarContainer extends React.Component {
 
   static onConversationsClicked (e) {
     e.preventDefault()
-
-    socket.ui.socket.emit('updateMailNotifications') // Pointless right now - No Receiver on server
   }
 
   render () {
@@ -178,7 +174,7 @@ class TopbarContainer extends React.Component {
                     )}
                     {/* End Create Ticket Perm */}
                     <li className='top-bar-icon'>
-                      <PDropdownTrigger target={'conversations'}>
+                      <PDropdownTrigger target={this.conversationsDropdownPartial}>
                         <a
                           title={'Conversations'}
                           className='no-ajaxy uk-vertical-align'
@@ -189,7 +185,7 @@ class TopbarContainer extends React.Component {
                       </PDropdownTrigger>
                     </li>
                     <li className='top-bar-icon'>
-                      <PDropdownTrigger target={'notifications'}>
+                      <PDropdownTrigger target={this.notificationsDropdownPartial}>
                         <a title={'Notifications'} className={'no-ajaxy uk-vertical-align'}>
                           <i className='material-icons'>notifications</i>
                           <span
@@ -222,33 +218,37 @@ class TopbarContainer extends React.Component {
                     <li className='profile-area profile-name'>
                       <span style={{ fontSize: 16 }}>{sessionUser.fullname}</span>
                       <div className='uk-position-relative uk-display-inline-block'>
-                        <DropdownTrigger pos={'bottom-right'}>
+                        <PDropdownTrigger target={this.profileDropdownPartial}>
                           <a
                             href='#'
                             title={sessionUser.fullname}
                             className={'profile-pic no-ajaxy uk-vertical-align-middle'}
                           >
-                            <Avatar image={sessionUser.image} showOnlineBubble={false} size={35} />
+                            <Avatar
+                              image={sessionUser.image}
+                              showOnlineBubble={true}
+                              userId={sessionUser._id}
+                              size={35}
+                              overrideBubbleSize={15}
+                            />
                           </a>
-                          <Dropdown small={true}>
-                            <DropdownHeader text={sessionUser.fullname} />
-                            <DropdownItem text='Profile' href={'/profile'} />
-                            <DropdownSeparator />
-                            <DropdownItem text={'Logout'} href={'/logout'} />
-                          </Dropdown>
-                        </DropdownTrigger>
+                        </PDropdownTrigger>
                       </div>
                     </li>
                   </ul>
                   <NotificationsDropdownPartial
+                    forwardedRef={this.notificationsDropdownPartial}
                     shortDateFormat={viewdata.get('shortDateFormat')}
                     timezone={viewdata.get('timezone')}
                     onViewAllNotificationsClick={() => this.props.showModal('VIEW_ALL_NOTIFICATIONS')}
                   />
                   <ConversationsDropdownPartial
+                    forwardedRef={this.conversationsDropdownPartial}
                     shortDateFormat={viewdata.get('shortDateFormat')}
                     timezone={viewdata.get('timezone')}
+                    socket={this.props.socket}
                   />
+                  <ProfileDropdownPartial forwardedRef={this.profileDropdownPartial} />
                 </div>
               </section>
             </div>
@@ -258,6 +258,7 @@ class TopbarContainer extends React.Component {
             timezone={viewdata.get('timezone')}
             users={viewdata.get('users').toArray()}
             sessionUser={this.props.sessionUser}
+            socket={this.props.socket}
           />
         </div>
       </div>

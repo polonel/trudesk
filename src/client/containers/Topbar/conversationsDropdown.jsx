@@ -21,7 +21,6 @@ import moment from 'moment-timezone'
 import PDropDown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 import 'history'
 
 @observer
@@ -36,11 +35,11 @@ class ConversationsDropdownPartial extends React.Component {
   }
 
   componentDidMount () {
-    socket.ui.socket.on('updateConversationsNotifications', this.onUpdateConversationsNotifications)
+    this.props.socket.on('updateConversationsNotifications', this.onUpdateConversationsNotifications)
   }
 
   componentWillUnmount () {
-    socket.ui.socket.off('updateConversationsNotifications', this.onUpdateConversationsNotifications)
+    this.props.socket.off('updateConversationsNotifications', this.onUpdateConversationsNotifications)
   }
 
   onUpdateConversationsNotifications (data) {
@@ -54,10 +53,11 @@ class ConversationsDropdownPartial extends React.Component {
   }
 
   render () {
-    const { timezone, shortDateFormat } = this.props
+    const { timezone, shortDateFormat, forwardedRef } = this.props
 
     return (
       <PDropDown
+        ref={forwardedRef}
         id={'conversations'}
         title={'Conversations'}
         titleHref={'/messages'}
@@ -114,7 +114,9 @@ class ConversationsDropdownPartial extends React.Component {
 
 ConversationsDropdownPartial.propTypes = {
   timezone: PropTypes.string.isRequired,
-  shortDateFormat: PropTypes.string.isRequired
+  shortDateFormat: PropTypes.string.isRequired,
+  socket: PropTypes.object.isRequired,
+  forwardedRef: PropTypes.any.isRequired
 }
 
 export default ConversationsDropdownPartial

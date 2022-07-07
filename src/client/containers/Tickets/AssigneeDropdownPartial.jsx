@@ -50,11 +50,12 @@ class AssigneeDropdownPartial extends React.Component {
   render () {
     return (
       <PDropDown
+        ref={this.props.forwardedRef}
         title={'Select Assignee'}
         id={'assigneeDropdown'}
         override={true}
         leftArrow={true}
-        topOffset={125}
+        topOffset={105}
         leftOffset={35}
         minHeight={215}
         rightComponent={
@@ -104,11 +105,12 @@ AssigneeDropdownPartial.propTypes = {
   ticketId: PropTypes.string.isRequired,
   onClearClick: PropTypes.func,
   onAssigneeClick: PropTypes.func,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  forwardedRef: PropTypes.any.isRequired
 }
 
 const mapStateToProps = state => ({
   socket: state.shared.socket
 })
 
-export default connect(mapStateToProps, {})(AssigneeDropdownPartial)
+export default connect(mapStateToProps, {}, null, { forwardRef: true })(AssigneeDropdownPartial)

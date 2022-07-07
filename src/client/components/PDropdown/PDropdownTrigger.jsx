@@ -8,21 +8,44 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/11/19 10:23 PM
+ *  Updated:    7/6/22 1:42 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
+import React, { createRef } from 'react'
 import PropTypes from 'prop-types'
 
 class PDropdownTrigger extends React.Component {
+  containerRef = createRef()
+
+  constructor (props) {
+    super(props)
+  }
+
+  componentDidMount () {}
+
+  componentDidUpdate (prevProps, prevState, snapshot) {}
+
+  componentWillUnmount () {}
+
+  onTargetClick (e) {
+    e.preventDefault()
+    if (this.props.target && this.props.target.current && typeof this.props.target.current.show === 'function') {
+      this.props.target.current.show(this.containerRef.current)
+    }
+  }
+
   render () {
-    return <div data-notifications={this.props.target}>{this.props.children}</div>
+    return (
+      <div ref={this.containerRef} className={'uk-clearfix'} onClick={e => this.onTargetClick(e)}>
+        {this.props.children}
+      </div>
+    )
   }
 }
 
 PDropdownTrigger.propTypes = {
-  target: PropTypes.string.isRequired,
+  target: PropTypes.any.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 

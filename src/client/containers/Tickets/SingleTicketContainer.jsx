@@ -11,7 +11,7 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment } from 'react'
+import React, { Fragment, createRef } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observable, computed, makeObservable } from 'mobx'
@@ -57,7 +57,6 @@ import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
 import axios from 'axios'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
-// import socket from 'lib/socket'
 import UIkit from 'uikit'
 import moment from 'moment'
 import SpinLoader from 'components/SpinLoader'
@@ -93,6 +92,7 @@ const showPriorityConfirm = () => {
 class SingleTicketContainer extends React.Component {
   @observable ticket = null
   @observable isSubscribed = false
+  assigneeDropdownPartial = createRef()
 
   constructor (props) {
     super(props)
@@ -314,7 +314,7 @@ class SingleTicketContainer extends React.Component {
                             className='relative no-ajaxy'
                             onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                           >
-                            <PDropdownTrigger target={'assigneeDropdown'}>
+                            <PDropdownTrigger target={this.assigneeDropdownPartial}>
                               <Avatar
                                 image={this.ticket.assignee && this.ticket.assignee.image}
                                 showOnlineBubble={this.ticket.assignee !== undefined}
@@ -350,6 +350,7 @@ class SingleTicketContainer extends React.Component {
 
                       {hasTicketUpdate && (
                         <AssigneeDropdownPartial
+                          forwardedRef={this.assigneeDropdownPartial}
                           ticketId={this.ticket._id}
                           onClearClick={() => (this.ticket.assignee = undefined)}
                           onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}

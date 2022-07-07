@@ -20,15 +20,15 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
   }
 
   navigation.notifications = function () {
-    $('[data-notifications]').each(function () {
-      $(this).off('click', showDropdown)
-      $(this).on('click', showDropdown)
-    })
-
-    $('[data-clearNotifications]').each(function () {
-      $(this).off('click', clearNotifications)
-      $(this).on('click', clearNotifications)
-    })
+    // $('[data-notifications]').each(function () {
+    //   $(this).off('click', showDropdown)
+    //   $(this).on('click', showDropdown)
+    // })
+    //
+    // $('[data-clearNotifications]').each(function () {
+    //   $(this).off('click', clearNotifications)
+    //   $(this).on('click', clearNotifications)
+    // })
 
     $(document).off('mouseup', hideDropdownMouseUp)
     $(document).on('mouseup', hideDropdownMouseUp)

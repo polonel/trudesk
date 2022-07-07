@@ -67,14 +67,15 @@ class NotificationsDropdownPartial extends React.Component {
   }
 
   render () {
-    const { shortDateFormat, timezone } = this.props
+    const { shortDateFormat, timezone, forwardedRef } = this.props
 
     return (
       <PDropdown
+        ref={forwardedRef}
         id={'notifications'}
         title={'Notifications'}
-        topOffset={'-10'}
-        leftOffset={'4'}
+        topOffset={-4}
+        leftOffset={4}
         rightComponent={
           <a className={'hoverUnderline no-ajaxy'} onClick={e => this.clearNotificationsClicked(e)}>
             Clear Notifications
@@ -142,11 +143,12 @@ NotificationsDropdownPartial.propTypes = {
   socket: PropTypes.object.isRequired,
   timezone: PropTypes.string.isRequired,
   shortDateFormat: PropTypes.string.isRequired,
-  onViewAllNotificationsClick: PropTypes.func.isRequired
+  onViewAllNotificationsClick: PropTypes.func.isRequired,
+  forwardedRef: PropTypes.any
 }
 
 const mapStateToProps = state => ({
   socket: state.shared.socket
 })
 
-export default connect(mapStateToProps, {})(NotificationsDropdownPartial)
+export default connect(mapStateToProps, {}, null, { forwardRef: true })(NotificationsDropdownPartial)
