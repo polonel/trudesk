@@ -2186,5 +2186,12 @@ define([
     })
   }
 
+  helpers.ajaxify = function (target) {
+    const $target = $(target)
+    if ($target.length > 0) {
+      $target.ajaxify()
+    }
+  }
+
   return helpers
 })

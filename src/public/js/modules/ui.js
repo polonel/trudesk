@@ -15,18 +15,14 @@
 define('modules/ui', [
   'serverSocket/socketEventConsts',
   'jquery',
-  'underscore',
+  'lodash',
   'uikit',
   'modules/helpers',
-  'modules/navigation',
-  'modules/socket.io/noticeUI',
-  'modules/socket.io/ticketsUI',
-  'modules/socket.io/logs.io',
   'history'
-], function (socketEvents, $, _, UIKit, helpers, nav, noticeUI, ticketsUI, logsIO) {
-  var socketUi = {}
+], function (socketEvents, $, _, UIKit, helpers) {
+  const socketUi = {}
 
-  var socket
+  let socket
 
   socketUi.init = function (sock) {
     socketUi.socket = socket = sock
@@ -35,54 +31,12 @@ define('modules/ui', [
 
     // Events
     this.onProfileImageUpdate()
-
-    // Logs
-    // this.updateServerLogs(socket)
-
-    // Backup / Restore
-    this.onShowRestoreOverlay()
-    this.onRestoreComplete()
   }
 
-  socketUi.onShowRestoreOverlay = function () {
-    socket.removeAllListeners('$trudesk:restore:showOverlay')
-    socket.on('$trudesk:restore:showOverlay', function () {
-      $('#restoreBackupOverlay').removeClass('hide')
-    })
-  }
-
-  socketUi.emitShowRestoreOverlay = function () {
-    socket.emit('$trudesk:restore:showOverlay')
-  }
-
-  socketUi.onRestoreComplete = function () {
-    socket.removeAllListeners('$trudesk:restore:complete')
-    socket.on('$trudesk:restore:complete', function () {
-      location.reload()
-    })
-  }
-
-  socketUi.emitRestoreComplete = function () {
-    socket.emit('$trudesk:restore:complete')
-  }
-
-  socketUi.setShowNotice = function (notice) {
-    noticeUI.setShowNotice(socket, notice)
-  }
-
-  socketUi.setClearNotice = function () {
-    noticeUI.setClearNotice(socket)
-  }
-
-  socketUi.updateShowNotice = noticeUI.updateShowNotice
-  socketUi.updateClearNotice = noticeUI.updateClearNotice
-
-  socketUi.updateSubscribe = ticketsUI.updateSubscribe
-
-  socketUi.updateServerLogs = logsIO.getLogData
   socketUi.fetchServerLogs = function () {
     socket.emit('logs:fetch')
   }
+
   socketUi.flushRoles = function () {
     socket.removeAllListeners(socketEvents.ROLES_FLUSH)
     socket.on(socketEvents.ROLES_FLUSH, function () {

@@ -26,10 +26,11 @@ import {
 } from 'actions/settings'
 import Log from '../../../logger'
 
+import { BACKUP_RESTORE_SHOW_OVERLAY, BACKUP_RESTORE_COMPLETE } from 'serverSocket/socketEventConsts'
+
 import $ from 'jquery'
 import UIKit from 'uikit'
 import axios from 'axios'
-import socket from 'lib/socket'
 import helpers from 'lib/helpers'
 
 import ButtonGroup from 'components/ButtonGroup'
@@ -158,14 +159,14 @@ class BackupRestoreSettingsContainer extends React.Component {
             This process may take a while depending on the size of the backup.
         </p>`,
       () => {
-        socket.ui.emitShowRestoreOverlay()
+        this.props.socket.emit(BACKUP_RESTORE_SHOW_OVERLAY)
 
         axios
           .post('/api/v1/backup/restore', { file: filename })
           .then(() => {
             helpers.UI.showSnackbar('Restore Complete. Logging all users out...')
             setTimeout(() => {
-              socket.ui.emitRestoreComplete()
+              this.props.socket.emit(BACKUP_RESTORE_COMPLETE)
             }, 2000)
           })
           .catch(err => {
@@ -246,7 +247,7 @@ class BackupRestoreSettingsContainer extends React.Component {
                 <strong>ArchLinux</strong>
               </h5>
               <pre style={{ whiteSpace: 'pre-line' }}>yay -S mongodb-tools-bin</pre>
-              <br/>
+              <br />
               <h5>
                 <strong>Fedora 29</strong>
               </h5>
@@ -444,6 +445,7 @@ class BackupRestoreSettingsContainer extends React.Component {
 }
 
 BackupRestoreSettingsContainer.propTypes = {
+  socket: PropTypes.object.isRequired,
   active: PropTypes.bool.isRequired,
   fetchMongoDBTools: PropTypes.func.isRequired,
   fetchBackups: PropTypes.func.isRequired,
@@ -456,6 +458,7 @@ BackupRestoreSettingsContainer.propTypes = {
 }
 
 const mapStateToProps = state => ({
+  socket: state.shared.socket,
   settings: state.settings
 })
 

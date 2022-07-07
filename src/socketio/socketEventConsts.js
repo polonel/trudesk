@@ -70,4 +70,16 @@ exported.MESSAGES_UI_RECEIVE = '$trudesk:messages:ui:receive'
 exported.MESSAGES_USER_TYPING = '$trudesk:messages:user_typing'
 exported.MESSAGES_UI_USER_TYPING = '$trudesk:messages:ui:user_typing'
 
+// NOTICES
+exported.NOTICE_SHOW = '$trudesk:notice:show'
+exported.NOTICE_UI_SHOW = '$trudesk:notice:ui:show'
+exported.NOTICE_CLEAR = '$trudesk:notice:clear'
+exported.NOTICE_UI_CLEAR = '$trudesk:notice:ui:clear'
+
+// BACKUP / RESTORE
+exported.BACKUP_RESTORE_SHOW_OVERLAY = '$trudesk:backup_restore:show_overlay'
+exported.BACKUP_RESTORE_UI_SHOW_OVERLAY = '$trudesk:backup_restore:ui:show_overlay'
+exported.BACKUP_RESTORE_COMPLETE = '$trudesk:backup_restore:complete'
+exported.BACKUP_RESTORE_UI_COMPLETE = '$trudesk:backup_restore:ui:complete'
+
 module.exports = exported

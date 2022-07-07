@@ -12,27 +12,15 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('modules/socket', ['modules/chat', 'modules/ui', 'modules/socket.io/accountsImporter'], function (
-  chat,
-  ui,
-  accountsImporter
-) {
-  var socket = io.connect({
-    transports: ['polling', 'websocket']
-  })
-
-  var sClient = {
-    socket: socket
+define('modules/socket', ['modules/chat', 'modules/ui'], function (chat, ui) {
+  var socket = {
+    // on: () => {},
+    // off: () => {},
+    // removeAllListeners: () => {},
+    // emit: () => {}
   }
 
-  ui.init(socket)
-  sClient.ui = ui
-
-  chat.init(socket)
-  sClient.chat = chat
-
-  accountsImporter.init(socket)
-  sClient.accountsImporter = accountsImporter
-
-  return sClient
+  return {
+    socket: socket
+  }
 })

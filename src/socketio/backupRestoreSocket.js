@@ -12,11 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var utils = require('../helpers/utils')
+const utils = require('../helpers/utils')
+const sharedVars = require('./index').shared
+const socketEvents = require('./socketEventConsts')
 
-var sharedVars = require('./index').shared
-
-var events = {}
+const events = {}
 
 function register (socket) {
   events.showRestoreOverlay(socket)
@@ -24,18 +24,18 @@ function register (socket) {
 }
 
 events.showRestoreOverlay = function (socket) {
-  socket.on('$trudesk:restore:showOverlay', function () {
+  socket.on(socketEvents.BACKUP_RESTORE_SHOW_OVERLAY, function () {
     if (global.socketServer && global.socketServer.eventLoop) {
       global.socketServer.eventLoop.stop()
     }
 
-    utils.sendToAllConnectedClients(io, '$trudesk:restore:showOverlay')
+    utils.sendToAllConnectedClients(io, socketEvents.BACKUP_RESTORE_UI_SHOW_OVERLAY)
   })
 }
 
 events.emitRestoreComplete = function (socket) {
-  socket.on('$trudesk:restore:complete', function () {
-    utils.sendToAllConnectedClients(io, '$trudesk:restore:complete')
+  socket.on(socketEvents.BACKUP_RESTORE_COMPLETE, function () {
+    utils.sendToAllConnectedClients(io, socketEvents.BACKUP_RESTORE_UI_COMPLETE)
     utils.disconnectAllClients(io)
     sharedVars.sockets = []
     sharedVars.usersOnline = {}

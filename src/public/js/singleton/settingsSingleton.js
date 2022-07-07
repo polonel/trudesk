@@ -2,9 +2,10 @@ const _ = require('lodash')
 const axios = require('axios').default
 
 const SettingsService = {}
-let settings = null
 
+let settings = null
 let loaded = false
+
 SettingsService.getLoaded = () => loaded
 
 SettingsService.init = callback => {

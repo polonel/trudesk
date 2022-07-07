@@ -12,12 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('modules/ajaxify', ['jquery', 'underscore', 'modules/helpers', 'modules/navigation', 'history'], function (
-  $,
-  _,
-  helpers,
-  nav
-) {
+define('modules/ajaxify', ['jquery', 'lodash', 'modules/helpers', 'history'], function ($, _, helpers) {
   $(window).on('statechangecomplete', function () {
     // Remove Rogue Tethers
     $('body > .side-nav-sub.tether-element').each(function () {
@@ -28,8 +23,6 @@ define('modules/ajaxify', ['jquery', 'underscore', 'modules/helpers', 'modules/n
     helpers.hideAllUiKitDropdowns()
     helpers.UI.initSidebar()
     helpers.UI.bindExpand()
-
-    nav.init()
 
     // Update react nav on ajaxy request
     window.react.renderer(window.react.redux.store)
@@ -46,7 +39,7 @@ define('modules/ajaxify', ['jquery', 'underscore', 'modules/helpers', 'modules/n
     // helpers.UI.cardShow()
 
     const event = _.debounce(function () {
-      $.event.trigger('$trudesk:ready')
+      $.event.trigger('trudesk:ready')
     }, 100)
 
     event()
