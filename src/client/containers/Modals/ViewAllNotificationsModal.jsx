@@ -20,13 +20,14 @@ import { makeObservable, observable } from 'mobx'
 import axios from 'axios'
 import Log from '../../logger'
 
+import { NOTIFICATIONS_MARK_READ } from 'serverSocket/socketEventConsts'
+
 import { hideModal } from 'actions/common'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 
 @observer
 class ViewAllNotificationsModal extends React.Component {
@@ -55,7 +56,7 @@ class ViewAllNotificationsModal extends React.Component {
     if (!notification || !notification.data || !notification.data.ticket || !notification.data.ticket.uid) return false
 
     this.props.hideModal()
-    socket.socket.emit('markNotificationRead', notification._id)
+    this.props.socket.emit(NOTIFICATIONS_MARK_READ, notification._id)
     History.pushState(null, null, `/tickets/${notification.data.ticket.uid}`)
   }
 
@@ -113,7 +114,12 @@ class ViewAllNotificationsModal extends React.Component {
 }
 
 ViewAllNotificationsModal.propTypes = {
-  hideModal: PropTypes.func.isRequired
+  hideModal: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired
 }
 
-export default connect(null, { hideModal })(ViewAllNotificationsModal)
+const mapStateToProps = state => ({
+  socket: state.shared.socket
+})
+
+export default connect(mapStateToProps, { hideModal })(ViewAllNotificationsModal)

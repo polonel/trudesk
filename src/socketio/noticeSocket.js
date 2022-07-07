@@ -12,11 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var winston = require('winston')
-var utils = require('../helpers/utils')
-var noticeSchema = require('../models/notice')
+const winston = require('winston')
+const utils = require('../helpers/utils')
+const noticeSchema = require('../models/notice')
 
-var events = {}
+const socketEventConst = require('../socketio/socketEventConsts')
+
+const events = {}
 
 function register (socket) {
   events.onShowNotice(socket)
@@ -26,7 +28,7 @@ function register (socket) {
 function eventLoop () {}
 
 events.onShowNotice = function (socket) {
-  socket.on('setShowNotice', function (noticeId) {
+  socket.on(socketEventConst.NOTICE_SHOW, function ({ noticeId }) {
     noticeSchema.getNotice(noticeId, function (err, notice) {
       if (err) return true
       notice.activeDate = new Date()
@@ -36,15 +38,15 @@ events.onShowNotice = function (socket) {
           return true
         }
 
-        utils.sendToAllConnectedClients(io, '$trudesk:notice:show', notice)
+        utils.sendToAllConnectedClients(io, socketEventConst.NOTICE_UI_SHOW, notice)
       })
     })
   })
 }
 
 events.onClearNotice = function (socket) {
-  socket.on('setClearNotice', function () {
-    utils.sendToAllConnectedClients(io, 'updateClearNotice')
+  socket.on(socketEventConst.NOTICE_CLEAR, function () {
+    utils.sendToAllConnectedClients(io, socketEventConst.NOTICE_UI_CLEAR)
   })
 }
 

@@ -27,6 +27,7 @@ class NoticeBanner extends React.Component {
 
     return (
       <div
+        id={'notice-banner'}
         style={{
           width: '100%',
           height: '30px',

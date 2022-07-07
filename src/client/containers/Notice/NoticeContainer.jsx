@@ -7,6 +7,8 @@ import axios from 'axios'
 import { fetchNotices, deleteNotice, unloadNotices } from 'actions/notices'
 import { showModal } from 'actions/common'
 
+import { NOTICE_SHOW, NOTICE_CLEAR } from 'serverSocket/socketEventConsts'
+
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
 import Table from 'components/Table'
@@ -17,7 +19,6 @@ import ButtonGroup from 'components/ButtonGroup'
 import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 import UIKit from 'uikit'
 
 class NoticeContainer extends React.Component {
@@ -46,7 +47,7 @@ class NoticeContainer extends React.Component {
     axios
       .put('/api/v2/notices/' + noticeId + '/activate', { active: true })
       .then(() => {
-        socket.ui.setShowNotice(noticeId)
+        this.props.socket.emit(NOTICE_SHOW, { noticeId })
       })
       .catch(err => {
         Log.error(err)
@@ -58,7 +59,7 @@ class NoticeContainer extends React.Component {
     axios
       .get('/api/v1/notices/clearactive')
       .then(() => {
-        socket.ui.setClearNotice()
+        this.props.socket.emit(NOTICE_CLEAR)
 
         helpers.UI.showSnackbar('Notice has been deactivated', false)
       })
@@ -195,6 +196,7 @@ class NoticeContainer extends React.Component {
 }
 
 NoticeContainer.propTypes = {
+  socket: PropTypes.object.isRequired,
   notices: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
 
@@ -205,6 +207,7 @@ NoticeContainer.propTypes = {
 }
 
 const mapStateToProps = state => ({
+  socket: state.shared.socket,
   notices: state.noticesState.notices,
   loading: state.noticesState.loading
 })

@@ -12,19 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var mongoose = require('mongoose')
-var winston = require('winston')
-var bcrypt = require('bcrypt')
-var _ = require('lodash')
-var Chance = require('chance')
+const async = require('async')
+const mongoose = require('mongoose')
+const winston = require('winston')
+const bcrypt = require('bcrypt')
+const _ = require('lodash')
+const Chance = require('chance')
 const utils = require('../helpers/utils')
 
 // Required for linkage
 require('./role')
 
-var SALT_FACTOR = 10
-var COLLECTION = 'accounts'
+const SALT_FACTOR = 10
+const COLLECTION = 'accounts'
 
 /**
  * User Schema
@@ -79,7 +79,8 @@ var userSchema = mongoose.Schema({
   preferences: {
     tourCompleted: { type: Boolean, default: false },
     autoRefreshTicketGrid: { type: Boolean, default: true },
-    openChatWindows: [{ type: String, default: [] }]
+    openChatWindows: [{ type: String, default: [] }],
+    keyboardShortcuts: { type: Boolean, default: true }
   },
 
   deleted: { type: Boolean, default: false }
@@ -87,7 +88,7 @@ var userSchema = mongoose.Schema({
 
 userSchema.set('toObject', { getters: true })
 
-var autoPopulateRole = function (next) {
+const autoPopulateRole = function (next) {
   this.populate('role', 'name description normalized _id')
   next()
 }
@@ -95,7 +96,7 @@ var autoPopulateRole = function (next) {
 userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
 
 userSchema.pre('save', function (next) {
-  var user = this
+  const user = this
 
   user.username = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.username.toLowerCase().trim()))
   user.email = utils.sanitizeFieldPlainText(user.email.trim())
