@@ -13,7 +13,8 @@
   },
   "rules": {
     "standard/no-callback-literal": 0, // enable after error handing refactor
-    "node/exports-style": ["error", "module.exports"],
+    "node/exports-style": 0,
+    "n/no-callback-literal": 0,
     "new-cap": 0,
     "no-console": "off",
     "complexity": ["error", 20]
