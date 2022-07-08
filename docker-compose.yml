@@ -23,6 +23,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo:/var/lib/mongo
+      - mongo_data:/data/db:rw
   elasticsearch:
     image: elasticsearch:8.0.0
     restart: always
@@ -47,4 +48,5 @@ volumes:
   trudesk_uploads:
   trudesk_backups:
   mongo:
+  mongo_data:
   elasticsearch:
