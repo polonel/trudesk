@@ -11,12 +11,6 @@ executors:
 commands:
   yarninstall:
     steps:
-    - enable_corepack:
-        name: Enable NodeJS Corepack
-        command: corepack enable
-    - install_yarn:
-        name: Install Yarn with corepack
-        command: yarn set version stable
     - restore_cache:
         name: Restore Yarn Package Cache
         keys:
@@ -24,6 +18,12 @@ commands:
     - run:
         name: Install Dependencies
         command: yarn install --frozen-lockfile
+    - run:
+        name: Enable NodeJS Corepack
+        command: corepack enable
+    - run:
+        name: Install Yarn with corepack
+        command: yarn set version stable
     - save_cache:
         name: Save Yarn Package Cache
         key: yarn-packages-{{ checksum "yarn.lock" }}
