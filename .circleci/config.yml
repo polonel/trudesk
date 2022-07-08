@@ -22,7 +22,7 @@ commands:
         name: Save Yarn Package Cache
         key: yarn-packages-{{ checksum "yarn.lock" }}
         paths:
-        - ~/.cache/yarn
+        - ~/trudesk/.yarn/cache
 
 jobs:
   build_general:
