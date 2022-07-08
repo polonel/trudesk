@@ -11,6 +11,12 @@ executors:
 commands:
   yarninstall:
     steps:
+    - enable_corepack:
+        name: Enable NodeJS Corepack
+        command: corepack enable
+    - install_yarn:
+        name: Install Yarn with corepack
+        command: yarn set version stable
     - restore_cache:
         name: Restore Yarn Package Cache
         keys:
