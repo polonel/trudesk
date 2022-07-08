@@ -17,13 +17,7 @@ commands:
         - yarn-packages-{{ checksum "yarn.lock" }}
     - run:
         name: Install Dependencies
-        command: yarn install --frozen-lockfile
-    - run:
-        name: Enable NodeJS Corepack
-        command: corepack enable
-    - run:
-        name: Install Yarn with corepack
-        command: yarn set version stable
+        command: yarn install --immutable
     - save_cache:
         name: Save Yarn Package Cache
         key: yarn-packages-{{ checksum "yarn.lock" }}
