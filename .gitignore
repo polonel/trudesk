@@ -5,7 +5,7 @@
 *.gz
 
 # Yarn Cache
-.yarn
+.yarn/cache
 
 # Runtime data
 pids
