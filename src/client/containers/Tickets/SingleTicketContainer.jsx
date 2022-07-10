@@ -273,10 +273,7 @@ class SingleTicketContainer extends React.Component {
       : []
 
     // Perms
-    const hasTicketUpdate =
-      this.ticket &&
-      this.ticket.status !== 3 &&
-      helpers.hasPermOverRole(this.ticket.owner.role, null, 'tickets:update', true)
+    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update')
 
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
@@ -295,7 +292,7 @@ class SingleTicketContainer extends React.Component {
                     status={this.ticket.status}
                     socket={this.props.socket}
                     onStatusChange={status => (this.ticket.status = status)}
-                    hasPerm={helpers.hasPermOverRole(this.ticket.owner.role, null, 'tickets:update', true)}
+                    hasPerm={hasTicketUpdate}
                   />
                 </div>
                 {/*  Left Side */}
@@ -859,6 +856,7 @@ SingleTicketContainer.propTypes = {
   ticketId: PropTypes.string.isRequired,
   ticketUid: PropTypes.string.isRequired,
   shared: PropTypes.object.isRequired,
+  sessionUser: PropTypes.object,
   socket: PropTypes.object.isRequired,
   common: PropTypes.object.isRequired,
   ticketTypes: PropTypes.object.isRequired,
@@ -873,6 +871,7 @@ SingleTicketContainer.propTypes = {
 const mapStateToProps = state => ({
   common: state.common.viewdata,
   shared: state.shared,
+  sessionUser: state.shared.sessionUser,
   socket: state.shared.socket,
   ticketTypes: state.ticketsState.types,
   groupsState: state.groupsState

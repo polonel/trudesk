@@ -19,6 +19,7 @@ var winston = require('winston')
 var sanitizeHtml = require('sanitize-html')
 var SettingsSchema = require('../../../models/setting')
 var settingsUtil = require('../../../settings/settingsUtil')
+const socketEventConsts = require('../../../socketio/socketEventConsts')
 
 var apiSettings = {}
 
@@ -195,7 +196,7 @@ apiSettings.updateRoleOrder = function (req, res) {
       order.save(function (err, order) {
         if (err) return res.status(500).json({ success: false, error: err.message })
 
-        emitter.emit('$trudesk:flushRoles')
+        emitter.emit(socketEventConsts.ROLES_FLUSH)
 
         return res.json({ success: true, roleOrder: order })
       })
@@ -203,7 +204,7 @@ apiSettings.updateRoleOrder = function (req, res) {
       order.updateOrder(req.body.roleOrder, function (err, order) {
         if (err) return res.status(400).json({ success: false, error: err.message })
 
-        emitter.emit('$trudesk:flushRoles')
+        emitter.emit(socketEventConsts.ROLES_FLUSH)
 
         return res.json({ success: true, roleOrder: order })
       })

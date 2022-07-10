@@ -1641,8 +1641,8 @@ define([
   }
 
   helpers.canUser = function (a, adminOverride) {
-    var role = window.trudeskSessionService.getUser().role
-    var roles = window.trudeskSessionService.getRoles()
+    let role = window.trudeskSessionService.getUser().role
+    const roles = window.trudeskSessionService.getRoles()
 
     if (adminOverride === true && role.isAdmin) return true
 
@@ -1677,8 +1677,8 @@ define([
   }
 
   helpers.hasHierarchyEnabled = function (roleId) {
-    var roles = window.trudeskSessionService.getRoles()
-    var role = _.find(roles, function (o) {
+    const roles = window.trudeskSessionService.getRoles()
+    const role = _.find(roles, function (o) {
       return o._id.toString() === roleId.toString()
     })
     if (_.isUndefined(role) || _.isUndefined(role.hierarchy)) throw new Error('Invalid Role: ' + roleId)
@@ -1755,6 +1755,7 @@ define([
   helpers.hasPermOverRole = function (ownerRole, extRole, action, adminOverride) {
     if (action && !helpers.canUser(action, adminOverride)) return false
     if (!extRole) extRole = window.trudeskSessionService.getUser().role
+
     if (!_.isObject(ownerRole) || !_.isObject(extRole)) {
       console.log('Invalid Role Sent to helpers.hasPermOverRole. [Must be role obj]')
       console.log('Owner: ' + ownerRole)
@@ -1775,19 +1776,26 @@ define([
       if (extRole && extRole.isAdmin) {
         return true
       } else {
-        var r = window.trudeskSessionService.getRoles()
-        var role = _.find(r, function (_role) {
+        const r = window.trudeskSessionService.getRoles()
+        const role = _.find(r, function (_role) {
           return _role._id.toString() === extRole._id.toString()
         })
         if (!_.isUndefined(role) && role.isAdmin) return true
       }
     }
 
-    var roles = helpers.parseRoleHierarchy(extRole._id)
+    if (!helpers.hasHierarchyEnabled(extRole._id)) {
+      return ownerRole._id === extRole._id
+    }
 
-    var i = _.find(roles, function (o) {
-      return o.toString() === ownerRole.toString()
+    const roles = helpers.parseRoleHierarchy(extRole._id)
+    // console.log('My Role ID: ', extRole._id)
+    // console.log('Hierarchy: ', roles)
+    const i = _.find(roles, function (o) {
+      return o.toString() === ownerRole._id.toString()
     })
+
+    // console.log('Found in Hierarchy: ', i)
 
     return !_.isUndefined(i)
   }

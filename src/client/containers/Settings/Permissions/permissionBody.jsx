@@ -129,7 +129,7 @@ class PermissionBody extends React.Component {
 
   onSubmit (e) {
     e.preventDefault()
-    let obj = {}
+    const obj = {}
     obj._id = this.props.role.get('_id')
     if (this.isAdmin) {
       obj.admin = ['*']

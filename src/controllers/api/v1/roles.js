@@ -16,6 +16,7 @@ var _ = require('lodash')
 var async = require('async')
 var userSchema = require('../../../models/user')
 var permissions = require('../../../permissions')
+const socketEventConsts = require('../../../socketio/socketEventConsts')
 
 var rolesV1 = {}
 
@@ -110,7 +111,7 @@ rolesV1.update = function (req, res) {
     role.updateGrantsAndHierarchy(k, hierarchy, function (err) {
       if (err) return res.status(400).json({ success: false, error: err })
 
-      emitter.emit('$trudesk:flushRoles')
+      emitter.emit(socketEventConsts.ROLES_FLUSH)
 
       return res.send('OK')
     })

@@ -40,7 +40,7 @@ class PermissionsSettingsContainer extends React.Component {
 
   onRoleOrderChanged (e) {
     const children = $(e.target).children('li')
-    let arr = []
+    const arr = []
     for (let i = 0; i < children.length; i++) arr.push($(children[i]).attr('data-key'))
 
     this.props.updateRoleOrder({ roleOrder: arr })
@@ -142,7 +142,6 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { fetchRoles, updateRoleOrder, showModal, updateSetting }
-)(PermissionsSettingsContainer)
+export default connect(mapStateToProps, { fetchRoles, updateRoleOrder, showModal, updateSetting })(
+  PermissionsSettingsContainer
+)
