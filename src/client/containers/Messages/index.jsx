@@ -38,6 +38,8 @@ import helpers from 'lib/helpers'
 @observer
 class MessagesContainer extends React.Component {
   @observable userListShown = false
+  @observable userListSearchText = ''
+  @observable mutableUserList = []
   @observable singleConversationLoaded = false
   @observable typingTimers = {}
 
@@ -140,15 +142,34 @@ class MessagesContainer extends React.Component {
 
   showUserList (e) {
     e.preventDefault()
-    this.props.fetchAccounts({ type: 'agents' }).then(() => {
-      this.userListShown = true
-    })
+    if (this.props.sessionUser.role.isAdmin || this.props.sessionUser.role.isAgent)
+      this.props.fetchAccounts({ type: 'all', limit: -1 }).then(() => {
+        this.mutableUserList = this.props.accountsState.accounts
+        this.userListShown = true
+      })
+    else
+      this.props.fetchAccounts({ type: 'agents' }).then(() => {
+        this.mutableUserList = this.props.accountsState.accounts
+        this.userListShown = true
+      })
   }
 
   hideUserList (e) {
     e.preventDefault()
     this.props.unloadAccounts()
     this.userListShown = false
+  }
+
+  onUserListSearchChange (e) {
+    this.userListSearchText = e.target.value
+    if (this.userListSearchText.length > 3) {
+      this.mutableUserList = this.props.accountsState.accounts.filter(i =>
+        i
+          .get('fullname')
+          .toLowerCase()
+          .includes(this.userListSearchText.toLowerCase())
+      )
+    } else this.mutableUserList = this.props.accountsState.accounts
   }
 
   onUserStartConversationClick (account) {
@@ -337,8 +358,16 @@ class MessagesContainer extends React.Component {
             )}
             {this.userListShown && (
               <div id='conversationUserList' className='page-content-left noborder full-height'>
+                <div className='search-box'>
+                  <input
+                    type='text'
+                    placeholder={'Search'}
+                    value={this.userListSearchText}
+                    onChange={e => this.onUserListSearchChange(e)}
+                  />
+                </div>
                 <ul className='message-items scrollable'>
-                  {this.props.accountsState.accounts.map(account => {
+                  {this.mutableUserList.map(account => {
                     const accountImage = account.get('image') || 'defaultProfile.jpg'
                     if (account.get('_id').toString() === this.props.sessionUser._id.toString()) return null
                     return (
