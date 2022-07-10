@@ -196,21 +196,21 @@ class TopbarContainer extends React.Component {
                         </a>
                       </PDropdownTrigger>
                     </li>
-                    <li className='top-bar-icon'>
-                      <OffCanvasTrigger target={'online-user-list'}>
-                        <a title={'Online Users'} className='no-ajaxy'>
-                          <i className='material-icons'>people_alt</i>
-                          <span
-                            className={
-                              'online-user-count alert uk-border-circle label ' +
-                              (this.activeUserCount < 1 ? 'hide' : '')
-                            }
-                          >
-                            {this.activeUserCount}
-                          </span>
-                        </a>
-                      </OffCanvasTrigger>
-                    </li>
+                    {/*<li className='top-bar-icon'>*/}
+                    {/*  <OffCanvasTrigger target={'online-user-list'}>*/}
+                    {/*    <a title={'Online Users'} className='no-ajaxy'>*/}
+                    {/*      <i className='material-icons'>people_alt</i>*/}
+                    {/*      <span*/}
+                    {/*        className={*/}
+                    {/*          'online-user-count alert uk-border-circle label ' +*/}
+                    {/*          (this.activeUserCount < 1 ? 'hide' : '')*/}
+                    {/*        }*/}
+                    {/*      >*/}
+                    {/*        {this.activeUserCount}*/}
+                    {/*      </span>*/}
+                    {/*    </a>*/}
+                    {/*  </OffCanvasTrigger>*/}
+                    {/*</li>*/}
                     <li className='top-bar-icon nopadding nohover'>
                       <i className='material-icons separator'>remove</i>
                     </li>
