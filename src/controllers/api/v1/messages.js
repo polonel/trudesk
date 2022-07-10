@@ -12,14 +12,14 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var _ = require('lodash')
-var winston = require('../../../logger')
-var ConversationSchema = require('../../../models/chat/conversation')
-var MessageSchema = require('../../../models/chat/message')
-var UserSchema = require('../../../models/user')
+const async = require('async')
+const _ = require('lodash')
+const winston = require('../../../logger')
+const ConversationSchema = require('../../../models/chat/conversation')
+const MessageSchema = require('../../../models/chat/message')
+const UserSchema = require('../../../models/user')
 
-var apiMessages = {}
+const apiMessages = {}
 
 /**
  * @api {get} /api/v1/messages Get Messages
@@ -48,7 +48,7 @@ apiMessages.getConversations = function (req, res) {
   ConversationSchema.getConversations(req.user._id, function (err, conversations) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
-    return res.json({ success: true, conversations: conversations })
+    return res.json({ success: true, conversations })
   })
 }
 
@@ -56,11 +56,11 @@ apiMessages.getRecentConversations = function (req, res) {
   ConversationSchema.getConversations(req.user._id, function (err, conversations) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
-    var result = []
+    const result = []
     async.eachSeries(
       conversations,
       function (item, done) {
-        var idx = _.findIndex(item.userMeta, function (mItem) {
+        const idx = _.findIndex(item.userMeta, function (mItem) {
           return mItem.userId.toString() === req.user._id.toString()
         })
         if (idx === -1) {
@@ -69,7 +69,7 @@ apiMessages.getRecentConversations = function (req, res) {
 
         MessageSchema.getMostRecentMessage(item._id, function (err, m) {
           if (err) return done(err)
-          var r = item.toObject()
+          const r = item.toObject()
 
           if (_.first(m) === undefined) {
             return done()
@@ -99,7 +99,7 @@ apiMessages.getRecentConversations = function (req, res) {
 apiMessages.get = function (req, res) {
   ConversationSchema.getConversations(req.user._id, function (err, conversations) {
     if (err) return res.status(400).json({ success: false, error: err })
-    var fullConversations = []
+    const fullConversations = []
 
     async.forEach(
       conversations,
@@ -109,7 +109,7 @@ apiMessages.get = function (req, res) {
           fullConversations.push({
             cId: item._id,
             p: item.participants,
-            messages: messages
+            messages
           })
 
           return done()
@@ -124,9 +124,9 @@ apiMessages.get = function (req, res) {
 }
 
 apiMessages.startConversation = function (req, res) {
-  var payload = req.body
-  var requester = payload.owner
-  var participants = payload.participants
+  const payload = req.body
+  const requester = payload.owner
+  const participants = payload.participants
 
   // Check if Conversation with these participants exist
   ConversationSchema.getConversations(participants, function (err, convo) {
@@ -134,47 +134,58 @@ apiMessages.startConversation = function (req, res) {
       return res.status(400).json({ success: false, error: err.message })
     }
 
-    if (convo.length === 1) {
-      return res.json({ success: true, conversation: convo[0] })
+    if (convo.length > 0) {
+      const conversation = _.first(convo)
+      const userMeta =
+        conversation.userMeta[_.findIndex(conversation.userMeta, i => i.userId.toString() === requester.toString())]
+      if (userMeta) {
+        userMeta.updatedAt = Date.now()
+        conversation.save((err, updatedConvo) => {
+          if (err) winston.debug(err)
+          return res.json({ success: true, conversation: updatedConvo })
+        })
+      } else return res.json({ success: true, conversation })
     }
 
-    var userMeta = []
-    _.each(participants, function (item) {
-      var meta = {
-        userId: item,
-        joinedAt: new Date()
-      }
+    if (convo.length < 1) {
+      const userMeta = []
+      _.each(participants, function (item) {
+        const meta = {
+          userId: item,
+          joinedAt: new Date()
+        }
 
-      if (requester === item) {
-        meta.lastRead = new Date()
-      }
+        if (requester === item) {
+          meta.lastRead = new Date()
+        }
 
-      userMeta.push(meta)
-    })
+        userMeta.push(meta)
+      })
 
-    var Conversation = new ConversationSchema({
-      participants: participants,
-      userMeta: userMeta,
-      updatedAt: new Date()
-    })
+      const Conversation = new ConversationSchema({
+        participants,
+        userMeta,
+        updatedAt: new Date()
+      })
 
-    Conversation.save(function (err, cSave) {
-      if (err) {
-        winston.debug(err)
-        return res.status(400).json({ success: false, error: err.message })
-      }
+      Conversation.save(function (err, cSave) {
+        if (err) {
+          winston.debug(err)
+          return res.status(400).json({ success: false, error: err.message })
+        }
 
-      return res.json({ success: true, conversation: cSave })
-    })
+        return res.json({ success: true, conversation: cSave })
+      })
+    }
   })
 }
 
 apiMessages.send = function (req, res) {
-  var payload = req.body
-  var cId = payload.cId
-  var owner = payload.owner
-  var message = payload.body
-  var matches = message.match(/^[Tt]#[0-9]*$/g)
+  const payload = req.body
+  const cId = payload.cId
+  const owner = payload.owner
+  let message = payload.body
+  const matches = message.match(/^[Tt]#[0-9]*$/g)
 
   if (!_.isNull(matches) && matches.length > 0) {
     _.each(matches, function (m) {
@@ -242,14 +253,14 @@ apiMessages.send = function (req, res) {
 }
 
 apiMessages.getMessagesForConversation = function (req, res) {
-  var conversation = req.params.id
-  var page = req.query.page === undefined ? 0 : req.query.page
-  var limit = req.query.limit === undefined ? 10 : req.query.limit
+  const conversation = req.params.id
+  const page = req.query.page === undefined ? 0 : req.query.page
+  const limit = req.query.limit === undefined ? 10 : req.query.limit
   if (_.isUndefined(conversation) || _.isNull(conversation)) {
     return res.status(400).json({ success: false, error: 'Invalid Conversation' })
   }
 
-  var response = {}
+  const response = {}
   async.series(
     [
       function (done) {
@@ -266,8 +277,8 @@ apiMessages.getMessagesForConversation = function (req, res) {
         MessageSchema.getConversationWithObject(
           {
             cid: conversation,
-            page: page,
-            limit: limit,
+            page,
+            limit,
             userMeta: response.conversation.userMeta,
             requestingUser: req.user
           },
@@ -297,7 +308,7 @@ apiMessages.getMessagesForConversation = function (req, res) {
 }
 
 apiMessages.deleteConversation = function (req, res) {
-  var conversation = req.params.id
+  const conversation = req.params.id
 
   if (_.isUndefined(conversation) || _.isNull(conversation)) {
     return res.status(400).json({ success: false, error: 'Invalid Conversation' })
@@ -306,8 +317,8 @@ apiMessages.deleteConversation = function (req, res) {
   ConversationSchema.getConversation(conversation, function (err, convo) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
-    var user = req.user
-    var idx = _.findIndex(convo.userMeta, function (item) {
+    const user = req.user
+    const idx = _.findIndex(convo.userMeta, function (item) {
       return item.userId.toString() === user._id.toString()
     })
     if (idx === -1) {

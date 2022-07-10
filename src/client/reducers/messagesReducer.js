@@ -21,7 +21,9 @@ import {
   MESSAGES_SEND,
   MESSAGES_UI_RECEIVE,
   UNLOAD_SINGLE_CONVERSATION,
-  UNLOAD_CONVERSATIONS
+  UNLOAD_CONVERSATIONS,
+  DELETE_CONVERSATION,
+  SET_CURRENT_CONVERSATION
 } from 'actions/types'
 
 const initialState = {
@@ -29,7 +31,10 @@ const initialState = {
   conversations: List([]),
 
   loadingSingleConversation: false,
-  currentConversation: null
+  currentConversation: null,
+
+  loadingChatWindowConversation: Map({}),
+  chatWindowConversations: Map({})
 }
 
 const reducer = handleActions(
@@ -46,6 +51,18 @@ const reducer = handleActions(
         ...state,
         loading: false,
         conversations: fromJS(action.response.conversations)
+      }
+    },
+
+    [DELETE_CONVERSATION.SUCCESS]: (state, action) => {
+      if (!action.response.conversation) return { ...state }
+      const conversation = action.response.conversation
+      const idx = state.conversations.findIndex(i => i.get('_id').toString() === conversation._id.toString())
+      if (idx === -1) return { ...state }
+
+      return {
+        ...state,
+        conversations: state.conversations.delete(idx)
       }
     },
 
@@ -71,6 +88,18 @@ const reducer = handleActions(
       }
     },
 
+    [SET_CURRENT_CONVERSATION.SUCCESS]: (state, action) => {
+      const conversation = action.payload.conversation
+      console.log(conversation)
+      if (!conversation) return { ...state }
+
+      return {
+        ...state,
+        loadingSingleConversation: false,
+        currentConversation: fromJS(conversation)
+      }
+    },
+
     [UNLOAD_SINGLE_CONVERSATION.SUCCESS]: state => {
       return {
         ...state,
@@ -85,11 +114,18 @@ const reducer = handleActions(
     [MESSAGES_UI_RECEIVE.SUCCESS]: (state, action) => {
       const message = fromJS(action.payload.message)
       const isOwner = action.payload.isOwner
-
+      console.log('ACTION:')
+      console.log(action)
       let conversation = state.conversations.find(
         c => c.get('_id').toString() === message.get('conversation').toString()
       )
       const index = state.conversations.indexOf(conversation)
+
+      if (index === -1) {
+        return {
+          ...state
+        }
+      }
 
       conversation = conversation.set(
         'recentMessage',

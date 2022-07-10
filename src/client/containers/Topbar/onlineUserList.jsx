@@ -19,6 +19,9 @@ import { observer } from 'mobx-react'
 import { observable, entries, makeObservable, configure } from 'mobx'
 import { isUndefined } from 'lodash'
 
+import { MESSAGES_SPAWN_CHAT_WINDOW } from 'serverSocket/socketEventConsts'
+import { startConversation } from 'lib2/chat'
+
 import OffCanvas from 'components/OffCanvas'
 
 import UIkit from 'uikit'
@@ -51,13 +54,16 @@ class OnlineUserListPartial extends React.Component {
     return !!this.activeUsers.get(username)
   }
 
-  static onUserClicked (e, id) {
+  onUserClicked (e, _id) {
     e.preventDefault()
-    this.props.socket.emit('spawnChatWindow', id)
     UIkit.offcanvas.hide()
+
+    startConversation(this.props.sessionUser._id, _id).then(conversation => {
+      this.props.socket.emit(MESSAGES_SPAWN_CHAT_WINDOW, { convoId: conversation._id })
+    })
   }
 
-  static fromNow (timezone, date) {
+  fromNow (timezone, date) {
     if (isUndefined(date)) {
       return 'Never'
     }
@@ -100,7 +106,7 @@ class OnlineUserListPartial extends React.Component {
                   const isAgentOrAdmin = value.user.role.isAdmin || value.user.role.isAgent
                   return (
                     <li key={key}>
-                      <a className={'no-ajaxy'} onClick={e => OnlineUserListPartial.onUserClicked(e, value.user._id)}>
+                      <a className={'no-ajaxy'} onClick={e => this.onUserClicked(e, value.user._id)}>
                         <div className='user-list-user'>
                           <div className='image'>
                             <img src={`/uploads/users/${image}`} alt='Profile Pic' />
@@ -146,7 +152,7 @@ class OnlineUserListPartial extends React.Component {
                       >
                         {this.isActiveUser(user.get('username'))
                           ? 'Now'
-                          : OnlineUserListPartial.fromNow(timezone, user.get('lastOnline'))}
+                          : this.fromNow(timezone, user.get('lastOnline'))}
                       </span>
                       <div className='user-name'>{user.get('fullname')}</div>
                     </a>

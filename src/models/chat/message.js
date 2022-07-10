@@ -69,8 +69,8 @@ messageSchema.statics.getConversation = function (convoId, callback) {
 
 messageSchema.statics.getConversationWithObject = function (object, callback) {
   const self = this
-  const limit = object.limit === null ? 25 : object.limit
-  const page = object.page === null ? 0 : object.page
+  const limit = !object.limit ? 25 : object.limit
+  const page = !object.page ? 0 : object.page
 
   return new Promise((resolve, reject) => {
     ;(async () => {

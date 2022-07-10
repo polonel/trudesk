@@ -109,4 +109,8 @@ apiMessages.single = async (req, res) => {
   }
 }
 
+apiMessages.deleteConversation = async (req, res) => {
+  return apiUtils.sendApiSuccess(res)
+}
+
 module.exports = apiMessages

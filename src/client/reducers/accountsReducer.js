@@ -43,8 +43,8 @@ const reducer = handleActions(
     },
 
     [FETCH_ACCOUNTS.SUCCESS]: (state, action) => {
-      let arr = state.accounts.toArray()
-      action.payload.response.accounts.map(i => {
+      const arr = state.accounts.toArray()
+      action.payload.response.accounts.forEach(i => {
         arr.push(i)
       })
       return {
@@ -63,8 +63,8 @@ const reducer = handleActions(
     },
 
     [FETCH_ACCOUNTS_CREATE_TICKET.SUCCESS]: (state, action) => {
-      let arr = state.accountsCreateTicket.toArray()
-      action.payload.response.accounts.map(i => {
+      const arr = state.accountsCreateTicket.toArray()
+      action.payload.response.accounts.forEach(i => {
         arr.push(i)
       })
       return {
@@ -107,7 +107,7 @@ const reducer = handleActions(
 
       return {
         ...state,
-        accounts: accounts
+        accounts
       }
     },
 

@@ -289,13 +289,18 @@ api.departments.delete = ({ _id }) => {
 }
 
 api.messages = {}
-api.messages.getConversations = payload => {
+api.messages.getConversations = () => {
   return axios.get('/api/v2/messages/conversations').then(res => {
     return res.data
   })
 }
 api.messages.getSingleConversation = ({ _id }) => {
   return axios.get(`/api/v2/messages/conversations/${_id}`).then(res => {
+    return res.data
+  })
+}
+api.messages.deleteConversation = payload => {
+  return axios.delete(`/api/v1/messages/conversation/${payload.convoId}`, payload).then(res => {
     return res.data
   })
 }

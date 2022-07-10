@@ -30,6 +30,7 @@ import SocketGlobal from 'containers/Global/SocketGlobal'
 import SessionLoader from 'lib2/sessionLoader'
 import HotKeysGlobal from 'containers/Global/HotKeysGlobal'
 import BackupRestoreOverlay from 'containers/Global/BackupRestoreOverlay'
+import ChatDock from 'containers/Global/ChatDock'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -62,6 +63,7 @@ if (document.getElementById('globals')) {
         <SocketGlobal />
         <HotKeysGlobal />
 
+        <ChatDock />
         <BackupRestoreOverlay />
       </>
     </Provider>

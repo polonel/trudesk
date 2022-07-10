@@ -69,6 +69,10 @@ exported.MESSAGES_SEND = '$trudesk:messages:send'
 exported.MESSAGES_UI_RECEIVE = '$trudesk:messages:ui:receive'
 exported.MESSAGES_USER_TYPING = '$trudesk:messages:user_typing'
 exported.MESSAGES_UI_USER_TYPING = '$trudesk:messages:ui:user_typing'
+exported.MESSAGES_SPAWN_CHAT_WINDOW = '$trudesk:messages:spawn_chat_window'
+exported.MESSAGES_UI_SPAWN_CHAT_WINDOW = '$trudesk:messages:ui:spawn_chat_window'
+exported.MESSAGES_SAVE_CHAT_WINDOW = '$trudesk:messages:save_chat_window'
+exported.MESSAGES_SAVE_CHAT_WINDOW_COMPLETE = '$trudesk:messages:save_chat_window_complete'
 
 // NOTICES
 exported.NOTICE_SHOW = '$trudesk:notice:show'

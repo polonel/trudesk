@@ -19,7 +19,9 @@ import {
   MESSAGES_SEND,
   MESSAGES_UI_RECEIVE,
   UNLOAD_SINGLE_CONVERSATION,
-  UNLOAD_CONVERSATIONS
+  UNLOAD_CONVERSATIONS,
+  DELETE_CONVERSATION,
+  SET_CURRENT_CONVERSATION
 } from 'actions/types'
 
 export const fetchConversations = createAction(
@@ -46,6 +48,18 @@ export const unloadSingleConversation = createAction(
   () => ({ thunk: true })
 )
 
+export const deleteConversation = createAction(
+  DELETE_CONVERSATION.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
+
+export const setCurrentConversation = createAction(
+  SET_CURRENT_CONVERSATION.SUCCESS,
+  payload => payload,
+  () => ({ thunk: true })
+)
+
 export const sendMessage = createAction(
   MESSAGES_SEND.ACTION,
   payload => payload,
@@ -53,7 +67,7 @@ export const sendMessage = createAction(
 )
 
 export const receiveMessage = createAction(
-  MESSAGES_UI_RECEIVE.SUCCESS,
+  MESSAGES_UI_RECEIVE.ACTION,
   payload => payload,
   () => ({ thunk: true })
 )

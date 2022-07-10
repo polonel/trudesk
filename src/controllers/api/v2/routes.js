@@ -80,6 +80,7 @@ module.exports = function (middleware, router, controllers) {
 
   router.get('/api/v2/messages/conversations', apiv2Auth, apiv2.messages.getConversations)
   router.get('/api/v2/messages/conversations/:id', apiv2Auth, apiv2.messages.single)
+  router.delete('/api/v2/messages/conversations/:id', apiv2Auth, apiv2.messages.deleteConversation)
 
   // ElasticSearch
   router.get('/api/v2/es/search', middleware.api, apiv2.elasticsearch.search)

@@ -33,7 +33,7 @@ var COLLECTION = 'conversations'
     }
  */
 
-var conversationSchema = mongoose.Schema({
+const conversationSchema = mongoose.Schema({
   title: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -96,7 +96,7 @@ conversationSchema.statics.getConversationsWithLimit = function (userId, limit, 
   return new Promise((resolve, reject) => {
     ;(async () => {
       try {
-        const l = limit || 1000
+        const l = limit || 1000000
         const query = self
           .model(COLLECTION)
           .find({ participants: userId })

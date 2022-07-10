@@ -305,34 +305,33 @@ events.getOpenChatWindows = function (socket) {
 }
 
 events.spawnChatWindow = function (socket) {
-  socket.on('spawnChatWindow', function (userId) {
-    // Get user
-    var userSchema = require('../models/user')
-    userSchema.getUser(userId, function (err, user) {
+  socket.on(socketEventConst.MESSAGES_SPAWN_CHAT_WINDOW, function ({ convoId }) {
+    if (!socket.request.user || !convoId) return true
+
+    const User = require('../models/user')
+    User.getUser(socket.request.user._id, function (err, user) {
       if (err) return true
       if (user !== null) {
-        var u = user.toObject()
-        delete u.password
-        delete u.resetPassHash
-        delete u.resetPassExpire
-        delete u.accessToken
-        delete u.iOSDeviceTokens
-        delete u.deleted
+        user.addOpenChatWindow(convoId)
 
-        utils.sendToSelf(socket, 'spawnChatWindow', u)
+        utils.sendToUser(
+          sharedVars.sockets,
+          sharedVars.usersOnline,
+          user.username,
+          socketEventConst.MESSAGES_UI_SPAWN_CHAT_WINDOW,
+          user
+        )
       }
     })
   })
 }
 
 events.saveChatWindow = function (socket) {
-  socket.on('saveChatWindow', function (data) {
-    var userId = data.userId
-    var convoId = data.convoId
-    var remove = data.remove
+  socket.on(socketEventConst.MESSAGES_SAVE_CHAT_WINDOW, function (data) {
+    const { userId, convoId, remove } = data
 
-    var userSchema = require('../models/user')
-    userSchema.getUser(userId, function (err, user) {
+    const User = require('../models/user')
+    User.getUser(userId, function (err, user) {
       if (err) return true
       if (user !== null) {
         if (remove) {
@@ -340,6 +339,13 @@ events.saveChatWindow = function (socket) {
         } else {
           user.addOpenChatWindow(convoId)
         }
+
+        utils.sendToUser(
+          sharedVars.sockets,
+          sharedVars.usersOnline,
+          user.username,
+          socketEventConst.MESSAGES_SAVE_CHAT_WINDOW_COMPLETE
+        )
       }
     })
   })
