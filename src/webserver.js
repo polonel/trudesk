@@ -57,7 +57,7 @@ let port = nconf.get('port') || 8118
     })
 
     server.listen(port, '0.0.0.0', () => {
-      winston.info('TruDesk is now listening on port: ' + port)
+      winston.info('Trudesk is now listening on port: ' + port)
 
       if (_.isFunction(callback)) return callback()
     })
