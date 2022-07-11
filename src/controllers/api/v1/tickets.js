@@ -1703,17 +1703,17 @@ apiTickets.getTicketStatsForUser = function (req, res) {
  *
  */
 apiTickets.getTagCount = function (req, res) {
-  var cache = global.cache
-  var timespan = req.params.timespan
+  const cache = global.cache
+  let timespan = req.params.timespan
   if (_.isUndefined(timespan) || _.isNaN(timespan)) timespan = 0
 
   if (_.isUndefined(cache)) {
     return res.status(400).send('Tag stats are still loading...')
   }
 
-  var tags = cache.get('tags:' + timespan + ':usage')
+  const tags = cache.get('tags:' + timespan + ':usage')
 
-  res.json({ success: true, tags: tags })
+  res.json({ success: true, tags })
 }
 
 /**
