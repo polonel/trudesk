@@ -61,7 +61,7 @@ if (document.getElementById('globals')) {
         <SingletonHooksContainer />
         <SessionLoader />
         <SocketGlobal />
-        <HotKeysGlobal />
+        {/*<HotKeysGlobal />*/}
 
         <ChatDock />
         <BackupRestoreOverlay />

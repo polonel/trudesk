@@ -58,7 +58,7 @@ class ProfileDropdownPartial extends React.Component {
         id={'profile-drop'}
         className={'profile-drop'}
         showTitlebar={false}
-        minHeight={255}
+        minHeight={185} // 255 with keyboard shortcuts
         minWidth={350}
         topOffset={-5}
         leftOffset={-70}
@@ -83,27 +83,27 @@ class ProfileDropdownPartial extends React.Component {
               </div>
             </div>
           </div>
-          <Spacer showBorder={true} borderSize={1} top={0} bottom={0} />
-          <div className={'user-action-items'}>
-            <EnableSwitch
-              label={'Keyboard Shortcuts'}
-              sublabel={
-                <>
-                  {this.keyboardShortcutsChecked && (
-                    <div className={'sub-label'}>
-                      Press <code>?</code> to view{' '}
-                      <a href='#' className={'no-ajaxy'}>
-                        Shortcuts
-                      </a>
-                    </div>
-                  )}
-                </>
-              }
-              stateName={'keyboard-shortcuts-enable-switch'}
-              checked={this.keyboardShortcutsChecked}
-              onChange={e => this.onKeyboardShortcutsChanged(e)}
-            />
-          </div>
+          {/*<Spacer showBorder={true} borderSize={1} top={0} bottom={0} />*/}
+          {/*<div className={'user-action-items'}>*/}
+          {/*  <EnableSwitch*/}
+          {/*    label={'Keyboard Shortcuts'}*/}
+          {/*    sublabel={*/}
+          {/*      <>*/}
+          {/*        {this.keyboardShortcutsChecked && (*/}
+          {/*          <div className={'sub-label'}>*/}
+          {/*            Press <code>?</code> to view{' '}*/}
+          {/*            <a href='#' className={'no-ajaxy'}>*/}
+          {/*              Shortcuts*/}
+          {/*            </a>*/}
+          {/*          </div>*/}
+          {/*        )}*/}
+          {/*      </>*/}
+          {/*    }*/}
+          {/*    stateName={'keyboard-shortcuts-enable-switch'}*/}
+          {/*    checked={this.keyboardShortcutsChecked}*/}
+          {/*    onChange={e => this.onKeyboardShortcutsChanged(e)}*/}
+          {/*  />*/}
+          {/*</div>*/}
           <Spacer showBorder={true} borderSize={1} top={0} bottom={0} />
           {/*<div className={'profile-drop-dark-section'}></div>*/}
           {/*<Spacer showBorder={true} borderSize={1} top={0} bottom={0} />*/}
