@@ -44,12 +44,12 @@ function register (socket) {
 function eventLoop () {
   updateUsers()
   updateOnlineBubbles()
-  updateConversationsNotifications()
 }
 
 events.onUpdateUsers = function (socket) {
   socket.on('updateUsers', updateUsers)
 }
+
 events.onSetUserOnlineStatus = function (socket) {
   socket.on(socketEventConst.UI_ONLINE_STATUS_SET, data => {
     const state = data.state
@@ -186,45 +186,34 @@ events.updateOnlineBubbles = function (socket) {
   })
 }
 
-async function updateConversationsNotifications () {
-  return // TODO: Disable until we can fix the performance hit on this eventloop.
-  const sockets = await io.fetchSockets()
-  sockets.forEach(function (socket) {
-    if (!socket.request && !socket.request.user) {
-      return
-    }
+async function updateConversationsNotifications (socket) {
+  if (socket && socket.request && socket.request.user) {
+    const user = socket.request.user
+    const Message = require('../models/chat/message')
+    const Conversation = require('../models/chat/conversation')
 
-    const userId = socket.request.user._id
-    const messageSchema = require('../models/chat/message')
-    const conversationSchema = require('../models/chat/conversation')
-    conversationSchema.getConversationsWithLimit(userId, 10, function (err, conversations) {
+    Conversation.getConversationsWithLimit(user._id, 10, (err, conversation) => {
       if (err) {
         winston.warn(err.message)
         return false
       }
 
       const convos = []
-
       async.eachSeries(
-        conversations,
-        function (convo, done) {
+        conversation,
+        (convo, done) => {
           const c = convo.toObject()
 
-          const userMeta =
-            convo.userMeta[
-              _.findIndex(convo.userMeta, function (item) {
-                return item.userId.toString() === userId.toString()
-              })
-            ]
+          const userMeta = convo.userMeta[_.findIndex(convo.userMeta, i => i.userId.toString() === user._id.toString())]
           if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
             return done()
           }
 
-          messageSchema.getMostRecentMessage(c._id, function (err, rm) {
+          Message.getMostRecentMessage(c._id, (err, rm) => {
             if (err) return done(err)
 
-            _.each(c.participants, function (p) {
-              if (p._id.toString() !== userId.toString()) {
+            _.each(c.participants, p => {
+              if (p._id.toString() !== user._id.toString()) {
                 c.partner = p
               }
             })
@@ -248,7 +237,7 @@ async function updateConversationsNotifications () {
             return done()
           })
         },
-        function (err) {
+        err => {
           if (err) return false
           return utils.sendToSelf(socket, socketEventConst.MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, {
             conversations: convos
@@ -256,7 +245,7 @@ async function updateConversationsNotifications () {
         }
       )
     })
-  })
+  }
 }
 
 events.updateConversationsNotifications = function (socket) {
