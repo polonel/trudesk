@@ -73,6 +73,7 @@ exported.MESSAGES_SPAWN_CHAT_WINDOW = '$trudesk:messages:spawn_chat_window'
 exported.MESSAGES_UI_SPAWN_CHAT_WINDOW = '$trudesk:messages:ui:spawn_chat_window'
 exported.MESSAGES_SAVE_CHAT_WINDOW = '$trudesk:messages:save_chat_window'
 exported.MESSAGES_SAVE_CHAT_WINDOW_COMPLETE = '$trudesk:messages:save_chat_window_complete'
+exported.MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS = '$trudesk:messages:ui:conversation_notifications:update'
 
 // NOTICES
 exported.NOTICE_SHOW = '$trudesk:notice:show'

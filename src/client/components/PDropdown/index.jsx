@@ -36,7 +36,7 @@ class PDropDown extends React.Component {
     }
   }
 
-  closeOnClick (e) {
+  closeOnClick () {
     if (this.dropRef.current) {
       document.removeEventListener('mouseup', this.hideDropdownOnMouseUp)
       this.dropRef.current.classList.remove('pDropOpen')
@@ -120,6 +120,8 @@ class PDropDown extends React.Component {
         ref.style.left = left
         ref.style.top = top
         ref.classList.add('pDropOpen')
+
+        this.props.onShow()
       }
     }
   }
@@ -194,6 +196,7 @@ PDropDown.propTypes = {
   minWidth: PropTypes.number,
   isListItems: PropTypes.bool,
   className: PropTypes.string,
+  onShow: PropTypes.func.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
@@ -205,7 +208,8 @@ PDropDown.defaultProps = {
   topOffset: '0',
   leftOffset: '0',
   minHeight: 0,
-  isListItems: true
+  isListItems: true,
+  onShow: () => {}
 }
 
 export default PDropDown

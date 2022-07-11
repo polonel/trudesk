@@ -18,6 +18,7 @@ import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import moment from 'moment-timezone'
 
+import { MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS } from 'serverSocket/socketEventConsts'
 import PDropDown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
@@ -35,18 +36,18 @@ class ConversationsDropdownPartial extends React.Component {
   }
 
   componentDidMount () {
-    this.props.socket.on('updateConversationsNotifications', this.onUpdateConversationsNotifications)
+    this.props.socket.on(MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, this.onUpdateConversationsNotifications)
   }
 
   componentWillUnmount () {
-    this.props.socket.off('updateConversationsNotifications', this.onUpdateConversationsNotifications)
+    this.props.socket.off(MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, this.onUpdateConversationsNotifications)
   }
 
   onUpdateConversationsNotifications (data) {
     if (!helpers.arrayIsEqual(this.conversations, data.conversations)) this.conversations = data.conversations
   }
 
-  static onConversationClicked (e, id) {
+  onConversationClicked (e, id) {
     e.preventDefault()
 
     History.pushState(null, null, `/messages/${id}`)
@@ -61,8 +62,11 @@ class ConversationsDropdownPartial extends React.Component {
         id={'conversations'}
         title={'Conversations'}
         titleHref={'/messages'}
-        topOffset={'-10'}
-        leftOffset={'4'}
+        topOffset={-4}
+        leftOffset={4}
+        onShow={() => {
+          this.props.socket.emit(MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS)
+        }}
         rightComponent={
           <a href={'/messages/startconversation'} className={'hoverUnderline'}>
             Start Conversation
@@ -85,7 +89,7 @@ class ConversationsDropdownPartial extends React.Component {
                 <li key={conversation._id}>
                   <a
                     className='no-ajaxy messageNotification uk-position-relative'
-                    onClick={e => ConversationsDropdownPartial.onConversationClicked(e, conversation._id)}
+                    onClick={e => this.onConversationClicked(e, conversation._id)}
                   >
                     <div className='uk-clearfix'>
                       <div className='profilePic uk-float-left'>
