@@ -18,6 +18,7 @@ import clsx from 'clsx'
 
 class PDropDown extends React.Component {
   dropRef = createRef()
+  pTriggerRef = null
 
   constructor (props) {
     super(props)
@@ -28,7 +29,7 @@ class PDropDown extends React.Component {
 
   hideDropdownOnMouseUp (e) {
     if (this.dropRef.current) {
-      if (!this.dropRef.current.contains(e.target)) {
+      if (!this.dropRef.current.contains(e.target) && !this.pTriggerRef.contains(e.target)) {
         document.removeEventListener('mouseup', this.hideDropdownOnMouseUp)
         this.dropRef.current.classList.remove('pDropOpen')
       }
@@ -47,6 +48,8 @@ class PDropDown extends React.Component {
       console.error('Invalid pTrigger sent to show method')
       return true
     }
+
+    this.pTriggerRef = pTrigger
 
     if (this.dropRef.current) {
       const ref = this.dropRef.current

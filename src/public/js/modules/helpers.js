@@ -1172,11 +1172,9 @@ define([
   }
 
   helpers.hideAllpDropDowns = function () {
-    $('[data-notifications]').each(function () {
-      var drop = $('#' + $(this).attr('data-notifications'))
-      if (drop.hasClass('pDropOpen')) {
-        drop.removeClass('pDropOpen')
-      }
+    $('.p-dropdown').each(function () {
+      const $drop = $(this)
+      if ($drop.hasClass('pDropOpen')) $drop.removeClass('pDropOpen')
     })
   }
 
