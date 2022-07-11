@@ -114,8 +114,6 @@ const reducer = handleActions(
     [MESSAGES_UI_RECEIVE.SUCCESS]: (state, action) => {
       const message = fromJS(action.payload.message)
       const isOwner = action.payload.isOwner
-      console.log('ACTION:')
-      console.log(action)
       let conversation = state.conversations.find(
         c => c.get('_id').toString() === message.get('conversation').toString()
       )
