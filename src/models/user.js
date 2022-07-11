@@ -45,7 +45,6 @@ const COLLECTION = 'accounts'
  * @property {String} tOTPKey One Time Password Secret Key
  * @property {Number} tOTPPeriod One Time Password Key Length (Time) - Default 30 Seconds
  * @property {String} accessToken API Access Token
- * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
  * @property {Object} preferences Object to hold user preferences
  * @property {Boolean} preferences.autoRefreshTicketGrid Enable the auto refresh of the ticket grid.
  * @property {Boolean} deleted Account Deleted
@@ -188,38 +187,6 @@ userSchema.methods.removeL2Auth = function (callback) {
 
     return callback()
   })
-}
-
-userSchema.methods.addDeviceToken = function (token, type, callback) {
-  if (_.isUndefined(token)) return callback('Invalid token')
-  var user = this
-  // type 1 = iOS
-  // type 2 = Android
-  if (type === 1) {
-    if (hasDeviceToken(user, token, type)) return callback(null, token)
-
-    user.iOSDeviceTokens.push(token)
-    user.save(function (err) {
-      if (err) return callback(err, null)
-
-      callback(null, token)
-    })
-  }
-}
-
-userSchema.methods.removeDeviceToken = function (token, type, callback) {
-  var user = this
-  if (type === 1) {
-    if (!hasDeviceToken(user, token, type)) return callback()
-
-    winston.debug('Removing Device: ' + token)
-    user.iOSDeviceTokens.splice(_.indexOf(this.iOSDeviceTokens, token), 1)
-    user.save(function (err, u) {
-      if (err) return callback(err, null)
-
-      return callback(null, u.iOSDeviceTokens)
-    })
-  }
 }
 
 userSchema.methods.addOpenChatWindow = function (convoId, callback) {
@@ -729,37 +696,6 @@ userSchema.statics.getAdmins = function (obj, callback) {
 
       q.exec(callback)
     })
-}
-
-/**
- * Checks if a user has device token already
- *
- * @memberof User
- * @instance
- * @method hasDeviceToken
- *
- * @param {User} user User to check against
- * @param {String} token token to check for in given user
- * @param {Number} type Type of Device token to check.
- * @return {Boolean}
- * @example
- * type:
- *   1: iOS
- *   2: Android
- *   3: Windows
- */
-function hasDeviceToken (user, token, type) {
-  if (type === 1) {
-    var matches = _.filter(user.iOSDeviceTokens, function (value) {
-      if (value === token) {
-        return value
-      }
-    })
-
-    return matches.length > 0
-  }
-
-  return false
 }
 
 module.exports = mongoose.model(COLLECTION, userSchema)

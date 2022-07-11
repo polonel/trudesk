@@ -109,7 +109,7 @@ class GeneralSettings extends React.Component {
           title='Site Url'
           subtitle={
             <div>
-              Publicly accessible URL of this site. <i>ex: {this.props.viewdata.hosturl}</i>
+              Publicly accessible URL of this site. <i>ex: {this.props.viewdata.get('hosturl')}</i>
             </div>
           }
           component={SiteUrl}
@@ -186,7 +186,7 @@ GeneralSettings.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  viewdata: state.common,
+  viewdata: state.common.viewdata,
   settings: state.settings.settings
 })
 

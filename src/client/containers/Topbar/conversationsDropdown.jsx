@@ -44,6 +44,7 @@ class ConversationsDropdownPartial extends React.Component {
   }
 
   onUpdateConversationsNotifications (data) {
+    helpers.setupScrollers()
     if (!helpers.arrayIsEqual(this.conversations, data.conversations)) this.conversations = data.conversations
   }
 
@@ -72,8 +73,20 @@ class ConversationsDropdownPartial extends React.Component {
             Start Conversation
           </a>
         }
+        footerComponent={
+          <div className={'uk-text-center' + (this.conversations.length < 1 ? ' hide' : '')}>
+            <a
+              className={'no-ajaxy hoverUnderline'}
+              onClick={() => {
+                History.pushState(null, null, '/messages')
+              }}
+            >
+              View All Conversations
+            </a>
+          </div>
+        }
       >
-        <div className={'items close-on-click'}>
+        <div className={'items scrollable close-on-click'}>
           <ul>
             {this.conversations.map(conversation => {
               const profilePic = conversation.partner.image || 'defaultProfile.jpg'

@@ -242,7 +242,7 @@ class TicketsSettings extends React.Component {
           subtitle={
             <div>
               Allow the creation of tickets by users that are unregistered. (
-              <a href={viewdata.hosturl + '/newissue'}>{viewdata.hosturl + '/newissue'}</a>)
+              <a href={viewdata.get('hosturl') + '/newissue'}>{viewdata.get('hosturl') + '/newissue'}</a>)
             </div>
           }
           component={
@@ -514,7 +514,7 @@ TicketsSettings.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  viewdata: state.common,
+  viewdata: state.common.viewdata,
   settings: state.settings.settings,
   tagsSettings: state.tagsSettings
 })

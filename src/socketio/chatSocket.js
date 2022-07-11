@@ -192,15 +192,16 @@ async function updateConversationsNotifications (socket) {
     const Message = require('../models/chat/message')
     const Conversation = require('../models/chat/conversation')
 
-    Conversation.getConversationsWithLimit(user._id, 10, (err, conversation) => {
+    Conversation.getConversationsWithLimit(user._id, null, (err, conversations) => {
       if (err) {
         winston.warn(err.message)
         return false
       }
 
       const convos = []
+
       async.eachSeries(
-        conversation,
+        conversations,
         (convo, done) => {
           const c = convo.toObject()
 
@@ -239,8 +240,9 @@ async function updateConversationsNotifications (socket) {
         },
         err => {
           if (err) return false
+
           return utils.sendToSelf(socket, socketEventConst.MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, {
-            conversations: convos
+            conversations: convos.length >= 10 ? convos.slice(0, 9) : convos
           })
         }
       )
