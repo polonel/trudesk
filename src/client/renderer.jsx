@@ -28,6 +28,7 @@ import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
 import ProfileContainer from 'containers/Profile'
 import MessagesContainer from 'containers/Messages'
+import ReportsContainer from 'containers/Reports'
 
 export default function (store) {
   if (document.getElementById('dashboard-container')) {
@@ -131,9 +132,10 @@ export default function (store) {
 
   if (document.getElementById('messages-container')) {
     const conversation = document.getElementById('messages-container').getAttribute('data-conversation-id')
+    const showNewConversation = document.getElementById('messages-container').getAttribute('data-show-new-convo')
     const MessagesContainterWithProvider = (
       <Provider store={store}>
-        <MessagesContainer initialConversation={conversation} />
+        <MessagesContainer initialConversation={conversation} showNewConvo={showNewConversation} />
       </Provider>
     )
 
@@ -148,6 +150,16 @@ export default function (store) {
     )
 
     ReactDOM.render(NoticeContainerWithProvider, document.getElementById('notices-container'))
+  }
+
+  if (document.getElementById('reports-container')) {
+    const ReportsContainerWithProvider = (
+      <Provider store={store}>
+        <ReportsContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(ReportsContainerWithProvider, document.getElementById('reports-container'))
   }
 
   if (document.getElementById('settings-container')) {

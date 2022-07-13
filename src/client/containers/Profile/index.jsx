@@ -31,6 +31,7 @@ class ProfileContainer extends React.Component {
 
   @observable fullname = null
   @observable title = null
+  @observable email = null
   @observable workNumber = null
   @observable mobileNumber = null
   @observable companyName = null
@@ -61,6 +62,7 @@ class ProfileContainer extends React.Component {
     if (prevProps.sessionUser === null && this.props.sessionUser !== null) {
       this.fullname = this.props.sessionUser.fullname
       this.title = this.props.sessionUser.title
+      this.email = this.props.sessionUser.email
       this.workNumber = this.props.sessionUser.workNumber
       this.mobileNumber = this.props.sessionUser.mobileNumber
       this.companyName = this.props.sessionUser.companyName
@@ -71,6 +73,7 @@ class ProfileContainer extends React.Component {
   }
 
   _validateEmail (email) {
+    if (!email) return false
     return email
       .toString()
       .toLowerCase()

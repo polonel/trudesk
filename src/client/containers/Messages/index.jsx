@@ -42,6 +42,7 @@ class MessagesContainer extends React.Component {
   @observable mutableUserList = []
   @observable singleConversationLoaded = false
   @observable typingTimers = {}
+  @observable showNewConvoLoaded = false
 
   conversationScrollSpy = createRef()
   userTypingBubbles = createRef()
@@ -72,12 +73,27 @@ class MessagesContainer extends React.Component {
         this.scrollToMessagesBottom(true)
       })
     }
+
+    // if (this.props.showNewConvo === 'true') {
+    //   this.showUserList()
+    // }
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
     helpers.resizeAll()
     helpers.setupScrollers()
     this.setupContextMenu()
+
+    // Hack in a way to show the user list on the /startconversation route
+    if (
+      !prevProps.sessionUser &&
+      this.props.sessionUser &&
+      this.props.showNewConvo === 'true' &&
+      !this.showNewConvoLoaded
+    ) {
+      this.showNewConvoLoaded = true
+      this.showUserList()
+    }
   }
 
   componentWillUnmount () {
@@ -141,7 +157,7 @@ class MessagesContainer extends React.Component {
   }
 
   showUserList (e) {
-    e.preventDefault()
+    if (e) e.preventDefault()
     if (this.props.sessionUser.role.isAdmin || this.props.sessionUser.role.isAgent)
       this.props.fetchAccounts({ type: 'all', limit: -1 }).then(() => {
         this.mutableUserList = this.props.accountsState.accounts
@@ -155,7 +171,7 @@ class MessagesContainer extends React.Component {
   }
 
   hideUserList (e) {
-    e.preventDefault()
+    if (e) e.preventDefault()
     this.props.unloadAccounts()
     this.userListShown = false
   }
@@ -521,7 +537,8 @@ MessagesContainer.propTypes = {
   sendMessage: PropTypes.func.isRequired,
   receiveMessage: PropTypes.func.isRequired,
   messagesState: PropTypes.object.isRequired,
-  initialConversation: PropTypes.string
+  initialConversation: PropTypes.string,
+  showNewConvo: PropTypes.string
 }
 
 const mapStateToProps = state => ({
