@@ -661,7 +661,7 @@
 
                 var adminInfoFormData = $('form#adminAccount').serializeObject();
                 var $usernameField, $fullnameField, $passwordField, $confirmPasswordField, $emailField;
-                var $usernameValid = false, $fullnameValid = false, $passwordValid = false, $emailValid = false;
+                var $usernameValid = false, $fullnameValid = false, $passwordValid = false, $confirmPasswordValid = false, $emailValid = false;
 
                 if (!adminInfoFormData['admin-username'] || (adminInfoFormData['admin-username'].length < 5)) {
                     $usernameField = $('form#adminAccount').find('input#admin-username');
@@ -701,6 +701,8 @@
                     $passwordField.parent('.md-input-wrapper').removeClass('has-error');
                     $passwordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
                     $passwordField.removeClass('uk-form-danger');
+                    
+                    $passwordValid = true;
                 }
 
                 if (!adminInfoFormData['admin-cpassword'] || (adminInfoFormData['admin-cpassword'] !== adminInfoFormData['admin-password'])) {
@@ -714,7 +716,7 @@
                     $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
                     $confirmPasswordField.removeClass('uk-form-danger');
 
-                    $passwordValid = true;
+                    $confirmPasswordValid = true;
                 }
 
                 if (!adminInfoFormData['admin-email'] || (!validateEmail(adminInfoFormData['admin-email']))) {
@@ -734,6 +736,7 @@
                 if (!$usernameValid ||
                     !$fullnameValid ||
                     !$passwordValid ||
+                    !$confirmPasswordValid ||
                     !$emailValid)
                     return false;
 
