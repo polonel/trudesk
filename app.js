@@ -58,6 +58,13 @@ checkForOldConfig()
 const configExists = fs.existsSync(configFile)
 
 function launchInstallServer () {
+  // Load the defaults for the install server
+  nconf.defaults({
+    tokens: {
+      secret: chance.hash() + chance.md5()
+    }
+  })
+
   const ws = require('./src/webserver')
   ws.installServer(function () {
     return winston.info('Trudesk Install Server Running...')
