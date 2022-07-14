@@ -53,6 +53,7 @@ define([
 
     self.resizeFullHeight()
     self.setupScrollers()
+    self.registerFormValidators()
     self.formvalidator()
     self.pToolTip()
     self.setupDonutchart()
@@ -1024,6 +1025,19 @@ define([
     })
   }
 
+  helpers.registerFormValidators = function () {
+    if (!('validate_shortDate' in $.formUtils.validators)) {
+      $.formUtils.addValidator({
+        name: 'shortDate',
+        validatorFunction: function (value) {
+          return moment(value, helpers.getShortDateFormat(), true).isValid()
+        },
+        errorMessage: 'Invalid Date (' + helpers.getShortDateFormat() + ')',
+        errorMessageKey: 'invalidShortDate'
+      })
+    }
+  }
+
   helpers.formvalidator = function () {
     $.validate({
       errorElementClass: 'uk-form-danger',
@@ -1535,15 +1549,17 @@ define([
   }
 
   helpers.formatDate = function (date, format) {
-    var timezone = this.getTimezone()
+    let timezone = this.getTimezone()
     if (!timezone) {
       timezone = 'America/New_York'
     }
 
-    return moment
-      .utc(date)
-      .tz(timezone)
-      .format(format)
+    return (
+      moment(date)
+        .utc(true)
+        // .tz(timezone)
+        .format(format)
+    )
   }
 
   helpers.setupChosen = function () {

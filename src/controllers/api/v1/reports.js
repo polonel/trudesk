@@ -56,7 +56,7 @@ var apiReports = {
  }
  */
 apiReports.generate.ticketsByGroup = function (req, res) {
-  var postData = req.body
+  const postData = req.body
   if (!postData || !postData.startDate || !postData.endDate)
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
@@ -75,7 +75,7 @@ apiReports.generate.ticketsByGroup = function (req, res) {
     function (err, tickets) {
       if (err) return res.status(400).json({ success: false, error: err })
 
-      var input = processReportData(tickets)
+      const input = processReportData(tickets)
 
       tickets = null
 
@@ -615,11 +615,11 @@ apiReports.generate.ticketsByAssignee = function (req, res) {
 }
 
 function processReportData (tickets) {
-  var input = []
-  for (var i = 0; i < tickets.length; i++) {
-    var ticket = tickets[i]
+  const input = []
+  for (let i = 0; i < tickets.length; i++) {
+    const ticket = tickets[i]
 
-    var t = []
+    const t = []
     t.push(ticket.uid)
     t.push(ticket.type.name)
     t.push(ticket.priority.name)
@@ -634,8 +634,8 @@ function processReportData (tickets) {
       t.push('')
     }
 
-    var tags = ''
-    for (var k = 0; k < ticket.tags.length; k++) {
+    let tags = ''
+    for (let k = 0; k < ticket.tags.length; k++) {
       if (k === ticket.tags.length - 1) {
         tags += ticket.tags[k].name
       } else {

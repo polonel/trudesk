@@ -112,6 +112,9 @@ export const UPDATE_NOTICE = defineAction('UPDATE_NOTICE', [SUCCESS, PENDING, ER
 export const DELETE_NOTICE = defineAction('DELETE_NOTICE', [PENDING, SUCCESS, ERROR])
 export const UNLOAD_NOTICES = defineAction('UNLOAD_NOTICES', [SUCCESS])
 
+// Reports
+export const GENERATE_REPORT = defineAction('GENERATE_REPORT', [SUCCESS, PENDING, ERROR])
+
 // Search
 export const FETCH_SEARCH_RESULTS = defineAction('FETCH_SEARCH_RESULTS', [SUCCESS, PENDING, ERROR])
 export const UNLOAD_SEARCH_RESULTS = defineAction('UNLOAD_SEARCH_RESULTS', [SUCCESS])

@@ -201,6 +201,8 @@ define('modules/ajaxify', ['jquery', 'lodash', 'modules/helpers', 'history'], fu
               window.react.dom.unmountComponentAtNode(document.getElementById('notices-container'))
             if (document.getElementById('messages-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('messages-container'))
+            if (document.getElementById('reports-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('reports-container'))
 
             // if (document.getElementById('modal-wrapper'))
             //   window.react.dom.unmountComponentAtNode(document.getElementById('modal-wrapper'))

@@ -24,6 +24,7 @@ import DepartmentSaga from './departments'
 import NoticeSage from './notices'
 import SearchSaga from './search'
 import MessagesSaga from './messages'
+import ReportsSaga from './reports'
 
 export default function * IndexSagas () {
   yield all([
@@ -37,6 +38,7 @@ export default function * IndexSagas () {
     DepartmentSaga(),
     NoticeSage(),
     SearchSaga(),
-    MessagesSaga()
+    MessagesSaga(),
+    ReportsSaga()
   ])
 }

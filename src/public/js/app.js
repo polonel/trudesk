@@ -21,8 +21,6 @@ require(['jquery', 'modules/helpers', 'async', 'singleton/sessionSingleton', 'si
   SessionService,
   SettingsService
 ) {
-  helpers.init()
-
   $(document).ready(function () {
     // Call the Session service before bootstrapping.
     // Allowing the SessionUser to be populated before the controllers have access.
@@ -38,6 +36,8 @@ require(['jquery', 'modules/helpers', 'async', 'singleton/sessionSingleton', 'si
       function (err) {
         if (err) console.log(err)
         if (err) throw new Error(err)
+
+        helpers.init()
 
         require(['lodash', 'uikit', 'modules/ajaxify', 'pace'], function (_, nav) {
           // React Bootstrap

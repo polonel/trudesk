@@ -466,8 +466,10 @@ class SingleTicketContainer extends React.Component {
                                 Clear
                               </a>
                               <DatePicker
+                                name={'ticket_due_date'}
                                 format={helpers.getShortDateFormat()}
                                 value={this.ticket.dueDate}
+                                small={true}
                                 onChange={e => {
                                   const dueDate = moment(e.target.value, helpers.getShortDateFormat())
                                     .utc()

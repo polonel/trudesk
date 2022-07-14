@@ -335,6 +335,11 @@ api.notices.delete = ({ _id }) => {
   })
 }
 
+api.reports = {}
+api.reports.generate = payload => {
+  return axios.post(`/api/v1/reports/generate/${payload.type}`, payload)
+}
+
 api.search = {}
 api.search.search = ({ limit, term }) => {
   const l = limit || 25
