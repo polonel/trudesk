@@ -22,6 +22,7 @@ import {
   CREATE_TICKET_TYPE,
   HIDE_MODAL,
   DELETE_TICKET_TYPE,
+  FETCH_PRIORITIES,
   CREATE_PRIORITY,
   DELETE_PRIORITY,
   UPDATE_PRIORITY,
@@ -149,6 +150,21 @@ function * getTagsWithPage ({ payload }) {
   }
 }
 
+function * fetchPriorities ({ payload, meta }) {
+  try {
+    const response = yield call(api.tickets.fetchPriorities, payload)
+    yield put({ type: FETCH_PRIORITIES.SUCCESS, response, meta })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: FETCH_PRIORITIES.ERROR, error })
+  }
+}
+
 function * createPriority ({ payload }) {
   try {
     const response = yield call(api.tickets.createPriority, payload)
@@ -247,6 +263,7 @@ export default function * watcher () {
   yield takeEvery(TICKET_EVENT.ACTION, ticketEvent)
   yield takeLatest(CREATE_TICKET_TYPE.ACTION, createTicketType)
   yield takeLatest(DELETE_TICKET_TYPE.ACTION, deleteTicketType)
+  yield takeLatest(FETCH_PRIORITIES.ACTION, fetchPriorities)
   yield takeLatest(CREATE_PRIORITY.ACTION, createPriority)
   yield takeLatest(UPDATE_PRIORITY.ACTION, updatePriority)
   yield takeLatest(DELETE_PRIORITY.ACTION, deletePriority)

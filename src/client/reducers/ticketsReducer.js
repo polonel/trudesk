@@ -22,7 +22,8 @@ import {
   UNLOAD_TICKETS,
   DELETE_TICKET,
   TICKET_EVENT,
-  FETCH_TICKET_TYPES
+  FETCH_TICKET_TYPES,
+  FETCH_PRIORITIES
 } from 'actions/types'
 
 const initialState = {
@@ -216,6 +217,13 @@ const reducer = handleActions(
         ...state,
         loadingTicketTypes: false,
         types: fromJS(action.response.ticketTypes),
+        priorities: fromJS(action.response.priorities)
+      }
+    },
+
+    [FETCH_PRIORITIES.SUCCESS]: (state, action) => {
+      return {
+        ...state,
         priorities: fromJS(action.response.priorities)
       }
     }

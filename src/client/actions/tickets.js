@@ -17,6 +17,7 @@ import {
   CREATE_TICKET_TYPE,
   RENAME_TICKET_TYPE,
   DELETE_TICKET_TYPE,
+  FETCH_PRIORITIES,
   CREATE_PRIORITY,
   DELETE_PRIORITY,
   UPDATE_PRIORITY,
@@ -47,6 +48,11 @@ export const ticketEvent = createAction(TICKET_EVENT.ACTION)
 export const createTicketType = createAction(CREATE_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const renameTicketType = createAction(RENAME_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const deleteTicketType = createAction(DELETE_TICKET_TYPE.ACTION, (id, newTypeId) => ({ id, newTypeId }))
+export const fetchPriorities = createAction(
+  FETCH_PRIORITIES.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
 export const createPriority = createAction(CREATE_PRIORITY.ACTION, ({ name, overdueIn, htmlColor }) => ({
   name,
   overdueIn,

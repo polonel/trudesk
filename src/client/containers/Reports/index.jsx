@@ -10,6 +10,7 @@ import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
 
 import ReportTicketByGroups from 'containers/Reports/subreports/ticketsByGroups'
+import ReportTicketsByPriorities from 'containers/Reports/subreports/ticketsByPriorities'
 
 import helpers from 'lib/helpers'
 
@@ -33,7 +34,6 @@ class ReportsContainer extends React.Component {
 
   onSelectReportClicked (e, type) {
     e.preventDefault()
-    console.log(type)
     this.selectedReport = type
   }
 
@@ -62,6 +62,15 @@ class ReportsContainer extends React.Component {
                           Tickets by Groups
                         </a>
                       </li>
+                      <li>
+                        <a
+                          href='#'
+                          className={'no-ajaxy'}
+                          onClick={e => this.onSelectReportClicked(e, 'tickets_by_priorities')}
+                        >
+                          Tickets by Priorities
+                        </a>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -77,6 +86,7 @@ class ReportsContainer extends React.Component {
                   </h3>
                 )}
                 {this.selectedReport === 'tickets_by_groups' && <ReportTicketByGroups />}
+                {this.selectedReport === 'tickets_by_priorities' && <ReportTicketsByPriorities />}
               </div>
             </div>
           </GridItem>

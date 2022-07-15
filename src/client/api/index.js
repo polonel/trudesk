@@ -110,6 +110,12 @@ api.tickets.deleteTicketType = ({ id, newTypeId }) => {
     return res.data
   })
 }
+
+api.tickets.fetchPriorities = () => {
+  return axios.get('/api/v1/tickets/priorities').then(res => {
+    return res.data
+  })
+}
 api.tickets.createPriority = ({ name, overdueIn, htmlColor }) => {
   return axios
     .post('/api/v1/tickets/priority/create', {

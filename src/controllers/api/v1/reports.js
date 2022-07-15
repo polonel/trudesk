@@ -150,12 +150,12 @@ apiReports.generate.ticketsByTeam = function (req, res) {
  }
  */
 apiReports.generate.ticketsByPriority = function (req, res) {
-  var postData = req.body
+  const postData = req.body
 
   async.waterfall(
     [
       function (done) {
-        if (_.includes(postData.groups, '-1')) {
+        if (_.includes(postData.groups, 'all')) {
           if (req.user.role.isAdmin || req.user.role.isAgent) {
             groupSchema.getAllGroupsNoPopulate(function (err, grps) {
               if (err) return done(err)
@@ -186,7 +186,7 @@ apiReports.generate.ticketsByPriority = function (req, res) {
           function (err, tickets) {
             if (err) return done(err)
 
-            var input = processReportData(tickets)
+            const input = processReportData(tickets)
 
             tickets = null
 
