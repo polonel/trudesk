@@ -34,6 +34,11 @@ viewController.getData = function (request, cb) {
         }
       },
       function (callback) {
+        const packageJson = require('../../../package.json')
+        viewdata.version = packageJson.version
+        return callback()
+      },
+      function (callback) {
         async.parallel(
           [
             function (done) {

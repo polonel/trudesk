@@ -29,6 +29,7 @@ import NoticeContainer from 'containers/Notice/NoticeContainer'
 import ProfileContainer from 'containers/Profile'
 import MessagesContainer from 'containers/Messages'
 import ReportsContainer from 'containers/Reports'
+import AboutContainer from 'containers/About'
 
 export default function (store) {
   if (document.getElementById('dashboard-container')) {
@@ -170,5 +171,15 @@ export default function (store) {
     )
 
     ReactDOM.render(SettingsContainerWithProvider, document.getElementById('settings-container'))
+  }
+
+  if (document.getElementById('about-container')) {
+    const AboutContainerWithProvider = (
+      <Provider store={store}>
+        <AboutContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(AboutContainerWithProvider, document.getElementById('about-container'))
   }
 }
