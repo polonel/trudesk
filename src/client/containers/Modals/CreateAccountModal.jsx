@@ -114,8 +114,8 @@ class CreateAccountModal extends React.Component {
       groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
       role: this.selectedRole,
-      password: this.password.length > 1 ? this.password : undefined,
-      passwordConfirm: this.passwordConfirm.length > 1 ? this.passwordConfirm : undefined
+      password: this.password.length > 3 ? this.password : undefined,
+      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : undefined
     }
 
     this.props.createAccount(payload)
@@ -180,8 +180,8 @@ class CreateAccountModal extends React.Component {
                   value={this.fullname}
                   onChange={e => this.onInputChanged(e, 'fullname')}
                   data-validation={'length'}
-                  data-validation-length={'min2'}
-                  data-validation-error-msg={'Name must contain at least 2 characters.'}
+                  data-validation-length={'min1'}
+                  data-validation-error-msg={'Name must contain at least 1 character.'}
                 />
               </div>
               <div className='uk-float-left uk-width-1-2'>
