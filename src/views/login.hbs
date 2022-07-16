@@ -226,7 +226,7 @@
         $('#loginForm').submit(function(e) {
             var u = $('#login-username').val();
             var p = $('#login-password').val();
-            if (u.length < 3 || p.length < 3)
+            if (u.length < 4 || p.length < 4)
                 e.preventDefault();
         });
 
