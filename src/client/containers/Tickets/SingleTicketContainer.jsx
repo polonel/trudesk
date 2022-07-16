@@ -274,6 +274,16 @@ class SingleTicketContainer extends React.Component {
 
     // Perms
     const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update')
+    const hasTicketStatusUpdate = () => {
+      const isAgent = this.props.sessionUser.role.isAgent
+      const isAdmin = this.props.sessionUser.role.isAdmin
+      if (isAgent || isAdmin) {
+        return helpers.canUser('tickets:update')
+      } else {
+        if (!this.ticket) return false
+        return helpers.hasPermOverRole(this.ticket.owner.role, this.sessionUser.role, 'tickets:update', false)
+      }
+    }
 
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
@@ -292,7 +302,7 @@ class SingleTicketContainer extends React.Component {
                     status={this.ticket.status}
                     socket={this.props.socket}
                     onStatusChange={status => (this.ticket.status = status)}
-                    hasPerm={hasTicketUpdate}
+                    hasPerm={hasTicketStatusUpdate()}
                   />
                 </div>
                 {/*  Left Side */}

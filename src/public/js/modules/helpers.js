@@ -1464,13 +1464,13 @@ define([
   }
 
   helpers.setTimezone = function () {
-    var $timezone = $('#__timezone')
-    var timezone
+    const $timezone = $('#__timezone')
+    let timezone
     if ($timezone.length < 1) {
       Cookies.set('$trudesk:timezone', 'America/New_York')
     } else {
       timezone = Cookies.get('$trudesk:timezone')
-      var __timezone = $timezone.text()
+      const __timezone = $timezone.text()
       if (!timezone) {
         Cookies.set('$trudesk:timezone', __timezone)
       } else if (timezone !== __timezone) {
@@ -1485,7 +1485,7 @@ define([
   }
 
   helpers.getTimezone = function () {
-    var timezone = Cookies.get('$trudesk:timezone')
+    let timezone = Cookies.get('$trudesk:timezone')
     if (!timezone) {
       timezone = 'America/New_York'
     }
