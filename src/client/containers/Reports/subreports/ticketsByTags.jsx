@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { fetchGroups, unloadGroups } from 'actions/groups'
-import { fetchPriorities } from 'actions/tickets'
+import { getTagsWithPage } from 'actions/tickets'
 import { generateReport } from 'actions/reports'
 
 import TruCard from 'components/TruCard'
@@ -16,27 +16,27 @@ import SpinLoader from 'components/SpinLoader'
 import moment from 'moment-timezone'
 import helpers from 'lib/helpers'
 
-const ReportTicketsByPriorities = () => {
+const ReportTicketsByTags = () => {
   const groupsState = useSelector(state => state.groupsState)
-  const ticketsState = useSelector(state => state.ticketsState)
+  const tagsSettings = useSelector(state => state.tagsSettings)
   const dispatch = useDispatch()
 
   const [groups, setGroups] = useState([])
-  const [priorities, setPriorities] = useState([])
+  const [tags, setTags] = useState([])
 
   const [isLoading, setIsLoading] = useState(false)
 
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [selectedGroups, setSelectedGroups] = useState([])
-  const [selectedPriorities, setSelectedPriorities] = useState([])
+  const [selectedTags, setSelectedTags] = useState([])
 
   useEffect(() => {
     helpers.UI.inputs()
     helpers.formvalidator()
 
     dispatch(fetchGroups())
-    dispatch(fetchPriorities())
+    dispatch(getTagsWithPage({ limit: -1, page: 0 }))
 
     setStartDate(
       moment()
@@ -66,11 +66,9 @@ const ReportTicketsByPriorities = () => {
   }, [groupsState])
 
   useEffect(() => {
-    const p = ticketsState.priorities
-      .map(priority => ({ text: priority.get('name'), value: priority.get('_id') }))
-      .toArray()
-    setPriorities(p)
-  }, [ticketsState])
+    const t = tagsSettings.tags.map(tag => ({ text: tag.get('name'), value: tag.get('_id') })).toArray()
+    setTags(t)
+  }, [tagsSettings])
 
   const onFormSubmit = e => {
     e.preventDefault()
@@ -78,12 +76,12 @@ const ReportTicketsByPriorities = () => {
     setIsLoading(true)
     dispatch(
       generateReport({
-        type: 'tickets_by_priority',
-        filename: `report_tickets_by_priority__${moment(startDate).format('MMDDYYYY')}`,
+        type: 'tickets_by_tags',
+        filename: `report_tickets_by_tags__${moment(startDate).format('MMDDYYYY')}`,
         startDate,
         endDate,
         groups: selectedGroups,
-        priorities: selectedPriorities
+        tags: selectedTags
       })
     ).then(() => {
       setIsLoading(false)
@@ -96,7 +94,7 @@ const ReportTicketsByPriorities = () => {
         hover={false}
         header={
           <div style={{ padding: '10px 15px' }}>
-            <h4 style={{ width: '100%', textAlign: 'left', fontSize: '14px', margin: 0 }}>Tickets by Priorities</h4>
+            <h4 style={{ width: '100%', textAlign: 'left', fontSize: '14px', margin: 0 }}>Tickets by Tags</h4>
           </div>
         }
         extraContentClass={'nopadding'}
@@ -153,13 +151,13 @@ const ReportTicketsByPriorities = () => {
                   </GridItem>
                   <GridItem width={'1-1'}>
                     <div className='uk-margin-medium-top uk-margin-medium-bottom'>
-                      <label htmlFor='priorities'>Priorities</label>
+                      <label htmlFor='priorities'>Tags</label>
                       <SingleSelect
                         multiple={true}
-                        items={priorities}
-                        value={selectedPriorities}
+                        items={tags}
+                        value={selectedTags}
                         onSelectChange={(e, value) => {
-                          setSelectedPriorities(value)
+                          setSelectedTags(value)
                         }}
                       />
                     </div>
@@ -186,4 +184,4 @@ const ReportTicketsByPriorities = () => {
   )
 }
 
-export default ReportTicketsByPriorities
+export default ReportTicketsByTags

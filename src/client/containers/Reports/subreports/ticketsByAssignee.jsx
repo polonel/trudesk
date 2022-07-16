@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { fetchGroups, unloadGroups } from 'actions/groups'
-import { fetchPriorities } from 'actions/tickets'
+import { fetchAccounts, unloadAccounts } from 'actions/accounts'
 import { generateReport } from 'actions/reports'
 
 import TruCard from 'components/TruCard'
@@ -16,27 +16,27 @@ import SpinLoader from 'components/SpinLoader'
 import moment from 'moment-timezone'
 import helpers from 'lib/helpers'
 
-const ReportTicketsByPriorities = () => {
+const ReportTicketsByAssignee = () => {
   const groupsState = useSelector(state => state.groupsState)
-  const ticketsState = useSelector(state => state.ticketsState)
+  const accountsState = useSelector(state => state.accountsState)
   const dispatch = useDispatch()
 
   const [groups, setGroups] = useState([])
-  const [priorities, setPriorities] = useState([])
+  const [agents, setAgents] = useState([])
 
   const [isLoading, setIsLoading] = useState(false)
 
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [selectedGroups, setSelectedGroups] = useState([])
-  const [selectedPriorities, setSelectedPriorities] = useState([])
+  const [selectedAssignee, setSelectedAssignee] = useState([])
 
   useEffect(() => {
     helpers.UI.inputs()
     helpers.formvalidator()
 
     dispatch(fetchGroups())
-    dispatch(fetchPriorities())
+    dispatch(fetchAccounts({ type: 'agents' }))
 
     setStartDate(
       moment()
@@ -52,6 +52,7 @@ const ReportTicketsByPriorities = () => {
 
     return () => {
       dispatch(unloadGroups())
+      dispatch(unloadAccounts())
     }
   }, [])
 
@@ -66,11 +67,11 @@ const ReportTicketsByPriorities = () => {
   }, [groupsState])
 
   useEffect(() => {
-    const p = ticketsState.priorities
-      .map(priority => ({ text: priority.get('name'), value: priority.get('_id') }))
+    const a = accountsState.accounts
+      .map(account => ({ text: account.get('fullname'), value: account.get('_id') }))
       .toArray()
-    setPriorities(p)
-  }, [ticketsState])
+    setAgents(a)
+  }, [accountsState])
 
   const onFormSubmit = e => {
     e.preventDefault()
@@ -78,12 +79,12 @@ const ReportTicketsByPriorities = () => {
     setIsLoading(true)
     dispatch(
       generateReport({
-        type: 'tickets_by_priority',
-        filename: `report_tickets_by_priority__${moment(startDate).format('MMDDYYYY')}`,
+        type: 'tickets_by_assignee',
+        filename: `report_tickets_by_assignee__${moment(startDate).format('MMDDYYYY')}`,
         startDate,
         endDate,
         groups: selectedGroups,
-        priorities: selectedPriorities
+        assignee: selectedAssignee
       })
     ).then(() => {
       setIsLoading(false)
@@ -96,7 +97,7 @@ const ReportTicketsByPriorities = () => {
         hover={false}
         header={
           <div style={{ padding: '10px 15px' }}>
-            <h4 style={{ width: '100%', textAlign: 'left', fontSize: '14px', margin: 0 }}>Tickets by Priorities</h4>
+            <h4 style={{ width: '100%', textAlign: 'left', fontSize: '14px', margin: 0 }}>Tickets by Assignee</h4>
           </div>
         }
         extraContentClass={'nopadding'}
@@ -153,13 +154,13 @@ const ReportTicketsByPriorities = () => {
                   </GridItem>
                   <GridItem width={'1-1'}>
                     <div className='uk-margin-medium-top uk-margin-medium-bottom'>
-                      <label htmlFor='priorities'>Priorities</label>
+                      <label htmlFor='priorities'>Assignee</label>
                       <SingleSelect
                         multiple={true}
-                        items={priorities}
-                        value={selectedPriorities}
+                        items={agents}
+                        value={selectedAssignee}
                         onSelectChange={(e, value) => {
-                          setSelectedPriorities(value)
+                          setSelectedAssignee(value)
                         }}
                       />
                     </div>
@@ -186,4 +187,4 @@ const ReportTicketsByPriorities = () => {
   )
 }
 
-export default ReportTicketsByPriorities
+export default ReportTicketsByAssignee

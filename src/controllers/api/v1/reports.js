@@ -235,12 +235,12 @@ apiReports.generate.ticketsByPriority = function (req, res) {
  }
  */
 apiReports.generate.ticketsByStatus = function (req, res) {
-  var postData = req.body
+  const postData = req.body
 
   async.waterfall(
     [
       function (done) {
-        if (_.includes(postData.groups, '-1')) {
+        if (_.includes(postData.groups, 'all')) {
           if (req.user.role.isAdmin || req.user.role.isAgent) {
             groupSchema.getAllGroupsNoPopulate(function (err, grps) {
               if (err) return done(err)
@@ -275,7 +275,7 @@ apiReports.generate.ticketsByStatus = function (req, res) {
           function (err, tickets) {
             if (err) return done(err)
 
-            var input = processReportData(tickets)
+            const input = processReportData(tickets)
 
             tickets = null
 
@@ -324,12 +324,12 @@ apiReports.generate.ticketsByStatus = function (req, res) {
  }
  */
 apiReports.generate.ticketsByTags = function (req, res) {
-  var postData = req.body
+  const postData = req.body
 
   async.waterfall(
     [
       function (done) {
-        if (_.includes(postData.groups, '-1')) {
+        if (_.includes(postData.groups, 'all')) {
           if (req.user.role.isAdmin || req.user.role.isAgent) {
             groupSchema.getAllGroupsNoPopulate(function (err, grps) {
               if (err) return done(err)
@@ -364,7 +364,7 @@ apiReports.generate.ticketsByTags = function (req, res) {
           function (err, tickets) {
             if (err) return done(err)
 
-            var input = processReportData(tickets)
+            const input = processReportData(tickets)
 
             tickets = null
 
@@ -413,11 +413,11 @@ apiReports.generate.ticketsByTags = function (req, res) {
  }
  */
 apiReports.generate.ticketsByType = function (req, res) {
-  var postData = req.body
+  const postData = req.body
   async.waterfall(
     [
       function (done) {
-        if (_.includes(postData.groups, '-1')) {
+        if (_.includes(postData.groups, 'all')) {
           if (req.user.role.isAdmin || req.user.role.isAgent) {
             groupSchema.getAllGroupsNoPopulate(function (err, grps) {
               if (err) return done(err)
@@ -452,7 +452,7 @@ apiReports.generate.ticketsByType = function (req, res) {
           function (err, tickets) {
             if (err) return done(err)
 
-            var input = processReportData(tickets)
+            const input = processReportData(tickets)
 
             tickets = null
 
@@ -501,11 +501,11 @@ apiReports.generate.ticketsByType = function (req, res) {
  }
  */
 apiReports.generate.ticketsByUser = function (req, res) {
-  var postData = req.body
+  const postData = req.body
   async.waterfall(
     [
       function (done) {
-        if (_.includes(postData.groups, '-1')) {
+        if (_.includes(postData.groups, 'all')) {
           if (req.user.role.isAdmin || req.user.role.isAgent) {
             groupSchema.getAllGroupsNoPopulate(function (err, grps) {
               if (err) return done(err)
@@ -540,7 +540,7 @@ apiReports.generate.ticketsByUser = function (req, res) {
           function (err, tickets) {
             if (err) return done(err)
 
-            var input = processReportData(tickets)
+            const input = processReportData(tickets)
 
             tickets = null
 
@@ -558,11 +558,11 @@ apiReports.generate.ticketsByUser = function (req, res) {
 }
 
 apiReports.generate.ticketsByAssignee = function (req, res) {
-  var postData = req.body
+  const postData = req.body
   async.waterfall(
     [
       function (done) {
-        if (_.includes(postData.groups, '-1')) {
+        if (_.includes(postData.groups, 'all')) {
           if (req.user.role.isAdmin || req.user.role.isAgent) {
             groupSchema.getAllGroupsNoPopulate(function (err, grps) {
               if (err) return done(err)
@@ -591,13 +591,13 @@ apiReports.generate.ticketsByAssignee = function (req, res) {
                 start: postData.startDate,
                 end: postData.endDate
               },
-              assignee: postData.assignees
+              assignee: postData.assignee
             }
           },
           function (err, tickets) {
             if (err) return done(err)
 
-            var input = processReportData(tickets)
+            const input = processReportData(tickets)
 
             tickets = null
 
