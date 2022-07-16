@@ -691,7 +691,7 @@
                     $fullnameValid = true;
                 }
 
-                if (!adminInfoFormData['admin-password'] || (adminInfoFormData['admin-password'].length < 6)) {
+                if (!adminInfoFormData['admin-password'] || (adminInfoFormData['admin-password'].length < 5)) {
                     $passwordField = $('form#adminAccount').find('input#admin-password');
                     $passwordField.parent('.md-input-wrapper').addClass('has-error');
                     $passwordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
