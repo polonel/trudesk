@@ -1,3 +1,28 @@
+## [1.2.5](https://github.com/polonel/trudesk/compare/v1.2.4...v1.2.5) (2022-07-17)
+
+
+### Bug Fixes
+
+* **accounts:** account creation fail with groups ([2e5420f](https://github.com/polonel/trudesk/commit/2e5420f))
+* **accounts:** invalid user function [unstable] ([f62045a](https://github.com/polonel/trudesk/commit/f62045a))
+* **core:** logout route with new passport ([1280521](https://github.com/polonel/trudesk/commit/1280521))
+* **core:** pDropDown flag for notices ([806a1df](https://github.com/polonel/trudesk/commit/806a1df))
+* **db:** mongo flag for version upgrade ([d8670fd](https://github.com/polonel/trudesk/commit/d8670fd))
+* **messages:** account population fields ([2ad5c14](https://github.com/polonel/trudesk/commit/2ad5c14))
+* **notices:** missing create notice option ([278a492](https://github.com/polonel/trudesk/commit/278a492))
+* **notices:** unable to deactivate notice through socket ([a2d9103](https://github.com/polonel/trudesk/commit/a2d9103))
+* **permissions:** agents not allowed to update tickets correctly ([dba6679](https://github.com/polonel/trudesk/commit/dba6679))
+* **readme:** kubernetes readme ([5765e9c](https://github.com/polonel/trudesk/commit/5765e9c))
+* **server:** install server not loading correctly ([37d8bf3](https://github.com/polonel/trudesk/commit/37d8bf3))
+* **session:** correctly load tokens from file ([24ea446](https://github.com/polonel/trudesk/commit/24ea446))
+* **settings:** missing values when moving to react ([24993c9](https://github.com/polonel/trudesk/commit/24993c9))
+* **tags:** add tag modal not displaying create tag modal ([4b141e6](https://github.com/polonel/trudesk/commit/4b141e6))
+* **tags:** clear button not working on AddTagsModal ([08b92db](https://github.com/polonel/trudesk/commit/08b92db))
+* **tickets:** not able to set status once closed ([a8fb844](https://github.com/polonel/trudesk/commit/a8fb844))
+* **ui:** conversation dropdown not populating ([4869ef1](https://github.com/polonel/trudesk/commit/4869ef1))
+* **ui:** pDropdown trigger closes on 2nd click ([e614ed6](https://github.com/polonel/trudesk/commit/e614ed6))
+* **ui:** top groups not fetching correct data ([07ecb87](https://github.com/polonel/trudesk/commit/07ecb87))
+
 ## [1.2.4](https://github.com/polonel/trudesk/compare/v1.2.3...v1.2.4) (2022-06-19)
 
 
