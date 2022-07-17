@@ -11,12 +11,13 @@ WORKDIR /usr/src/trudesk
 COPY . /usr/src/trudesk
 
 RUN apk add --no-cache --update bash make gcc g++ python3
-RUN yarn install --production=true
-RUN npm rebuild bcrypt node-sass --build-from-source
+RUN yarn plugin import workspace-tools
+RUN yarn workspace focus --all --production
 RUN cp -R node_modules prod_node_modules
-RUN yarn install --production=false
+RUN yarn install
 RUN yarn build
 RUN rm -rf node_modules && mv prod_node_modules node_modules
+RUN rm -rf .yarn/cache
 
 FROM node:16.14-alpine
 WORKDIR /usr/src/trudesk
