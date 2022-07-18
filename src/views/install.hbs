@@ -663,7 +663,7 @@
                 var $usernameField, $fullnameField, $passwordField, $confirmPasswordField, $emailField;
                 var $usernameValid = false, $fullnameValid = false, $passwordValid = false, $confirmPasswordValid = false, $emailValid = false;
 
-                if (!adminInfoFormData['admin-username'] || (adminInfoFormData['admin-username'].length < 5)) {
+                if (!adminInfoFormData['admin-username'] || (adminInfoFormData['admin-username'].length < 4)) {
                     $usernameField = $('form#adminAccount').find('input#admin-username');
                     $usernameField.parent('.md-input-wrapper').addClass('has-error');
                     $usernameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
@@ -691,7 +691,7 @@
                     $fullnameValid = true;
                 }
 
-                if (!adminInfoFormData['admin-password'] || (adminInfoFormData['admin-password'].length < 5)) {
+                if (!adminInfoFormData['admin-password'] || (adminInfoFormData['admin-password'].length < 4)) {
                     $passwordField = $('form#adminAccount').find('input#admin-password');
                     $passwordField.parent('.md-input-wrapper').addClass('has-error');
                     $passwordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
