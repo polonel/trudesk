@@ -44,7 +44,7 @@ middleware.redirectToDashboardIfLoggedIn = function (req, res, next) {
       return middleware.ensurel2Auth(req, res, next)
     }
 
-    if (req.user.role === 'user') {
+    if (!req.user.role.isAdmin || !req.user.role.isAgent) {
       return res.redirect('/tickets')
     }
 

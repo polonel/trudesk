@@ -12,7 +12,7 @@ COPY . /usr/src/trudesk
 
 RUN apk add --no-cache --update bash make gcc g++ python3
 RUN yarn plugin import workspace-tools
-RUN yarn workspace focus --all --production
+RUN yarn workspaces focus --all --production
 RUN cp -R node_modules prod_node_modules
 RUN yarn install
 RUN yarn build
