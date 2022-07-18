@@ -108,6 +108,16 @@ function checkForOldConfig () {
 
 function start () {
   if (!isDocker) loadConfig()
+  if (isDocker) {
+    // Load some defaults for JWT token that is missing when using docker
+    const jwt = process.env.TRUDESK_JWTSECRET
+    nconf.defaults({
+      tokens: {
+        secret: jwt || chance.hash() + chance.md5(),
+        expires: 900
+      }
+    })
+  }
 
   const _db = require('./src/database')
 
