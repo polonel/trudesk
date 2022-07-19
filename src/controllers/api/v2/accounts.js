@@ -62,6 +62,17 @@ accountsApi.create = async function (req, res) {
   const chance = new Chance()
 
   try {
+    if (postData.password == undefined || postData.passwordConfirm == undefined) throw new Error('Password length is too short.')
+
+    // SETTINGS
+    const SettingsUtil = require('../../../settings/settingsUtil')
+    const settingsContent = await SettingsUtil.getSettings()
+    const settings = settingsContent.data.settings
+    const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
+
+    if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
+    throw new Error('Password does not meet requirements')
+
     let user = await User.create({
       username: postData.username,
       email: postData.email,
@@ -272,7 +283,7 @@ accountsApi.update = async function (req, res) {
         user.password = postData.password
         passwordUpdated = true
       } else throw new Error('Password and Confirm Password do not match.')
-    }
+    } else throw new Error('Password length is too short.')
 
     if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
     if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
