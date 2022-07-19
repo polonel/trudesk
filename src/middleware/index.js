@@ -56,8 +56,13 @@ module.exports = function (app, db, callback) {
   app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
-  if (process.env.NODE_ENV === 'production') app.use(expressStaticGzip(path.join(__dirname, '../../public')))
-  else app.use(express.static(path.join(__dirname, '../../public')))
+  if (global.env === 'production') {
+    app.use(
+      expressStaticGzip(path.join(__dirname, '../../public'), {
+        index: false
+      })
+    )
+  } else app.use(express.static(path.join(__dirname, '../../public')))
 
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
@@ -87,7 +92,7 @@ module.exports = function (app, db, callback) {
         app.use(
           session({
             secret: sessionSecret,
-            cookie: cookie,
+            cookie,
             store: sessionStore,
             saveUninitialized: false,
             resave: false

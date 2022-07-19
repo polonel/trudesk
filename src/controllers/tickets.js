@@ -308,7 +308,6 @@ ticketsController.processor = function (req, res) {
   content.data.page = object.page
   content.data.filter = object.filter
 
-  // return res.sendFile(path.resolve('public/js/index.html'))
   return res.render(processor.renderpage, content)
 }
 
