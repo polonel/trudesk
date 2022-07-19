@@ -1,11 +1,9 @@
 # Logs
 *.log
 
-#compressed files
-*.gz
-
 # Yarn Cache
 .yarn/cache
+.yarn/*.gz
 
 # Runtime data
 pids
