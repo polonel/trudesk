@@ -122,8 +122,13 @@ class ProfileContainer extends React.Component {
       return
     }
 
+    if (this.currentPassword.length < 4 || this.newPassword.length < 4 || this.confirmPassword.length < 4) {
+      helpers.UI.showSnackbar('Password length is too short', true)
+      return
+    }
+    
     if (this.currentPassword.length > 255 || this.newPassword.length > 255 || this.confirmPassword.length > 255) {
-      helpers.UI.showSnackbar('Password length is too long')
+      helpers.UI.showSnackbar('Password length is too long', true)
       return
     }
 
