@@ -148,8 +148,10 @@ class ProfileContainer extends React.Component {
       })
       .then(() => {
         this.editingProfile = false
-        this.props.setSessionUser()
-        helpers.UI.showSnackbar('Profile saved successfully.')
+        helpers.forceSessionUpdate().then(() => {
+          this.props.setSessionUser()
+          helpers.UI.showSnackbar('Profile saved successfully.')
+        })
       })
   }
 

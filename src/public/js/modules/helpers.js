@@ -75,13 +75,24 @@ define([
     self.UI.onlineUserSearch()
     self.UI.showLinkWarning('.link-warning')
 
-    var layout = self.onWindowResize()
+    const layout = self.onWindowResize()
 
     // Initial Call to Load Layout
     layout()
     $(window).resize(layout)
 
     self.loaded = true
+  }
+
+  helpers.forceSessionUpdate = () => {
+    return new Promise((resolve, reject) => {
+      if (!window.trudeskSessionService) return reject(new Error('SessionService is not loaded'))
+
+      window.trudeskSessionService.forceUpdate(() => {
+        const refreshedSessionUser = window.trudeskSessionService.getUser()
+        return resolve(refreshedSessionUser)
+      })
+    })
   }
 
   helpers.countUpMe = function () {
@@ -1639,29 +1650,27 @@ define([
 
     if (adminOverride === true && role.isAdmin) return true
 
-    if (_.isUndefined(role)) return false
-    if (_.isUndefined(roles)) return false
-    if (__.hasIn(role, '_id')) role = role._id
-    var rolePerm = _.find(roles, { _id: role })
-    if (_.isUndefined(rolePerm)) return false
-    if (_.indexOf(rolePerm.grants, '*') !== -1) return true
-    if (_.isUndefined(a)) return false
+    if (!role || !roles) return false
 
-    var actionType = a.split(':')[0]
-    var action = a.split(':')[1]
+    if (__.hasIn(role, '_id')) role = role._id
+    const rolePerm = _.find(roles, { _id: role })
+    if (!rolePerm) return false
+    if (_.indexOf(rolePerm.grants, '*') !== -1) return true
+    if (!a) return false
+
+    const actionType = a.split(':')[0]
+    const action = a.split(':')[1]
 
     if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-    var result = _.filter(rolePerm.grants, function (value) {
+    const result = _.filter(rolePerm.grants, function (value) {
       if (__.startsWith(value, actionType + ':')) return value
     })
 
-    if (_.isUndefined(result) || _.size(result) < 1) return false
-    if (_.size(result) === 1) {
-      if (result[0] === '*') return true
-    }
+    if (!result || _.size(result) < 1) return false
+    if (_.size(result) === 1 && result[0] === '*') return true
 
-    var typePerm = result[0].split(':')[1].split(' ')
+    let typePerm = result[0].split(':')[1].split(' ')
     typePerm = _.uniq(typePerm)
 
     if (_.indexOf(typePerm, '*') !== -1) return true

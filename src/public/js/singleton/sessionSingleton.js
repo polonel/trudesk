@@ -10,11 +10,19 @@ let groups = null
 let roles = null
 let roleOrder = null
 
-SessionService.init = callback => {
-  if (instance) {
+SessionService.init = (callback, force) => {
+  if (instance && !force) {
     if (typeof callback === 'function') return callback(null, instance)
 
     return
+  }
+
+  if (force) {
+    instance = null
+    sessionUser = null
+    groups = null
+    roles = null
+    roleOrder = null
   }
 
   async.series(
@@ -93,6 +101,9 @@ SessionService.getUser = () => sessionUser
 SessionService.getRoles = () => roles
 SessionService.getRoleOrder = () => roleOrder
 SessionService.getInstance = () => instance
+SessionService.forceUpdate = callback => {
+  SessionService.init(callback, true)
+}
 
 if (_.isUndefined(window.trudeskSessionService) || window.trudeskSessionService === null)
   window.trudeskSessionService = SessionService
