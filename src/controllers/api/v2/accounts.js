@@ -273,6 +273,7 @@ accountsApi.update = async function (req, res) {
       !_.isUndefined(postData.passwordConfirm) &&
       !_.isEmpty(postData.passwordConfirm)
     ) {
+      if (postData.password.length < 4 || postData.passwordConfirm.length < 4) throw new Error('Password length is too short.')
       if (postData.password === postData.passwordConfirm) {
         if (passwordComplexityEnabled) {
           if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
@@ -281,7 +282,7 @@ accountsApi.update = async function (req, res) {
         user.password = postData.password
         passwordUpdated = true
       } else throw new Error('Password and Confirm Password do not match.')
-    } else throw new Error('Password length is too short.')
+    }
 
     if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
     if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
