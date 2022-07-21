@@ -123,8 +123,8 @@ class EditAccountModal extends React.Component {
       groups: !this.isAgentRole && this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.isAgentRole && this.teamsSelect ? this.teamsSelect.getSelected() : undefined,
       role: this.selectedRole,
-      password: this.password.length > 3 ? this.password : undefined,
-      passwordConfirm: this.confirmPassword.length > 3 ? this.confirmPassword : undefined
+      password: this.password.length > 0 ? this.password : undefined,
+      passwordConfirm: this.confirmPassword.length > 0 ? this.confirmPassword : undefined
     }
 
     this.props.saveEditAccount(data)
