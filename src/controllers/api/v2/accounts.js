@@ -22,8 +22,6 @@ const Group = require('../../../models/group')
 const Team = require('../../../models/team')
 const Department = require('../../../models/department')
 const passwordComplexity = require('../../../settings/passwordComplexity')
-const SettingsUtil = require('../../../settings/settingsUtil')
-const Session = require('../../../models/session')
 
 const accountsApi = {}
 
@@ -62,8 +60,7 @@ accountsApi.create = async function (req, res) {
   const chance = new Chance()
 
   try {
-    if (postData.password == undefined || postData.passwordConfirm == undefined)
-      throw new Error('Password length is too short.')
+    if (!postData.password || !postData.passwordConfirm) throw new Error('Password length is too short.')
 
     // SETTINGS
     const SettingsUtil = require('../../../settings/settingsUtil')
