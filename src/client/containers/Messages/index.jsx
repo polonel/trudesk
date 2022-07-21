@@ -413,11 +413,11 @@ class MessagesContainer extends React.Component {
                 style={{ marginBottom: '41px !important' }}
               >
                 <span className={'conversation-start'}>
-                  Conversation Started on {currentConversation.get('createdAt')}
+                  Conversation Started on {helpers.formatDate(currentConversation.get('createdAt'), helpers.getLongDateWithTimeFormat())}
                 </span>
                 {currentConversation.get('requestingUserMeta').get('deletedAt') && (
                   <span className={'conversation-deleted'}>
-                    Conversation Deleted at {currentConversation.get('requestingUserMeta').get('deletedAt')}
+                    Conversation Deleted at {helpers.formatDate(currentConversation.get('requestingUserMeta').get('deletedAt'), helpers.getLongDateWithTimeFormat())}
                   </span>
                 )}
                 <div ref={this.conversationScrollSpy} className={clsx('uk-text-center', 'uk-hidden')}>
