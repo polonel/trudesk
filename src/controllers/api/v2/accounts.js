@@ -62,7 +62,8 @@ accountsApi.create = async function (req, res) {
   const chance = new Chance()
 
   try {
-    if (postData.password == undefined || postData.passwordConfirm == undefined) throw new Error('Password length is too short.')
+    if (postData.password == undefined || postData.passwordConfirm == undefined)
+      throw new Error('Password length is too short.')
 
     // SETTINGS
     const SettingsUtil = require('../../../settings/settingsUtil')
@@ -71,7 +72,7 @@ accountsApi.create = async function (req, res) {
     const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
-    throw new Error('Password does not meet requirements')
+      throw new Error('Password does not meet requirements')
 
     let user = await User.create({
       username: postData.username,
@@ -388,6 +389,11 @@ accountsApi.saveProfile = async (req, res) => {
     if (!_.isUndefined(payload.workNumber) && !_.isNull(payload.workNumber)) dbUser.workNumber = payload.workNumber
     if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber))
       dbUser.mobileNumber = payload.mobileNumber
+
+    // User Preferences
+    if (!_.isUndefined(payload.preferences) && !_.isNull(payload.preferences)) {
+      if (payload.preferences.timezone) dbUser.preferences.timezone = payload.preferences.timezone
+    }
 
     dbUser = await dbUser.save()
     return apiUtil.sendApiSuccess(res, { user: dbUser })

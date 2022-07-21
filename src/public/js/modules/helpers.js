@@ -41,15 +41,13 @@ define([
 
   helpers.loaded = false
   helpers.init = function (reload) {
-    var self = this
+    const self = this
     if (reload) self.loaded = false
     if (self.loaded) {
       console.warn('Helpers already loaded. Possible double load.')
     }
 
     self.prototypes()
-
-    self.setTimezone()
 
     self.resizeFullHeight()
     self.setupScrollers()
@@ -1463,34 +1461,15 @@ define([
     })
   }
 
-  helpers.setTimezone = function () {
-    const $timezone = $('#__timezone')
-    let timezone
-    if ($timezone.length < 1) {
-      Cookies.set('$trudesk:timezone', 'America/New_York')
-    } else {
-      timezone = Cookies.get('$trudesk:timezone')
-      const __timezone = $timezone.text()
-      if (!timezone) {
-        Cookies.set('$trudesk:timezone', __timezone)
-      } else if (timezone !== __timezone) {
-        Cookies.set('$trudesk:timezone', __timezone)
-      }
-    }
-
-    timezone = Cookies.get('$trudesk:timezone')
-
-    moment.tz.setDefault(timezone)
-    $timezone.remove()
-  }
-
   helpers.getTimezone = function () {
-    let timezone = Cookies.get('$trudesk:timezone')
-    if (!timezone) {
-      timezone = 'America/New_York'
+    const sessionUser = window.trudeskSessionService.getUser()
+    if (sessionUser && sessionUser.preferences && sessionUser.preferences.timezone) {
+      return sessionUser.preferences.timezone
     }
 
-    return timezone
+    // Lets get the server Timezone as the default
+    const settings = window.trudeskSettingsService.getSettings()
+    return settings.timezone.value || 'America/New_York' // Return America/New_York as the fallback
   }
 
   helpers.getTimeFormat = function () {
@@ -1548,18 +1527,18 @@ define([
     return `${helpers.getShortDateFormat()} ${helpers.getTimeFormat()}`
   }
 
-  helpers.formatDate = function (date, format) {
-    let timezone = this.getTimezone()
-    if (!timezone) {
-      timezone = 'America/New_York'
-    }
+  helpers.formatDate = function (date, format, isUTC) {
+    const timezone = this.getTimezone()
 
-    return (
-      moment(date)
+    if (isUTC)
+      return moment(date)
         .utc(true)
-        // .tz(timezone)
+        .tz(timezone)
         .format(format)
-    )
+
+    return moment(date)
+      .tz(timezone)
+      .format(format)
   }
 
   helpers.setupChosen = function () {

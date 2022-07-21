@@ -86,7 +86,7 @@ commonV1.getLoggedInUser = function (req, res) {
     return res.status(400).json({ success: false, error: 'Invalid Auth' })
   }
 
-  var resUser = _.clone(req.user._doc)
+  const resUser = _.clone(req.user._doc)
   delete resUser.resetPassExpire
   delete resUser.accessToken
   delete resUser.resetPassHash
@@ -94,7 +94,6 @@ commonV1.getLoggedInUser = function (req, res) {
   delete resUser.iOSDeviceTokens
   delete resUser.tOTPKey
   delete resUser.__v
-  delete resUser.preferences
 
   return res.json({ success: true, user: resUser })
 }

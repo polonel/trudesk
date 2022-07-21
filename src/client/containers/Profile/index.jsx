@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import axios from 'axios'
+import moment from 'moment-timezone'
 
 import { saveProfile, genMFA } from 'actions/accounts'
 import { showModal, hideModal, setSessionUser } from 'actions/common'
@@ -21,6 +22,7 @@ import TruTabSection from 'components/TruTabs/TruTabSection'
 import Input from 'components/Input'
 import QRCode from 'components/QRCode'
 import TruAccordion from 'components/TruAccordion'
+import SingleSelect from 'components/SingleSelect'
 
 import helpers from 'lib/helpers'
 import RGrid from 'components/RGrid'
@@ -51,15 +53,23 @@ class ProfileContainer extends React.Component {
   @observable l2ShowCantSeeQR = null
   @observable l2VerifyText = null
 
+  // Prefs
+  @observable timezone = null
+
   constructor (props) {
     super(props)
 
     makeObservable(this)
   }
 
+  componentDidMount () {
+    // This will update the profile with the latest values
+    this.props.setSessionUser()
+  }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     // This should load initial state values
-    if (prevProps.sessionUser === null && this.props.sessionUser !== null) {
+    if (prevProps.sessionUser !== this.props.sessionUser) {
       this.fullname = this.props.sessionUser.fullname
       this.title = this.props.sessionUser.title
       this.email = this.props.sessionUser.email
@@ -69,6 +79,10 @@ class ProfileContainer extends React.Component {
       this.facebookUrl = this.props.sessionUser.facebookUrl
       this.linkedinUrl = this.props.sessionUser.linkedinUrl
       this.twitterUrl = this.props.sessionUser.twitterUrl
+
+      if (this.props.sessionUser.preferences) {
+        this.timezone = this.props.sessionUser.preferences.timezone
+      }
     }
   }
 
@@ -82,9 +96,30 @@ class ProfileContainer extends React.Component {
       )
   }
 
+  _getTimezones () {
+    return moment.tz
+      .names()
+      .map(function (name) {
+        const year = new Date().getUTCFullYear()
+        const timezoneAtBeginningOfyear = moment.tz(year + '-01-01', name)
+        return {
+          utc: timezoneAtBeginningOfyear.utcOffset(),
+          text: '(GMT' + timezoneAtBeginningOfyear.format('Z') + ') ' + name,
+          value: name
+        }
+      })
+      .sort(function (a, b) {
+        return a.utc - b.utc
+      })
+  }
+
+  onTimezoneSelectChange = e => {
+    this.timezone = e.target.value
+  }
+
   onSaveProfileClicked = e => {
     e.preventDefault()
-    if ((this.fullname && this.fullname.length) > 25 || (this.email && this.email.length > 25)) {
+    if ((this.fullname && this.fullname.length) > 50 || (this.email && this.email.length > 50)) {
       helpers.UI.showSnackbar('Field length too long', true)
       return
     }
@@ -106,11 +141,15 @@ class ProfileContainer extends React.Component {
         companyName: this.companyName,
         facebookUrl: this.facebookUrl,
         linkedinUrl: this.linkedinUrl,
-        twitterUrl: this.twitterUrl
+        twitterUrl: this.twitterUrl,
+        preferences: {
+          timezone: this.timezone
+        }
       })
       .then(() => {
         this.editingProfile = false
         this.props.setSessionUser()
+        helpers.UI.showSnackbar('Profile saved successfully.')
       })
   }
 
@@ -126,7 +165,7 @@ class ProfileContainer extends React.Component {
       helpers.UI.showSnackbar('Password length is too short', true)
       return
     }
-    
+
     if (this.currentPassword.length > 255 || this.newPassword.length > 255 || this.confirmPassword.length > 255) {
       helpers.UI.showSnackbar('Password length is too long', true)
       return
@@ -310,10 +349,11 @@ class ProfileContainer extends React.Component {
               <div>
                 <TruTabWrapper style={{ padding: '0' }}>
                   <TruTabSelectors showTrack={true}>
-                    <TruTabSelector selectorId={0} label={'Profile'} active={true} />
+                    <TruTabSelector selectorId={0} label={'Profile'} active={false} />
                     <TruTabSelector selectorId={1} label={'Security'} />
+                    <TruTabSelector selectorId={2} label={'Preferences'} active={true} />
                   </TruTabSelectors>
-                  <TruTabSection sectionId={0} active={true} style={{ minHeight: 480 }}>
+                  <TruTabSection sectionId={0} active={false} style={{ minHeight: 480 }}>
                     <div style={{ maxWidth: 900, padding: '10px 25px' }}>
                       <h4 style={{ marginBottom: 15 }}>Work Information</h4>
                       <div style={{ display: 'flex' }}>
@@ -568,6 +608,28 @@ class ProfileContainer extends React.Component {
                           </div>
                         }
                       />
+                    </div>
+                  </TruTabSection>
+                  <TruTabSection sectionId={2} style={{ minHeight: 480 }} active={true}>
+                    <div style={{ maxWidth: 450, padding: '10px 25px' }}>
+                      <h4 style={{ marginBottom: 15 }}>UI Preferences</h4>
+                      <div className={'uk-clearfix uk-margin-large-bottom'}>
+                        <label style={{ fontSize: '13px' }}>Timezone</label>
+                        <SingleSelect
+                          items={this._getTimezones()}
+                          defaultValue={this.timezone || undefined}
+                          onSelectChange={e => this.onTimezoneSelectChange(e)}
+                        />
+                      </div>
+                      <div>
+                        <Button
+                          text={'Save Preferences'}
+                          style={'primary'}
+                          small={true}
+                          type={'button'}
+                          onClick={e => this.onSaveProfileClicked(e)}
+                        />
+                      </div>
                     </div>
                   </TruTabSection>
                 </TruTabWrapper>
