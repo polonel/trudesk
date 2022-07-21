@@ -102,7 +102,9 @@
                             <h3>{{data.ticket.subject}}</h3>
                             <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                             <br>
-                            <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date (concat data.common.longDateFormat data.common.timeFormat true true)}}</time>
+                            <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">
+                                {{formatDate data.ticket.date (concat data.common.longDateFormat data.common.timeFormat true true) data.user.preferences.timezone}}
+                            </time>
                             <br>
                             <br>
                             <div class="issue-body">
@@ -122,7 +124,7 @@
                                     <h3>Re: {{../data.ticket.subject}}</h3>
                                     <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
                                     <br>
-                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}</time>
+                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date (concat ../data.common.longDateFormat ../data.common.timeFormat true true) ../data.user.preferences.timezone}}</time>
                                     <br>
                                     <div class="comment-body">
                                         <p>{{{comment}}}</p>
@@ -136,7 +138,7 @@
                         {{#foreach data.ticket.history}}
                             <div style="font-size: 12px; margin-bottom: 15px; margin-top: 20px; margin-left: 50px; ">
                                 <div style="font-weight: bold;">{{description}}</div>
-                                <div>By {{owner.fullname}} - {{formatDate date (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}</div>
+                                <div>By {{owner.fullname}} - {{formatDate date (concat ../data.common.longDateFormat ../data.common.timeFormat true true) ../data.user.preferences.timezone}}</div>
                                 <hr />
                             </div>
 
