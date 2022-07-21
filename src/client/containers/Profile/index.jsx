@@ -349,11 +349,11 @@ class ProfileContainer extends React.Component {
               <div>
                 <TruTabWrapper style={{ padding: '0' }}>
                   <TruTabSelectors showTrack={true}>
-                    <TruTabSelector selectorId={0} label={'Profile'} active={false} />
+                    <TruTabSelector selectorId={0} label={'Profile'} active={true} />
                     <TruTabSelector selectorId={1} label={'Security'} />
-                    <TruTabSelector selectorId={2} label={'Preferences'} active={true} />
+                    <TruTabSelector selectorId={2} label={'Preferences'} />
                   </TruTabSelectors>
-                  <TruTabSection sectionId={0} active={false} style={{ minHeight: 480 }}>
+                  <TruTabSection sectionId={0} active={true} style={{ minHeight: 480 }}>
                     <div style={{ maxWidth: 900, padding: '10px 25px' }}>
                       <h4 style={{ marginBottom: 15 }}>Work Information</h4>
                       <div style={{ display: 'flex' }}>
@@ -610,7 +610,7 @@ class ProfileContainer extends React.Component {
                       />
                     </div>
                   </TruTabSection>
-                  <TruTabSection sectionId={2} style={{ minHeight: 480 }} active={true}>
+                  <TruTabSection sectionId={2} style={{ minHeight: 480 }}>
                     <div style={{ maxWidth: 450, padding: '10px 25px' }}>
                       <h4 style={{ marginBottom: 15 }}>UI Preferences</h4>
                       <div className={'uk-clearfix uk-margin-large-bottom'}>
