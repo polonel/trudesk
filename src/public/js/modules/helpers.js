@@ -1537,6 +1537,10 @@ define([
   helpers.getShortDateWithTimeFormat = function () {
     return `${helpers.getShortDateFormat()} ${helpers.getTimeFormat()}`
   }
+  
+  helpers.getLongDateWithTimeFormat = function () {
+    return `${helpers.getLongDateFormat()} ${helpers.getTimeFormat()}`
+  }
 
   helpers.formatDate = function (date, format, isUTC) {
     const timezone = this.getTimezone()
