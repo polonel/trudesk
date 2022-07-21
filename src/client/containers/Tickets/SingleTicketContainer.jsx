@@ -275,13 +275,13 @@ class SingleTicketContainer extends React.Component {
     // Perms
     const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update')
     const hasTicketStatusUpdate = () => {
-      const isAgent = this.props.sessionUser.role.isAgent
-      const isAdmin = this.props.sessionUser.role.isAdmin
+      const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
+      const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
       if (isAgent || isAdmin) {
         return helpers.canUser('tickets:update')
       } else {
-        if (!this.ticket) return false
-        return helpers.hasPermOverRole(this.ticket.owner.role, this.sessionUser.role, 'tickets:update', false)
+        if (!this.ticket || !this.props.sessionUser) return false
+        return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
       }
     }
 
