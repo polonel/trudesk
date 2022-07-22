@@ -12,141 +12,112 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var winston = require('winston')
-var apiUtils = require('../apiUtils')
-var Ticket = require('../../../models/ticket')
-const TicketType = require('../../../models/tickettype')
-const Priorities = require('../../../models/ticketpriority')
-const TicketTags = require('../../../models/tag')
-var Group = require('../../../models/group')
-var Department = require('../../../models/department')
-var permissions = require('../../../permissions')
-const nconf = require('nconf')
-const request = require('axios')
+const _ = require('lodash')
+const async = require('async')
+const logger = require('../../../logger')
+const apiUtils = require('../apiUtils')
+const Models = require('../../../models')
+const permissions = require('../../../permissions')
 
-var ticketsV2 = {}
+const ticketsV2 = {}
 
 ticketsV2.create = function (req, res) {
-  var postTicket = req.body
+  const postTicket = req.body
   if (!postTicket) return apiUtils.sendApiError_InvalidPostData(res)
 }
 
-ticketsV2.get = function (req, res) {
-  var query = req.query
-  var type = query.type || 'all'
+ticketsV2.get = async (req, res) => {
+  const query = req.query
+  const type = query.type || 'all'
+
+  let limit = 50
+  let page = 0
 
   try {
-    var limit = query.limit ? parseInt(query.limit) : 50
-    var page = query.page ? parseInt(query.page) : 0
+    limit = query.limit ? parseInt(query.limit) : limit
+    page = query.page ? parseInt(query.page) : page
   } catch (e) {
-    winston.debug(e)
+    logger.warn(e)
     return apiUtils.sendApiError_InvalidPostData(res)
   }
 
-  var queryObject = {
-    limit: limit,
-    page: page
+  const queryObject = {
+    limit,
+    page
   }
 
-  async.waterfall(
-    [
-      function (next) {
-        if (req.user.role.isAdmin || req.user.role.isAgent) {
-          Department.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
-            if (err) return next(err)
-
-            var groups = dbGroups.map(function (g) {
-              return g._id
-            })
-
-            return next(null, groups)
-          })
-        } else {
-          Group.getAllGroupsOfUser(req.user._id, next)
-        }
-      },
-      function (groups, next) {
-        var mappedGroups = groups.map(function (g) {
-          return g._id
-        })
-
-        switch (type.toLowerCase()) {
-          case 'active':
-            queryObject.status = [0, 1, 2]
-            break
-          case 'assigned':
-            queryObject.filter = {
-              assignee: [req.user._id]
-            }
-            break
-          case 'unassigned':
-            queryObject.unassigned = true
-            break
-          case 'new':
-            queryObject.status = [0]
-            break
-          case 'open':
-            queryObject.status = [1]
-            break
-          case 'pending':
-            queryObject.status = [2]
-            break
-          case 'closed':
-            queryObject.status = [3]
-            break
-          case 'filter':
-            try {
-              queryObject.filter = JSON.parse(query.filter)
-              queryObject.status = queryObject.filter.status
-            } catch (error) {
-              winston.warn(error)
-            }
-            break
-        }
-
-        if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
-
-        Ticket.getTicketsWithObject(mappedGroups, queryObject, function (err, tickets) {
-          if (err) return next(err)
-          return next(null, mappedGroups, tickets)
-        })
-      },
-      function (mappedGroups, tickets, done) {
-        Ticket.getCountWithObject(mappedGroups, queryObject, function (err, count) {
-          if (err) return done(err)
-
-          return done(null, {
-            tickets: tickets,
-            totalCount: count
-          })
-        })
-      }
-    ],
-    function (err, resultObject) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res, {
-        tickets: resultObject.tickets,
-        count: resultObject.tickets.length,
-        totalCount: resultObject.totalCount,
-        page: page,
-        prevPage: page === 0 ? 0 : page - 1,
-        nextPage: page * limit + limit <= resultObject.totalCount ? page + 1 : page
-      })
+  try {
+    let groups = []
+    if (req.user.role.isAdmin || req.user.role.isAgent) {
+      const dbGroups = await Models.Department.getDepartmentGroupsOfUser(req.user._id)
+      groups = dbGroups.map(g => g._id)
+    } else {
+      groups = await Models.Group.getAllGroupsOfUser(req.user._id)
     }
-  )
+
+    const mappedGroups = groups.map(g => g._id)
+
+    switch (type.toLowerCase()) {
+      case 'active':
+        queryObject.status = [0, 1, 2]
+        break
+      case 'assigned':
+        queryObject.filter = {
+          assignee: [req.user._id]
+        }
+        break
+      case 'unassigned':
+        queryObject.unassigned = true
+        break
+      case 'new':
+        queryObject.status = [0]
+        break
+      case 'open':
+        queryObject.status = [1]
+        break
+      case 'pending':
+        queryObject.status = [2]
+        break
+      case 'closed':
+        queryObject.status = [3]
+        break
+      case 'filter':
+        try {
+          queryObject.filter = JSON.parse(query.filter)
+          queryObject.status = queryObject.filter.status
+        } catch (error) {
+          logger.warn(error)
+        }
+        break
+    }
+
+    if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
+
+    const tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject)
+    const totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject)
+
+    return apiUtils.sendApiSuccess(res, {
+      tickets,
+      count: tickets.length,
+      totalCount,
+      page,
+      prevPage: page === 0 ? 0 : page - 1,
+      nextPage: page * limit + limit <= totalCount ? page + 1 : page
+    })
+  } catch (err) {
+    logger.warn(err)
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
 ticketsV2.single = async function (req, res) {
   const uid = req.params.uid
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
-  Ticket.getTicketByUid(uid, function (err, ticket) {
+  Models.Ticket.getTicketByUid(uid, function (err, ticket) {
     if (err) return apiUtils.sendApiError(res, 500, err)
 
     if (req.user.role.isAdmin || req.user.role.isAgent) {
-      Department.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
+      Models.Department.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
         if (err) return apiUtils.sendApiError(res, 500, err)
 
         const groups = dbGroups.map(function (g) {
@@ -154,13 +125,13 @@ ticketsV2.single = async function (req, res) {
         })
 
         if (groups.includes(ticket.group._id.toString())) {
-          return apiUtils.sendApiSuccess(res, { ticket: ticket })
+          return apiUtils.sendApiSuccess(res, { ticket })
         } else {
           return apiUtils.sendApiError(res, 403, 'Forbidden')
         }
       })
     } else {
-      Group.getAllGroupsOfUser(req.user._id, function (err, userGroups) {
+      Models.Group.getAllGroupsOfUser(req.user._id, function (err, userGroups) {
         if (err) return apiUtils.sendApiError(res, 500, err)
 
         const groupIds = userGroups.map(function (m) {
@@ -168,7 +139,7 @@ ticketsV2.single = async function (req, res) {
         })
 
         if (groupIds.includes(ticket.group._id.toString())) {
-          return apiUtils.sendApiSuccess(res, { ticket: ticket })
+          return apiUtils.sendApiSuccess(res, { ticket })
         } else {
           return apiUtils.sendApiError(res, 403, 'Forbidden')
         }
@@ -178,12 +149,12 @@ ticketsV2.single = async function (req, res) {
 }
 
 ticketsV2.update = function (req, res) {
-  var uid = req.params.uid
-  var putTicket = req.body.ticket
+  const uid = req.params.uid
+  const putTicket = req.body.ticket
   if (!uid || !putTicket) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
   // todo: complete this...
-  Ticket.getTicketByUid(uid, function (err, ticket) {
+  Models.Ticket.getTicketByUid(uid, function (err, ticket) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
 
     return apiUtils.sendApiSuccess(res, ticket)
@@ -191,18 +162,18 @@ ticketsV2.update = function (req, res) {
 }
 
 ticketsV2.batchUpdate = function (req, res) {
-  var batch = req.body.batch
+  const batch = req.body.batch
   if (!_.isArray(batch)) return apiUtils.sendApiError_InvalidPostData(res)
 
   async.each(
     batch,
     function (batchTicket, next) {
-      Ticket.getTicketById(batchTicket.id, function (err, ticket) {
+      Models.Ticket.getTicketById(batchTicket.id, function (err, ticket) {
         if (err) return next(err)
 
         if (!_.isUndefined(batchTicket.status)) {
           ticket.status = batchTicket.status
-          var HistoryItem = {
+          const HistoryItem = {
             action: 'ticket:set:status',
             description: 'status set to: ' + batchTicket.status,
             owner: req.user._id
@@ -223,10 +194,10 @@ ticketsV2.batchUpdate = function (req, res) {
 }
 
 ticketsV2.delete = function (req, res) {
-  var uid = req.params.uid
+  const uid = req.params.uid
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
-  Ticket.softDeleteUid(uid, function (err, success) {
+  Models.Ticket.softDeleteUid(uid, function (err, success) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
     if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete ticket')
 
@@ -235,10 +206,10 @@ ticketsV2.delete = function (req, res) {
 }
 
 ticketsV2.permDelete = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
-  Ticket.deleteOne({ _id: id }, function (err, success) {
+  Models.Ticket.deleteOne({ _id: id }, function (err, success) {
     if (err) return apiUtils.sendApiError(res, 400, err.message)
     if (!success) return apiUtils.sendApiError(res, 400, 'Unable to delete ticket')
 
@@ -251,7 +222,7 @@ ticketsV2.transferToThirdParty = async (req, res) => {
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
   try {
-    const ticket = await Ticket.findOne({ uid })
+    const ticket = await Models.Ticket.findOne({ uid })
     if (!ticket) return apiUtils.sendApiError(res, 400, 'Ticket not found')
 
     ticket.status = 3
@@ -280,22 +251,24 @@ ticketsV2.transferToThirdParty = async (req, res) => {
 ticketsV2.info = {}
 ticketsV2.info.types = async (req, res) => {
   try {
-    const ticketTypes = await TicketType.find({})
-    const priorities = await Priorities.find({})
+    const ticketTypes = await Models.TicketType.find({})
+    const priorities = await Models.Priority.find({})
 
     return apiUtils.sendApiSuccess(res, { ticketTypes, priorities })
   } catch (err) {
-    return apiUtils.sendApiError(500, err)
+    logger.warn(err)
+    return apiUtils.sendApiError(res, 500, err.message)
   }
 }
 
 ticketsV2.info.tags = async (req, res) => {
   try {
-    const tags = await TicketTags.find({}).sort('normalized')
+    const tags = await Models.TicketTags.find({}).sort('normalized')
 
     return apiUtils.sendApiSuccess(res, { tags })
   } catch (err) {
-    return apiUtils.sendApiError(500, err)
+    logger.warn(err)
+    return apiUtils.sendApiError(res, 500, err.message)
   }
 }
 
