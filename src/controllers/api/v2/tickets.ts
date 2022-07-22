@@ -21,7 +21,11 @@ const permissions = require('../../../permissions')
 
 const ticketsV2 = {}
 
-ticketsV2.create = function (req, res) {
+export interface TypedRequestBody<T> extends Express.Request {
+  body: T
+}
+
+ticketsV2.create = (req: Express.Request, res: Express.Response) => {
   const postTicket = req.body
   if (!postTicket) return apiUtils.sendApiError_InvalidPostData(res)
 }

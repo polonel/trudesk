@@ -1,8 +1,12 @@
 {
-  "plugins": ["import", "prettier"],
-  "extends": ["standard", "prettier"],
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "root": true,
-  "parser": "@babel/eslint-parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 6
   },
@@ -16,8 +20,8 @@
     "node/exports-style": 0,
     "n/no-callback-literal": 0,
     "new-cap": 0,
-    "no-console": "off",
-    "complexity": ["error", 20]
+    "no-console": 2,
+    "complexity": ["error", 30]
   },
   "globals": {
     "define": true,

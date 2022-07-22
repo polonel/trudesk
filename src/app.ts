@@ -13,25 +13,31 @@
  *  Copyright (c) 2014-2022 Trudesk, Inc. All rights reserved.
  */
 
-const async = require('async')
-const path = require('path')
-const fs = require('fs')
-const winston = require('./src/logger')
-const nconf = require('nconf')
-const Chance = require('chance')
-const chance = new Chance()
-const pkg = require('./package.json')
-// `const memory = require('./src/memory');
+import async from 'async'
+import winston from './logger'
+import pkg from '../package.json'
 
-const isDocker = process.env.TRUDESK_DOCKER || false
+//
+import { checkForOldConfig, hasConfigFile, loadConfig } from './config'
+import { init as webServerInit, installServer, webServerListen } from './webserver'
+import { init as databaseInit, TrudeskDatabase, trudeskDatabase } from './database'
+import tdDefaults from './settings/defaults'
+import permissions from './permissions'
+import elasticsearch from './elasticsearch'
+import Models from './models'
+import mailCheck from './mailer/mailCheck'
+import migration from './migration'
+import buildSass from './sass/buildsass'
+import { init as cacheInit } from './cache/cache'
+import taskRunner from './taskrunner'
+
+const isDocker = process.env['TRUDESK_DOCKER'] || false
 
 global.forks = []
 
-nconf.argv().env()
+global.env = process.env['NODE_ENV'] || 'development'
 
-global.env = process.env.NODE_ENV || 'development'
-
-if (!process.env.FORK) {
+if (!process.env['FORK']) {
   winston.info('    .                              .o8                     oooo')
   winston.info('  .o8                             "888                     `888')
   winston.info('.o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo')
@@ -46,97 +52,36 @@ if (!process.env.FORK) {
   winston.info('Server Time: ' + new Date())
 }
 
-let configFile = path.join(__dirname, '/config.yml')
-
-if (nconf.get('config')) {
-  configFile = path.resolve(__dirname, nconf.get('config'))
-}
-
 // Make sure we convert the .json file to .yml
 checkForOldConfig()
 
-const configExists = fs.existsSync(configFile)
-
-function launchInstallServer () {
-  // Load the defaults for the install server
-  nconf.defaults({
-    tokens: {
-      secret: chance.hash() + chance.md5()
-    }
-  })
-
-  const ws = require('./src/webserver')
-  ws.installServer(function () {
+function launchInstallServer() {
+  installServer(function () {
     return winston.info('Trudesk Install Server Running...')
   })
 }
 
-if (nconf.get('install') || (!configExists && !isDocker)) {
+if (!hasConfigFile() && !isDocker) {
   launchInstallServer()
 }
 
-function loadConfig () {
-  nconf.file({
-    file: configFile,
-    format: require('nconf-yaml')
-  })
-
-  // Must load after file
-  nconf.defaults({
-    base_dir: __dirname,
-    tokens: {
-      secret: chance.hash() + chance.md5(),
-      expires: 900
-    }
-  })
-}
-
-function checkForOldConfig () {
-  const oldConfigFile = path.join(__dirname, '/config.json')
-  if (fs.existsSync(oldConfigFile)) {
-    // Convert config to yaml.
-    const content = fs.readFileSync(oldConfigFile)
-    const YAML = require('yaml')
-    const data = JSON.parse(content)
-
-    fs.writeFileSync(configFile, YAML.stringify(data))
-
-    // Rename the old config.json to config.json.bk
-    fs.renameSync(oldConfigFile, path.join(__dirname, '/config.json.bk'))
-  }
-}
-
-function start () {
+function start() {
   if (!isDocker) loadConfig()
-  if (isDocker) {
-    // Load some defaults for JWT token that is missing when using docker
-    const jwt = process.env.TRUDESK_JWTSECRET
-    nconf.defaults({
-      tokens: {
-        secret: jwt || chance.hash() + chance.md5(),
-        expires: 900
-      }
-    })
-  }
-
-  const _db = require('./src/database')
-
-  _db.init(function (err, db) {
+  databaseInit(function (err) {
     if (err) {
       winston.error('FETAL: ' + err.message)
       winston.warn('Retrying to connect to MongoDB in 10secs...')
-      return setTimeout(function () {
-        _db.init(dbCallback)
+      setTimeout(function () {
+        databaseInit(dbCallback)
       }, 10000)
     } else {
-      dbCallback(err, db)
+      dbCallback(err, trudeskDatabase)
     }
   })
 }
 
-function launchServer (db) {
-  const ws = require('./src/webserver')
-  ws.init(db, function (err) {
+function launchServer(db: TrudeskDatabase) {
+  webServerInit(db, function (err) {
     if (err) {
       winston.error(err)
       return
@@ -145,13 +90,13 @@ function launchServer (db) {
     async.series(
       [
         function (next) {
-          require('./src/settings/defaults').init(next)
+          tdDefaults.init(next)
         },
         function (next) {
-          require('./src/permissions').register(next)
+          permissions.register(next)
         },
         function (next) {
-          require('./src/elasticsearch').init(function (err) {
+          elasticsearch.init(function (err) {
             if (err) {
               winston.error(err)
             }
@@ -160,12 +105,12 @@ function launchServer (db) {
           })
         },
         function (next) {
-          require('./src/socketserver')(ws)
+          // ss(ws)
           return next()
         },
         function (next) {
           // Start Check Mail
-          const settingSchema = require('./src/models/setting')
+          const settingSchema = Models.Setting
           settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
               winston.warn(err)
@@ -176,7 +121,6 @@ function launchServer (db) {
               settingSchema.getSettings(function (err, settings) {
                 if (err) return next(err)
 
-                const mailCheck = require('./src/mailer/mailCheck')
                 winston.debug('Starting MailCheck...')
                 mailCheck.init(settings)
 
@@ -188,11 +132,11 @@ function launchServer (db) {
           })
         },
         function (next) {
-          require('./src/migration').run(next)
+          migration.run(next)
         },
         function (next) {
           winston.debug('Building dynamic sass...')
-          require('./src/sass/buildsass').build(next)
+          buildSass.build(next)
         },
         // function (next) {
         //   // Start Task Runners
@@ -200,32 +144,30 @@ function launchServer (db) {
         //   return next()
         // },
         function (next) {
-          const cache = require('./src/cache/cache')
           if (isDocker) {
             cache.env = {
-              TRUDESK_DOCKER: process.env.TRUDESK_DOCKER,
-              TD_MONGODB_SERVER: process.env.TD_MONGODB_SERVER,
-              TD_MONGODB_PORT: process.env.TD_MONGODB_PORT,
-              TD_MONGODB_USERNAME: process.env.TD_MONGODB_USERNAME,
-              TD_MONGODB_PASSWORD: process.env.TD_MONGODB_PASSWORD,
-              TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE,
-              TD_MONGODB_URI: process.env.TD_MONGODB_URI
+              TRUDESK_DOCKER: process.env['TRUDESK_DOCKER'],
+              TD_MONGODB_SERVER: process.env['TD_MONGODB_SERVER'],
+              TD_MONGODB_PORT: process.env['TD_MONGODB_PORT'],
+              TD_MONGODB_USERNAME: process.env['TD_MONGODB_USERNAME'],
+              TD_MONGODB_PASSWORD: process.env['TD_MONGODB_PASSWORD'],
+              TD_MONGODB_DATABASE: process.env['TD_MONGODB_DATABASE'],
+              TD_MONGODB_URI: process.env['TD_MONGODB_URI']
             }
           }
 
-          cache.init()
+          cacheInit()
 
           return next()
         },
         function (next) {
-          const taskRunner = require('./src/taskrunner')
           return taskRunner.init(next)
         }
       ],
       function (err) {
         if (err) throw new Error(err)
 
-        ws.listen(function () {
+        webServerListen(function () {
           winston.info('trudesk Ready')
         })
       }
@@ -233,13 +175,13 @@ function launchServer (db) {
   })
 }
 
-function dbCallback (err, db) {
+function dbCallback(err, db) {
   if (err || !db) {
     return start()
   }
 
   if (isDocker) {
-    const s = require('./src/models/setting')
+    const s = Models.Setting
     s.getSettingByName('installed', function (err, installed) {
       if (err) return start()
 
@@ -254,4 +196,4 @@ function dbCallback (err, db) {
   }
 }
 
-if (!nconf.get('install') && (configExists || isDocker)) start()
+if (hasConfigFile() || isDocker) start()

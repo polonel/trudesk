@@ -5,6 +5,9 @@
 .yarn/cache
 .yarn/*.gz
 
+# Build Files
+/dist
+
 # Runtime data
 pids
 *.pid

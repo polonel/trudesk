@@ -12,14 +12,23 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const _ = require('lodash')
-const NodeCache = require('node-cache')
-const path = require('path')
-const cache = {}
+import _ from 'lodash'
+import NodeCache from 'node-cache'
+import path from 'path'
+import { ChildProcess, fork } from 'child_process'
+import type { NamedChildProcess } from '../typedefs/global'
 
-cache.init = function () {
+export interface TrudeskCache {
+  fork?: ChildProcess
+  env?: NodeJS.ProcessEnv
+  memLimit?: string
+}
+
+const cache: TrudeskCache = {}
+
+export function init() {
   global.cache = new NodeCache({ checkperiod: 0 })
-  cache.memLimit = process.env.CACHE_MEMLIMIT || '2048'
+  cache.memLimit = process.env['CACHE_MEMLIMIT'] || '2048'
   const env = { FORK: 1, NODE_ENV: global.env, TIMEZONE: global.timezone }
   cache.env = _.merge(cache.env, env)
 
@@ -27,33 +36,31 @@ cache.init = function () {
   setInterval(spawnCache, 55 * 60 * 1000)
 }
 
-cache.forceRefresh = function() {
+export function forceRefresh() {
   spawnCache()
 }
 
-function spawnCache () {
-  const fork = require('child_process').fork
-
-  const n = fork(path.join(__dirname, './index.js'), {
-    execArgv: ['--max-old-space-size=' + cache.memLimit],
-    env: cache.env
+function spawnCache() {
+  const n = fork(path.join(__dirname, './index'), {
+    // execArgv: ['--max-old-space-size=' + cache.memLimit],
+    env: cache.env,
   })
 
   cache.fork = n
 
   global.forks.push({ name: 'cache', fork: n })
 
-  n.on('message', function (data) {
+  n.on('message', function (data: { cache: NodeCache }) {
     if (data.cache) {
       global.cache.data = data.cache.data
     }
   })
 
   n.on('close', function () {
-    _.remove(global.forks, function (i) {
+    _.remove(global.forks, function (i: NamedChildProcess) {
       return i.name === 'cache'
     })
   })
 }
 
-module.exports = cache
+export default cache

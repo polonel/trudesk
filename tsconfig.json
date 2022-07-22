@@ -1,0 +1,40 @@
+{
+  "display": "Node 16 + Strictest",
+  "compilerOptions": {
+    "lib": [
+      "es2021"
+    ],
+    "module": "commonjs",
+    "target": "es2021",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importsNotUsedAsValues": "error",
+    "checkJs": false,
+    // Everything below are custom changes for this app
+    "allowJs": true,
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "files": [
+    "./src/typedefs/global.d.ts"
+  ],
+  "ts-node": {
+    "swc": true
+  }
+}

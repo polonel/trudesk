@@ -12,7 +12,8 @@ module.exports = function (grunt) {
       },
       web: {
         options: {
-          script: 'app.js',
+          opts: ['node_modules/.bin/ts-node'],
+          script: 'src/app.ts',
           port: 8118
         }
       }
@@ -20,8 +21,8 @@ module.exports = function (grunt) {
 
     watch: {
       web: {
-        files: ['*.js', 'src/**/*.js', 'plugins/**/*.js', '!src/public/**/*.js', '!src/client/**/*.js'],
-        tasks: ['express:web'],
+        files: ['*.js', 'src/**/*.js', 'src/**/*.ts', 'plugins/**/*.js', '!src/public/**/*.js', '!src/client/**/*.js'],
+        tasks: ['shell:tsDev'],
         options: {
           nospawn: true,
           atBegin: true
@@ -37,7 +38,7 @@ module.exports = function (grunt) {
         tasks: [
           {
             grunt: true,
-            args: ['watch:web']
+            args: ['shell:tsDev']
           },
           {
             grunt: true,
@@ -127,13 +128,15 @@ module.exports = function (grunt) {
     shell: {
       webpackWatch: 'yarn run webpackwatch',
       webpackDev: 'yarn run webpackdev',
-      webpackDist: 'yarn run webpackdist'
-    }
+      webpackDist: 'yarn run webpackdist',
+      tsbuild: 'yarn tsc -p .',
+      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/public/*,src/client/*" -T src/app.ts'
+    },
   })
 
   grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin'])
   grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'cssmin', 'parallel:web'])
-  grunt.registerTask('build', ['uglify:uikit', 'cssmin', 'shell:webpackDist'])
+  grunt.registerTask('build', ['shell:tsbuild', 'uglify:uikit', 'cssmin', 'shell:webpackDist'])
   grunt.registerTask('devbuild', ['shell:webpackDev'])
   grunt.registerTask('default', ['server'])
 }

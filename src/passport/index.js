@@ -19,9 +19,11 @@ const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const base32 = require('thirty-two')
 const User = require('../models/user')
-const nconf = require('nconf')
+const config = require('../config')
 
 module.exports = function () {
+  config.loadConfig()
+
   passport.serializeUser(function (user, done) {
     done(null, user._id)
   })
@@ -103,7 +105,7 @@ module.exports = function () {
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: nconf.get('tokens') ? nconf.get('tokens').secret : false,
+        secretOrKey: config.get('tokens') ? config.get('tokens').secret : false,
         ignoreExpiration: true
       },
       function (jwtPayload, done) {
