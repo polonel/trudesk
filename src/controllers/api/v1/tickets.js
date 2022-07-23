@@ -30,7 +30,7 @@ function buildGraphData (arr, days, callback) {
     .minute(59)
     .second(59)
   var timespanArray = []
-  for (var i = days; i--; ) {
+  for (var i = days; i--;) {
     timespanArray.push(i)
   }
 
@@ -43,10 +43,10 @@ function buildGraphData (arr, days, callback) {
       return (
         v.date <= d.toDate() &&
         v.date >=
-          d
-            .clone()
-            .subtract(1, 'd')
-            .toDate()
+        d
+          .clone()
+          .subtract(1, 'd')
+          .toDate()
       )
     })
 
@@ -401,7 +401,7 @@ apiTickets.search = function (req, res) {
  * @apiError InvalidPostData The data was invalid
  * @apiErrorExample
  *      HTTP/1.1 400 Bad Request
-        {
+ {
             "error": "Invalid Post Data"
         }
  */
@@ -1461,7 +1461,7 @@ apiTickets.getTicketStats = function (req, res) {
       return res.send(obj)
     }
 
-    var tz = context.data.settings.timezone.value
+    var tz = context.settings.timezone.value
     obj.lastUpdated = moment
       .utc(obj.lastUpdated)
       .tz(tz)
@@ -1813,7 +1813,7 @@ apiTickets.removeAttachment = function (req, res) {
  * curl -H "Content-Type: application/json" -H "accesstoken: {accesstoken}" -X PUT -d "{\"user\": {user},\"subscribe\": {boolean}}" -l http://localhost/api/v1/tickets/{id}
  *
  * @apiParamExample {json} Request-Example:
-   {
+ {
        "user": {user},
        "subscribe": {boolean}
    }

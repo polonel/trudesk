@@ -181,7 +181,7 @@ apiUsers.create = async function (req, res) {
       function (next) {
         SettingUtil.getSettings(function (err, content) {
           if (err) return next(err)
-          const settings = content.data.settings
+          const settings = content.settings
           if (settings.accountsPasswordComplexity.value) {
             const passwordComplexity = require('../../../settings/passwordComplexity')
             if (!passwordComplexity.validate(postData.aPass))
@@ -410,7 +410,7 @@ apiUsers.profileUpdate = function (req, res) {
         SettingUtil.getSettings(function (err, content) {
           if (err) return done(err)
 
-          const settings = content.data.settings
+          const settings = content.settings
           passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
           return done()
@@ -545,7 +545,7 @@ apiUsers.update = function (req, res) {
         var SettingUtil = require('../../../settings/settingsUtil')
         SettingUtil.getSettings(function (err, content) {
           if (err) return done(err)
-          var settings = content.data.settings
+          var settings = content.settings
           passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
           return done()

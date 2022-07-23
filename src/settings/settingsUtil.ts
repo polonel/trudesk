@@ -20,7 +20,7 @@ import type { SettingsObjectType, SettingsObjectType_Base } from "./settings";
 
 export interface ISettingsUtil {
   setSetting: (setting: string, value: string | object | boolean | number) => Promise<void>
-  getSettings: (callback: (err?: Error, settings?: Array<object>) => void) => Promise<Array<object>>
+  getSettings: (callback: (err?: Error, settings?: Array<object>) => void) => Promise<ContentData>
 }
 
 function parseSetting(settings: Array<SettingsObjectType_Base>, name: string, defaultValue: string | boolean | object | number) {
@@ -51,123 +51,130 @@ async function setSetting(setting: string, value: string | object | boolean | nu
   })
 }
 
-async function getSettings(callback: (err?: Error, settings?: Array<object>) => void): Promise<Array<object>> {
-  return new Promise<Array<object>>((resolve, reject) => {
+interface ContentData {
+  ticketTypes?: any
+  priorities?: any
+  mailTemplates?: any
+  tags?: any
+  roles?: any
+  settings?: SettingsObjectType
+}
+
+async function getSettings(callback: (err?: Error, settings?: Array<object>) => void): Promise<ContentData> {
+  return new Promise<ContentData>((resolve, reject) => {
     (async () => {
       try {
         const settings = await SettingModel.getSettings()
-        const s: SettingsObjectType = {}
-        const content = { data: {} }
+        const result: ContentData = {}
+        const s: SettingsObjectType = {
+          emailBeta: parseSetting(settings, 'beta:email', false),
+          hasThirdParty: !config.get('thirdParty') ? false : config.get('thirdParty').enable,
 
-        s.emailBeta = parseSetting(settings, 'beta:email', false)
-        s.hasThirdParty = !config.get('thirdParty') ? false : config.get('thirdParty').enable
+          siteTitle: parseSetting(settings, 'gen:sitetitle', 'Trudesk'),
+          siteUrl: parseSetting(settings, 'gen:siteurl', ''),
+          timezone: parseSetting(settings, 'gen:timezone', 'America/New_York'),
+          timeFormat: parseSetting(settings, 'gen:timeFormat', 'hh:mma'),
+          shortDateFormat: parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY'),
+          longDateFormat: parseSetting(settings, 'gen:longDateFormat', 'MMM DD, YYYY'),
 
-        s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk')
-        s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
-        s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York')
-        s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma')
-        s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY')
-        s.longDateFormat = parseSetting(settings, 'gen:longDateFormat', 'MMM DD, YYYY')
+          hasCustomLogo: parseSetting(settings, 'gen:customlogo', false),
+          customLogoFilename: parseSetting(settings, 'gen:customlogofilename', ''),
+          hasCustomPageLogo: parseSetting(settings, 'gen:custompagelogo', false),
+          customPageLogoFilename: parseSetting(settings, 'gen:custompagelogofilename', ''),
+          hasCustomFavicon: parseSetting(settings, 'gen:customfavicon', false),
+          customFaviconFilename: parseSetting(settings, 'gen:customfaviconfilename', ''),
 
-        s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false)
-        s.customLogoFilename = parseSetting(settings, 'gen:customlogofilename', '')
-        s.hasCustomPageLogo = parseSetting(settings, 'gen:custompagelogo', false)
-        s.customPageLogoFilename = parseSetting(settings, 'gen:custompagelogofilename', '')
-        s.hasCustomFavicon = parseSetting(settings, 'gen:customfavicon', false)
-        s.customFaviconFilename = parseSetting(settings, 'gen:customfaviconfilename', '')
+          colorHeaderBG: parseSetting(settings, 'color:headerbg', '#42464d'),
+          colorHeaderPrimary: parseSetting(settings, 'color:headerprimary', '#f6f7fa'),
+          colorPrimary: parseSetting(settings, 'color:primary', '#545A63'),
+          colorSecondary: parseSetting(settings, 'color:secondary', '#f7f8fa'),
+          colorTertiary: parseSetting(settings, 'color:tertiary', '#E74C3C'),
+          colorQuaternary: parseSetting(settings, 'color:quaternary', '#E6E7E8'),
 
-        s.colorHeaderBG = parseSetting(settings, 'color:headerbg', '#42464d')
-        s.colorHeaderPrimary = parseSetting(settings, 'color:headerprimary', '#f6f7fa')
-        s.colorPrimary = parseSetting(settings, 'color:primary', '#545A63')
-        s.colorSecondary = parseSetting(settings, 'color:secondary', '#f7f8fa')
-        s.colorTertiary = parseSetting(settings, 'color:tertiary', '#E74C3C')
-        s.colorQuaternary = parseSetting(settings, 'color:quaternary', '#E6E7E8')
+          defaultTicketType: parseSetting(settings, 'ticket:type:default', ''),
+          minSubjectLength: parseSetting(settings, 'ticket:minlength:subject', 10),
+          minIssueLength: parseSetting(settings, 'ticket:minlength:issue', 10),
 
-        s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '')
-        s.minSubjectLength = parseSetting(settings, 'ticket:minlength:subject', 10)
-        s.minIssueLength = parseSetting(settings, 'ticket:minlength:issue', 10)
+          defaultUserRole: parseSetting(settings, 'role:user:default', ''),
 
-        s.defaultUserRole = parseSetting(settings, 'role:user:default', '')
+          mailerEnabled: parseSetting(settings, 'mailer:enable', false),
+          mailerHost: parseSetting(settings, 'mailer:host', ''),
+          mailerSSL: parseSetting(settings, 'mailer:ssl', false),
+          mailerPort: parseSetting(settings, 'mailer:port', 25),
+          mailerUsername: parseSetting(settings, 'mailer:username', ''),
+          mailerPassword: parseSetting(settings, 'mailer:password', ''),
+          mailerFrom: parseSetting(settings, 'mailer:from', ''),
 
-        s.mailerEnabled = parseSetting(settings, 'mailer:enable', false)
-        s.mailerHost = parseSetting(settings, 'mailer:host', '')
-        s.mailerSSL = parseSetting(settings, 'mailer:ssl', false)
-        s.mailerPort = parseSetting(settings, 'mailer:port', 25)
-        s.mailerUsername = parseSetting(settings, 'mailer:username', '')
-        s.mailerPassword = parseSetting(settings, 'mailer:password', '')
-        s.mailerFrom = parseSetting(settings, 'mailer:from', '')
+          mailerCheckEnabled: parseSetting(settings, 'mailer:check:enable', false),
+          mailerCheckPolling: parseSetting(settings, 'mailer:check:polling', 600000),
+          mailerCheckHost: parseSetting(settings, 'mailer:check:host', ''),
+          mailerCheckPort: parseSetting(settings, 'mailer:check:port', 143),
+          mailerCheckUsername: parseSetting(settings, 'mailer:check:username', ''),
+          mailerCheckPassword: parseSetting(settings, 'mailer:check:password', ''),
+          mailerCheckSelfSign: parseSetting(settings, 'mailer:check:selfsign', false),
+          mailerCheckTicketType: parseSetting(settings, 'mailer:check:ticketype', ''),
+          mailerCheckTicketPriority: parseSetting(settings, 'mailer:check:ticketpriority', ''),
+          mailerCheckCreateAccount: parseSetting(settings, 'mailer:check:createaccount', false),
+          mailerCheckDeleteMessage: parseSetting(settings, 'mailer:check:deletemessage', true),
 
-        s.mailerCheckEnabled = parseSetting(settings, 'mailer:check:enable', false)
-        s.mailerCheckPolling = parseSetting(settings, 'mailer:check:polling', 600000)
-        s.mailerCheckHost = parseSetting(settings, 'mailer:check:host', '')
-        s.mailerCheckPort = parseSetting(settings, 'mailer:check:port', 143)
-        s.mailerCheckUsername = parseSetting(settings, 'mailer:check:username', '')
-        s.mailerCheckPassword = parseSetting(settings, 'mailer:check:password', '')
-        s.mailerCheckSelfSign = parseSetting(settings, 'mailer:check:selfsign', false)
-        s.mailerCheckTicketType = parseSetting(settings, 'mailer:check:ticketype', '')
-        s.mailerCheckTicketPriority = parseSetting(settings, 'mailer:check:ticketpriority', '')
-        s.mailerCheckCreateAccount = parseSetting(settings, 'mailer:check:createaccount', false)
-        s.mailerCheckDeleteMessage = parseSetting(settings, 'mailer:check:deletemessage', true)
+          showTour: parseSetting(settings, 'showTour:enable', false),
+          showOverdueTickets: parseSetting(settings, 'showOverdueTickets:enable', true),
 
-        s.showTour = parseSetting(settings, 'showTour:enable', false)
-        s.showOverdueTickets = parseSetting(settings, 'showOverdueTickets:enable', true)
+          // Elasticsearch
+          elasticSearchEnabled: parseSetting(settings, 'es:enable', false),
+          elasticSearchHost: parseSetting(settings, 'es:host', ''),
+          elasticSearchPort: parseSetting(settings, 'es:port', 9200),
+          elasticSearchConfigured: {
+            name: 'es:configured',
+            value: parseSetting(settings, 'es:enable', false).value && !_.isEmpty(parseSetting(settings, 'es:host', '').value)
+          },
 
-        // Elasticsearch
-        s.elasticSearchEnabled = parseSetting(settings, 'es:enable', false)
-        s.elasticSearchHost = parseSetting(settings, 'es:host', '')
-        s.elasticSearchPort = parseSetting(settings, 'es:port', 9200)
-        s.elasticSearchConfigured = {
-          value: s.elasticSearchEnabled.value === true && !_.isEmpty(s.elasticSearchHost.value)
+          allowAgentUserTickets: parseSetting(settings, 'allowAgentUserTickets:enable', false),
+          allowPublicTickets: parseSetting(settings, 'allowPublicTickets:enable', false),
+          allowUserRegistration: parseSetting(settings, 'allowUserRegistration:enable', false),
+          playNewTicketSound: parseSetting(settings, 'playNewTicketSound:enable', true),
+
+          privacyPolicy: parseSetting(settings, 'legal:privacypolicy', ' '),
+
+          maintenanceMode: parseSetting(settings, 'maintenanceMode:enable', false),
+
+          accountsPasswordComplexity: parseSetting(settings, 'accountsPasswordComplexity:enable', true),
         }
 
-        s.tpsEnabled = parseSetting(settings, 'tps:enable', false)
-        s.tpsUsername = parseSetting(settings, 'tps:username', '')
-        s.tpsApiKey = parseSetting(settings, 'tps:apikey', '')
-
-        s.allowAgentUserTickets = parseSetting(settings, 'allowAgentUserTickets:enable', false)
-        s.allowPublicTickets = parseSetting(settings, 'allowPublicTickets:enable', false)
-        s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false)
-        s.playNewTicketSound = parseSetting(settings, 'playNewTicketSound:enable', true)
-
-        s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', ' ')
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)
 
-        s.maintenanceMode = parseSetting(settings, 'maintenanceMode:enable', false)
-
-        s.accountsPasswordComplexity = parseSetting(settings, 'accountsPasswordComplexity:enable', true)
-
         const types = await TicketTypeModel.getTypes()
-        content.data.ticketTypes = _.sortBy(types, o => o.name)
+        result.ticketTypes = _.sortBy(types, o => o.name)
 
-        _.each(content.data.ticketTypes, type => {
+        _.each(result.ticketTypes, type => {
           type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name'])
         })
 
         const priorities = await PriorityModel.getPriorities()
-        content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
+        result.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
 
         const templateSchema = require('../models/template')
         const templates = await templateSchema.find({})
-        content.data.mailTemplates = _.sortBy(templates, 'name')
+        result.mailTemplates = _.sortBy(templates, 'name')
 
         const tagCount = await TicketTagsModel.getTagCount()
-        content.data.tags = { count: tagCount }
+        result.tags = { count: tagCount }
 
         const roles = await RoleModel.getRoles()
         let roleOrder = await RoleOrderModel.getOrder()
         roleOrder = roleOrder.order
 
         if (roleOrder.length > 0) {
-          content.data.roles = _.map(roleOrder, roID => {
+          result.roles = _.map(roleOrder, roID => {
             return _.find(roles, { _id: roID })
           })
-        } else content.data.roles = roles
+        } else result.roles = roles
 
-        content.data.settings = s
+        result.settings = s
 
-        if (typeof callback === 'function') callback(null, content)
+        if (typeof callback === 'function') callback(null, result)
 
-        return resolve(content)
+        return resolve(result)
       } catch (e) {
         if (typeof callback === 'function') callback(e)
 

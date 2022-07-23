@@ -26,8 +26,8 @@ import {
   FETCH_ROLES,
   FETCH_SETTINGS,
   HIDE_MODAL,
-  RESTORE_DELETED_TICKET,
   PERM_DELETE_TICKET,
+  RESTORE_DELETED_TICKET,
   UPDATE_COLORSCHEME,
   UPDATE_MULTIPLE_SETTINGS,
   UPDATE_PERMISSIONS,
@@ -56,6 +56,7 @@ function * fetchFlow ({ payload }) {
   } catch (error) {
     // if (error.status === (401 || 403))
     //     yield put({type: LOGOUT});
+    helpers.UI.showSnackbar('Unable to get settings. Check Console', true)
     yield put({ type: FETCH_SETTINGS.ERROR, error })
   }
 }

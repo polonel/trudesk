@@ -6062,7 +6062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^1.0.0, chalk@npm:^1.1.3":
+"chalk@npm:^1.0.0, chalk@npm:^1.1.1, chalk@npm:^1.1.3":
   version: 1.1.3
   resolution: "chalk@npm:1.1.3"
   dependencies:
@@ -8479,7 +8479,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.9.3":
+"enhanced-resolve@npm:^5.0.0, enhanced-resolve@npm:^5.9.3":
   version: 5.10.0
   resolution: "enhanced-resolve@npm:5.10.0"
   dependencies:
@@ -9879,6 +9879,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-sync-cmp@npm:^0.1.0":
+  version: 0.1.1
+  resolution: "file-sync-cmp@npm:0.1.1"
+  checksum: a0b59b62be55a6efe1ed2571d3869f4a81d023b2fc0309b2ffb08159776c08759e07a2add8c22732c521d81992c4d753256f62b9e0e70b1b5ab3d9784cb4bd9e
+  languageName: node
+  linkType: hard
+
 "file-uri-to-path@npm:2":
   version: 2.0.0
   resolution: "file-uri-to-path@npm:2.0.0"
@@ -10977,6 +10984,16 @@ __metadata:
   bin:
     grunt: bin/grunt
   checksum: 794da5899789bf94c19ee5dd8bee0e69b1bf2135dd0082c6f8f33a71c711a131fd43717528ec8fd43cbfb7d9962cb6fed882d1e957c835633e4ca6b29a20cd24
+  languageName: node
+  linkType: hard
+
+"grunt-contrib-copy@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "grunt-contrib-copy@npm:1.0.0"
+  dependencies:
+    chalk: ^1.1.1
+    file-sync-cmp: ^0.1.0
+  checksum: 12feff37c3594b895c092db925ff571604f2616936d4e30a00ad18989bc3c2eca279a594e3648690bf9ccf74a16e3fb13a688e2e484f0b2ce691b0f5184a286b
   languageName: node
   linkType: hard
 
@@ -22515,6 +22532,7 @@ __metadata:
     fast-csv: 4.3.6
     fs-extra: 10.1.0
     grunt: 1.5.3
+    grunt-contrib-copy: ^1.0.0
     grunt-contrib-cssmin: 4.0.0
     grunt-contrib-uglify: 5.2.2
     grunt-contrib-watch: 1.1.0
@@ -22616,6 +22634,7 @@ __metadata:
     tar: 6.1.11
     terser-webpack-plugin: 5.3.3
     thirty-two: 1.0.2
+    ts-loader: ^9.3.1
     ts-node: ^10.9.1
     typescript: ^4.7.4
     uglify-js: 3.16.2
@@ -22639,6 +22658,21 @@ __metadata:
   dependencies:
     glob: ^7.1.2
   checksum: 2e2e3bf37b4b05db2e2a1d60329960a4aa697ad7a89bd97c66f5f4da83977897c29c704276e62bca62d055d8078065bc08a1c7a01f409de11c6592af8b442cbe
+  languageName: node
+  linkType: hard
+
+"ts-loader@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "ts-loader@npm:9.3.1"
+  dependencies:
+    chalk: ^4.1.0
+    enhanced-resolve: ^5.0.0
+    micromatch: ^4.0.0
+    semver: ^7.3.4
+  peerDependencies:
+    typescript: "*"
+    webpack: ^5.0.0
+  checksum: 462a8ac315017cf4961dafd2be29d5abe7c3af63c4515e325269f79b9d0212b35c59184d7fd01fc378749c88454752e1599301d2190eb6844ea5fe332de5f695
   languageName: node
   linkType: hard
 

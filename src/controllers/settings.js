@@ -58,11 +58,11 @@ function renderView (res, content) {
   settingsUtil.getSettings(function (err, returnedContent) {
     if (err) return handleError(res, err)
 
-    content.data.settings = returnedContent.data.settings
-    content.data.ticketTypes = returnedContent.data.ticketTypes
-    content.data.priorities = returnedContent.data.priorities
-    content.data.mailTemplates = returnedContent.data.mailTemplates
-    content.data.tags = returnedContent.data.tags
+    content.data.settings = returnedContent.settings
+    content.data.ticketTypes = returnedContent.ticketTypes
+    content.data.priorities = returnedContent.priorities
+    content.data.mailTemplates = returnedContent.mailTemplates
+    content.data.tags = returnedContent.tags
 
     return res.render('settings', content)
   })

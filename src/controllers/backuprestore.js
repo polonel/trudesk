@@ -17,6 +17,8 @@ const fs = require('fs-extra')
 const path = require('path')
 const async = require('async')
 const moment = require('moment')
+const logger = require('../logger')
+const config = require('../config')
 
 const backupRestore = {}
 
@@ -30,7 +32,7 @@ function formatBytes (bytes, fixed) {
 }
 
 backupRestore.getBackups = function (req, res) {
-  fs.readdir(path.join(__dirname, '../../backups'), function (err, files) {
+  fs.readdir(path.resolve(config.trudeskRoot(), 'backups'), function (err, files) {
     if (err) return res.status(400).json({ error: err })
 
     files = files.filter(function (file) {
@@ -41,7 +43,7 @@ backupRestore.getBackups = function (req, res) {
     async.forEach(
       files,
       function (f, next) {
-        fs.stat(path.join(__dirname, '../../backups/', f), function (err, stats) {
+        fs.stat(path.resolve(config.trudeskRoot(), 'backups/', f), function (err, stats) {
           if (err) return next(err)
 
           const obj = {}
@@ -68,7 +70,7 @@ backupRestore.getBackups = function (req, res) {
 
 backupRestore.runBackup = function (req, res) {
   const database = require('../database')
-  const child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), {
+  const child = require('child_process').fork(path.join(__dirname, '../backup/backup'), {
     env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri, PATH: process.env.PATH }
   })
   global.forks.push({ name: 'backup', fork: child })
@@ -82,22 +84,25 @@ backupRestore.runBackup = function (req, res) {
     })
 
     if (data.error) {
+      logger.warn(data.error)
       result = { success: false, error: data.error }
     }
 
     if (data.success) {
       result = { success: true }
     } else {
+      logger.warn(data)
       result = { success: false, error: data }
     }
   })
 
   child.on('close', function () {
     if (!result) {
-      return res.status(500).json({ success: false, error: 'An Unknown Error Occurred' })
+      return res.status(500).json({ success: false, error: { message: 'An Unknown Error Occurred' } })
     }
 
     if (result.error) {
+      logger.warn(result)
       return res.status(400).json(result)
     }
 
@@ -107,11 +112,11 @@ backupRestore.runBackup = function (req, res) {
 
 backupRestore.deleteBackup = function (req, res) {
   const filename = req.params.backup
-  if (_.isUndefined(filename) || !fs.existsSync(path.join(__dirname, '../../backups/', filename))) {
+  if (_.isUndefined(filename) || !fs.existsSync(path.resolve(config.trudeskRoot(), 'backups/', filename))) {
     return res.status(400).json({ success: false, error: 'Invalid Filename' })
   }
 
-  fs.unlink(path.join(__dirname, '../../backups/', filename), function (err) {
+  fs.unlink(path.resolve(config.trudeskRoot(), 'backups/', filename), function (err) {
     if (err) return res.status(400).json({ success: false, error: err })
 
     return res.json({ success: true })
@@ -134,7 +139,7 @@ backupRestore.restoreBackup = function (req, res) {
   //     return res.json({success: true});
   // });
 
-  const child = require('child_process').fork(path.join(__dirname, '../../src/backup/restore'), {
+  const child = require('child_process').fork(path.resolve(__dirname, '../backup/restore'), {
     env: {
       FORK: 1,
       NODE_ENV: global.env,
@@ -243,7 +248,7 @@ backupRestore.uploadBackup = function (req, res) {
       return file.resume()
     }
 
-    const savePath = path.join(__dirname, '../../backups')
+    const savePath = path.resolve(config.trudeskRoot(), 'backups')
     fs.ensureDirSync(savePath)
 
     object.filePath = path.join(savePath, filename)

@@ -21,6 +21,7 @@ import moment from 'moment-timezone'
 import { trudeskDatabase } from '../database'
 import { PriorityModel, SettingModel } from '../models'
 import RoleModel from '../models/role'
+import config from "../config";
 
 type DefaultGrants = {
   userGrants: Array<string>
@@ -183,10 +184,10 @@ function createDirectories(callback) {
   async.parallel(
     [
       function (done) {
-        fs.ensureDir(path.join(__dirname, '../../backups'), done)
+        fs.ensureDir(path.resolve(config.trudeskRoot(), 'backups'), done)
       },
       function (done) {
-        fs.ensureDir(path.join(__dirname, '../../restores'), done)
+        fs.ensureDir(path.resolve(config.trudeskRoot(), 'restores'), done)
       }
     ],
     callback
@@ -203,7 +204,7 @@ function downloadWin32MongoDBTools(callback) {
   if (os.platform() === 'win32') {
     winston.debug('MongoDB version ' + fileVersion + ' detected.')
     var filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
-    var savePath = path.join(__dirname, '../backup/bin/win32/')
+    var savePath = path.resolve(config.trudeskRoot(), 'src/backup/bin/win32/')
     fs.ensureDirSync(savePath)
     if (
       !fs.existsSync(path.join(savePath, 'mongodump.exe')) ||

@@ -41,7 +41,7 @@ mainController.index = function (req, res) {
   const settingsUtil = require('../settings/settingsUtil')
   settingsUtil.getSettings(function (err, s) {
     if (err) throw new Error(err)
-    const settings = s.data.settings
+    const settings = s.settings
     content.siteTitle = settings.siteTitle.value
 
     content.allowUserRegistration = settings.allowUserRegistration.value

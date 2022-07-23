@@ -25,7 +25,7 @@ SettingsService.refresh = callback => {
   axios
     .get('/api/v1/settings')
     .then(res => {
-      settings = res.data.settings.data.settings
+      settings = res.data.settings.settings
 
       if (typeof callback === 'function') return callback()
     })

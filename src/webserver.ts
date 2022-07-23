@@ -90,8 +90,7 @@ export const installServer = function (callback) {
   )
   ExpressApp.set('view engine', 'hbs')
   hbsHelpers.register(hbs.handlebars)
-
-  ExpressApp.use('/assets', express.static(path.join(__dirname, '../public/uploads/assets')))
+  ExpressApp.use('/assets', express.static(path.resolve(__dirname, '../public/uploads/assets')))
 
   ExpressApp.use(express.static(path.join(__dirname, '../public')))
   ExpressApp.use(favicon(path.join(__dirname, '../public/img/favicon.ico')))

@@ -10,7 +10,7 @@
     pm2.start(
       {
         name: 'trudesk',
-        script: path.join(__dirname, '/dist/app.js'),
+        script: path.join(__dirname, '/dist/src/app.js'),
         output: path.join(__dirname, '/logs/output.log'),
         error: path.join(__dirname, '/logs/output.log'),
         mergeLogs: true

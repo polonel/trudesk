@@ -13,7 +13,7 @@
  */
 
 import { find } from 'lodash'
-import { fromJS, Map, List } from 'immutable'
+import { fromJS, List, Map } from 'immutable'
 import { handleActions } from 'redux-actions'
 import {
   BACKUP_NOW,
@@ -22,8 +22,8 @@ import {
   FETCH_DELETED_TICKETS,
   FETCH_MONGODB_TOOLS,
   FETCH_SETTINGS,
-  RESTORE_DELETED_TICKET,
   PERM_DELETE_TICKET,
+  RESTORE_DELETED_TICKET,
   UPDATE_MULTIPLE_SETTINGS,
   UPDATE_SETTING
 } from 'actions/types'
@@ -43,11 +43,13 @@ const initialState = {
 
 const settingsReducer = handleActions(
   {
-    [FETCH_SETTINGS.SUCCESS]: (state, action) => ({
-      ...state,
-      settings: fromJS(action.response.settings.data),
-      loaded: true
-    }),
+    [FETCH_SETTINGS.SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        settings: fromJS(action.response.settings),
+        loaded: true
+      }
+    },
 
     [UPDATE_SETTING.SUCCESS]: (state, action) => {
       const updatedSetting = find(action.response.updatedSettings, { name: action.payload.name })

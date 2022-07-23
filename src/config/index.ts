@@ -22,8 +22,17 @@ import YAML from "yaml";
 nconf.argv().env()
 
 const chance = new Chance()
-const configFile = path.join(__dirname, '../../config.yml')
 
+export const trudeskRoot = (): string => {
+  if (fs.existsSync(path.resolve('../../', 'node_modules')))
+    return '../../'
+  else if (fs.existsSync(path.resolve('../../../', 'node_modules')))
+    return '../../../'
+
+  return './'
+}
+
+const configFile = path.resolve(trudeskRoot(), 'config.yml')
 export const hasConfigFile = () => fs.existsSync(configFile)
 
 export const loadConfig = () => {
@@ -35,7 +44,8 @@ export const loadConfig = () => {
   const jwt = process.env['TRUDESK_JWTSECRET']
 
   nconf.defaults({
-    base_dir: path.join(__dirname, '../../'),
+    base_dir: path.resolve(trudeskRoot()),
+    trudeskRoot: path.resolve(trudeskRoot()),
     tokens: {
       secret: jwt || chance.hash() + chance.hash(),
       expires: 900
@@ -50,7 +60,7 @@ export const get = (item: string) => {
 // This was here to convert from .json config to .yml...
 // Should be removed sooner or later
 export const checkForOldConfig = () => {
-  const oldConfigFile = path.join(__dirname, '../../config.json')
+  const oldConfigFile = path.resolve(trudeskRoot(), 'config.json')
   if (fs.existsSync(oldConfigFile)) {
     // Convert config to yaml.
     const content = fs.readFileSync(oldConfigFile)
@@ -59,12 +69,13 @@ export const checkForOldConfig = () => {
     fs.writeFileSync(configFile, YAML.stringify(data))
 
     // Rename the old config.json to config.json.bk
-    fs.renameSync(oldConfigFile, path.join(__dirname, '../../config.json.bk'))
+    fs.renameSync(oldConfigFile, path.resolve(trudeskRoot(), 'config.json.bk'))
   }
 }
 
 export default {
   loadConfig,
   get,
-  checkForOldConfig
+  checkForOldConfig,
+  trudeskRoot
 }

@@ -376,7 +376,7 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.hasThirdParty = res.data.settings.hasThirdParty
+          viewdata.hasThirdParty = res.settings.hasThirdParty
 
           return callback()
         })
@@ -385,7 +385,7 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.accountsPasswordComplexity = res.data.settings.accountsPasswordComplexity.value
+          viewdata.accountsPasswordComplexity = res.settings.accountsPasswordComplexity.value
 
           return callback()
         })
@@ -467,7 +467,7 @@ viewController.getConversations = function (request, callback) {
             _.findIndex(convo.userMeta, function (item) {
               return item.userId.toString() === request.user._id.toString()
             })
-          ]
+            ]
         if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
           return done()
         }

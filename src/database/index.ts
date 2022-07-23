@@ -18,7 +18,7 @@ import winston from '../logger'
 
 // Type Defs
 export type TrudeskDatabase = {
-  connection?: mongoose.Connection | null
+  connection: mongoose.Connection | null
   version?: string
 }
 type DBCallback = (err: Error | null, db: TrudeskDatabase | null) => void
@@ -32,8 +32,55 @@ type MongoConnectionUriObject = {
 }
 // End Type Defs
 
-let CONNECTION_URI = ''
-const db: TrudeskDatabase = {}
+const db: TrudeskDatabase = {
+  connection: global.dbConnection
+}
+
+export function getConnectionUri(): string {
+  let CONNECTION_URI
+
+  const mongoConnectionUri: MongoConnectionUriObject = {
+    server: process.env["TD_MONGODB_SERVER"] || nconf.get('mongo:host'),
+    port: process.env["TD_MONGODB_PORT"] || nconf.get('mongo:port') || '27017',
+    username: process.env["TD_MONGODB_USERNAME"] || nconf.get('mongo:username'),
+    password: process.env["TD_MONGODB_PASSWORD"] || nconf.get('mongo:password'),
+    database: process.env["TD_MONGODB_DATABASE"] || nconf.get('mongo:database'),
+    shard: process.env["TD_MONGODB_SHARD"] || nconf.get('mongo:shard')
+  }
+
+  if (!mongoConnectionUri.username) {
+    CONNECTION_URI =
+      'mongodb://' + mongoConnectionUri.server + ':' + mongoConnectionUri.port + '/' + mongoConnectionUri.database
+    if (mongoConnectionUri.shard)
+      CONNECTION_URI = 'mongodb+srv://' + mongoConnectionUri.server + '/' + mongoConnectionUri.database
+  } else {
+    mongoConnectionUri.password = encodeURIComponent(mongoConnectionUri.password)
+    if (mongoConnectionUri.shard)
+      CONNECTION_URI =
+        'mongodb+srv://' +
+        mongoConnectionUri.username +
+        ':' +
+        mongoConnectionUri.password +
+        '@' +
+        mongoConnectionUri.server +
+        '/' +
+        mongoConnectionUri.database
+    else
+      CONNECTION_URI =
+        'mongodb://' +
+        mongoConnectionUri.username +
+        ':' +
+        mongoConnectionUri.password +
+        '@' +
+        mongoConnectionUri.server +
+        ':' +
+        mongoConnectionUri.port +
+        '/' +
+        mongoConnectionUri.database
+  }
+
+  return CONNECTION_URI
+}
 
 export async function init(callback: DBCallback, connectionString?: string, opts?: mongoose.ConnectOptions) {
   let options: mongoose.ConnectOptions = {
@@ -44,48 +91,11 @@ export async function init(callback: DBCallback, connectionString?: string, opts
   if (opts) options = opts
   options.dbName = process.env["TD_MONGODB_DATABASE"] || nconf.get("mongo:database")
 
+  let CONNECTION_URI
   if (connectionString) CONNECTION_URI = connectionString
   else if (process.env["TD_MONGODB_URI"]) CONNECTION_URI = process.env["TD_MONGODB_URI"]
   else {
-    const mongoConnectionUri: MongoConnectionUriObject = {
-      server: process.env["TD_MONGODB_SERVER"] || nconf.get('mongo:host'),
-      port: process.env["TD_MONGODB_PORT"] || nconf.get('mongo:port') || '27017',
-      username: process.env["TD_MONGODB_USERNAME"] || nconf.get('mongo:username'),
-      password: process.env["TD_MONGODB_PASSWORD"] || nconf.get('mongo:password'),
-      database: process.env["TD_MONGODB_DATABASE"] || nconf.get('mongo:database'),
-      shard: process.env["TD_MONGODB_SHARD"] || nconf.get('mongo:shard')
-    }
-
-    if (!mongoConnectionUri.username) {
-      CONNECTION_URI =
-        'mongodb://' + mongoConnectionUri.server + ':' + mongoConnectionUri.port + '/' + mongoConnectionUri.database
-      if (mongoConnectionUri.shard)
-        CONNECTION_URI = 'mongodb+srv://' + mongoConnectionUri.server + '/' + mongoConnectionUri.database
-    } else {
-      mongoConnectionUri.password = encodeURIComponent(mongoConnectionUri.password)
-      if (mongoConnectionUri.shard)
-        CONNECTION_URI =
-          'mongodb+srv://' +
-          mongoConnectionUri.username +
-          ':' +
-          mongoConnectionUri.password +
-          '@' +
-          mongoConnectionUri.server +
-          '/' +
-          mongoConnectionUri.database
-      else
-        CONNECTION_URI =
-          'mongodb://' +
-          mongoConnectionUri.username +
-          ':' +
-          mongoConnectionUri.password +
-          '@' +
-          mongoConnectionUri.server +
-          ':' +
-          mongoConnectionUri.port +
-          '/' +
-          mongoConnectionUri.database
-    }
+    CONNECTION_URI = getConnectionUri()
   }
 
   if (db.connection) {
@@ -103,6 +113,7 @@ export async function init(callback: DBCallback, connectionString?: string, opts
       }
 
       db.connection = mongoose.connection
+      global.dbConnection = db.connection
       mongoose.connection.db.admin()
         .command({ buildInfo: 1 }, function (err, result): void {
           if (err) winston.warn(err.message)
@@ -113,10 +124,12 @@ export async function init(callback: DBCallback, connectionString?: string, opts
     .catch(function (e) {
       winston.error('Oh no, something went wrong with DB! - ' + e.message)
       db.connection = null
-
+      global.dbConnection = null
       return callback(e, null)
     })
 }
 
 export const trudeskDatabase = db
-export const connectionuri = CONNECTION_URI
+export const connectionuri = getConnectionUri()
+
+export default trudeskDatabase

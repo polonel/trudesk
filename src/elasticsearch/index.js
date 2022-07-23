@@ -204,9 +204,9 @@ ES.rebuildIndex = async () => {
   try {
     const settings = await settingUtil.getSettings()
 
-    if (!settings.data.settings.elasticSearchConfigured.value) return false
+    if (!settings.settings.elasticSearchConfigured.value) return false
 
-    const s = settings.data.settings
+    const s = settings.settings
 
     const ELASTICSEARCH_URI = s.elasticSearchHost.value + ':' + s.elasticSearchPort.value
 
@@ -269,7 +269,7 @@ ES.init = async callback => {
     global.esRebuilding = false
 
     const s = await settingUtil.getSettings()
-    const settings = s.data.settings
+    const settings = s.settings
     const ENABLED = settings.elasticSearchConfigured.value
 
     if (!ENABLED) {

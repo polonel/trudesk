@@ -130,13 +130,23 @@ module.exports = function (grunt) {
       webpackDev: 'yarn run webpackdev',
       webpackDist: 'yarn run webpackdist',
       tsbuild: 'yarn tsc -p .',
-      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/public/*,src/client/*" -T src/app.ts'
+      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" -T src/app.ts'
     },
+
+    copy: {
+      main: {
+        files: [
+          { expand: true, src: ['src/views/**'], dest: 'dist' },
+          // { expand: true, src: ['src/sass/**/*.sass', 'src/sass/**/*.scss', 'src/sass/**/*.css'], dest: 'dist' },
+          { expand: true, src: ['src/settings/json/**'], dest: 'dist' }
+        ]
+      }
+    }
   })
 
   grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin'])
   grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'cssmin', 'parallel:web'])
-  grunt.registerTask('build', ['shell:tsbuild', 'uglify:uikit', 'cssmin', 'shell:webpackDist'])
+  grunt.registerTask('build', ['shell:tsbuild', 'copy', 'uglify:uikit', 'cssmin', 'shell:webpackDist'])
   grunt.registerTask('devbuild', ['shell:webpackDev'])
   grunt.registerTask('default', ['server'])
 }

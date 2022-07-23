@@ -65,7 +65,7 @@ accountsApi.create = async function (req, res) {
     // SETTINGS
     const SettingsUtil = require('../../../settings/settingsUtil')
     const settingsContent = await SettingsUtil.getSettings()
-    const settings = settingsContent.data.settings
+    const settings = settingsContent.settings
     const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
@@ -259,7 +259,7 @@ accountsApi.update = async function (req, res) {
     // SETTINGS
     const SettingsUtil = require('../../../settings/settingsUtil')
     const settingsContent = await SettingsUtil.getSettings()
-    const settings = settingsContent.data.settings
+    const settings = settingsContent.settings
     const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
     // USER
@@ -490,7 +490,7 @@ accountsApi.updatePassword = async (req, res) => {
     // SETTINGS
     const SettingsUtil = require('../../../settings/settingsUtil')
     const settingsContent = await SettingsUtil.getSettings()
-    const settings = settingsContent.data.settings
+    const settings = settingsContent.settings
     const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
     if (passwordComplexityEnabled && !passwordComplexity.validate(payload.newPassword))

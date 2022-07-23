@@ -16,12 +16,13 @@ var _ = require('lodash')
 var path = require('path')
 var sass = require('node-sass')
 var settingUtil = require('../settings/settingsUtil')
+var config = require('../config')
 
 var buildsass = {}
 
 var sassOptionsDefaults = {
   indentedSyntax: true,
-  includePaths: [path.join(__dirname, '../../src/sass')],
+  includePaths: [path.resolve(config.trudeskRoot(), 'src/sass')],
   outputStyle: 'compressed'
 }
 
@@ -38,7 +39,7 @@ function sassVariables (variablesObj) {
 }
 
 function sassImport (path) {
-  return "@import '" + path + "'\n"
+  return '@import \'' + path + '\'\n'
 }
 
 function dynamicSass (entry, vars, success, error) {
@@ -54,7 +55,7 @@ function dynamicSass (entry, vars, success, error) {
 
 function save (result) {
   var fs = require('fs')
-  var themeCss = path.join(__dirname, '../../public/css/app.min.css')
+  var themeCss = path.resolve(config.trudeskRoot(), 'public/css/app.min.css')
   fs.writeFileSync(themeCss, result)
 }
 
@@ -73,7 +74,7 @@ buildsass.buildDefault = function (callback) {
 buildsass.build = function (callback) {
   settingUtil.getSettings(function (err, s) {
     if (!err && s) {
-      var settings = s.data.settings
+      var settings = s.settings
 
       dynamicSass(
         'app.sass',

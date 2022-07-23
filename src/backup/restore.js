@@ -21,6 +21,7 @@ const async = require('async')
 const AdmZip = require('adm-zip')
 const database = require('../database')
 const winston = require('../logger')
+const config = require('../config')
 
 global.env = process.env.NODE_ENV || 'production'
 
@@ -29,12 +30,12 @@ let databaseName = null
 
 function cleanup (callback) {
   const rimraf = require('rimraf')
-  rimraf(path.join(__dirname, '../../restores/restore_*'), callback)
+  rimraf(path.resolve(config.trudeskRoot(), 'restores/restore_*'), callback)
 }
 
 function cleanUploads (callback) {
   const rimraf = require('rimraf')
-  rimraf(path.join(__dirname, '../../public/uploads/*'), callback)
+  rimraf(path.resolve(config.trudeskRoot(), 'public/uploads/*'), callback)
 }
 
 function copyUploads (file, callback) {
@@ -42,22 +43,22 @@ function copyUploads (file, callback) {
     [
       function (done) {
         fs.copy(
-          path.join(__dirname, '../../restores/restore_' + file + '/assets/'),
-          path.join(__dirname, '../../public/uploads/assets/'),
+          path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/assets/'),
+          path.resolve(config.trudeskRoot(), 'public/uploads/assets/'),
           done
         )
       },
       function (done) {
         fs.copy(
-          path.join(__dirname, '../../restores/restore_' + file + '/users/'),
-          path.join(__dirname, '../../public/uploads/users/'),
+          path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/users/'),
+          path.resolve(config.trudeskRoot(), 'public/uploads/users/'),
           done
         )
       },
       function (done) {
         fs.copy(
-          path.join(__dirname, '../../restores/restore_' + file + '/tickets/'),
-          path.join(__dirname, '../../public/uploads/tickets/'),
+          path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/tickets/'),
+          path.resolve(config.trudeskRoot(), 'public/uploads/tickets/'),
           done
         )
       }
@@ -67,8 +68,8 @@ function copyUploads (file, callback) {
 }
 
 function extractArchive (file, callback) {
-  const zip = new AdmZip(path.join(__dirname, '../../backups/', file))
-  zip.extractAllTo(path.join(__dirname, '../../restores/restore_' + file + '/'), true)
+  const zip = new AdmZip(path.resolve(config.trudeskRoot(), 'backups/', file))
+  zip.extractAllTo(path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/'), true)
 
   if (_.isFunction(callback)) {
     return callback()
@@ -76,14 +77,14 @@ function extractArchive (file, callback) {
 }
 
 function cleanMongoDb (callback) {
-  database.db.connection.db.dropDatabase(callback)
+  database.trudeskDatabase.connection.db.dropDatabase(callback)
 }
 
 function runRestore (file, callback) {
   const platform = os.platform()
   winston.info('Starting Restore... (' + platform + ')')
 
-  const dbName = fs.readdirSync(path.join(__dirname, '../../restores/restore_' + file, 'database'))[0]
+  const dbName = fs.readdirSync(path.resolve(config.trudeskRoot(), 'restores/restore_' + file, 'database'))[0]
   if (!dbName) {
     return callback(new Error('Invalid Backup. Unable to get DBName'))
   }
@@ -93,12 +94,12 @@ function runRestore (file, callback) {
     CONNECTION_URI,
     '-d',
     databaseName,
-    path.join(__dirname, '../../restores/restore_' + file, 'database', dbName),
+    path.resolve(config.trudeskRoot(), 'restores/restore_' + file, 'database', dbName),
     '--noIndexRestore'
   ]
   let mongorestore = null
   if (platform === 'win32') {
-    mongorestore = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options, {
+    mongorestore = spawn(path.resolve(config.trudeskRoot(), 'src/backup/bin', platform, 'mongorestore'), options, {
       env: { PATH: process.env.PATH }
     })
   } else {
@@ -122,14 +123,14 @@ function runRestore (file, callback) {
   })
 }
 
-;(function () {
+(function () {
   CONNECTION_URI = process.env.MONGOURI
   if (!CONNECTION_URI) return process.send({ success: false, error: 'Invalid connection uri' })
 
   const FILE = process.env.FILE
   if (!FILE) return process.send({ success: false, error: 'Invalid File' })
 
-  if (!fs.existsSync(path.join(__dirname, '../../backups', FILE))) {
+  if (!fs.existsSync(path.resolve(config.trudeskRoot(), 'backups', FILE))) {
     return process.send({ success: false, error: 'FILE NOT FOUND' })
   }
 
@@ -150,9 +151,15 @@ function runRestore (file, callback) {
         })
       }
 
-      databaseName = database.db.connection.db.databaseName
+      databaseName = database.trudeskDatabase.connection.db.databaseName
+      if (!databaseName) {
+        return process.send({
+          success: false,
+          error: { message: 'Unable to get database name' }
+        })
+      }
 
-      fs.ensureDirSync(path.join(__dirname, '../../restores'))
+      fs.ensureDirSync(path.resolve(config.trudeskRoot(), 'restores'))
 
       async.series(
         [

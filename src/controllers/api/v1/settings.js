@@ -35,26 +35,23 @@ apiSettings.getSettings = function (req, res) {
 
     // Sanitize
     if (!req.user.role.isAdmin) {
-      delete settings.data.settings.mailerHost
-      delete settings.data.settings.mailerSSL
-      delete settings.data.settings.mailerPort
-      delete settings.data.settings.mailerUsername
-      delete settings.data.settings.mailerPassword
-      delete settings.data.settings.mailerFrom
-      delete settings.data.settings.mailerCheckEnabled
-      delete settings.data.settings.mailerCheckPolling
-      delete settings.data.settings.mailerCheckHost
-      delete settings.data.settings.mailerCheckPort
-      delete settings.data.settings.mailerCheckPassword
-      delete settings.data.settings.mailerCheckTicketType
-      delete settings.data.settings.mailerCheckTicketPriority
-      delete settings.data.settings.mailerCheckCreateAccount
-      delete settings.data.settings.mailerCheckDeleteMessage
-      delete settings.data.settings.tpsEnabled
-      delete settings.data.settings.tpsUsername
-      delete settings.data.settings.tpsApiKey
+      delete settings.settings.mailerHost
+      delete settings.settings.mailerSSL
+      delete settings.settings.mailerPort
+      delete settings.settings.mailerUsername
+      delete settings.settings.mailerPassword
+      delete settings.settings.mailerFrom
+      delete settings.settings.mailerCheckEnabled
+      delete settings.settings.mailerCheckPolling
+      delete settings.settings.mailerCheckHost
+      delete settings.settings.mailerCheckPort
+      delete settings.settings.mailerCheckPassword
+      delete settings.settings.mailerCheckTicketType
+      delete settings.settings.mailerCheckTicketPriority
+      delete settings.settings.mailerCheckCreateAccount
+      delete settings.settings.mailerCheckDeleteMessage
 
-      delete settings.data.mailTemplates
+      delete settings.mailTemplates
     }
 
     return res.json({ success: true, settings: settings })
@@ -65,7 +62,7 @@ apiSettings.getSingleSetting = function (req, res) {
   settingsUtil.getSettings(function (err, settings) {
     if (err) return res.status(400).json({ success: false, error: err })
 
-    var setting = settings.data.settings[req.params.name]
+    var setting = settings.settings[req.params.name]
     if (!setting) return res.status(400).json({ success: false, error: 'invalid setting' })
 
     return res.json({ success: true, setting: setting })
@@ -88,9 +85,9 @@ apiSettings.getSingleSetting = function (req, res) {
  *
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json"
-        -H "accesstoken: {accesstoken}"
-        -X PUT -d "{\"name\": {name},\"value\": \"{value}\"}"
-        -l http://localhost/api/v1/settings/:setting
+ -H "accesstoken: {accesstoken}"
+ -X PUT -d "{\"name\": {name},\"value\": \"{value}\"}"
+ -l http://localhost/api/v1/settings/:setting
  *
  * @apiSuccess {boolean} success Successful?
  *

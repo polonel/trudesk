@@ -24,6 +24,7 @@ const hbs = require('express-hbs')
 const hbsHelpers = require('../helpers/hbs/helpers')
 const winston = require('../logger')
 const nconf = require('nconf')
+const config = require('../config')
 const flash = require('connect-flash')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -58,11 +59,11 @@ module.exports = function (app, db, callback) {
 
   if (global.env === 'production') {
     app.use(
-      expressStaticGzip(path.join(__dirname, '../../public'), {
+      expressStaticGzip(path.resolve(config.trudeskRoot(), 'public'), {
         index: false
       })
     )
-  } else app.use(express.static(path.join(__dirname, '../../public')))
+  } else app.use(express.static(path.resolve(config.trudeskRoot(), 'public')))
 
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
@@ -80,7 +81,7 @@ module.exports = function (app, db, callback) {
     maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year
   }
 
-  const sessionSecret = nconf.get('tokens:secret') ? nconf.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
+  const sessionSecret = config.get('tokens:secret') ? config.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
 
   async.waterfall(
     [
@@ -117,7 +118,7 @@ module.exports = function (app, db, callback) {
           var settings = require('../settings/settingsUtil')
           settings.getSettings(function (err, setting) {
             if (err) return winston.warn(err)
-            var maintenanceMode = setting.data.settings.maintenanceMode
+            var maintenanceMode = setting.settings.maintenanceMode
 
             if (req.user) {
               if (maintenanceMode.value === true && !req.user.role.isAdmin) {
@@ -130,16 +131,16 @@ module.exports = function (app, db, callback) {
         })
 
         // Mobile
-        app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')))
+        app.use('/mobile', express.static(path.resolve(config.trudeskRoot(), 'mobile')))
 
-        app.use('/assets', express.static(path.join(__dirname, '../../public/uploads/assets')))
-        app.use('/uploads/users', express.static(path.join(__dirname, '../../public/uploads/users')))
-        app.use('/uploads', middleware.hasAuth, express.static(path.join(__dirname, '../../public/uploads')))
+        app.use('/assets', express.static(path.resolve(config.trudeskRoot(), 'public/uploads/assets')))
+        app.use('/uploads/users', express.static(path.resolve(config.trudeskRoot(), 'public/uploads/users')))
+        app.use('/uploads', middleware.hasAuth, express.static(path.resolve(config.trudeskRoot(), 'public/uploads')))
         app.use(
           '/backups',
           middleware.hasAuth,
           middleware.isAdmin,
-          express.static(path.join(__dirname, '../../backups'))
+          express.static(path.resolve(config.trudeskRoot(), 'backups'))
         )
 
         // Uncomment to enable plugins
@@ -182,7 +183,7 @@ function allowCrossDomain (req, res, next) {
     'Access-Control-Allow-Headers',
     'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken,X-RToken,X-Token'
   )
-  res.setHeader('Content-Security-Policy', "frame-ancestors 'none';")
+  res.setHeader('Content-Security-Policy', 'frame-ancestors \'none\';')
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200)

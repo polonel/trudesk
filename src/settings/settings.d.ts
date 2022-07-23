@@ -41,7 +41,19 @@ export type SettingsObjectType = {
   mailerCheckTicketPriority: SettingsObjectType_String
   mailerCheckCreateAccount: SettingsObjectType_Bool
   mailerCheckDeleteMessage: SettingsObjectType_Bool
-
+  showTour: SettingsObjectType_Bool
+  showOverdueTickets: SettingsObjectType_Bool
+  elasticSearchEnabled: SettingsObjectType_Bool
+  elasticSearchHost: SettingsObjectType_String
+  elasticSearchPort: SettingsObjectType_Number
+  elasticSearchConfigured: SettingsObjectType_Bool
+  allowAgentUserTickets: SettingsObjectType_Bool
+  allowPublicTickets: SettingsObjectType_Bool
+  allowUserRegistration: SettingsObjectType_Bool
+  playNewTicketSound: SettingsObjectType_Bool
+  privacyPolicy: SettingsObjectType_String
+  maintenanceMode: SettingsObjectType_Bool
+  accountsPasswordComplexity: SettingsObjectType_Bool
 
 }
 
