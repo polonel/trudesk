@@ -12,31 +12,51 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const winston = require('./logger')
-const async = require('async')
-const passportSocketIo = require('passport.socketio')
-const cookieparser = require('cookie-parser')
-const nconf = require('nconf')
+import winston from './logger'
+import async from 'async'
+import passportSocketIo from 'passport.socketio'
+import config from './config'
+
+import { UserModel } from './models'
 
 // Submodules
-const ticketSocket = require('./socketio/ticketSocket')
-const chatSocket = require('./socketio/chatSocket')
-const notificationSocket = require('./socketio/notificationSocket')
-const noticeSocket = require('./socketio/noticeSocket')
-const accountsImportSocket = require('./socketio/accountImportSocket')
-const backupRestoreSocket = require('./socketio/backupRestoreSocket')
-const logsSocket = require('./socketio/logsSocket')
+import ticketSocket from './socketio/ticketSocket'
+import chatSocket from './socketio/chatSocket'
+import notificationSocket from './socketio/notificationSocket'
+import noticeSocket from './socketio/noticeSocket'
+import accountsImportSocket from './socketio/accountImportSocket'
+import backupRestoreSocket from './socketio/backupRestoreSocket'
+import logsSocket from './socketio/logsSocket'
 
-const socketServer = function (ws) {
-  'use strict'
+// socketio
+import { Server } from 'socket.io'
+import type { WebServer } from "./webserver";
 
+interface ServerToClientEvents {
+  noArg: () => void
+}
+
+interface ClientToServerEvents {
+
+}
+
+interface InterServerEvents {
+  ping: () => void
+}
+
+export interface SocketData {
+  name: string
+  user: any
+}
+
+export const SocketServer = function (ws: WebServer) {
   const socketConfig = {
-    pingTimeout: nconf.get('socket:pingTimeout') ? nconf.get('socket:pingTimeout') : 15000,
-    pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 30000,
-    secret: nconf.get('tokens:secret') ? nconf.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
+    pingTimeout: config.get('socket:pingTimeout') ? config.get('socket:pingTimeout') : 15000,
+    pingInterval: config.get('socket:pingInterval') ? config.get('socket:pingInterval') : 30000,
+    secret: config.get('tokens:secret') ? config.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
   }
 
-  const io = require('socket.io')(ws.server, {
+  const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(ws.server, {
     pingTimeout: socketConfig.pingTimeout,
     pingInterval: socketConfig.pingInterval
   })
@@ -50,8 +70,7 @@ const socketServer = function (ws) {
             return next(null, data)
           }
 
-          const userSchema = require('./models/user')
-          userSchema.getUserByAccessToken(data.request._query.token, (err, user) => {
+          UserModel.getUserByAccessToken(data.request._query.token, (err, user) => {
             if (!err && user) {
               winston.debug('Authenticated socket ' + data.id + ' - ' + user.username)
               data.request.user = user
@@ -72,7 +91,6 @@ const socketServer = function (ws) {
           }
 
           return passportSocketIo.authorize({
-            cookieParser: cookieparser,
             key: 'connect.sid',
             store: ws.sessionStore,
             secret: socketConfig.secret,
@@ -82,7 +100,7 @@ const socketServer = function (ws) {
       ],
       function (err) {
         if (err) {
-          return accept(new Error(err))
+          return accept(err)
         }
 
         return accept()
@@ -127,10 +145,8 @@ const socketServer = function (ws) {
   winston.info('SocketServer Running')
 }
 
-function onAuthorizeSuccess (data, accept) {
+function onAuthorizeSuccess(data: SocketData, accept: () => void) {
   winston.debug('User successfully connected: ' + data.user.username)
 
   accept()
 }
-
-module.exports = socketServer

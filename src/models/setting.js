@@ -31,7 +31,7 @@ settingSchema.statics.getSettings = function (callback) {
 
 settingSchema.statics.getSettingByName = async function (name, callback) {
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    (async () => {
       const q = this.model(COLLECTION).findOne({ name })
 
       try {
@@ -50,7 +50,7 @@ settingSchema.statics.getSettingByName = async function (name, callback) {
 
 settingSchema.statics.getSettingsByName = async function (names, callback) {
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    (async () => {
       try {
         const q = this.model(COLLECTION).find({ name: names })
         const result = await q.exec()

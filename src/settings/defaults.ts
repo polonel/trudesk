@@ -15,54 +15,59 @@
 import _ from 'lodash'
 import fs from 'fs-extra'
 import path from 'path'
-import async from 'async'
+import async, { series } from 'async'
 import winston from '../logger'
 import moment from 'moment-timezone'
 import { trudeskDatabase } from '../database'
 import { PriorityModel, SettingModel } from '../models'
+import RoleModel from '../models/role'
+
+type DefaultGrants = {
+  userGrants: Array<string>
+  supportGrants: Array<string>
+  adminGrants: Array<string>
+}
 
 const settingsDefaults = {}
-const roleDefaults = {}
-
-roleDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
-roleDefaults.supportGrants = [
-  'tickets:*',
-  'agent:*',
-  'accounts:create update view import',
-  'teams:create update view',
-  'comments:create view update create delete',
-  'reports:view create',
-  'notices:*'
-]
-roleDefaults.adminGrants = [
-  'admin:*',
-  'agent:*',
-  'chat:*',
-  'tickets:*',
-  'accounts:*',
-  'groups:*',
-  'teams:*',
-  'departments:*',
-  'comments:*',
-  'reports:*',
-  'notices:*',
-  'settings:*',
-  'api:*'
-]
+const roleDefaults: DefaultGrants = {
+  userGrants: ['tickets:create view update', 'comments:create view update'],
+  supportGrants: [
+    'tickets:*',
+    'agent:*',
+    'accounts:create update view import',
+    'teams:create update view',
+    'comments:create view update create delete',
+    'reports:view create',
+    'notices:*'
+  ],
+  adminGrants: [
+    'admin:*',
+    'agent:*',
+    'chat:*',
+    'tickets:*',
+    'accounts:*',
+    'groups:*',
+    'teams:*',
+    'departments:*',
+    'comments:*',
+    'reports:*',
+    'notices:*',
+    'settings:*',
+    'api:*'
+  ]
+}
 
 settingsDefaults.roleDefaults = roleDefaults
 
-function rolesDefault(callback) {
-  const roleSchema = require('../models/role')
-
+function rolesDefault(callback: () => void) {
   async.series(
     [
       function (done) {
-        roleSchema.getRoleByName('User', function (err, role) {
+        RoleModel.getRoleByName('User', function (err, role) {
           if (err) return done(err)
           if (role) return done()
 
-          roleSchema.create(
+          RoleModel.create(
             {
               name: 'User',
               description: 'Default role for users',
@@ -87,13 +92,13 @@ function rolesDefault(callback) {
         })
       },
       function (done) {
-        roleSchema.getRoleByName('Support', function (err, role) {
+        RoleModel.getRoleByName('Support', function (err, role) {
           if (err) return done(err)
           if (role) {
             return done()
             // role.updateGrants(supportGrants, done);
           } else
-            roleSchema.create(
+            RoleModel.create(
               {
                 name: 'Support',
                 description: 'Default role for agents',
@@ -104,12 +109,12 @@ function rolesDefault(callback) {
         })
       },
       function (done) {
-        roleSchema.getRoleByName('Admin', function (err, role) {
+        RoleModel.getRoleByName('Admin', function (err, role) {
           if (err) return done(err)
           if (role) return done()
           // role.updateGrants(adminGrants, done);
           else {
-            roleSchema.create(
+            RoleModel.create(
               {
                 name: 'Admin',
                 description: 'Default role for admins',
@@ -126,7 +131,7 @@ function rolesDefault(callback) {
           if (err) return done(err)
           if (roleOrder) return done()
 
-          roleSchema.getRoles(function (err, roles) {
+          RoleModel.getRoles(function (err, roles) {
             if (err) return done(err)
 
             var roleOrder = []
@@ -671,26 +676,27 @@ function installationID(callback) {
   })
 }
 
-function maintenanceModeDefault(callback) {
-  SettingModel.getSettingByName('maintenanceMode:enable', function (err, setting) {
-    if (err) return callback(err)
-    if (!setting) {
-      SettingModel.create(
-        {
-          name: 'maintenanceMode:enable',
-          value: false
-        },
-        callback
-      )
-    } else {
-      return callback()
-    }
+async function maintenanceModeDefault() {
+  return new Promise<void>((resolve, reject) => {
+    (async () => {
+      try {
+        const setting = await SettingModel.getSettingByName('maintenanceMode:enable')
+        if (!setting) {
+          await SettingModel.create({ name: 'maintenanceMode:enable', value: false })
+          return resolve()
+        } else {
+          return resolve()
+        }
+      } catch (e) {
+        return reject(e)
+      }
+    })()
   })
 }
 
-settingsDefaults.init = function (callback) {
+settingsDefaults.init = function (callback: () => void) {
   winston.debug('Checking Default Settings...')
-  async.series(
+  series(
     [
       function (done) {
         return createDirectories(done)
@@ -729,7 +735,9 @@ settingsDefaults.init = function (callback) {
         return elasticSearchConfToDB(done)
       },
       function (done) {
-        return maintenanceModeDefault(done)
+        return maintenanceModeDefault().then(() => {
+          done()
+        })
       },
       function (done) {
         return installationID(done)
@@ -737,9 +745,9 @@ settingsDefaults.init = function (callback) {
     ],
     function (err) {
       if (err) winston.warn(err)
-      if (_.isFunction(callback)) return callback()
+      if (typeof callback === 'function') return callback()
     }
   )
 }
 
-module.exports = settingsDefaults
+export default settingsDefaults

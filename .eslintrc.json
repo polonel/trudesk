@@ -1,5 +1,7 @@
 {
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -16,12 +18,18 @@
     "mocha": true
   },
   "rules": {
-    "standard/no-callback-literal": 0, // enable after error handing refactor
+    "standard/no-callback-literal": 0,
+    // enable after error handing refactor
     "node/exports-style": 0,
     "n/no-callback-literal": 0,
     "new-cap": 0,
     "no-console": 2,
-    "complexity": ["error", 30]
+    "complexity": [
+      "error",
+      30
+    ],
+    // Temp Typescript while converting
+    "@typescript-eslint/no-explicit-any": 0
   },
   "globals": {
     "define": true,

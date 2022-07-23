@@ -62,3 +62,9 @@ export const checkForOldConfig = () => {
     fs.renameSync(oldConfigFile, path.join(__dirname, '../../config.json.bk'))
   }
 }
+
+export default {
+  loadConfig,
+  get,
+  checkForOldConfig
+}

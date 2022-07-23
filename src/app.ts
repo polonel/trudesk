@@ -19,7 +19,7 @@ import pkg from '../package.json'
 
 //
 import { checkForOldConfig, hasConfigFile, loadConfig } from './config'
-import { init as webServerInit, installServer, webServerListen } from './webserver'
+import webserver, { init as webServerInit, installServer, webServerListen } from './webserver'
 import { init as databaseInit, TrudeskDatabase, trudeskDatabase } from './database'
 import tdDefaults from './settings/defaults'
 import permissions from './permissions'
@@ -30,6 +30,7 @@ import migration from './migration'
 import buildSass from './sass/buildsass'
 import { init as cacheInit } from './cache/cache'
 import taskRunner from './taskrunner'
+import { SocketServer } from "./socketserver";
 
 const isDocker = process.env['TRUDESK_DOCKER'] || false
 
@@ -96,6 +97,7 @@ function launchServer(db: TrudeskDatabase) {
           permissions.register(next)
         },
         function (next) {
+
           elasticsearch.init(function (err) {
             if (err) {
               winston.error(err)
@@ -105,12 +107,12 @@ function launchServer(db: TrudeskDatabase) {
           })
         },
         function (next) {
-          // ss(ws)
+          SocketServer(webserver)
           return next()
         },
         function (next) {
           // Start Check Mail
-          const settingSchema = Models.Setting
+          const settingSchema = Models.SettingModel
           settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
               winston.warn(err)
@@ -181,7 +183,7 @@ function dbCallback(err, db) {
   }
 
   if (isDocker) {
-    const s = Models.Setting
+    const s = Models.SettingModel
     s.getSettingByName('installed', function (err, installed) {
       if (err) return start()
 

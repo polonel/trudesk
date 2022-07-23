@@ -18,8 +18,13 @@ import express from 'express'
 import winston from './logger'
 import middleware from './middleware'
 import routes from './routes'
-import http from 'http'
+import http, { Server } from 'http'
 import type { TrudeskDatabase } from "./database";
+
+export interface WebServer {
+  server: Server
+  sessionStore?: any
+}
 
 const nconf = _nconf.argv().env()
 
@@ -27,11 +32,14 @@ export const ExpressApp = express()
 export const HTTPServer = http.createServer(ExpressApp)
 export let Port = nconf.get('port') || 8118
 
+const webserver: WebServer = {
+  server: HTTPServer
+}
 
 export const init = async (db: TrudeskDatabase, callback, port?: number) => {
   if (port) Port = port
   middleware(ExpressApp, db, function (middleware, store) {
-    module.exports.sessionStore = store
+    webserver.sessionStore = store
     routes(ExpressApp, middleware)
 
     // Load Events
@@ -127,3 +135,5 @@ export const installServer = function (callback) {
     }
   })
 }
+
+export default webserver

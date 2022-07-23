@@ -12,44 +12,55 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const _ = require('lodash')
-const nconf = require('nconf')
-const jsStringEscape = require('js-string-escape')
-const settingSchema = require('../models/setting')
-const ticketTypeSchema = require('../models/tickettype')
-const roleSchema = require('../models/role')
-const roleOrderSchema = require('../models/roleorder')
+import _ from 'lodash'
+import config from '../config'
+import jsStringEscape from 'js-string-escape'
+import { PriorityModel, RoleModel, RoleOrderModel, SettingModel, TicketTagsModel, TicketTypeModel } from "../models";
+import type { SettingsObjectType, SettingsObjectType_Base } from "./settings";
 
-const util = {}
+export interface ISettingsUtil {
+  setSetting: (setting: string, value: string | object | boolean | number) => Promise<void>
+  getSettings: (callback: (err?: Error, settings?: Array<object>) => void) => Promise<Array<object>>
+}
 
-function parseSetting (settings, name, defaultValue) {
+function parseSetting(settings: Array<SettingsObjectType_Base>, name: string, defaultValue: string | boolean | object | number) {
   let s = _.find(settings, function (x) {
     return x.name === name
   })
-  s = _.isUndefined(s) ? { value: defaultValue } : s
+
+  s = _.isUndefined(s) ? { name, value: defaultValue } : s
 
   return s
 }
 
-util.setSetting = function (setting, value, callback) {
-  const s = {
-    name: setting,
-    value: value
-  }
+async function setSetting(setting: string, value: string | object | boolean | number) {
+  return new Promise<void>((resolve, reject) => {
+    (async () => {
+      try {
+        const s = {
+          name: setting,
+          value: value
+        }
 
-  settingSchema.updateOne({ name: s.name }, s, { upsert: true }, callback)
+        await SettingModel.updateOne({ name: s.name }, s, { upsert: true })
+        return resolve()
+      } catch (e) {
+        return reject(e)
+      }
+    })()
+  })
 }
 
-util.getSettings = async callback => {
-  return new Promise((resolve, reject) => {
-    ;(async () => {
+async function getSettings(callback: (err?: Error, settings?: Array<object>) => void): Promise<Array<object>> {
+  return new Promise<Array<object>>((resolve, reject) => {
+    (async () => {
       try {
-        const settings = await settingSchema.getSettings()
-        const s = {}
+        const settings = await SettingModel.getSettings()
+        const s: SettingsObjectType = {}
         const content = { data: {} }
 
         s.emailBeta = parseSetting(settings, 'beta:email', false)
-        s.hasThirdParty = !nconf.get('thirdParty') ? false : nconf.get('thirdParty').enable
+        s.hasThirdParty = !config.get('thirdParty') ? false : config.get('thirdParty').enable
 
         s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk')
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
@@ -125,27 +136,25 @@ util.getSettings = async callback => {
 
         s.accountsPasswordComplexity = parseSetting(settings, 'accountsPasswordComplexity:enable', true)
 
-        const types = await ticketTypeSchema.getTypes()
+        const types = await TicketTypeModel.getTypes()
         content.data.ticketTypes = _.sortBy(types, o => o.name)
 
         _.each(content.data.ticketTypes, type => {
           type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name'])
         })
 
-        const ticketPrioritySchema = require('../models/ticketpriority')
-        const priorities = await ticketPrioritySchema.getPriorities()
+        const priorities = await PriorityModel.getPriorities()
         content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
 
         const templateSchema = require('../models/template')
         const templates = await templateSchema.find({})
         content.data.mailTemplates = _.sortBy(templates, 'name')
 
-        const tagSchema = require('../models/tag')
-        const tagCount = await tagSchema.getTagCount()
+        const tagCount = await TicketTagsModel.getTagCount()
         content.data.tags = { count: tagCount }
 
-        const roles = await roleSchema.getRoles()
-        let roleOrder = await roleOrderSchema.getOrder()
+        const roles = await RoleModel.getRoles()
+        let roleOrder = await RoleOrderModel.getOrder()
         roleOrder = roleOrder.order
 
         if (roleOrder.length > 0) {
@@ -168,4 +177,11 @@ util.getSettings = async callback => {
   })
 }
 
-module.exports = util
+export const SettingsUtil: ISettingsUtil = {
+  setSetting,
+  getSettings
+}
+
+export default SettingsUtil
+
+module.exports = SettingsUtil

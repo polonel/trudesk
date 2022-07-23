@@ -12,17 +12,16 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const _ = require('lodash')
-const winston = require('../logger')
-const roleSchema = require('../models/role')
-const roleOrder = require('../models/roleorder')
+import _ from 'lodash'
+import winston from '../logger'
+import { RoleModel, RoleOrderModel } from '../models'
 
-const register = function (callback) {
+const register = function (callback: (err?: Error | undefined | null) => void) {
   // Register Roles
-  roleSchema.getRolesLean(function (err, roles) {
+  RoleModel.getRolesLean(function (err, roles) {
     if (err) return callback(err)
 
-    roleOrder.getOrderLean(function (err, ro) {
+    RoleOrderModel.getOrderLean(function (err, ro) {
       if (err) return callback(err)
 
       winston.debug('Registering Permissions...')
@@ -44,7 +43,7 @@ const register = function (callback) {
 
 const canThis = function (role, a, adminOverride = false) {
   if (_.isUndefined(role)) return false
-  if (adminOverride === true && role.isAdmin) return true
+  if (adminOverride && role.isAdmin) return true
 
   const roles = global.roles
   if (_.isUndefined(roles)) return false
@@ -122,7 +121,7 @@ const getRoles = function (action) {
   return rolesWithAction
 }
 
-function hasHierarchyEnabled (roleId) {
+function hasHierarchyEnabled(roleId) {
   const role = _.find(global.roles, function (o) {
     return o._id.toString() === roleId.toString()
   })
@@ -130,7 +129,7 @@ function hasHierarchyEnabled (roleId) {
   return role.hierarchy
 }
 
-function parseRoleHierarchy (roleId) {
+function parseRoleHierarchy(roleId) {
   const roleOrder = global.roleOrder.order
 
   const idx = _.findIndex(roleOrder, function (i) {
@@ -141,7 +140,7 @@ function parseRoleHierarchy (roleId) {
   return _.slice(roleOrder, idx)
 }
 
-function hasPermOverRole (ownRole, extRole) {
+function hasPermOverRole(ownRole, extRole) {
   const roles = parseRoleHierarchy(extRole)
 
   const i = _.find(roles, function (o) {
@@ -151,7 +150,7 @@ function hasPermOverRole (ownRole, extRole) {
   return !_.isUndefined(i)
 }
 
-function isAdmin (roleId, callback) {
+function isAdmin(roleId, callback) {
   roleSchema.get(roleId, function (err, role) {
     if (err) return callback(false)
 
@@ -159,7 +158,7 @@ function isAdmin (roleId, callback) {
   })
 }
 
-function isAdminSync (roleId) {
+function isAdminSync(roleId) {
   const roles = global.roles
   if (!roles) return false
   const role = _.find(roles, function (r) {
@@ -171,13 +170,13 @@ function isAdminSync (roleId) {
   return role.isAdmin
 }
 
-function buildGrants (obj) {
+function buildGrants(obj) {
   return _.map(obj, function (v, k) {
     return k + ':' + _.join(v, ' ')
   })
 }
 
-module.exports = {
+const Permissions = {
   register,
   flushRoles: register,
   canThis,
@@ -190,3 +189,6 @@ module.exports = {
   isAdminSync,
   buildGrants
 }
+
+export default Permissions
+module.exports = Permissions

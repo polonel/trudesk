@@ -1,5 +1,7 @@
 import NodeCache from "node-cache";
 import { ChildProcess } from "child_process";
+import type { IRole } from "../models/role";
+import { Server } from "socket.io";
 
 export declare global {
   var forks: Array<NamedChildProcess>
@@ -9,6 +11,11 @@ export declare global {
 
   //Database
   var CONNECTION_URI: string
+  var roles: Array<IRole>
+
+  // Socket.io
+  var io: Server
+  var socketServer: any
 }
 
 export type NamedChildProcess = {
