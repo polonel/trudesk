@@ -752,3 +752,4 @@ settingsDefaults.init = function (callback: () => void) {
 }
 
 export default settingsDefaults
+module.exports = settingsDefaults

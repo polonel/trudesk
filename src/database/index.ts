@@ -92,9 +92,11 @@ export async function init(callback: DBCallback, connectionString?: string, opts
   options.dbName = process.env["TD_MONGODB_DATABASE"] || nconf.get("mongo:database")
 
   let CONNECTION_URI
-  if (connectionString) CONNECTION_URI = connectionString
-  else if (process.env["TD_MONGODB_URI"]) CONNECTION_URI = process.env["TD_MONGODB_URI"]
-  else {
+  if (connectionString) {
+    CONNECTION_URI = connectionString
+  } else if (process.env["TD_MONGODB_URI"]) {
+    CONNECTION_URI = process.env["TD_MONGODB_URI"]
+  } else {
     CONNECTION_URI = getConnectionUri()
   }
 
