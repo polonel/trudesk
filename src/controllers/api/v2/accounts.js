@@ -128,7 +128,7 @@ accountsApi.create = async function (req, res) {
   }
 }
 
-accountsApi.get = function (req, res) {
+accountsApi.get = async function (req, res) {
   const query = req.query
   const type = query.type || 'customers'
   const limit = query.limit ? Number(query.limit) : 25
@@ -149,32 +149,24 @@ accountsApi.get = function (req, res) {
       })
       break
     case 'customers':
-      User.getCustomers(obj, function (err, accounts) {
-        if (err) return apiUtil.sendApiError(res, 500, err.message)
-
+      try {
+        const accounts = await User.getCustomers(obj)
         const resAccounts = []
 
-        async.eachSeries(
-          accounts,
-          function (account, next) {
-            Group.getAllGroupsOfUser(account._id, function (err, groups) {
-              if (err) return next(err)
-              const a = account.toObject()
-              a.groups = groups.map(function (group) {
-                return { name: group.name, _id: group._id }
-              })
-              resAccounts.push(a)
-              next()
-            })
-          },
-          function (err) {
-            if (err) return apiUtil.sendApiError(res, 500, err.message)
+        for (const account of accounts) {
+          const groups = await Group.getAllGroupsOfUser(account._id)
+          const accountObj = account.toObject()
+          accountObj.groups = groups.map(group => {
+            return { name: group.name, _id: group._id }
+          })
 
-            return apiUtil.sendApiSuccess(res, { accounts: resAccounts, count: resAccounts.length })
-          }
-        )
-      })
-      break
+          resAccounts.push(accountObj)
+        }
+
+        return apiUtil.sendApiSuccess(res, { accounts: resAccounts, count: resAccounts.length })
+      } catch (err) {
+        return apiUtil.sendApiError(res, 500, err.message)
+      }
     case 'agents':
       User.getAgents(obj, function (err, accounts) {
         if (err) return apiUtil.sendApiError(res, 500, err.message)

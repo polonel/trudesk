@@ -15,10 +15,13 @@
 import type { NextFunction, Request, Response } from "express";
 import * as _ from 'lodash'
 import { init as databaseInit, TrudeskDatabase } from '../database'
-import mongoose from 'mongoose'
+import mongoose, { CallbackError, HydratedDocument } from 'mongoose'
 import winston from '../logger'
 import csrf from '../dependencies/csrf-td'
 import viewdata from '../helpers/viewdata'
+import passport from 'passport'
+import { UserModel } from "../models";
+import permissions from "../permissions";
 
 export type RouteMiddlewareType = {
   db?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => TrudeskDatabase | void
@@ -207,8 +210,6 @@ middleware.checkOrigin = function (req, res, next) {
 middleware.api = function (req, res, next) {
   const accessToken = req.headers.accesstoken
 
-  const userSchema = require('../models/user')
-
   if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
     const user = req.user
     if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({ error: 'Invalid Access Token' })
@@ -216,7 +217,7 @@ middleware.api = function (req, res, next) {
     return next()
   }
 
-  userSchema.getUserByAccessToken(accessToken, function (err, user) {
+  UserModel.getUserByAccessToken(accessToken, function (err?: CallbackError, user?: HydratedDocument<any>) {
     if (err) return res.status(401).json({ error: err.message })
     if (!user) return res.status(401).json({ error: 'Invalid Access Token' })
 
@@ -232,7 +233,6 @@ middleware.apiv2 = function (req, res, next) {
   // ByPass auth for now if user is set through session
   if (req.user) return next()
 
-  const passport = require('passport')
   passport.authenticate('jwt', { session: true }, function (err, user) {
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
     if (user) {
@@ -247,7 +247,7 @@ middleware.apiv2 = function (req, res, next) {
 middleware.canUser = function (action) {
   return function (req, res, next) {
     if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
-    const permissions = require('../permissions')
+
     const perm = permissions.canThis(req.user.role._id, action)
     if (perm) return next()
 
@@ -257,6 +257,7 @@ middleware.canUser = function (action) {
 
 middleware.isAdmin = function (req, res, next) {
   const roles = global.roles
+
   const role = _.find(roles, { _id: req.user.role._id })
   if (role) {
     role.isAdmin = role.grants.indexOf('admin:*') !== -1

@@ -144,8 +144,9 @@ function launchServer(db: TrudeskDatabase) {
         //   return next()
         // },
         function (next) {
+          let cacheEnvVars = {}
           if (isDocker) {
-            cache.env = {
+            cacheEnvVars = {
               TRUDESK_DOCKER: process.env['TRUDESK_DOCKER'],
               TD_MONGODB_SERVER: process.env['TD_MONGODB_SERVER'],
               TD_MONGODB_PORT: process.env['TD_MONGODB_PORT'],
@@ -156,7 +157,7 @@ function launchServer(db: TrudeskDatabase) {
             }
           }
 
-          cacheInit()
+          cacheInit(cacheEnvVars)
 
           return next()
         },

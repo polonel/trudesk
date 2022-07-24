@@ -12,10 +12,12 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var TagSchema = require('../../../models/tag')
-var apiTags = {}
+const _ = require('lodash')
+const async = require('async')
+const logger = require('../../../logger')
+const TagSchema = require('../../../models/tag')
+
+const apiTags = {}
 
 /**
  * @api {post} /api/v1/tags/create Creates a tag
@@ -53,43 +55,27 @@ apiTags.createTag = function (req, res) {
   })
 }
 
-apiTags.getTagsWithLimit = function (req, res) {
-  var qs = req.query
-  var limit = qs.limit ? qs.limit : 25
-  var page = qs.page ? qs.page : 0
+apiTags.getTagsWithLimit = async function (req, res) {
+  const qs = req.query
+  const limit = qs.limit ? qs.limit : 25
+  const page = qs.page ? qs.page : 0
 
-  var tagSchema = require('../../../models/tag')
-  var result = { success: true }
+  const tagSchema = require('../../../models/tag')
+  const result = { success: true }
 
-  async.parallel(
-    [
-      function (done) {
-        try {
-          tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page), function (err, tags) {
-            if (err) return done(err)
+  try {
+    const getTagsWithLimit = tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page))
+    const countDocuments = tagSchema.countDocuments({})
+    const [tags, count] = await Promise.all([getTagsWithLimit, countDocuments])
 
-            result.tags = tags
-            return done()
-          })
-        } catch (e) {
-          return done({ message: 'Invalid Limit and/or page' })
-        }
-      },
-      function (done) {
-        tagSchema.countDocuments({}, function (err, count) {
-          if (err) return done(err)
-          result.count = count
+    result.tags = tags
+    result.count = count
 
-          return done()
-        })
-      }
-    ],
-    function (err) {
-      if (err) return res.status(500).json({ success: false, error: err.message })
-
-      return res.json(result)
-    }
-  )
+    return res.json(result)
+  } catch (error) {
+    logger.warn(error)
+    return res.status(500).json({ success: false, error: error.message })
+  }
 }
 
 /**
@@ -107,25 +93,24 @@ apiTags.getTagsWithLimit = function (req, res) {
  * @apiSuccess {object} tag Updated Tag
  *
  */
-apiTags.updateTag = function (req, res) {
-  var id = req.params.id
-  var data = req.body
+apiTags.updateTag = async function (req, res) {
+  const id = req.params.id
+  const data = req.body
   if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data)) {
     return res.status(400).json({ success: false, error: 'Invalid Put Data' })
   }
 
-  var tagSchema = require('../../../models/tag')
-  tagSchema.getTag(id, function (err, tag) {
-    if (err) return res.status(400).json({ success: false, error: err.message })
+  const tagSchema = require('../../../models/tag')
 
+  try {
+    let tag = await tagSchema.getTag(id)
     tag.name = data.name
+    tag = await tag.save()
 
-    tag.save(function (err, t) {
-      if (err) return res.status(400).json({ success: false, error: err.message })
-
-      return res.json({ success: true, tag: t })
-    })
-  })
+    return res.json({ success: true, tag })
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error.message })
+  }
 }
 
 /**

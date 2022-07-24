@@ -15,7 +15,15 @@
 import _ from 'lodash'
 import config from '../config'
 import jsStringEscape from 'js-string-escape'
-import { PriorityModel, RoleModel, RoleOrderModel, SettingModel, TicketTagsModel, TicketTypeModel } from "../models";
+import {
+  PriorityModel,
+  RoleModel,
+  RoleOrderModel,
+  SettingModel,
+  TemplateModel,
+  TicketTagsModel,
+  TicketTypeModel
+} from "../models";
 import type { SettingsObjectType, SettingsObjectType_Base } from "./settings";
 
 export interface ISettingsUtil {
@@ -153,8 +161,7 @@ async function getSettings(callback: (err?: Error | null | undefined, data?: Con
         const priorities = await PriorityModel.getPriorities()
         result.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
 
-        const templateSchema = require('../models/template')
-        const templates = await templateSchema.find({})
+        const templates = await TemplateModel.find({})
         result.mailTemplates = _.sortBy(templates, 'name')
 
         const tagCount = await TicketTagsModel.getTagCount()

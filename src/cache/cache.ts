@@ -26,11 +26,11 @@ export interface TrudeskCache {
 
 const cache: TrudeskCache = {}
 
-export function init() {
+export function init(cacheEnvVars: any) {
   global.cache = new NodeCache({ checkperiod: 0 })
   cache.memLimit = process.env['CACHE_MEMLIMIT'] || '2048'
   const env = { FORK: 1, NODE_ENV: global.env, TIMEZONE: global.timezone }
-  cache.env = _.merge(cache.env, env)
+  cache.env = _.merge(cacheEnvVars, env)
 
   spawnCache()
   setInterval(spawnCache, 55 * 60 * 1000)

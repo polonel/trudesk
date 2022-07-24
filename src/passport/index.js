@@ -28,10 +28,14 @@ module.exports = function () {
     done(null, user._id)
   })
 
-  passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-      done(err, user)
-    })
+  passport.deserializeUser(async function (id, done) {
+    try {
+      const user = await User.findById(id)
+      
+      return done(null, user)
+    } catch (e) {
+      return done(e)
+    }
   })
 
   passport.use(

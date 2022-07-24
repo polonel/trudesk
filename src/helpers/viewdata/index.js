@@ -12,12 +12,30 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const async = require('async')
-const _ = require('lodash')
-const winston = require('../../logger')
-const moment = require('moment')
-const settingSchema = require('../../models/setting')
-const settingsUtil = require('../../settings/settingsUtil')
+import async from 'async'
+import _ from 'lodash'
+import winston from '../../logger'
+import moment from 'moment'
+import {
+  ConversationModel,
+  DepartmentModel,
+  GroupModel,
+  MessageModel,
+  NoticeModel,
+  NotificationModel,
+  PriorityModel,
+  SettingModel,
+  SettingModel as settingSchema,
+  TeamModel,
+  TicketTagsModel,
+  TicketTypeModel,
+  UserModel
+} from '../../models'
+import settingsUtil from '../../settings/settingsUtil'
+import buildSass from '../../sass/buildsass'
+import packageJson from '../../../package.json'
+import permissions from '../../permissions'
+import { trudeskRoot } from '../../config'
 
 const viewController = {}
 const viewdata = {}
@@ -28,13 +46,12 @@ viewController.getData = function (request, cb) {
     [
       function (callback) {
         if (global.env === 'development') {
-          require('../../sass/buildsass').build(callback)
+          buildSass.build(callback)
         } else {
           return callback()
         }
       },
       function (callback) {
-        const packageJson = require('../../../package.json')
         viewdata.version = packageJson.version
         return callback()
       },
@@ -411,8 +428,7 @@ viewController.getData = function (request, cb) {
 }
 
 viewController.getActiveNotice = function (callback) {
-  const noticeSchema = require('../../models/notice')
-  noticeSchema.getActive(function (err, notice) {
+  NoticeModel.getActive(function (err, notice) {
     if (err) {
       winston.warn(err.message)
       return callback(err)
@@ -423,8 +439,7 @@ viewController.getActiveNotice = function (callback) {
 }
 
 viewController.getUserNotifications = function (request, callback) {
-  const notificationsSchema = require('../../models/notification')
-  notificationsSchema.findAllForUser(request.user._id, function (err, data) {
+  NotificationModel.findAllForUser(request.user._id, function (err, data) {
     if (err) {
       winston.warn(err.message)
       return callback(err)
@@ -435,8 +450,7 @@ viewController.getUserNotifications = function (request, callback) {
 }
 
 viewController.getUnreadNotificationsCount = function (request, callback) {
-  const notificationsSchema = require('../../models/notification')
-  notificationsSchema.getUnreadCount(request.user._id, function (err, count) {
+  NotificationModel.getUnreadCount(request.user._id, function (err, count) {
     if (err) {
       winston.warn(err.message)
       return callback(err)
@@ -447,9 +461,7 @@ viewController.getUnreadNotificationsCount = function (request, callback) {
 }
 
 viewController.getConversations = function (request, callback) {
-  const conversationSchema = require('../../models/chat/conversation')
-  const messageSchema = require('../../models/chat/message')
-  conversationSchema.getConversationsWithLimit(request.user._id, 10, function (err, conversations) {
+  ConversationModel.getConversationsWithLimit(request.user._id, 10, function (err, conversations) {
     if (err) {
       winston.warn(err.message)
       return callback(err)
@@ -472,7 +484,7 @@ viewController.getConversations = function (request, callback) {
           return done()
         }
 
-        messageSchema.getMostRecentMessage(c._id, function (err, rm) {
+        MessageModel.getMostRecentMessage(c._id, function (err, rm) {
           if (err) return done(err)
 
           _.each(c.participants, function (p) {
@@ -505,14 +517,11 @@ viewController.getConversations = function (request, callback) {
   })
 }
 
-viewController.getUsers = function (request, callback) {
-  const userSchema = require('../../models/user')
+viewController.getUsers = async (request, callback) => {
   if (request.user.role.isAdmin || request.user.role.isAgent) {
-    userSchema.findAll(function (err, users) {
-      if (err) {
-        winston.warn(err)
-        return callback()
-      }
+    try {
+      const users = await UserModel.find({})
+      if (!users) throw new Error('Unable to find any users...')
 
       let u = _.reject(users, function (u) {
         return u.deleted === true
@@ -529,10 +538,12 @@ viewController.getUsers = function (request, callback) {
       u = _.sortBy(u, 'fullname')
 
       return callback(u)
-    })
+    } catch (e) {
+      winston.warn(e)
+      if (typeof callback === 'function') return callback(e)
+    }
   } else {
-    const groupSchema = require('../../models/group')
-    groupSchema.getAllGroupsOfUser(request.user._id, function (err, groups) {
+    GroupModel.getAllGroupsOfUser(request.user._id, function (err, groups) {
       if (err) return callback(err)
 
       let users = _.map(groups, function (g) {
@@ -564,27 +575,24 @@ viewController.getUsers = function (request, callback) {
   }
 }
 
-viewController.loggedInAccount = function (request, callback) {
-  const userSchema = require('../../models/user')
-  userSchema.getUser(request.user._id, function (err, data) {
-    if (err) {
-      return callback(err)
-    }
+viewController.loggedInAccount = async function (request, callback) {
+  try {
+    const user = await UserModel.getUser(request.user._id)
 
-    return callback(data)
-  })
+    return callback(null, user)
+  } catch (e) {
+    winston.warn(e)
+    return callback(e)
+  }
 }
 
 viewController.getTeams = function (request, callback) {
-  const Team = require('../../models/team')
-  return Team.getTeams(callback)
+  return TeamModel.getTeams(callback)
 }
 
 viewController.getGroups = function (request, callback) {
-  const groupSchema = require('../../models/group')
-  const Department = require('../../models/department')
   if (request.user.role.isAdmin || request.user.role.isAgent) {
-    Department.getDepartmentGroupsOfUser(request.user._id, function (err, groups) {
+    DepartmentModel.getDepartmentGroupsOfUser(request.user._id, function (err, groups) {
       if (err) {
         winston.debug(err)
         return callback(err)
@@ -593,15 +601,14 @@ viewController.getGroups = function (request, callback) {
       return callback(null, groups)
     })
   } else {
-    groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
+    GroupModel.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
       if (err) {
         winston.debug(err)
         return callback(err)
       }
 
-      const p = require('../../permissions')
-      if (p.canThis(request.user.role, 'ticket:public')) {
-        groupSchema.getAllPublicGroups(function (err, groups) {
+      if (permissions.canThis(request.user.role, 'ticket:public')) {
+        GroupModel.getAllPublicGroups(function (err, groups) {
           if (err) {
             winston.debug(err)
             return callback(err)
@@ -618,9 +625,7 @@ viewController.getGroups = function (request, callback) {
 }
 
 viewController.getTypes = function (request, callback) {
-  const typeSchema = require('../../models/tickettype')
-
-  typeSchema.getTypes(function (err, data) {
+  TicketTypeModel.getTypes(function (err, data) {
     if (err) {
       winston.debug(err)
       return callback(err)
@@ -631,15 +636,13 @@ viewController.getTypes = function (request, callback) {
 }
 
 viewController.getDefaultTicketType = function (request, callback) {
-  const settingSchema = require('../../models/setting')
-  settingSchema.getSettingByName('ticket:type:default', function (err, defaultType) {
+  SettingModel.getSettingByName('ticket:type:default', function (err, defaultType) {
     if (err) {
       winston.debug('Error viewController:getDefaultTicketType: ', err)
       return callback(err)
     }
 
-    const typeSchema = require('../../models/tickettype')
-    typeSchema.getType(defaultType.value, function (err, type) {
+    TicketTypeModel.getType(defaultType.value, function (err, type) {
       if (err) {
         winston.debug('Error viewController:getDefaultTicketType: ', err)
         return callback(err)
@@ -651,8 +654,7 @@ viewController.getDefaultTicketType = function (request, callback) {
 }
 
 viewController.getPriorities = function (request, callback) {
-  const ticketPrioritySchema = require('../../models/ticketpriority')
-  ticketPrioritySchema.getPriorities(function (err, priorities) {
+  PriorityModel.getPriorities(function (err, priorities) {
     if (err) {
       winston.debug('Error viewController:getPriorities: ' + err)
       return callback(err)
@@ -665,9 +667,7 @@ viewController.getPriorities = function (request, callback) {
 }
 
 viewController.getTags = function (request, callback) {
-  const tagSchema = require('../../models/tag')
-
-  tagSchema.getTags(function (err, data) {
+  TicketTagsModel.getTags(function (err, data) {
     if (err) {
       winston.debug(err)
       return callback(err)
@@ -680,8 +680,7 @@ viewController.getTags = function (request, callback) {
 }
 
 viewController.getOverdueSetting = function (request, callback) {
-  const settingSchema = require('../../models/setting')
-  settingSchema.getSettingByName('showOverdueTickets:enable', function (err, data) {
+  SettingModel.getSettingByName('showOverdueTickets:enable', function (err, data) {
     if (err) {
       winston.debug(err)
       return callback(null, true)
@@ -691,24 +690,22 @@ viewController.getOverdueSetting = function (request, callback) {
   })
 }
 
-viewController.getShowTourSetting = function (request, callback) {
+viewController.getShowTourSetting = async function (request, callback) {
   if (!request.user) return callback('Invalid User')
 
-  const settingSchema = require('../../models/setting')
-  settingSchema.getSettingByName('showTour:enable', function (err, data) {
-    if (err) {
-      winston.debug(err)
-      return callback(null, true)
-    }
+  try {
+    SettingModel.getSettingByName('showTour:enable', async function (err, data) {
+      if (err) {
+        winston.debug(err)
+        return callback(null, true)
+      }
 
-    if (!_.isNull(data) && !_.isUndefined(data) && data === false) {
-      return callback(null, true)
-    }
+      if (!_.isNull(data) && !_.isUndefined(data) && data === false) {
+        return callback(null, true)
+      }
 
-    const userSchema = require('../../models/user')
-    userSchema.getUser(request.user._id, function (err, user) {
-      if (err) return callback(err)
-
+      const user = await UserModel.getUser(request.user._id)
+      
       let hasTourCompleted = false
 
       if (user.preferences.tourCompleted) {
@@ -721,15 +718,21 @@ viewController.getShowTourSetting = function (request, callback) {
 
       return callback(null, data.value)
     })
-  })
+  } catch (e) {
+    winston.warn(e)
+    return callback(e)
+  }
 }
 
 viewController.getPluginsInfo = function (request, callback) {
   // Load Plugin routes
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dive = require('dive')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const path = require('path')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const fs = require('fs')
-  const pluginDir = path.join(__dirname, '../../../plugins')
+  const pluginDir = path.resolve(trudeskRoot(), 'plugins')
   if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir)
   const plugins = []
   dive(
@@ -738,6 +741,7 @@ viewController.getPluginsInfo = function (request, callback) {
     function (err, dir) {
       if (err) throw err
       delete require.cache[require.resolve(path.join(dir, '/plugin.json'))]
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const pluginPackage = require(path.join(dir, '/plugin.json'))
       plugins.push(pluginPackage)
     },
@@ -748,3 +752,5 @@ viewController.getPluginsInfo = function (request, callback) {
 }
 
 module.exports = viewController
+
+export default viewController

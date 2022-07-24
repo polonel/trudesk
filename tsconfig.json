@@ -23,6 +23,8 @@
     "importsNotUsedAsValues": "error",
     "checkJs": false,
     // Everything below are custom changes for this app
+    // Below line is needed for Typegoose
+    "emitDecoratorMetadata": true,
     "allowJs": true,
     "outDir": "dist",
     "experimentalDecorators": true,

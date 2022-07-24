@@ -1890,17 +1890,19 @@ apiTickets.subscribe = function (req, res) {
  * @apiSuccess {boolean} tags Array of Tags
  *
  */
-apiTickets.getTags = function (req, res) {
-  var tagSchema = require('../../../models/tag')
-  tagSchema.getTags(function (err, tags) {
-    if (err) return res.status(400).json({ success: false, error: err })
-
+apiTickets.getTags = async function (req, res) {
+  try {
+    const tagSchema = require('../../../models/tag')
+    const tags = await tagSchema.getTags()
     _.each(tags, function (item) {
       item.__v = undefined
     })
 
-    res.json({ success: true, tags: tags })
-  })
+    res.json({ success: true, tags })
+
+  } catch (error) {
+    return res.json({ success: false, error })
+  }
 }
 
 /**

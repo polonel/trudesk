@@ -84,7 +84,7 @@ export const SocketServer = function (ws: WebServer) {
             return next(new Error('Unauthorized'))
           })
         },
-        function (data, accept) {
+        function (data, accept: (err?: Error | null, acceptConnection?: boolean) => void) {
           if (data.request && data.request.user && data.request.user.logged_in) {
             data.user = data.request.user
             return accept(null, true)

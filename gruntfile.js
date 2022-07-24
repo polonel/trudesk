@@ -130,7 +130,7 @@ module.exports = function (grunt) {
       webpackDev: 'yarn run webpackdev',
       webpackDist: 'yarn run webpackdist',
       tsbuild: 'yarn tsc -p .',
-      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" -T src/app.ts'
+      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" src/app.ts'
     },
 
     copy: {

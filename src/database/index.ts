@@ -16,6 +16,9 @@ import nconf from 'nconf'
 import mongoose from 'mongoose'
 import winston from '../logger'
 
+// Register the models with require
+require('../models')
+
 // Type Defs
 export type TrudeskDatabase = {
   connection: mongoose.Connection | null

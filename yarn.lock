@@ -3430,10 +3430,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typegoose/typegoose@npm:^9.10.1":
+  version: 9.10.1
+  resolution: "@typegoose/typegoose@npm:9.10.1"
+  dependencies:
+    lodash: ^4.17.20
+    loglevel: ^1.8.0
+    reflect-metadata: ^0.1.13
+    semver: ^7.3.7
+    tslib: ^2.4.0
+  peerDependencies:
+    mongoose: ~6.4.2
+  checksum: 4877cc3e5296eae53748263c21b02c3c247c34f614a75b3c2f9fd7211ee8c394c0b6da4ff1c8c26c481f761b98cc765f3b56f77b453e3a4f8b7bba654ad17df6
+  languageName: node
+  linkType: hard
+
 "@types/async@npm:^3.2.15":
   version: 3.2.15
   resolution: "@types/async@npm:3.2.15"
   checksum: c0d9dae6cabc000abe3bb60ce1c7f3e6019aacf4f5f4ad659fef9f9f4d5dd2a59c6524da30d411dab67dab9f348c527bb18d59ae06d0a26f4a64ef3e6b2ec998
+  languageName: node
+  linkType: hard
+
+"@types/bcrypt@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/bcrypt@npm:5.0.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: 063c32c7a519d64768dfc0169a319b8244d6a6cb50a355c93992b3c5fee1dbc236526a1111f0e7bb25abc8b0473e5f40a5edfeb8b33cad2a6ea35aa2d7d7db14
   languageName: node
   linkType: hard
 
@@ -14466,6 +14490,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"loglevel@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "loglevel@npm:1.8.0"
+  checksum: 41aeea17de24aba8dba68084a31fe9189648bce4f39c1277e021bb276c3c53a75b0d337395919cf271068ad40ecefabad0e4fdeb4a8f11908beee532b898f4a7
+  languageName: node
+  linkType: hard
+
 "longest-streak@npm:^3.0.0":
   version: 3.0.1
   resolution: "longest-streak@npm:3.0.1"
@@ -16061,9 +16092,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:6.4.3":
-  version: 6.4.3
-  resolution: "mongoose@npm:6.4.3"
+"mongoose@npm:6.4.2":
+  version: 6.4.2
+  resolution: "mongoose@npm:6.4.2"
   dependencies:
     bson: ^4.6.2
     kareem: 2.4.1
@@ -16072,7 +16103,7 @@ __metadata:
     mquery: 4.0.3
     ms: 2.1.3
     sift: 16.0.0
-  checksum: 016bfaf417cf423d801415a7bbb82bca5d721732ed7938d6a8e5c856cd14fc8b95cfa490fd0cca65363c22790b5c6bd961ec42f65f8377e8bf1a1e00a59caf86
+  checksum: 16945de7f4f5aa1aedacba937a6f41dad0b7bd3016fc6f55957f01c0478bc9b062c3b5285d18ed642f52815c1bd6d01f9e055e899eddf5ca6aaeab38ece97894
   languageName: node
   linkType: hard
 
@@ -19556,6 +19587,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"reflect-metadata@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "reflect-metadata@npm:0.1.13"
+  checksum: 798d379a7b6f6455501145419505c97dd11cbc23857a386add2b9ef15963ccf15a48d9d15507afe01d4cd74116df8a213247200bac00320bd7c11ddeaa5e8fb4
+  languageName: node
+  linkType: hard
+
 "regenerate-unicode-properties@npm:^10.0.1":
   version: 10.0.1
   resolution: "regenerate-unicode-properties@npm:10.0.1"
@@ -22498,7 +22536,9 @@ __metadata:
     "@semantic-release/git": 10.0.1
     "@semantic-release/npm": 9.0.1
     "@swc/core": ^1.2.218
+    "@typegoose/typegoose": ^9.10.1
     "@types/async": ^3.2.15
+    "@types/bcrypt": ^5.0.0
     "@types/body-parser": ^1.19.2
     "@types/chance": ^1.1.3
     "@types/cookie-parser": ^1.4.3
@@ -22602,7 +22642,7 @@ __metadata:
     moment: 2.29.4
     moment-duration-format: 2.3.2
     moment-timezone: 0.5.34
-    mongoose: 6.4.3
+    mongoose: 6.4.2
     mongoose-autopopulate: 0.16.1
     mongoose-lean-virtuals: 0.9.1
     nconf: 0.12.0

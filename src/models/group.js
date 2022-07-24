@@ -247,15 +247,14 @@ groupSchema.statics.getGroups = async function (groupIds, callback) {
 
 groupSchema.statics.getAllGroupsOfUser = async function (userId, callback) {
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    (async () => {
       if (_.isUndefined(userId)) {
         if (typeof callback === 'function')
           return callback({ message: 'Invalid UserId - GroupSchema.GetAllGroupsOfUser()' })
         return reject(new Error('Invalid UserId - GroupSchema.GetAllGroupsOfUser()'))
       }
 
-      const q = this.model(COLLECTION)
-        .find({ members: userId })
+      const q = this.find({ members: userId })
         .populate('members', '_id username fullname email role preferences image title deleted')
         .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
         .sort('name')

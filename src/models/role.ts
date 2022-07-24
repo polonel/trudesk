@@ -35,7 +35,7 @@ export interface IRole extends Document {
   updateGrantsAndHierarchy(grants: Array<string>, hierarchy: boolean, callback: () => void): void
 }
 
-interface IRoleModel extends Model<IRole> {
+export interface IRoleModel extends Model<IRole> {
   getRoles(callback?: (err?: CallbackError, res?: Array<HydratedDocument<IRole>>) => void): Promise<Array<HydratedDocument<IRole>>>
 
   getRolesLean(callback: (err: CallbackError, roles: Array<IRole>) => void): void

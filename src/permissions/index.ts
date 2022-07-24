@@ -35,34 +35,26 @@ const register = function (callback: (err?: Error | undefined | null) => void) {
   })
 }
 
-/***
- * Checks to see if a role as the given action
- * @param roleId [role to check against]
- * @param a [action to check]
- * @param adminOverride [override if admin]
- * @returns {boolean}
- */
+const canThis = function (role: string | Types.ObjectId | IRole, a: string, adminOverride = false) {
+  if (!role) return false
 
-const canThis = function (roleId: string | Types.ObjectId, a: string, adminOverride = false) {
-  if (_.isUndefined(roleId)) return false
+  let roleId = role
+  if ((role as IRole)._id) {
+    roleId = (role as IRole)._id
+  }
 
   const roles = global.roles
   if (_.isUndefined(roles)) return false
   const rolePerm = _.find(roles, { _id: roleId }) as IRole
   if (!rolePerm) return false
   if (adminOverride && rolePerm.isAdmin) return true
-  if (_.isUndefined(rolePerm)) return false
   if (_.indexOf(rolePerm.grants, '*') !== -1) return true
 
   const actionType = a.split(':')[0]
   const action = a.split(':')[1]
-
   if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-  const result = _.filter(rolePerm.grants, (value) => {
-    if (_.startsWith(value, actionType + ':')) return value as string
-    return null
-  })
+  const result = _.filter(rolePerm.grants, v => _.startsWith(v, actionType + ":"))
 
   if (!result || result.length < 1) return false
   if (result.length === 1) {

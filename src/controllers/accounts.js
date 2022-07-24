@@ -83,6 +83,7 @@ accountsController.get = function (req, res) {
 accountsController.getCustomers = function (req, res) {
   const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+
     return res.redirect('/')
   }
 

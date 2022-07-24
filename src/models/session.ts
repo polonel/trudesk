@@ -13,12 +13,21 @@
  */
 // This is used to connect to MongoStore for express-session to destroy the sessions of users
 
-const mongoose = require('mongoose')
-const winston = require('../logger')
+import { Document, model, Model, Schema, Types } from 'mongoose'
+import winston from '../logger'
 
 const COLLECTION = 'sessions'
 
-const SessionSchema = new mongoose.Schema(
+interface ISession extends Document {
+  expires: Date
+  session: string
+}
+
+interface ISessionModel extends Model<ISession> {
+  destroyUserSession: (userId: string | Types.ObjectId) => Promise<void>
+}
+
+const SessionSchema = new Schema<ISession, ISessionModel>(
   {
     _id: String,
     expires: Date,
@@ -27,15 +36,16 @@ const SessionSchema = new mongoose.Schema(
   { strict: false }
 )
 
-SessionSchema.statics.getAllSessionUsers = async function () {}
+SessionSchema.statics.getAllSessionUsers = async function () {
+}
 
-SessionSchema.statics.destroyUserSession = async function (userId) {
-  return new Promise((resolve, reject) => {
-    ;(async () => {
+async function destroyUserSession(userId: string | Types.ObjectId): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    (async () => {
       try {
         if (!userId) return reject(new Error('Invalid User Id'))
 
-        const userSessions = await this.model(COLLECTION).find({})
+        const userSessions = await SessionModel.find({})
 
         if (userSessions) {
           for (const s of userSessions) {
@@ -48,7 +58,7 @@ SessionSchema.statics.destroyUserSession = async function (userId) {
               sessionObject.passport.user === userId.toString()
             ) {
               delete sessionObject.passport
-              await this.model(COLLECTION).findOneAndUpdate({ _id: id }, { session: JSON.stringify(sessionObject) })
+              await SessionModel.findOneAndUpdate({ _id: id }, { session: JSON.stringify(sessionObject) })
             }
           }
 
@@ -64,6 +74,10 @@ SessionSchema.statics.destroyUserSession = async function (userId) {
   })
 }
 
-SessionSchema.statics.destroy = SessionSchema.statics.destroyUserSession
+SessionSchema.static('destroyUserSession', destroyUserSession)
+SessionSchema.static('destroy', destroyUserSession)
 
-module.exports = mongoose.model(COLLECTION, SessionSchema)
+const SessionModel = model<ISession, ISessionModel>(COLLECTION, SessionSchema)
+
+export default SessionModel
+module.exports = SessionModel
