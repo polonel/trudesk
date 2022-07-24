@@ -21,7 +21,7 @@ export type TrudeskDatabase = {
   connection: mongoose.Connection | null
   version?: string
 }
-type DBCallback = (err: Error | null, db: TrudeskDatabase | null) => void
+export type DBCallback = (err?: Error | null, db?: TrudeskDatabase | null) => void
 type MongoConnectionUriObject = {
   server: string
   port: string

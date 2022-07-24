@@ -535,7 +535,7 @@ apiTickets.createPublicTicket = function (req, res) {
   async.waterfall(
     [
       function (next) {
-        settingSchema.getSetting('allowPublicTickets:enable', function (err, allowPublicTickets) {
+        settingSchema.getSettingByName('allowPublicTickets:enable', function (err, allowPublicTickets) {
           if (err) return next(err)
           if (!allowPublicTickets) {
             winston.warn('Public ticket creation attempted while disabled!')
@@ -546,7 +546,7 @@ apiTickets.createPublicTicket = function (req, res) {
         })
       },
       function (next) {
-        settingSchema.getSetting('role:user:default', function (err, roleDefault) {
+        settingSchema.getSettingByName('role:user:default', function (err, roleDefault) {
           if (err) return next(err)
           if (!roleDefault) {
             winston.error('No Default User Role Set. (Settings > Permissions > Default User Role)')

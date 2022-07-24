@@ -19,9 +19,10 @@ import pkg from '../package.json'
 
 //
 import { checkForOldConfig, hasConfigFile, loadConfig } from './config'
-import webserver, { init as webServerInit, installServer, webServerListen } from './webserver'
+import webserver, { init as webServerInit, webServerListen } from './webserver'
+import { installServer } from './installserver'
 import { init as databaseInit, TrudeskDatabase, trudeskDatabase } from './database'
-import tdDefaults from './settings/defaults'
+import { init as tdDefaultInit } from './settings/defaults'
 import permissions from './permissions'
 import elasticsearch from './elasticsearch'
 import Models from './models'
@@ -47,7 +48,9 @@ if (!process.env['FORK']) {
   winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.')
   winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o')
   winston.info('==========================================================================')
-  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2022 Chris Brame')
+  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2022 Trudesk Inc. (POLONEL)')
+  winston.info('')
+  winston.info('                         COMMUNITY EDITION')
   winston.info('')
   winston.info('Running in: ' + global.env)
   winston.info('Server Time: ' + new Date())
@@ -82,23 +85,18 @@ function start() {
 }
 
 function launchServer(db: TrudeskDatabase) {
-  webServerInit(db, function (err) {
-    if (err) {
-      winston.error(err)
-      return
-    }
-
+  webServerInit(db, () => {
     async.series(
       [
         function (next) {
-          tdDefaults.init(next)
+          tdDefaultInit(next)
         },
         function (next) {
           permissions.register(next)
         },
         function (next) {
 
-          elasticsearch.init(function (err) {
+          elasticsearch.init(function (err?: Error) {
             if (err) {
               winston.error(err)
             }
@@ -113,7 +111,7 @@ function launchServer(db: TrudeskDatabase) {
         function (next) {
           // Start Check Mail
           const settingSchema = Models.SettingModel
-          settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
+          settingSchema.getSettingByName('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
               winston.warn(err)
               return next(err)
@@ -167,7 +165,7 @@ function launchServer(db: TrudeskDatabase) {
         }
       ],
       function (err) {
-        if (err) throw new Error(err)
+        if (err) throw err
 
         webServerListen(function () {
           winston.info('trudesk Ready')
@@ -177,7 +175,7 @@ function launchServer(db: TrudeskDatabase) {
   })
 }
 
-function dbCallback(err, db) {
+function dbCallback(err?: Error | null, db?: TrudeskDatabase | null) {
   if (err || !db) {
     return start()
   }

@@ -76,7 +76,7 @@ function rolesDefault(callback: () => void) {
             },
             function (err, userRole) {
               if (err) return done(err)
-              SettingModel.getSetting('role:user:default', function (err, roleUserDefault) {
+              SettingModel.getSettingByName('role:user:default', function (err, roleUserDefault) {
                 if (err) return done(err)
                 if (roleUserDefault) return done()
 
@@ -164,7 +164,7 @@ function defaultUserRole(callback) {
     if (err) return callback(err)
     if (!roleOrder) return callback()
 
-    SettingModel.getSetting('role:user:default', function (err, roleDefault) {
+    SettingModel.getSettingByName('role:user:default', function (err, roleDefault) {
       if (err) return callback(err)
       if (roleDefault) return callback()
 
@@ -695,7 +695,7 @@ async function maintenanceModeDefault() {
   })
 }
 
-settingsDefaults.init = function (callback: () => void) {
+export const init = function (callback: () => void) {
   winston.debug('Checking Default Settings...')
   series(
     [
@@ -750,6 +750,7 @@ settingsDefaults.init = function (callback: () => void) {
     }
   )
 }
+settingsDefaults.init = init
 
 export default settingsDefaults
 module.exports = settingsDefaults

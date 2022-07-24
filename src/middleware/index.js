@@ -35,7 +35,7 @@ const passportConfig = require('../passport')()
 let middleware = {}
 
 module.exports = function (app, db, callback) {
-  middleware = require('./middleware')(app)
+  middleware = require('./middleware')
   app.disable('x-powered-by')
 
   app.set('views', path.join(__dirname, '../views/'))

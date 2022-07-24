@@ -15,6 +15,8 @@
 import path from 'path'
 import fs from 'fs'
 import nconf from 'nconf'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import nconfyaml from 'nconf-yaml'
 import Chance from 'chance'
 import YAML from "yaml";

@@ -8,40 +8,90 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:43 PM
- *  Copyright (c) 2014-2019. All rights reserved.
+ *  Updated:    7/23/22 4:47 AM
+ *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-'use strict'
+import type { NextFunction, Request, Response } from "express";
+import * as _ from 'lodash'
+import { init as databaseInit, TrudeskDatabase } from '../database'
+import mongoose from 'mongoose'
+import winston from '../logger'
+import csrf from '../dependencies/csrf-td'
+import viewdata from '../helpers/viewdata'
 
-var _ = require('lodash')
-var db = require('../database')
-var mongoose = require('mongoose')
-var winston = require('../logger')
-const csrf = require('../dependencies/csrf-td')
-const viewdata = require('../helpers/viewdata')
+export type RouteMiddlewareType = {
+  db?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => TrudeskDatabase | void
+  redirectToDashboardIfLoggedIn?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  redirectToLogin?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  ensurel2Auth?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  redirectIfUser?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  loadCommonData?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  cache?: (seconds: number) => (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  checkCaptcha?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  checkOrigin?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  api?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  hasAuth?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  apiv2?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  canUser?: (action: string) => (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  isAdmin?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  isAgentOrAdmin?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  isAgent?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  isSupport?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
+  csrfCheck?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
 
-var middleware = {}
+}
 
-middleware.db = function (req, res, next) {
+interface MiddlewareRequest extends Request {
+  db: TrudeskDatabase | null | undefined
+  user: any
+  session: any
+  viewdata: any
+  csrfToken: any
+}
+
+interface MiddlewareResponse extends Response {
+  session: any
+}
+
+const middleware: RouteMiddlewareType = {}
+
+middleware.db = (req, res, next) => {
   if (mongoose.connection.readyState !== 1) {
     winston.warn('MongoDB ReadyState = ' + mongoose.connection.readyState)
-    db.init(function (e, database) {
+    databaseInit(function (e, database) {
       if (e) {
         return res.status(503).send()
       }
 
-      req.db = database
+      return req.db = database
     })
   }
 
   return next()
 }
 
-middleware.redirectToDashboardIfLoggedIn = function (req, res, next) {
+export const ensurel2Auth = function (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction): void {
+  if (req.session.l2auth === 'totp') {
+    if (req.user) {
+      if (req.user.role !== 'user') {
+        return res.redirect('/dashboard')
+      }
+
+      return res.redirect('/tickets')
+    }
+
+    return next()
+  }
+
+  return res.redirect('/l2auth')
+}
+middleware.ensurel2Auth = ensurel2Auth
+
+middleware.redirectToDashboardIfLoggedIn = (req, res, next) => {
   if (req.user) {
     if (req.user.hasL2Auth) {
-      return middleware.ensurel2Auth(req, res, next)
+      return ensurel2Auth(req, res, next)
     }
 
     if (!req.user.role.isAdmin || !req.user.role.isAgent) {
@@ -64,10 +114,11 @@ middleware.redirectToLogin = function (req, res, next) {
   }
 
   if (req.user.deleted) {
-    req.logout()
-    req.session.l2auth = null
-    req.session.destroy()
-    return res.redirect('/')
+    req.logout(function () {
+      req.session.l2auth = null
+      req.session.destroy()
+      return res.redirect('/')
+    })
   }
 
   if (req.user.hasL2Auth) {
@@ -95,25 +146,9 @@ middleware.redirectIfUser = function (req, res, next) {
   return next()
 }
 
-middleware.ensurel2Auth = function (req, res, next) {
-  if (req.session.l2auth === 'totp') {
-    if (req.user) {
-      if (req.user.role !== 'user') {
-        return res.redirect('/dashboard')
-      }
-
-      return res.redirect('/tickets')
-    }
-
-    return next()
-  }
-
-  return res.redirect('/l2auth')
-}
-
 // Common
-middleware.loadCommonData = function (req, res, next) {
-  viewdata.getData(req, function (data) {
+middleware.loadCommonData = function (req, _res, next) {
+  viewdata.getData(req, function (data: { csrfToken: any }) {
     data.csrfToken = req.csrfToken
     req.viewdata = data
 
@@ -122,7 +157,7 @@ middleware.loadCommonData = function (req, res, next) {
 }
 
 middleware.cache = function (seconds) {
-  return function (req, res, next) {
+  return function (_req, res, next) {
     res.setHeader('Cache-Control', 'public, max-age=' + seconds)
 
     next()
@@ -130,13 +165,13 @@ middleware.cache = function (seconds) {
 }
 
 middleware.checkCaptcha = function (req, res, next) {
-  var postData = req.body
+  const postData = req.body
   if (postData === undefined) {
     return res.status(400).json({ success: false, error: 'Invalid Captcha' })
   }
 
-  var captcha = postData.captcha
-  var captchaValue = req.session.captcha
+  const captcha = postData.captcha
+  const captchaValue = req.session.captcha
 
   if (captchaValue === undefined) {
     return res.status(400).json({ success: false, error: 'Invalid Captcha' })
@@ -150,17 +185,16 @@ middleware.checkCaptcha = function (req, res, next) {
 }
 
 middleware.checkOrigin = function (req, res, next) {
-  var origin = req.headers.origin
-  var host = req.headers.host
+  let origin = req.headers.origin
+  const host = req.headers.host
 
   // Firefox Hack - Firefox Bug 1341689 & 1424076
   // Trudesk Bug #26
   // TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
   if (!origin) {
     origin = host
-  }
-
-  origin = origin.replace(/^https?:\/\//, '')
+  } else
+    origin = origin.replace(/^https?:\/\//, '')
 
   if (origin !== host) {
     return res.status(400).json({ success: false, error: 'Invalid Origin!' })
@@ -171,12 +205,12 @@ middleware.checkOrigin = function (req, res, next) {
 
 // API
 middleware.api = function (req, res, next) {
-  var accessToken = req.headers.accesstoken
+  const accessToken = req.headers.accesstoken
 
-  var userSchema = require('../models/user')
+  const userSchema = require('../models/user')
 
   if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
-    var user = req.user
+    const user = req.user
     if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({ error: 'Invalid Access Token' })
 
     return next()
@@ -198,7 +232,7 @@ middleware.apiv2 = function (req, res, next) {
   // ByPass auth for now if user is set through session
   if (req.user) return next()
 
-  var passport = require('passport')
+  const passport = require('passport')
   passport.authenticate('jwt', { session: true }, function (err, user) {
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
     if (user) {
@@ -214,7 +248,7 @@ middleware.canUser = function (action) {
   return function (req, res, next) {
     if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
     const permissions = require('../permissions')
-    const perm = permissions.canThis(req.user.role, action)
+    const perm = permissions.canThis(req.user.role._id, action)
     if (perm) return next()
 
     return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
@@ -222,30 +256,36 @@ middleware.canUser = function (action) {
 }
 
 middleware.isAdmin = function (req, res, next) {
-  var roles = global.roles
-  var role = _.find(roles, { _id: req.user.role._id })
-  role.isAdmin = role.grants.indexOf('admin:*') !== -1
+  const roles = global.roles
+  const role = _.find(roles, { _id: req.user.role._id })
+  if (role) {
+    role.isAdmin = role.grants.indexOf('admin:*') !== -1
 
-  if (role.isAdmin) return next()
+    if (role.isAdmin) return next()
+  }
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
 middleware.isAgentOrAdmin = function (req, res, next) {
-  var role = _.find(global.roles, { _id: req.user.role._id })
-  role.isAdmin = role.grants.indexOf('admin:*') !== -1
-  role.isAgent = role.grants.indexOf('agent:*') !== -1
+  const role = _.find(global.roles, { _id: req.user.role._id })
+  if (role) {
+    role.isAdmin = role.grants.indexOf('admin:*') !== -1
+    role.isAgent = role.grants.indexOf('agent:*') !== -1
 
-  if (role.isAgent || role.isAdmin) return next()
+    if (role.isAgent || role.isAdmin) return next()
+  }
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
 middleware.isAgent = function (req, res, next) {
-  var role = _.find(global.roles, { _id: req.user.role._id })
-  role.isAgent = role.grants.indexOf('agent:*') !== -1
+  const role = _.find(global.roles, { _id: req.user.role._id })
+  if (role) {
+    role.isAgent = role.grants.indexOf('agent:*') !== -1
 
-  if (role.isAgent) return next()
+    if (role.isAgent) return next()
+  }
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
@@ -257,6 +297,6 @@ middleware.csrfCheck = function (req, res, next) {
   return csrf.middleware(req, res, next)
 }
 
-module.exports = function () {
-  return middleware
-}
+module.exports = middleware
+
+export default middleware

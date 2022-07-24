@@ -330,7 +330,7 @@ mainController.forgotPass = function (req, res) {
         [
           function (next) {
             const settingsSchema = require('../models/setting')
-            settingsSchema.getSetting('beta:email', function (err, setting) {
+            settingsSchema.getSettingByName('beta:email', function (err, setting) {
               if (err) return next(err)
               const betaEnabled = !setting ? false : setting.value
 

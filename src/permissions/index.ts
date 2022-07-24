@@ -15,6 +15,8 @@
 import _ from 'lodash'
 import winston from '../logger'
 import { RoleModel, RoleOrderModel } from '../models'
+import type { IRole } from "../models/role";
+import type { Types } from "mongoose";
 
 const register = function (callback: (err?: Error | undefined | null) => void) {
   // Register Roles
@@ -35,20 +37,20 @@ const register = function (callback: (err?: Error | undefined | null) => void) {
 
 /***
  * Checks to see if a role as the given action
- * @param role [role to check against]
+ * @param roleId [role to check against]
  * @param a [action to check]
  * @param adminOverride [override if admin]
  * @returns {boolean}
  */
 
-const canThis = function (role, a, adminOverride = false) {
-  if (_.isUndefined(role)) return false
-  if (adminOverride && role.isAdmin) return true
+const canThis = function (roleId: string | Types.ObjectId, a: string, adminOverride = false) {
+  if (_.isUndefined(roleId)) return false
 
   const roles = global.roles
   if (_.isUndefined(roles)) return false
-  if (_.hasIn(role, '_id')) role = role._id
-  const rolePerm = _.find(roles, { _id: role })
+  const rolePerm = _.find(roles, { _id: roleId }) as IRole
+  if (!rolePerm) return false
+  if (adminOverride && rolePerm.isAdmin) return true
   if (_.isUndefined(rolePerm)) return false
   if (_.indexOf(rolePerm.grants, '*') !== -1) return true
 
@@ -57,16 +59,19 @@ const canThis = function (role, a, adminOverride = false) {
 
   if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-  const result = _.filter(rolePerm.grants, function (value) {
-    if (_.startsWith(value, actionType + ':')) return value
+  const result = _.filter(rolePerm.grants, (value) => {
+    if (_.startsWith(value, actionType + ':')) return value as string
+    return null
   })
 
-  if (_.isUndefined(result) || _.size(result) < 1) return false
-  if (_.size(result) === 1) {
+  if (!result || result.length < 1) return false
+  if (result.length === 1) {
     if (result[0] === '*') return true
   }
 
-  let typePerm = result[0].split(':')[1].split(' ')
+  const singleResult = result[0] as string
+
+  let typePerm = singleResult.split(':')[1]?.split(' ')
   typePerm = _.uniq(typePerm)
 
   if (_.indexOf(typePerm, '*') !== -1) return true
@@ -74,10 +79,10 @@ const canThis = function (role, a, adminOverride = false) {
   return _.indexOf(typePerm, action) !== -1
 }
 
-const getRoles = function (action) {
-  if (_.isUndefined(action)) return false
+const getRoles = (action: string) => {
+  if (!action) return false
 
-  let rolesWithAction = []
+  let rolesWithAction: Array<IRole> = []
   const roles = global.roles
   if (_.isUndefined(roles)) return []
 
@@ -93,6 +98,7 @@ const getRoles = function (action) {
 
     const result = _.filter(role.grants, function (value) {
       if (_.startsWith(value, actionType + ':')) return value
+      return null
     })
 
     if (_.isUndefined(result) || _.size(result) < 1) return
@@ -103,7 +109,9 @@ const getRoles = function (action) {
       }
     }
 
-    let typePerm = result[0].split(':')[1].split(' ')
+    const singleResult = result[0] as string
+
+    let typePerm = singleResult.split(':')[1]?.split(' ')
     typePerm = _.uniq(typePerm)
 
     if (_.indexOf(typePerm, '*') !== -1) {
@@ -121,7 +129,7 @@ const getRoles = function (action) {
   return rolesWithAction
 }
 
-function hasHierarchyEnabled(roleId) {
+function hasHierarchyEnabled(roleId: string | Types.ObjectId) {
   const role = _.find(global.roles, function (o) {
     return o._id.toString() === roleId.toString()
   })
@@ -129,8 +137,8 @@ function hasHierarchyEnabled(roleId) {
   return role.hierarchy
 }
 
-function parseRoleHierarchy(roleId) {
-  const roleOrder = global.roleOrder.order
+function parseRoleHierarchy(roleId: string | Types.ObjectId) {
+  const roleOrder = global.roleOrder?.order
 
   const idx = _.findIndex(roleOrder, function (i) {
     return i.toString() === roleId.toString()
@@ -140,25 +148,25 @@ function parseRoleHierarchy(roleId) {
   return _.slice(roleOrder, idx)
 }
 
-function hasPermOverRole(ownRole, extRole) {
-  const roles = parseRoleHierarchy(extRole)
+function hasPermOverRole(ownRoleId: string | Types.ObjectId, extRoleId: string | Types.ObjectId) {
+  const roles = parseRoleHierarchy(extRoleId)
 
   const i = _.find(roles, function (o) {
-    return o.toString() === ownRole.toString()
+    return o.toString() === ownRoleId.toString()
   })
 
   return !_.isUndefined(i)
 }
 
-function isAdmin(roleId, callback) {
-  roleSchema.get(roleId, function (err, role) {
+function isAdmin(roleId: string | Types.ObjectId, callback: (result: boolean) => void) {
+  RoleModel.get(roleId, function (err, role) {
     if (err) return callback(false)
-
+    if (!role) return callback(false)
     return callback(role.isAdmin)
   })
 }
 
-function isAdminSync(roleId) {
+function isAdminSync(roleId: string | Types.ObjectId): boolean {
   const roles = global.roles
   if (!roles) return false
   const role = _.find(roles, function (r) {
@@ -170,7 +178,7 @@ function isAdminSync(roleId) {
   return role.isAdmin
 }
 
-function buildGrants(obj) {
+function buildGrants(obj: { k: string, v: string }): string[] {
   return _.map(obj, function (v, k) {
     return k + ':' + _.join(v, ' ')
   })

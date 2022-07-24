@@ -26,19 +26,25 @@ export interface IRole extends Document {
   grants: Array<string>
   hierarchy: boolean
 
+  // Virtual
+  isAdmin: boolean
+  isAgent: boolean
+
   updateGrants(grants: Array<string>, callback: () => void): void
 
   updateGrantsAndHierarchy(grants: Array<string>, hierarchy: boolean, callback: () => void): void
 }
 
 interface IRoleModel extends Model<IRole> {
-  getRoles(): Array<HydratedDocument<IRole>>
+  getRoles(callback?: (err?: CallbackError, res?: Array<HydratedDocument<IRole>>) => void): Promise<Array<HydratedDocument<IRole>>>
 
   getRolesLean(callback: (err: CallbackError, roles: Array<IRole>) => void): void
 
-  getRole(id: Types.ObjectId, callback: (err: CallbackError, role: HydratedDocument<IRole>) => void): HydratedDocument<IRole>
+  get(id: string | Types.ObjectId, callback: (err?: CallbackError, res?: HydratedDocument<IRole>) => void): Promise<HydratedDocument<IRole>>
 
-  getRoleByName(name: string, callback: (err: CallbackError, role: HydratedDocument<IRole>) => void): HydratedDocument<IRole>
+  getRole(id: Types.ObjectId, callback: (err: CallbackError, role: HydratedDocument<IRole>) => void): Promise<HydratedDocument<IRole>>
+
+  getRoleByName(name: string, callback: (err: CallbackError, role: HydratedDocument<IRole>) => void): Promise<HydratedDocument<IRole>>
 }
 
 const roleSchema = new Schema<IRole, IRoleModel>(

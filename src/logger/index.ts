@@ -1,4 +1,4 @@
-const Winston = require('winston')
+import Winston from 'winston'
 
 const logger = Winston.createLogger({
   format: Winston.format.errors({ stack: true }),
@@ -9,7 +9,7 @@ const logger = Winston.createLogger({
         Winston.format.colorize(),
         Winston.format.splat(),
         Winston.format.timestamp({
-          format: 'MM-DD-YYYY HH:mm:ss [[' + global.process.pid + ']]'
+          format: 'MM-DD-YY HH:mm:ss [[' + global.process.pid + ']]'
         }),
         Winston.format.align(),
         Winston.format.printf(info => {
@@ -26,3 +26,4 @@ const logger = Winston.createLogger({
 })
 
 module.exports = logger
+export default logger

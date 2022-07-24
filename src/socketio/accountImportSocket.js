@@ -271,7 +271,7 @@ events.onImportLDAP = function (socket) {
       [
         function (next) {
           var settingSchema = require('../models/setting')
-          settingSchema.getSetting('role:user:default', function (err, setting) {
+          settingSchema.getSettingByName('role:user:default', function (err, setting) {
             if (err || !setting) {
               utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
                 error: 'Default user role not set. Please contact an Administrator.'

@@ -302,7 +302,7 @@ apiUsers.createPublicAccount = function (req, res) {
   async.waterfall(
     [
       function (next) {
-        SettingSchema.getSetting('allowUserRegistration:enable', function (err, allowUserRegistration) {
+        SettingSchema.getSettingByName('allowUserRegistration:enable', function (err, allowUserRegistration) {
           if (err) return next(err)
           if (!allowUserRegistration) {
             winston.warn('Public account creation was attempted while disabled!')
@@ -313,7 +313,7 @@ apiUsers.createPublicAccount = function (req, res) {
         })
       },
       function (next) {
-        SettingSchema.getSetting('role:user:default', function (err, roleDefault) {
+        SettingSchema.getSettingByName('role:user:default', function (err, roleDefault) {
           if (err) return next(err)
           if (!roleDefault) {
             winston.error('No Default User Role Set. (Settings > Permissions > Default User Role)')
@@ -324,7 +324,7 @@ apiUsers.createPublicAccount = function (req, res) {
         })
       },
       function (roleDefault, next) {
-        SettingSchema.getSetting('accountsPasswordComplexity:enable', function (err, passwordComplexitySetting) {
+        SettingSchema.getSettingByName('accountsPasswordComplexity:enable', function (err, passwordComplexitySetting) {
           if (err) return next(err)
           if (!passwordComplexitySetting || passwordComplexitySetting.value === true) {
             const passwordComplexity = require('../../../settings/passwordComplexity')

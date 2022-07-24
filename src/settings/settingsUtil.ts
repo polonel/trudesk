@@ -20,7 +20,7 @@ import type { SettingsObjectType, SettingsObjectType_Base } from "./settings";
 
 export interface ISettingsUtil {
   setSetting: (setting: string, value: string | object | boolean | number) => Promise<void>
-  getSettings: (callback: (err?: Error, settings?: Array<object>) => void) => Promise<ContentData>
+  getSettings: (callback: (err?: Error | null | undefined, settings?: ContentData) => void) => Promise<ContentData>
 }
 
 function parseSetting(settings: Array<SettingsObjectType_Base>, name: string, defaultValue: string | boolean | object | number) {
@@ -60,7 +60,7 @@ interface ContentData {
   settings?: SettingsObjectType
 }
 
-async function getSettings(callback: (err?: Error, settings?: Array<object>) => void): Promise<ContentData> {
+async function getSettings(callback: (err?: Error | null | undefined, data?: ContentData) => void): Promise<ContentData> {
   return new Promise<ContentData>((resolve, reject) => {
     (async () => {
       try {
@@ -161,10 +161,15 @@ async function getSettings(callback: (err?: Error, settings?: Array<object>) => 
         result.tags = { count: tagCount }
 
         const roles = await RoleModel.getRoles()
-        let roleOrder = await RoleOrderModel.getOrder()
-        roleOrder = roleOrder.order
+        const roleOrder = await RoleOrderModel.getOrder()
+        if (!roleOrder) {
+          if (typeof callback === 'function') callback(new Error("Invalid Role Order"))
+          return reject(new Error("Invalid Role Order"))
+        }
 
-        if (roleOrder.length > 0) {
+        const roleOrderIds = roleOrder.order
+
+        if (roleOrderIds && roleOrderIds.length > 0) {
           result.roles = _.map(roleOrder, roID => {
             return _.find(roles, { _id: roID })
           })
@@ -176,7 +181,7 @@ async function getSettings(callback: (err?: Error, settings?: Array<object>) => 
 
         return resolve(result)
       } catch (e) {
-        if (typeof callback === 'function') callback(e)
+        if (typeof callback === 'function') callback(e as Error)
 
         return reject(e)
       }

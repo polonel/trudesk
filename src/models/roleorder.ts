@@ -8,8 +8,8 @@
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
  Created:    10/30/2018
+ Updated:    7/23/22 12:22 PM
  Author:     Chris Brame
-
  **/
 
 import _ from 'lodash'
@@ -26,9 +26,9 @@ export interface IRoleOrder extends Document {
 }
 
 interface IRoleOrderModel extends Model<IRoleOrder> {
-  getOrder(): Array<HydratedDocument<IRoleOrder>>
+  getOrder(callback?: (err?: CallbackError, res?: HydratedDocument<IRoleOrder>) => void): Promise<HydratedDocument<IRoleOrder>>
 
-  getOrderLean(): Array<IRoleOrderModel>
+  getOrderLean(callback: (err?: CallbackError, res?: IRoleOrder) => void): Promise<IRoleOrder>
 }
 
 const schema = new Schema<IRoleOrder, IRoleOrderModel>({

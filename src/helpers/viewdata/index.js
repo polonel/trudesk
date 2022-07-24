@@ -42,7 +42,7 @@ viewController.getData = function (request, cb) {
         async.parallel(
           [
             function (done) {
-              settingSchema.getSetting('gen:timeFormat', function (err, setting) {
+              settingSchema.getSettingByName('gen:timeFormat', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.timeFormat = setting.value
                 } else {
@@ -53,7 +53,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('gen:shortDateFormat', function (err, setting) {
+              settingSchema.getSettingByName('gen:shortDateFormat', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.shortDateFormat = setting.value
                 } else {
@@ -64,7 +64,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('gen:longDateFormat', function (err, setting) {
+              settingSchema.getSettingByName('gen:longDateFormat', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.longDateFormat = setting.value
                 } else {
@@ -83,7 +83,7 @@ viewController.getData = function (request, cb) {
         async.parallel(
           [
             function (done) {
-              settingSchema.getSetting('playNewTicketSound:enable', function (err, setting) {
+              settingSchema.getSettingByName('playNewTicketSound:enable', function (err, setting) {
                 if (!err && setting && !_.isUndefined(setting.value)) {
                   viewdata.ticketSettings.playNewTicketSound = setting.value
                 } else {
@@ -94,7 +94,7 @@ viewController.getData = function (request, cb) {
               return done()
             },
             function (done) {
-              settingSchema.getSetting('ticket:minlength:subject', function (err, setting) {
+              settingSchema.getSettingByName('ticket:minlength:subject', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.ticketSettings.minSubject = setting.value
                 } else {
@@ -105,7 +105,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('ticket:minlength:issue', function (err, setting) {
+              settingSchema.getSettingByName('ticket:minlength:issue', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.ticketSettings.minIssue = setting.value
                 } else {
@@ -116,7 +116,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('allowAgentUserTickets:enable', function (err, setting) {
+              settingSchema.getSettingByName('allowAgentUserTickets:enable', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.ticketSettings.allowAgentUserTickets = setting.value
                 } else {
@@ -131,7 +131,7 @@ viewController.getData = function (request, cb) {
         )
       },
       function (callback) {
-        settingSchema.getSetting('gen:sitetitle', function (err, setting) {
+        settingSchema.getSettingByName('gen:sitetitle', function (err, setting) {
           if (!err && setting && setting.value) {
             viewdata.siteTitle = setting.value
           } else {
@@ -146,7 +146,7 @@ viewController.getData = function (request, cb) {
         viewdata.hosturl = request.protocol + '://' + request.get('host')
 
         // If hosturl setting is not set. Let's set it.
-        settingSchema.getSetting('gen:siteurl', function (err, setting) {
+        settingSchema.getSettingByName('gen:siteurl', function (err, setting) {
           if (!err && !setting) {
             settingSchema.create(
               {
@@ -166,7 +166,7 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:timezone', function (err, timezone) {
+        settingSchema.getSettingByName('gen:timezone', function (err, timezone) {
           if (!err && timezone) {
             viewdata.timezone = timezone.value
           } else {
@@ -177,7 +177,7 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:customlogo', function (err, hasCustomLogo) {
+        settingSchema.getSettingByName('gen:customlogo', function (err, hasCustomLogo) {
           viewdata.hasCustomLogo = !!(!err && hasCustomLogo && hasCustomLogo.value)
 
           if (!viewdata.hasCustomLogo) {
@@ -185,7 +185,7 @@ viewController.getData = function (request, cb) {
             return callback()
           }
 
-          settingSchema.getSetting('gen:customlogofilename', function (err, logoFileName) {
+          settingSchema.getSettingByName('gen:customlogofilename', function (err, logoFileName) {
             if (!err && logoFileName && !_.isUndefined(logoFileName.value)) {
               viewdata.logoImage = '/assets/' + logoFileName.value
             } else {
@@ -197,7 +197,7 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:custompagelogo', function (err, hasCustomPageLogo) {
+        settingSchema.getSettingByName('gen:custompagelogo', function (err, hasCustomPageLogo) {
           viewdata.hasCustomPageLogo = !!(!err && hasCustomPageLogo && hasCustomPageLogo.value)
 
           if (!viewdata.hasCustomPageLogo) {
@@ -205,7 +205,7 @@ viewController.getData = function (request, cb) {
             return callback()
           }
 
-          settingSchema.getSetting('gen:custompagelogofilename', function (err, logoFileName) {
+          settingSchema.getSettingByName('gen:custompagelogofilename', function (err, logoFileName) {
             if (!err && logoFileName && !_.isUndefined(logoFileName.value)) {
               viewdata.pageLogoImage = '/assets/' + logoFileName.value
             } else {
@@ -217,14 +217,14 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:customfavicon', function (err, hasCustomFavicon) {
+        settingSchema.getSettingByName('gen:customfavicon', function (err, hasCustomFavicon) {
           viewdata.hasCustomFavicon = !!(!err && hasCustomFavicon && hasCustomFavicon.value)
           if (!viewdata.hasCustomFavicon) {
             viewdata.favicon = '/img/favicon.ico'
             return callback()
           }
 
-          settingSchema.getSetting('gen:customfaviconfilename', function (err, faviconFilename) {
+          settingSchema.getSettingByName('gen:customfaviconfilename', function (err, faviconFilename) {
             if (!err && faviconFilename && !_.isUndefined(faviconFilename.value)) {
               viewdata.favicon = '/assets/' + faviconFilename.value
             } else {
@@ -632,7 +632,7 @@ viewController.getTypes = function (request, callback) {
 
 viewController.getDefaultTicketType = function (request, callback) {
   const settingSchema = require('../../models/setting')
-  settingSchema.getSetting('ticket:type:default', function (err, defaultType) {
+  settingSchema.getSettingByName('ticket:type:default', function (err, defaultType) {
     if (err) {
       winston.debug('Error viewController:getDefaultTicketType: ', err)
       return callback(err)

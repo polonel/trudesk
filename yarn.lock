@@ -3838,6 +3838,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/serve-favicon@npm:^2.5.3":
+  version: 2.5.3
+  resolution: "@types/serve-favicon@npm:2.5.3"
+  dependencies:
+    "@types/express": "*"
+  checksum: 14818c9e22c4d14ab89d70884f07964263563d5803c2c6f1f1e5d7d8c81e04c1770d75f5aaaac16f1786640fca921b95693cdf13999cb9746838643bf9a7a348
+  languageName: node
+  linkType: hard
+
 "@types/serve-static@npm:*":
   version: 1.13.10
   resolution: "@types/serve-static@npm:1.13.10"
@@ -22501,6 +22510,7 @@ __metadata:
     "@types/nconf": ^0.10.3
     "@types/node": ^18.0.6
     "@types/passport.socketio": ^3.7.7
+    "@types/serve-favicon": ^2.5.3
     "@types/supertest": ^2.0.12
     "@typescript-eslint/eslint-plugin": ^5.30.7
     "@typescript-eslint/parser": ^5.30.7

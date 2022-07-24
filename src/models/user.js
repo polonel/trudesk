@@ -513,7 +513,7 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
   var self = this
 
   var settingSchema = require('./setting')
-  settingSchema.getSetting('role:user:default', function (err, userRoleDefault) {
+  settingSchema.getSettingByName('role:user:default', function (err, userRoleDefault) {
     if (err || !userRoleDefault) return callback('Invalid Setting - UserRoleDefault')
 
     var Chance = require('chance')
@@ -568,7 +568,7 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
           })
 
           var settingSchema = require('./setting')
-          settingSchema.getSetting('gen:siteurl', function (err, setting) {
+          settingSchema.getSettingByName('gen:siteurl', function (err, setting) {
             if (err) return callback(err)
 
             if (!setting) {
