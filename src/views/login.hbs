@@ -2,12 +2,14 @@
 <html>
 <head>
     <title>{{{siteTitle}}} &middot; {{{title}}}</title>
+    <link rel="icon" href="{{favicon}}"/>
     <link rel="stylesheet" href="/css/plugins.min.css">
     <link rel="stylesheet" href="/css/app.min.css">
     <style type="text/css">
         html {
             overflow-x: hidden;
         }
+
         body {
             background: {{colorSecondary}};
             text-align: center;
@@ -84,18 +86,21 @@
         }
 
         ::-webkit-input-placeholder { /* WebKit browsers */
-            color:    #222;
+            color: #222;
         }
+
         :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-            color:    #222;
-            opacity:  1;
+            color: #222;
+            opacity: 1;
         }
+
         ::-moz-placeholder { /* Mozilla Firefox 19+ */
-            color:    #222;
-            opacity:  1;
+            color: #222;
+            opacity: 1;
         }
+
         :-ms-input-placeholder { /* Internet Explorer 10+ */
-            color:    #222;
+            color: #222;
         }
 
         .alert-message {
@@ -153,6 +158,7 @@
         .btn:hover, .btn:active, .btn:focus {
             /*color: #222;*/
         }
+
         .bottom {
             position: fixed;
             bottom: 0;
@@ -160,7 +166,7 @@
             font-size: 12px;
             font-family: "Roboto", Arial, sans-serif;
             margin: 0 0 5px 15px;
-            color: rgba(0,0,0,0.5);
+            color: rgba(0, 0, 0, 0.5);
         }
     </style>
     <script src="/socket.io/socket.io.js"></script>
@@ -168,21 +174,25 @@
     <script src="/js/truRequire.js"></script>
 </head>
 <body>
+
+<div id="login-container"></div>
+
+
 <div class="alert-message {{#if flash}} {{else}} hide {{/if}} {{#if flash.success}} green {{/if}}">
     <p>{{#if flash.message}} {{{flash.message}}} {{else}} {{{flash}}}{{/if}}</p>
 </div>
 <div class="login-wrapper">
-    <img src="{{pageLogo}}" alt="Logo" class="site-logo-login" />
+    <img src="{{pageLogo}}" alt="Logo" class="site-logo-login"/>
 
     <div class="loginForm">
         <form id="loginForm" method="post" action="/login" class="uk-form-stacked uk-clearfix">
             <div class="uk-margin-medium-bottom">
                 <label for="login-username">Username</label>
-                <input id="login-username" name="login-username" class="md-input" type="text" />
+                <input id="login-username" name="login-username" class="md-input" type="text"/>
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="login-password">Password</label>
-                <input id="login-password" name="login-password" class="md-input md-waves-light" type="password" />
+                <input id="login-password" name="login-password" class="md-input md-waves-light" type="password"/>
             </div>
             <button class="btn md-btn md-btn-flat md-btn-wave md-btn-flat-accent" type="submit">Login</button>
         </form>
@@ -191,7 +201,8 @@
             <a id="allowUserRegistration" href="/signup" class="no-ajaxy left">Create an Account.</a>
         {{/if}}
         {{#if mailerEnabled}}
-            <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your password?</a>
+            <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your
+                password?</a>
         {{/if}}
     </div>
 
@@ -200,10 +211,12 @@
             <form id="forgotPassForm" method="post" action="/">
                 <div class="uk-margin-medium-bottom">
                     <label for="forgotPass-email">Email</label>
-                    <input id="forgotPass-email" name="forgotPass-email" type="text" class="md-input" />
+                    <input id="forgotPass-email" name="forgotPass-email" type="text" class="md-input"/>
                 </div>
                 <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
-                <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Forgot Password</button>
+                <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Forgot
+                    Password
+                </button>
             </form>
 
             <a id="backToLogin" href="#" class="no-ajaxy">Back to Login</a>
@@ -216,77 +229,79 @@
     {{bottom}}
 </div>
 
+<script src="/js/common.min.js"></script>
+
 <script type="text/javascript">
-    window.truRequire(['jquery', 'helpers'], function(loadedModules) {
-        var $ = loadedModules[0];
-        var helpers = loadedModules[1];
-        helpers.UI.inputs();
-        helpers.UI.waves();
+    window.truRequire(['jquery', 'helpers'], function (loadedModules) {
+        var $ = loadedModules[0]
+        var helpers = loadedModules[1]
+        helpers.UI.inputs()
+        helpers.UI.waves()
 
-        $('#loginForm').submit(function(e) {
-            var u = $('#login-username').val();
-            var p = $('#login-password').val();
+        $('#loginForm').submit(function (e) {
+            var u = $('#login-username').val()
+            var p = $('#login-password').val()
             if (u.length < 4 || p.length < 4)
-                e.preventDefault();
-        });
+                e.preventDefault()
+        })
 
-        $('#forgotPass').click(function(e) {
-            e.preventDefault();
-            $('.loginForm').fadeOut(100, function() {
-                $('.forgotPassForm').fadeIn();
-            });
-
-        });
-
-        $('#backToLogin').click(function(e) {
-            e.preventDefault();
-            $('.forgotPassForm').fadeOut(100, function() {
-                $('.loginForm').fadeIn();
+        $('#forgotPass').click(function (e) {
+            e.preventDefault()
+            $('.loginForm').fadeOut(100, function () {
+                $('.forgotPassForm').fadeIn()
             })
-        });
 
-        $('#forgotPassForm').submit(function(e) {
-            e.preventDefault();
-            var self = $(this);
-            var alertMessage = $('.alert-message');
+        })
+
+        $('#backToLogin').click(function (e) {
+            e.preventDefault()
+            $('.forgotPassForm').fadeOut(100, function () {
+                $('.loginForm').fadeIn()
+            })
+        })
+
+        $('#forgotPassForm').submit(function (e) {
+            e.preventDefault()
+            var self = $(this)
+            var alertMessage = $('.alert-message')
             $.ajax({
                 type: 'POST',
                 url: '/forgotpass',
                 data: self.serialize(),
                 async: true,
-                success: function(data) {
+                success: function (data) {
                     alertMessage.removeClass('hide')
                             .addClass('green')
                             .find('p')
-                            .html('Password Reset Email Sent!');
+                            .html('Password Reset Email Sent!')
 
-                    $('#forgotPass-email').val('');
+                    $('#forgotPass-email').val('')
 
-                    $('.forgotPassForm').fadeOut(100, function() {
-                        $('.loginForm').fadeIn();
+                    $('.forgotPassForm').fadeOut(100, function () {
+                        $('.loginForm').fadeIn()
                     })
                 },
 
-                error: function(xhr, ajaxOptions, thrownError) {
+                error: function (xhr, ajaxOptions, thrownError) {
                     alertMessage.removeClass('hide')
                             .find('p')
-                            .html(xhr.responseText);
+                            .html(xhr.responseText)
                 }
-            });
+            })
 
-            return false;
-        });
+            return false
+        })
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             if (screen.width <= 800) {
-                document.location = '/mobile';
+                document.location = '/mobile'
             }
 
-            setTimeout(function() {
-                $('#login-username').focus();
-            }, 700);
-        });
-    });
+            setTimeout(function () {
+                $('#login-username').focus()
+            }, 700)
+        })
+    })
 </script>
 </body>
 </html>

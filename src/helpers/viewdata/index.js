@@ -233,24 +233,26 @@ viewController.getData = function (request, cb) {
           })
         })
       },
-      function (callback) {
-        settingSchema.getSettingByName('gen:customfavicon', function (err, hasCustomFavicon) {
-          viewdata.hasCustomFavicon = !!(!err && hasCustomFavicon && hasCustomFavicon.value)
+      async function (callback) {
+        try {
+          const hasCustomFavicon = await settingSchema.getSettingByName('gen:customfavicon')
+          viewdata.hasCustomFavicon = hasCustomFavicon && hasCustomFavicon.value === false
           if (!viewdata.hasCustomFavicon) {
             viewdata.favicon = '/img/favicon.ico'
             return callback()
           }
 
-          settingSchema.getSettingByName('gen:customfaviconfilename', function (err, faviconFilename) {
-            if (!err && faviconFilename && !_.isUndefined(faviconFilename.value)) {
-              viewdata.favicon = '/assets/' + faviconFilename.value
-            } else {
-              viewdata.favicon = '/img/favicon.ico'
-            }
+          const faviconFilename = await settingSchema.getSettingByName('gen:customfaviconfilename')
+          if (faviconFilename && faviconFilename.value)
+            viewdata.favicon = `/assets/${faviconFilename.value}`
+          else
+            viewdata.favicon = '/img/favicon.ico'
 
-            return callback()
-          })
-        })
+          return callback()
+        } catch (e) {
+          viewdata.favicon = '/img/favicon.ico'
+          return callback()
+        }
       },
       function (callback) {
         viewController.getActiveNotice(function (err, data) {
@@ -705,7 +707,7 @@ viewController.getShowTourSetting = async function (request, callback) {
       }
 
       const user = await UserModel.getUser(request.user._id)
-      
+
       let hasTourCompleted = false
 
       if (user.preferences.tourCompleted) {

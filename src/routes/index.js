@@ -16,7 +16,7 @@ const path = require('path')
 const winston = require('../logger')
 const packagejson = require('../../package.json')
 
-function mainRoutes (router, middleware, controllers) {
+function mainRoutes(router, middleware, controllers) {
   router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index)
   router.get('/healthz', function (req, res) {
     return res.status(200).send('OK')
@@ -456,7 +456,7 @@ module.exports = function (app, middleware) {
   app.use(handleErrors)
 }
 
-function handleErrors (err, req, res) {
+function handleErrors(err, req, res) {
   const status = err.status || 500
   res.status(err.status)
 
@@ -480,10 +480,10 @@ function handleErrors (err, req, res) {
   res.render('error', {
     message: err.message,
     error: err,
-    layout: false
+    layout: false,
   })
 }
 
-function handle404 (req, res) {
+function handle404(req, res) {
   return res.status(404).render('404', { layout: false })
 }

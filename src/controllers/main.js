@@ -56,6 +56,12 @@ mainController.index = function (req, res) {
       content.pageLogo = '/assets/' + settings.customPageLogoFilename.value
     }
 
+    if (settings.hasCustomFavicon.value && settings.customFaviconFilename.value.length > 0) {
+      content.favicon = `/assets/${settings.customFaviconFilename.value}`
+    } else {
+      content.favicon = '/img/favicon.ico'
+    }
+
     content.bottom = 'Trudesk v' + pkg.version
 
     res.render('login', content)

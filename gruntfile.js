@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
-  require('matchdep')
-    .filterAll('grunt-*')
-    .forEach(grunt.loadNpmTasks)
+  require('matchdep').filterAll('grunt-*').forEach(grunt.loadNpmTasks)
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -14,9 +12,9 @@ module.exports = function (grunt) {
         options: {
           opts: ['node_modules/.bin/ts-node'],
           script: 'src/app.ts',
-          port: 8118
-        }
-      }
+          port: 8118,
+        },
+      },
     },
 
     watch: {
@@ -25,27 +23,27 @@ module.exports = function (grunt) {
         tasks: ['shell:tsDev'],
         options: {
           nospawn: true,
-          atBegin: true
-        }
-      }
+          atBegin: true,
+        },
+      },
     },
 
     parallel: {
       web: {
         options: {
-          stream: true
+          stream: true,
         },
         tasks: [
           {
             grunt: true,
-            args: ['shell:tsDev']
+            args: ['shell:tsDev'],
           },
           {
-            grunt: true,
-            args: ['shell:webpackWatch']
-          }
-        ]
-      }
+            grunt: false,
+            args: ['shell:webpackWatch'],
+          },
+        ],
+      },
     },
 
     cssmin: {
@@ -74,24 +72,24 @@ module.exports = function (grunt) {
             'src/public/js/vendor/easymde/dist/easymde.min.css',
             'src/public/js/vendor/grapesjs/css/grapes.min.css',
             'node_modules/react-grid-layout/css/styles.css',
-            'node_modules/react-resizable/css/styles.css'
-          ]
-        }
+            'node_modules/react-resizable/css/styles.css',
+          ],
+        },
       },
       minify: {
         expand: true,
         cwd: 'public/css/',
         src: ['*.css', '!app.min.css', '!*.min.css'],
         dest: 'public/css/',
-        ext: '.min.css'
-      }
+        ext: '.min.css',
+      },
     },
 
     uglify: {
       uikit: {
         options: {
           beautify: false,
-          mangle: false
+          mangle: false,
         },
 
         src: [
@@ -119,10 +117,10 @@ module.exports = function (grunt) {
           'src/public/js/vendor/uikit/js/components/tooltip.js',
           'src/public/js/vendor/uikit/js/components/upload.js',
 
-          'src/public/js/vendor/uikit/js/custom.js'
+          'src/public/js/vendor/uikit/js/custom.js',
         ],
-        dest: 'src/public/js/vendor/uikit/js/uikit_combined.min.js'
-      }
+        dest: 'src/public/js/vendor/uikit/js/uikit_combined.min.js',
+      },
     },
 
     shell: {
@@ -130,7 +128,7 @@ module.exports = function (grunt) {
       webpackDev: 'yarn run webpackdev',
       webpackDist: 'yarn run webpackdist',
       tsbuild: 'yarn tsc -p .',
-      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" src/app.ts'
+      tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" src/app.ts',
     },
 
     copy: {
@@ -138,10 +136,10 @@ module.exports = function (grunt) {
         files: [
           { expand: true, src: ['src/views/**'], dest: 'dist' },
           // { expand: true, src: ['src/sass/**/*.sass', 'src/sass/**/*.scss', 'src/sass/**/*.css'], dest: 'dist' },
-          { expand: true, src: ['src/settings/json/**'], dest: 'dist' }
-        ]
-      }
-    }
+          { expand: true, src: ['src/settings/json/**'], dest: 'dist' },
+        ],
+      },
+    },
   })
 
   grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin'])
