@@ -1,17 +1,3 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
 .chat-bar
   position: fixed
   bottom: 0
@@ -31,6 +17,7 @@
   .chat-box-wrapper
     position: relative
     display: block
+
     .chat-box-position
       position: relative
       //top: -267px
@@ -44,10 +31,10 @@
       height: 280px
       background: #f3f5f9
       z-index: 300
-      border: 1px solid rgba(100,100,100,0.4)
+      border: 1px solid rgba(100, 100, 100, 0.4)
       border-bottom: none
       +borderRadius(0)
-      +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
+      +boxShadow(0px 3px 8px 0px rgba(0, 0, 0, 0.247059))
       +transition(opacity 0.5s ease)
 
       .chat-box-title
@@ -61,6 +48,7 @@
 
         .material-icons
           font-size: 14px
+
         h4
           font-size: 14px
           margin: 2px 8px 3px
@@ -68,14 +56,18 @@
 
           a
             color: automatic-text-color(darken(#595f69, 10%))
+
             &:hover
               text-decoration: underline
+
       .chat-box-title-buttons
         line-height: 29px
         margin-right: 7px
         font-size: 14px
+
         a
           color: #bac3c6
+
           &:hover
             color: #ffffff
 
@@ -90,7 +82,7 @@
         background: #ffffff
         line-height: 16px
         height: auto
-        border-top: 1px solid rgb(201,208,218)
+        border-top: 1px solid rgb(201, 208, 218)
 
       textarea
         resize: none
@@ -109,6 +101,7 @@
         word-wrap: break-word
         height: 0
         +boxShadow(none)
+
         &:focus
           background: inherit
 
@@ -124,10 +117,13 @@
           margin-bottom: 10px
           position: relative
           min-height: 35px
+
           &.chat-message-user
             min-height: 25px
+
             .chat-text-wrapper
               margin-left: 60px
+
               .chat-text
                 background: $accent_color
                 color: #ffffff
@@ -161,7 +157,7 @@
               background: #ffffff
               float: left
               margin-left: 6px
-              border: 1px solid rgba(0,0,0,0.18)
+              border: 1px solid rgba(0, 0, 0, 0.18)
               +borderRadius(4px)
               color: #3e454c
               min-height: 14px

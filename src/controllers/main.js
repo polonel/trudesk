@@ -13,19 +13,19 @@
  */
 
 const _ = require('lodash')
-const async = require('async')
 const path = require('path')
 const passport = require('passport')
-const winston = require('winston')
+const winston = require('../logger')
 const pkg = require('../../package')
 const xss = require('xss')
+const { trudeskRoot } = require('../config')
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
 
 const limiterSlowBruteByIP = new RateLimiterMemory({
   keyPrefix: 'login_fail_ip_per_day',
   points: 15,
   duration: 60 * 60 * 24,
-  blockDuration: 60 * 60
+  blockDuration: 60 * 60,
 })
 
 const mainController = {}
@@ -62,7 +62,7 @@ mainController.index = function (req, res) {
       content.favicon = '/img/favicon.ico'
     }
 
-    content.bottom = 'Trudesk v' + pkg.version
+    content.bottom = 'Trudesk ' + 'v' + pkg.version + '-' + 'C' + 'E'
 
     res.render('login', content)
   })
@@ -77,7 +77,7 @@ mainController.about = function (req, res) {
       return res.render('error', {
         layout: false,
         error: err,
-        message: err.message
+        message: err.message,
       })
 
     const content = {}
@@ -111,7 +111,7 @@ mainController.dashboard = function (req, res) {
   return res.render('dashboard', content)
 }
 
-mainController.loginPost = async function (req, res, next) {
+mainController.loginPost = async function (req, res) {
   const ipAddress = req.ip
   const [resEmailAndIP] = await Promise.all([limiterSlowBruteByIP.get(ipAddress)])
 
@@ -123,23 +123,23 @@ mainController.loginPost = async function (req, res, next) {
   if (retrySecs > 0) {
     res.set('Retry-After', retrySecs.toString())
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
-    res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
+    res.status(429).json({ success: false, timeout: retrySecs.toString() })
   } else {
-    passport.authenticate('local', async function (err, user) {
+    passport.authenticate('local', async function (err, user, obj) {
       if (err) {
         winston.error(err)
-        return next(err)
+        return res.status(400).json({ success: false, error: err })
       }
       if (!user) {
         try {
           await limiterSlowBruteByIP.consume(ipAddress)
-          return res.redirect('/')
+          return res.status(401).json({ success: false, flash: obj.flash })
         } catch (rlRejected) {
           if (rlRejected instanceof Error) throw rlRejected
           else {
             const timeout = String(Math.round(rlRejected.msBeforeNext / 1000)) || 1
             res.set('Retry-After', timeout)
-            res.status(429).render('429', { timeout, layout: false })
+            res.status(429).json({ success: false, timeout })
           }
         }
       }
@@ -159,13 +159,14 @@ mainController.loginPost = async function (req, res, next) {
         req.logIn(user, function (err) {
           if (err) {
             winston.debug(err)
-            return next(err)
+            return res.status(400).json({ success: false, error: err })
           }
 
-          return res.redirect(redirectUrl)
+          return res.status(200).json({ success: true, redirectUrl })
+          // return res.redirect(redirectUrl)
         })
       }
-    })(req, res, next)
+    })(req, res)
   }
 }
 
@@ -243,16 +244,16 @@ mainController.forgotL2Auth = function (req, res) {
         views: {
           root: templateDir,
           options: {
-            extension: 'handlebars'
-          }
-        }
+            extension: 'handlebars',
+          },
+        },
       })
 
       savedUser = savedUser.toJSON()
 
       const data = {
         base_url: req.protocol + '://' + req.get('host'),
-        user: savedUser
+        user: savedUser,
       }
 
       email
@@ -262,7 +263,7 @@ mainController.forgotL2Auth = function (req, res) {
             to: savedUser.email,
             subject: '[Trudesk] Account Recovery',
             html: html,
-            generateTextFromHTML: true
+            generateTextFromHTML: true,
           }
 
           mailer.sendMail(mailOptions, function (err) {
@@ -282,27 +283,19 @@ mainController.forgotL2Auth = function (req, res) {
   })
 }
 
-mainController.forgotPass = function (req, res) {
-  const data = req.body
-  if (_.isUndefined(data['forgotPass-email'])) {
-    return res.status(400).send('No Form Data')
-  }
-
-  const email = data['forgotPass-email']
-  const userSchema = require('../models/user')
-  userSchema.getUserByEmail(email, function (err, user) {
-    if (err) {
-      req.flash(err)
-      return res.status(400).send(err.message)
+mainController.forgotPass = async function (req, res) {
+  try {
+    const postEmail = req.body?.email
+    if (!postEmail) {
+      return res.status(400).send('No Form Data')
     }
 
-    if (_.isUndefined(user) || _.isEmpty(user)) {
-      req.flash('Invalid Email: Account not found!')
-      return res.status(400).send('Invalid Email: Account not found!')
+    const UserModel = require('../models/user')
+    let user = await UserModel.findOne({ email: postEmail.toLowerCase(), deleted: false })
+    if (!user) {
+      return res.status(400).json({ success: false, error: 'Invalid Email: Account not found!' })
     }
 
-    // Found user send Password Reset Email.
-    // Set User Reset Hash and Expire Date.
     const Chance = require('chance')
     const chance = new Chance()
 
@@ -311,113 +304,75 @@ mainController.forgotPass = function (req, res) {
     expireDate.setDate(expireDate.getDate() + 2)
     user.resetPassExpire = expireDate
 
-    user.save(function (err, savedUser) {
-      if (err) {
-        req.flash(err)
-        return res.status(400).send(err.message)
-      }
+    user = await user.save()
 
-      // Send mail
-      const mailer = require('../mailer')
-      const Email = require('email-templates')
-      const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+    const mailer = require('../mailer')
+    const Email = require('email-templates')
+    const templateDir = path.resolve(trudeskRoot(), 'src/mailer/templates')
+
+    let email = null
+    let template = null
+
+    user = user.toJSON()
+
+    const data = {
+      base_url: `${req.protocol}://${req.get('host')}`,
+      user,
+    }
+
+    const settingUtils = require('../settings/settingsUtil')
+    const resultData = await settingUtils.getSettings()
+    const settings = resultData.settings
+    const betaEnabled = settings.emailBeta.value
+    if (betaEnabled) {
       const templateSchema = require('../models/template')
+      template = await templateSchema.findOne({ name: 'password-reset' })
+      if (template) {
+        email = new Email({
+          render: (view, locals) => {
+            return new Promise((resolve, reject) => {
+              ;(async () => {
+                if (!global.Handlebars) return reject(new Error('Count not load global.Handlebars'))
+                const _template = await templateSchema.findOne({ name: view })
+                if (!_template) return reject(new Error('Invalid Template'))
+                const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+                email.juiceResources(html).then(resolve)
+              })()
+            })
+          },
+        })
+      }
+    } else {
+      email = new Email({
+        views: {
+          root: templateDir,
+          options: {
+            extension: 'handlebars',
+          },
+        },
+      })
+    }
 
-      let email = null
+    let subject = '[Trudesk] Password Reset Request'
+    if (template) subject = global.Handlebars.compile(template.subject)(data)
+    if (!email) throw new Error('No Email was defined. Exiting...')
 
-      savedUser = savedUser.toJSON()
-
-      const data = {
-        base_url: req.protocol + '://' + req.get('host'),
-        user: savedUser
+    email.render('password-reset', data).then(async (html) => {
+      const mailOptions = {
+        to: user.email,
+        subject,
+        html,
+        generateTextFromHTML: true,
       }
 
-      async.waterfall(
-        [
-          function (next) {
-            const settingsSchema = require('../models/setting')
-            settingsSchema.getSettingByName('beta:email', function (err, setting) {
-              if (err) return next(err)
-              const betaEnabled = !setting ? false : setting.value
+      await mailer.sendMail(mailOptions)
 
-              return next(null, betaEnabled)
-            })
-          },
-          function (betaEnabled, next) {
-            if (!betaEnabled) return next(null, { betaEnabled: false })
-            templateSchema.findOne({ name: 'password-reset' }, function (err, template) {
-              if (err) return next(err)
-              if (!template) return next(null, { betaEnabled: false })
-
-              email = new Email({
-                render: function (view, locals) {
-                  return new Promise(function (resolve, reject) {
-                    if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
-                    templateSchema.findOne({ name: view }, function (err, template) {
-                      if (err) return reject(err)
-                      if (!template) return reject(new Error('Invalid Template'))
-                      const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
-                      email.juiceResources(html).then(resolve)
-                    })
-                  })
-                }
-              })
-
-              return next(null, { betaEnabled: true, template: template })
-            })
-          },
-          function (obj, next) {
-            if (obj.betaEnabled) return next(null, obj.template)
-
-            email = new Email({
-              views: {
-                root: templateDir,
-                options: {
-                  extension: 'handlebars'
-                }
-              }
-            })
-
-            return next(null, false)
-          }
-        ],
-        function (err, template) {
-          if (err) {
-            req.flash('loginMessage', 'Error: ' + err)
-            winston.warn(err)
-            return res.status(500).send(err)
-          }
-
-          let subject = '[Trudesk] Password Reset Request'
-          if (template) subject = global.Handlebars.compile(template.subject)(data)
-
-          email
-            .render('password-reset', data)
-            .then(function (html) {
-              const mailOptions = {
-                to: savedUser.email,
-                subject: subject,
-                html: html,
-                generateTextFromHTML: true
-              }
-
-              mailer.sendMail(mailOptions, function (err) {
-                if (err) {
-                  winston.warn(err)
-                  return res.status(400).send(err)
-                }
-                return res.status(200).send()
-              })
-            })
-            .catch(function (err) {
-              req.flash('loginMessage', 'Error: ' + err)
-              winston.warn(err)
-              return res.status(400).send(err.message)
-            })
-        }
-      )
+      return res.json({ success: true })
     })
-  })
+  } catch (e) {
+    winston.warn(e)
+    return res.status(500).json({ success: false, error: e.message })
+  }
 }
 
 mainController.resetl2auth = function (req, res) {
@@ -457,9 +412,9 @@ mainController.resetl2auth = function (req, res) {
           views: {
             root: templateDir,
             options: {
-              extension: 'handlebars'
-            }
-          }
+              extension: 'handlebars',
+            },
+          },
         })
 
         updated = updated.toJSON()
@@ -471,7 +426,7 @@ mainController.resetl2auth = function (req, res) {
               to: updated.email,
               subject: '[Trudesk] Two-Factor Authentication Removed!',
               html: html,
-              generateTextFromHTML: true
+              generateTextFromHTML: true,
             }
 
             mailer.sendMail(mailOptions, function (err) {
@@ -497,88 +452,68 @@ mainController.resetl2auth = function (req, res) {
   })
 }
 
-mainController.resetPass = function (req, res) {
-  const hash = req.params.hash
+mainController.resetPass = async (req, res) => {
+  try {
+    const hash = req.params.hash
 
-  if (_.isUndefined(hash)) {
-    return res.status(400).send('Invalid Link!')
-  }
-
-  const userSchema = require('../models/user')
-  userSchema.getUserByResetHash(hash, function (err, user) {
-    if (err) {
-      return res.status(400).send('Invalid Link!')
+    if (!hash) {
+      return res.status(400).json({ success: false, error: 'Invalid Link!' })
     }
 
-    if (_.isUndefined(user) || _.isEmpty(user)) {
-      return res.status(400).send('Invalid Link!')
-    }
+    const userSchema = require('../models/user')
+    let user = await userSchema.getUserByResetHash(hash)
+    if (!user) return res.status(400).json({ success: false, error: 'Invalid' })
 
     const now = new Date()
     if (now < user.resetPassExpire) {
       const Chance = require('chance')
       const chance = new Chance()
-      const gPass = chance.string({ length: 8 })
-      user.password = gPass
+      const gPass = chance.string({ alpha: true, length: 8 })
 
+      //user.password = gPass
       user.resetPassHash = undefined
       user.resetPassExpire = undefined
 
-      user.save(function (err, updated) {
-        if (err) {
-          return res.status(500).send(err.message)
+      user = await user.save()
+
+      const mailer = require('../mailer')
+      const Email = require('email-templates')
+      const templateDir = path.resolve(trudeskRoot(), 'src/mailer/templates')
+
+      let email = new Email({
+        views: {
+          root: templateDir,
+          options: {
+            extension: 'handlebars',
+          },
+        },
+      })
+
+      user = user.toJSON()
+
+      const data = {
+        password: gPass,
+        user,
+      }
+
+      email.render('new-password', data).then(async (html) => {
+        const mailOptions = {
+          to: user.email,
+          subject: '[Trudesk] New Password',
+          html,
+          generateTextFromHTML: true,
         }
 
-        // Send mail
-        const mailer = require('../mailer')
-        const Email = require('email-templates')
-        const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+        await mailer.sendMail(mailOptions)
 
-        const email = new Email({
-          views: {
-            root: templateDir,
-            options: {
-              extension: 'handlebars'
-            }
-          }
-        })
+        const flash = 'Password reset successfully'
 
-        updated = updated.toJSON()
-
-        const data = {
-          password: gPass,
-          user: updated
-        }
-
-        email
-          .render('new-password', data)
-          .then(function (html) {
-            const mailOptions = {
-              to: updated.email,
-              subject: '[Trudesk] New Password',
-              html: html,
-              generateTextFromHTML: true
-            }
-
-            mailer.sendMail(mailOptions, function (err) {
-              if (err) {
-                winston.warn(err)
-                req.flash('loginMessage', err.message)
-                return res.redirect(307, '/')
-              }
-
-              req.flash('loginMessage', 'Password reset successfully')
-              return res.redirect(307, '/')
-            })
-          })
-          .catch(function (err) {
-            winston.warn(err)
-            req.flash('Error: ' + err.message)
-            res.status(400).send(err.message)
-          })
+        return res.status(200).json({ success: true, flash })
       })
     }
-  })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err })
+  }
 }
 
 mainController.l2authget = function (req, res) {
@@ -613,8 +548,8 @@ mainController.uploadFavicon = function (req, res) {
     headers: req.headers,
     limit: {
       file: 1,
-      fileSize: 1024 * 1024 * 1
-    }
+      fileSize: 1024 * 1024 * 1,
+    },
   })
 
   const object = {}
@@ -627,7 +562,7 @@ mainController.uploadFavicon = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -643,7 +578,7 @@ mainController.uploadFavicon = function (req, res) {
     file.on('limit', function () {
       error = {
         stats: 400,
-        message: 'File size too large. File size limit: 1mb'
+        message: 'File size too large. File size limit: 1mb',
       }
 
       return file.resume()
@@ -689,8 +624,8 @@ mainController.uploadLogo = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 1024 * 1024 * 3 // 3mb
-    }
+      fileSize: 1024 * 1024 * 3, // 3mb
+    },
   })
 
   const object = {}
@@ -702,7 +637,7 @@ mainController.uploadLogo = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -718,7 +653,7 @@ mainController.uploadLogo = function (req, res) {
     file.on('limit', function () {
       error = {
         stats: 400,
-        message: 'File size too large. File size limit: 3mb'
+        message: 'File size too large. File size limit: 3mb',
       }
 
       return file.resume()
@@ -764,8 +699,8 @@ mainController.uploadPageLogo = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 1024 * 1024 * 3 // 3mb
-    }
+      fileSize: 1024 * 1024 * 3, // 3mb
+    },
   })
 
   const object = {}
@@ -778,7 +713,7 @@ mainController.uploadPageLogo = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -794,7 +729,7 @@ mainController.uploadPageLogo = function (req, res) {
     file.on('limit', function () {
       error = {
         stats: 400,
-        message: 'File size too large. File size limit: 3mb'
+        message: 'File size too large. File size limit: 3mb',
       }
 
       return file.resume()

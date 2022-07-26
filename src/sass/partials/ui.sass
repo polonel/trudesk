@@ -1,20 +1,7 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
 // SVG LOGO
 .st0
-  fill: rgba(0,0,0,0.6)
+  fill: rgba(0, 0, 0, 0.6)
+
 .st1
   fill: rgba(231, 76, 60, 0.9)
 
@@ -29,6 +16,7 @@ select, textarea
 select[disabled]
   -moz-appearance: none
   -webkit-appearance: none
+
   &::-ms-expand
     display: none
 
@@ -140,12 +128,14 @@ textarea.md-input
   padding-top: 4px
   width: 100%
   display: block
+
   .md-input-bar
     display: block
     position: absolute
     bottom: 0
     left: 0
     width: 100%
+
     &:before, &:after
       content: ''
       display: block
@@ -156,10 +146,13 @@ textarea.md-input
       background: $accent_color
       -webkit-transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
       transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
+
     &:before
       left: 50%
+
     &:after
       right: 50%
+
   > label
     color: automatic-text-color($page_content_bg, 'muted')
     position: absolute
@@ -169,23 +162,30 @@ textarea.md-input
     pointer-events: none
     -webkit-transition: all 150ms ease-out
     transition: all 150ms ease-out
+
   + *
     margin-top: 10px
+
   &.md-input-wrapper-disabled > label
     color: rgba(0, 0, 0, 0.26)
+
   &.has-error
     > label
       color: $accent_danger
+
     .md-input-bar
       bottom: 20px
+
   &.has-error
     .md-input-bar
       &.bottom-fix
         bottom: 0
+
       &.error-color
         &:before,
         &:after
           background: $accent_danger !important
+
   .search-icon
     position: absolute
     top: 20px
@@ -196,11 +196,12 @@ textarea.md-input
     border-bottom: 1px solid rgba(0, 0, 0, 0.12)
 
 
-
 .md-input-wrapper-count
   padding-bottom: 24px
+
   .md-input-bar
     bottom: 24px
+
   .text-count-wrapper
     font-size: 12px
     position: absolute
@@ -209,6 +210,7 @@ textarea.md-input
     opacity: 0
     -webkit-transition: opacity 200ms ease-in
     transition: opacity 200ms ease-in
+
   > .md-input-wrapper-count .text-count-wrapper
     position: absolute
     bottom: 0
@@ -224,6 +226,7 @@ textarea.md-input
 .md-input-focus
   &.md-input-wrapper-count .text-count-wrapper
     opacity: 1
+
   .md-input-bar
     &:before, &:after
       width: 50%
@@ -232,6 +235,7 @@ textarea.md-input
   .md-input-bar
     &:before, &:after
       background: #e53935
+
   &.md-input-wrapper-count .text-count-wrapper
     color: #e53935
 
@@ -239,15 +243,17 @@ textarea.md-input
   .md-input-bar
     &:before, &:after
       background: #7cb342
+
   &.md-input-wrapper-count .text-count-wrapper
     color: #7cb342
 
 .md-input-wrapper-nocolor
   .md-input-bar
     &:before, &:after
-      background: rgba(0,0,0, 0.5)
+      background: rgba(0, 0, 0, 0.5)
+
   &.md-input-wrapper-count .text-count-wrapper
-    color: rgba(0,0,0,0.12)
+    color: rgba(0, 0, 0, 0.12)
 
 .md-form-group
   position: relative
@@ -268,24 +274,32 @@ label.md-label
   position: relative
   font-size: 0
   white-space: nowrap
+
   .md-btn
     vertical-align: top
     margin-left: 0 !important
+
     &.no-border-radius
       +borderRadius(0)
-    &:hover,&:active,&:focus
-      box-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.18) !important
+
+    &:hover, &:active, &:focus
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 2px 4px rgba(0, 0, 0, 0.18) !important
+
     &.no-shadow
       box-shadow: none !important
-      border: 1px solid rgba(0,0,0,0.18)
-      &:hover,&:active,&:focus
+      border: 1px solid rgba(0, 0, 0, 0.18)
+
+      &:hover, &:active, &:focus
         box-shadow: none !important
-        background: rgba(0,0,0,0.01)
+        background: rgba(0, 0, 0, 0.01)
+
     &:first-child
       border-top-right-radius: 0
       border-bottom-right-radius: 0
+
     &:not(:first-child):not(:last-child)
       border-radius: 0
+
     &:last-child
       border-top-left-radius: 0
       border-bottom-left-radius: 0
@@ -295,14 +309,17 @@ label.md-label
     &:hover
       color: #fff
       background: $accent_color
+
   &.hover-primary
     &:hover
       color: #fff
       background: $accent_blue
+
   &.hover-danger
     &:hover
       color: #fff
       background: $accent_danger
+
   &.hover-success
     &:hover
       color: #fff
@@ -310,26 +327,35 @@ label.md-label
 
 .md-color-white
   color: white !important
+
 .md-color-green
   color: #4CAF50 !important
+
 .md-bg-color-green
   background-color: #4CAF50 !important
+
 .md-color-blue
   color: #2196F3 !important
+
 .md-bg-color-blue
   background-color: #2196F3 !important
+
 .md-color-blue-grey
   color: #607D8B !important
+
 .md-bg-color-blue-grey
   background-color: #607D8B !important
+
 .md-color-red
   color: #F44336 !important
+
 .md-bg-color-red
   background-color: #f44336 !important
 
 .md-large-icon
   height: 185px
   padding: 25px
+
   > i
     font-size: 128px
 
@@ -343,6 +369,7 @@ label.md-label
   font-size: 13px
   padding: 5px 24px 5px 10px
   color: white
+
   &:after
     top: 5px
     color: white
@@ -361,7 +388,7 @@ label.md-label
     background: lighten($page_content_bg, 10%)
     color: automatic-text-color(lighten($page_content_bg, 10%))
 
-  >.uk-active > *
+  > .uk-active > *
     background: $accent_color
 
 .uk-text-muted
@@ -377,85 +404,107 @@ label.md-label
   line-height: 15px
   font-weight: 400
   margin-left: 5px
+
   &.uk-badge-blue
     background: $accent_blue
+
   &.uk-badge-success
     background: $accent_success
+
   &.uk-badge-warning
     background: #ffa000
+
   &.uk-badge-danger
     background: #e53935
+
   &.uk-badge-grey
     background: darken($page_content_right_bg, 5%)
     color: automatic-text-color(darken($page_content_right_bg, 5%), 'muted')
+
   &.uk-badge-small
     font-size: 10px
     padding: 2px 4px
     +borderRadius(2px)
     line-height: 12px
-    color: rgba(0,0,0,0.75)
+    color: rgba(0, 0, 0, 0.75)
 
 .uk-progress
   background: pre-color($page_content_right_bg)
+
   &.uk-progress-disabled .uk-progress-bar
     background-color: #ccc
+
   &.uk-progress-success .uk-progress-bar
     background-color: #7cb342
+
   &.uk-progress-accent .uk-progress-bar
     background-color: $accent_color
+
   .uk-progress-bar
     background-color: $accent_blue
 
 .uk-margin-medium-bottom
   margin-bottom: 24px !important
+
 .uk-margin-medium-top
   margin-top: 24px !important
+
 .uk-margin-medium-left
   margin-left: 24px !important
+
 .uk-margin-medium-right
   margin-right: 24px !important
+
 .uk-padding-medium-sides
   padding-left: 24px !important
   padding-right: 24px !important
+
 .uk-padding-small-sides
   padding-left: 12px !important
   padding-right: 12px !important
 
 .uk-datepicker-table th
   color: automatic-text-color($page_content_right_bg, 'muted')
+
 .uk-datepicker-table a
   color: $text_color
+
   &:hover, &:active, &:focus
     color: $text_color
+
 a.uk-datepicker-table-muted
   color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
+
   &:hover, &:active, &:focus
     color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
 
 .uk-tooltip
   background: mix(black, $page_content_bg, 65%)
   color: automatic-text-color(mix(black, $page_content_bg, 65%))
+
 .uk-tooltip-top-left:after,
 .uk-tooltip-top-right:after,
 .uk-tooltip-top:after
-    border-top-color: mix(black, $page_content_bg, 65%) !important
+  border-top-color: mix(black, $page_content_bg, 65%) !important
 
 .uk-dropdown
   background: $page_content_button_color
-  & >ul > li > a
+
+  & > ul > li > a
     color: $page_content_button_text_color
 
 .uk-dropdown.uk-datepicker
   opacity: 1
   z-index: 99999
-  transform: scale(1,1)
-  -webkit-transform: scale(1,1)
+  transform: scale(1, 1)
+  -webkit-transform: scale(1, 1)
 
 .uk-button
   text-shadow: none
 
 .uk-button-success
   background-color: $success-color
+
   &:hover
     background-color: darken($success-color, 10%)
 
@@ -467,14 +516,16 @@ a.uk-datepicker-table-muted
   border: none
   font: 400 14px/16px "Source Sans Pro", sans-serif
   text-shadow: none
-  &:hover,&:active,&:focus
+
+  &:hover, &:active, &:focus
     color: white
     background: lighten($accent_color, 5%)
 
 .uk-button.uk-button-cancel
   background: darken($page_content_right_bg, 10%)
   color: automatic-text-color(darken($page_content_right_bg, 10%))
-  &:hover,&:active,&:focus
+
+  &:hover, &:active, &:focus
     color: automatic-text-color(darken($page_content_right_bg, 10%))
     background: darken($page_content_right_bg, 25%)
 
@@ -482,6 +533,7 @@ a.uk-datepicker-table-muted
   padding: 0
   float: left
   display: inline-block
+
   i.material-icons
     font-size: 22px
     vertical-align: middle
@@ -510,36 +562,39 @@ a.uk-datepicker-table-muted
 
 .uk-tooltip-modal
   z-index: 99999
+
   &.uk-tooltip-small
     &:after
       display: none !important
 
 .uk-tooltip.long-text
   text-align: left
+
   .uk-tooltip-inner
     white-space: normal
     overflow: visible
     line-height: 18px
     padding: 4px 0
 
-.uk-pagination>li.uk-active>a,
-.uk-pagination>li.uk-active>span
+.uk-pagination > li.uk-active > a,
+.uk-pagination > li.uk-active > span
   background: $accent_color
 
-.uk-pagination>li>a,
-.uk-pagination>li>span
+.uk-pagination > li > a,
+.uk-pagination > li > span
   color: automatic-text-color($page_content_bg)
 
-.uk-pagination>li>a:hover,.uk-pagination>li>a:active
+.uk-pagination > li > a:hover, .uk-pagination > li > a:active
   background: darken($page_content_bg, 10%)
   color: automatic-text-color($page_content_bg)
 
 .title-shadow
-  box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24) !important
 
 table
   border: none
   background: inherit
+
   thead
     background: inherit
 
@@ -561,20 +616,24 @@ table tr.even, table tr.alt, table tr:nth-of-type(even)
   opacity: 0
   transform: translateY(100%)
   transition: transform .4s, opacity .1s .3s
+
   h3
     margin: 0 0 14px 0
     padding: 0
     color: #fff
     font-size: 14px
     font-weight: 300
+
   span
     font-style: italic
     font-size: 12px
     line-height: 14px
     font-weight: 300
-    color: rgba(255,255,255,0.5)
+    color: rgba(255, 255, 255, 0.5)
+
     &:before
       content: "Note: "
+
   a
     text-align: center
     padding: 5px 10px
@@ -588,6 +647,7 @@ table tr.even, table tr.alt, table tr:nth-of-type(even)
 
 .largeProfilePic.hoverEffect
   overflow: hidden
+
   img
     transition: transform 0.4s
 
@@ -604,10 +664,13 @@ table tr.even, table tr.alt, table tr:nth-of-type(even)
 
 .uk-datepicker-nav
   background: $datepicker_header_bg
+
   a, a:hover
     color: $datepicker_header_text_color
+
   .uk-form-select
     color: $datepicker_header_text_color
+
     option
       color: #222
 
@@ -620,6 +683,7 @@ table tr.even, table tr.alt, table tr:nth-of-type(even)
 
 .confirm-delete-button
   color: $accent_danger !important
+
   &:hover,
   &:active,
   &:focus
@@ -631,17 +695,17 @@ body.shepherd-active .shepherd-target.shepherd-enabled
   position: relative
   box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.5)
   z-index: 9999
-  pointer-events:  auto
+  pointer-events: auto
   transition: all 0.3s ease
 
 
 body.shepherd-active .shepherd-step
-  pointer-events:  auto
+  pointer-events: auto
   z-index: 9999
 
 
 body.shepherd-active
-  pointer-events:  none !important
+  pointer-events: none !important
 
 //assignee drop icon
 .drop-icon
@@ -677,10 +741,13 @@ textarea.review-list
 .uk-table thead th
   color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
   border-bottom-width: 1px !important
+
 .uk-table td
   border-bottom: 1px solid $page_content_border_color
+
 .uk-table-striped tbody tr:nth-of-type(odd)
   background: lighten($page_content_bg, 2%)
+
 .uk-table-striped tbody tr:nth-of-type(even)
   background: darken($page_content_bg, 2%)
 
@@ -692,6 +759,7 @@ textarea.review-list
     z-index: 15
     background: $page_content_bg
     border-bottom: none !important
+
   thead th:after
     content: ''
     position: absolute
@@ -705,25 +773,30 @@ textarea.review-list
 
 .danger-zone,
 .zone
-  border: 1px solid rgba(0,0,0,0.175)
+  border: 1px solid rgba(0, 0, 0, 0.175)
   +borderRadius(3px)
+
   h2
     font-weight: 300
+
   h5
     font-weight: 600
     font-size: 14px
     line-height: 1.5
     color: darken($text_color, 2%)
     margin: 0
+
   .z-box,
   .dz-box
     padding: 16px
-    border-top: 1px solid rgba(0,0,0,0.175)
+    border-top: 1px solid rgba(0, 0, 0, 0.175)
     margin-top: -1px
+
     &:first-of-type,
     &:only-of-type
       border-top: none
-    p,.p
+
+    p, .p
       font-size: 13px
       line-height: 1.5
       color: $text_color
@@ -736,20 +809,26 @@ textarea.review-list
 .ms-container
   .ms-selectable
     background: lighten($page_content_right_bg, 5%)
-    li.ms-elem-selectable, li.ms-elem-selectable>span
+
+    li.ms-elem-selectable, li.ms-elem-selectable > span
       border-color: $page_content_border_color !important
       color: automatic-text-color(lighten($page_content_right_bg, 5%))
+
       &.ms-hover
         span
           color: white
+
   .ms-selection
     background: lighten($page_content_right_bg, 5%)
-    li.ms-elem-selection, li.ms-elem-selection>span
+
+    li.ms-elem-selection, li.ms-elem-selection > span
       border-color: $page_content_border_color
       color: automatic-text-color(lighten($page_content_right_bg, 5%))
+
       &.ms-hover
         span
           color: white
+
   .ms-list
     border-color: $page_content_border_color !important
 
@@ -762,26 +841,32 @@ textarea.review-list
   box-sizing: border-box
   height: calc(100% - 11px)
   width: 100%
+
   .editor-container
     position: relative
     display: flex
     flex-direction: column
     flex-grow: 1
     min-height: 0
+
     .editor
       display: flex
       flex-grow: 1
       min-height: 0
+
       .code-mirror-wrap
         display: flex
         flex-direction: column
         position: relative
         flex-grow: 1
         max-width: 100%
+
         .CodeMirror
           height: 100%
+
         .editor-statusbar
           display: none !important
+
   .action-panel
     display: flex
     flex-shrink: 0
@@ -807,15 +892,19 @@ textarea.review-list
   z-index: 999
   background: $page_content_right_bg
   transition: height 250ms ease, background 250ms ease, max-width 250ms ease
-  +boxShadow(0 -1px 40px rgba(0,0,0,0.12))
+  +boxShadow(0 -1px 40px rgba(0, 0, 0, 0.12))
+
   &.closed
     height: 0 !important
+
   &.open
     height: 350px
+
   .grippie
     cursor: row-resize
     padding: 4px 0
     background: $accent_color
+
     &:before
       content: ''
       display: block
@@ -825,6 +914,7 @@ textarea.review-list
 
 .avatar-wrapper
   padding: 0 8px
+
   img
     height: 34px
     width: 34px
@@ -838,7 +928,7 @@ textarea.review-list
   height: 28px
   border-radius: 8px
   border: 3px solid #fff
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.1)
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1)
   cursor: pointer
 
 .popover
@@ -847,7 +937,7 @@ textarea.review-list
   top: calc(100% + 2px)
   left: 0
   border-radius: 9px
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15)
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15)
 
 // END - Color Picker
 

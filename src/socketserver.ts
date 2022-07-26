@@ -12,33 +12,28 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import winston from './logger'
-import async from 'async'
-import passportSocketIo from 'passport.socketio'
-import config from './config'
-
-import { UserModel } from './models'
-
-// Submodules
-import ticketSocket from './socketio/ticketSocket'
-import chatSocket from './socketio/chatSocket'
-import notificationSocket from './socketio/notificationSocket'
-import noticeSocket from './socketio/noticeSocket'
-import accountsImportSocket from './socketio/accountImportSocket'
-import backupRestoreSocket from './socketio/backupRestoreSocket'
-import logsSocket from './socketio/logsSocket'
-
-// socketio
-import { Server } from 'socket.io'
-import type { WebServer } from "./webserver";
+import type { IncomingMessage } from 'http'
+import passportSocketIo         from 'passport.socketio'
+import { Server, Socket }       from 'socket.io'
+import type { ExtendedError }   from 'socket.io/dist/namespace'
+import config                   from './config'
+import winston                  from './logger'
+import { UserModel }            from './models'
+import type { UserModelClass }  from './models/user'
+import accountsImportSocket     from './socketio/accountImportSocket'
+import backupRestoreSocket      from './socketio/backupRestoreSocket'
+import chatSocket               from './socketio/chatSocket'
+import logsSocket               from './socketio/logsSocket'
+import noticeSocket             from './socketio/noticeSocket'
+import notificationSocket       from './socketio/notificationSocket'
+import ticketSocket             from './socketio/ticketSocket'
+import type { WebServer }       from './webserver'
 
 interface ServerToClientEvents {
-  noArg: () => void
+  unauthorized: () => void
 }
 
-interface ClientToServerEvents {
-
-}
+interface ClientToServerEvents {}
 
 interface InterServerEvents {
   ping: () => void
@@ -49,68 +44,71 @@ export interface SocketData {
   user: any
 }
 
+interface ExtendedUser extends UserModelClass {
+  logged_in?: boolean
+}
+
+interface ExtendedSocket extends Socket {
+  token: string
+  user: ExtendedUser
+}
+
+interface QueryIncomingMessage extends IncomingMessage {
+  _query: { token: string }
+  user: ExtendedUser
+}
+
 export const SocketServer = function (ws: WebServer) {
   const socketConfig = {
     pingTimeout: config.get('socket:pingTimeout') ? config.get('socket:pingTimeout') : 15000,
     pingInterval: config.get('socket:pingInterval') ? config.get('socket:pingInterval') : 30000,
-    secret: config.get('tokens:secret') ? config.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288'
+    secret: config.get('tokens:secret') ? config.get('tokens:secret') : 'trudesk$1234#SessionKeY!2288',
   }
 
   const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(ws.server, {
     pingTimeout: socketConfig.pingTimeout,
-    pingInterval: socketConfig.pingInterval
+    pingInterval: socketConfig.pingInterval,
   })
 
   io.use(function (data, accept) {
-    async.waterfall(
-      [
-        async.constant(data),
-        function (data, next) {
-          if (!data.request._query.token) {
-            return next(null, data)
-          }
-
-          UserModel.getUserByAccessToken(data.request._query.token, (err, user) => {
-            if (!err && user) {
-              winston.debug('Authenticated socket ' + data.id + ' - ' + user.username)
-              data.request.user = user
-              data.request.user.logged_in = true
-              data.token = data.request._query.token
-              return next(null, data)
-            }
-
+    ;(async () => {
+      try {
+        const queryRequest = data.request as QueryIncomingMessage
+        const _query = queryRequest?._query
+        const extendedSocket = data as ExtendedSocket
+        if (_query.token) {
+          const user = (await UserModel.findOne({ accessToken: _query.token, deleted: false })) as UserModelClass
+          if (user) {
+            winston.debug('Authenticated socket ' + data.id + ' - ' + user.username)
+            queryRequest.user = user
+            queryRequest.user.logged_in = true
+            extendedSocket.token = queryRequest._query.token
+          } else {
             data.emit('unauthorized')
-            data.disconnect('Unauthorized')
-            return next(new Error('Unauthorized'))
-          })
-        },
-        function (data, accept: (err?: Error | null, acceptConnection?: boolean) => void) {
-          if (data.request && data.request.user && data.request.user.logged_in) {
-            data.user = data.request.user
-            return accept(null, true)
+            data.disconnect(true)
           }
-
-          return passportSocketIo.authorize({
-            key: 'connect.sid',
-            store: ws.sessionStore,
-            secret: socketConfig.secret,
-            success: onAuthorizeSuccess
-          })(data, accept)
-        }
-      ],
-      function (err) {
-        if (err) {
-          return accept(err)
         }
 
-        return accept()
+        if (queryRequest && queryRequest.user && queryRequest.user.logged_in) {
+          extendedSocket.user = queryRequest.user
+          return accept()
+        }
+
+        return passportSocketIo.authorize({
+          key: 'connect.sid',
+          store: ws.sessionStore,
+          secret: socketConfig.secret,
+          success: onAuthorizeSuccess,
+        })(extendedSocket, accept)
+      } catch (err) {
+        return accept(err as ExtendedError)
       }
-    )
+    })()
   })
 
   // io.set('transports', ['polling', 'websocket'])
 
-  io.sockets.on('connection', socket => {
+  io.sockets.on('connection', (socket) => {
     // Register Submodules
     ticketSocket.register(socket)
     chatSocket.register(socket)
@@ -136,8 +134,8 @@ export const SocketServer = function (ws: WebServer) {
       },
       stop: () => {
         clearInterval(global.socketServer.eventLoop._loop)
-      }
-    }
+      },
+    },
   }
 
   global.socketServer.eventLoop.start()

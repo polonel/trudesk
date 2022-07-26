@@ -46,7 +46,7 @@ rolesV1.get = function (req, res) {
 
           return done()
         })
-      }
+      },
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err })
@@ -82,7 +82,7 @@ rolesV1.create = function (req, res) {
             return next(null, role, savedRo)
           })
         })
-      }
+      },
     ],
     function (err, role, roleOrder) {
       if (err) return res.status(400).json({ success: false, error: err })
@@ -95,27 +95,29 @@ rolesV1.create = function (req, res) {
   )
 }
 
-rolesV1.update = function (req, res) {
-  var _id = req.params.id
-  var data = req.body
+rolesV1.update = async (req, res) => {
+  const _id = req.params.id
+  const data = req.body
   if (_.isUndefined(_id) || _.isUndefined(data))
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-  var emitter = require('../../../emitter')
-  var hierarchy = data.hierarchy ? data.hierarchy : false
-  var cleaned = _.omit(data, ['_id', 'hierarchy'])
-  var k = permissions.buildGrants(cleaned)
-  var roleSchema = require('../../../models/role')
-  roleSchema.get(data._id, function (err, role) {
-    if (err) return res.status(400).json({ success: false, error: err })
-    role.updateGrantsAndHierarchy(k, hierarchy, function (err) {
-      if (err) return res.status(400).json({ success: false, error: err })
+  const emitter = require('../../../emitter')
+  const hierarchy = data.hierarchy ? data.hierarchy : false
+  const cleaned = _.omit(data, ['_id', 'hierarchy'])
+  const k = permissions.buildGrants(cleaned)
+  const { RoleModel } = require('../../../models')
+  try {
+    const role = await RoleModel.getRole(data._id)
+    await role.updateGrantsAndHierarchy(k, hierarchy)
 
-      emitter.emit(socketEventConsts.ROLES_FLUSH)
+    emitter.emit(socketEventConsts.ROLES_FLUSH)
 
-      return res.send('OK')
-    })
-  })
+    await permissions.register()
+
+    return res.send('OK')
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message })
+  }
 }
 
 rolesV1.delete = function (req, res) {
@@ -140,7 +142,7 @@ rolesV1.delete = function (req, res) {
 
           ro.removeFromOrder(_id, done)
         })
-      }
+      },
     ],
     function (err) {
       if (err) return res.status(500).json({ success: false, error: err })

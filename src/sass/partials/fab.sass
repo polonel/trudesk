@@ -1,17 +1,3 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
 .md-fab
   box-sizing: border-box
   width: 64px
@@ -27,8 +13,10 @@
   position: relative
   text-align: center
   cursor: pointer
+
   &:hover, &:focus, &:active
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)
+
   > i
     font-size: 36px
     line-height: 64px
@@ -38,30 +26,41 @@
     left: 0
     top: 0
     color: #727272
+
   &.md-fab-accent
     background: $accent_color
+
   &.md-fab-success
     background: $accent_success
+
     > i
       color: #fff
+
   &.md-fab-danger
     background: $accent_danger
+
     > i
       color: #fff
+
   &.md-fab-primary
     background: $accent_blue
+
     > i
       color: #fff
+
   &.md-fab-warning
     background: #ffa000
+
     > i
       color: #fff
+
   &.md-fab-small
     width: 48px
     height: 48px
     border-radius: 50%
     line-height: 48px
     font-size: 24px
+
     > i
       line-height: 48px
       height: inherit
@@ -78,8 +77,10 @@
   z-index: 1004
   -webkit-transition: margin 280ms cubic-bezier(0.4, 0, 0.2, 1)
   transition: margin 280ms cubic-bezier(0.4, 0, 0.2, 1)
+
   > .md-fab + .md-fab
     margin-top: 16px
+
   &.md-fab-in-card
     position: absolute
 
@@ -96,76 +97,101 @@
     min-height: 48px
     width: 48px
     z-index: -1
+
     .md-fab-small
       -webkit-transform: scale(0)
       transform: scale(0)
       opacity: 0
       position: absolute
       right: 0
+
       &:nth-child(1)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms
+
       &:nth-last-child(2)
         bottom: 64px
+
       &:nth-child(2)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms
+
       &:nth-last-child(3)
         bottom: 128px
+
       &:nth-child(3)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms
+
       &:nth-last-child(4)
         bottom: 192px
+
       &:nth-child(4)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms
+
       &:nth-last-child(5)
         bottom: 256px
+
       &:nth-child(5)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms
+
       &:nth-last-child(6)
         bottom: 320px
+
       &:nth-child(6)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms
+
       &:nth-last-child(7)
         bottom: 384px
+
       &:nth-child(7)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms
+
       &:nth-last-child(8)
         bottom: 448px
+
       &:nth-child(8)
         -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms
         transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms
+
   &.md-fab-active .md-fab-small
     -webkit-transform: scale(1)
     transform: scale(1)
     opacity: 1
     z-index: 10
+
     &:nth-last-child(1)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 50ms
+
     &:nth-last-child(2)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 100ms
+
     &:nth-last-child(3)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms
+
     &:nth-last-child(4)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 200ms
+
     &:nth-last-child(5)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 250ms
+
     &:nth-last-child(6)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 300ms
+
     &:nth-last-child(7)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 350ms
+
     &:nth-last-child(8)
       -webkit-transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms
       transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms, opacity 100ms cubic-bezier(0.4, 0, 0.2, 1) 400ms
@@ -174,6 +200,7 @@
   -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1)
   transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1)
   cursor: default
+
   > i
     cursor: pointer
 
@@ -183,6 +210,7 @@
   padding: 0 10px
   overflow: hidden
   box-sizing: border-box
+
   a, button
     display: block
     float: left
@@ -197,8 +225,10 @@
     border: none
     outline: none
     cursor: pointer
+
     a:first-child, button:first-child
       margin-left: 0
+
   .material-icons
     font-size: 36px
     line-height: 64px
@@ -208,20 +238,26 @@
   &.md-fab-animated
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)
     border-radius: 4px
+
     > i
       display: none
+
   &.md-fab-active .md-fab-toolbar-actions
     visibility: visible
+
     a, button
       opacity: 1
+
   &.md-fab-small .md-fab-toolbar-actions
     a, button
       height: 48px
       width: 36px
       padding: 0
       margin: 0 0 0 8px
+
       a:first-child, button:first-child
         margin-left: 0
+
     .material-icons
       font-size: 24px
       line-height: 48px
@@ -231,6 +267,7 @@
   -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1)
   transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1)
   cursor: default
+
   > i
     cursor: pointer
 
@@ -240,6 +277,7 @@
   overflow: hidden
   box-sizing: border-box
   padding: 4px 0
+
   > a
     display: block
     opacity: 0
@@ -248,8 +286,10 @@
     font: 400 16px / 32px "Roboto", sans-serif
     text-align: left
     color: #212121
+
     &:hover
       color: #212121
+
   .material-icons
     font-size: 24px
     margin-right: 8px
@@ -259,10 +299,13 @@
   &.md-fab-animated
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)
     border-radius: 4px
+
     > i
       display: none
+
   &.md-fab-active .md-fab-sheet-actions
     visibility: visible
+
     > a
       opacity: 1
 

@@ -20,20 +20,27 @@ var settings = require('../models/setting')
 var mailer = {}
 
 mailer.sendMail = function (data, callback) {
-  createTransporter(function (err, mailSettings) {
-    if (err) return callback(err)
-    if (!mailSettings || !mailSettings.enabled) {
-      // Mail Disabled
-      return callback(null, 'Mail Disabled')
+  return new Promise((resolve, reject) => {
+    try {
+      createTransporter(async (err, mailSettings) => {
+        if (err) throw err
+        if (!mailSettings || !mailSettings.enabled) return resolve('Mail Disabled')
+
+        if (!mailSettings.from) throw new Error('No From Address Set.')
+
+        data.from = mailSettings.from.value
+
+        if (!data.from) return new Error('No From Address Set.')
+
+        await mailSettings.transporter.sendMail(data)
+
+        resolve()
+      })
+    } catch (e) {
+      if (typeof callback === 'function') return callback(e)
+
+      reject(e)
     }
-
-    if (!mailSettings.from) return callback('No From Address Set.')
-
-    data.from = mailSettings.from.value
-
-    if (!data.from) return callback('No From Address Set.')
-
-    mailSettings.transporter.sendMail(data, callback)
   })
 }
 
@@ -86,13 +93,13 @@ function createTransporter (callback) {
       secure: mailSettings.ssl && mailSettings.ssl.value ? mailSettings.ssl.value : false,
       tls: {
         rejectUnauthorized: false,
-        ciphers: 'SSLv3'
-      }
+        ciphers: 'SSLv3',
+      },
     }
     if (mailSettings.username && mailSettings.username.value) {
       transport.auth = {
         user: mailSettings.username.value,
-        pass: mailSettings.password && mailSettings.password.value ? mailSettings.password.value : ''
+        pass: mailSettings.password && mailSettings.password.value ? mailSettings.password.value : '',
       }
     }
 

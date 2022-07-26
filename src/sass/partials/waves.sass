@@ -1,18 +1,4 @@
 /*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
-/*!
  ** Waves v0.7.4
  ** http://fian.my.id/Waves
  **
@@ -25,6 +11,7 @@
   cursor: pointer
   overflow: hidden
   -webkit-tap-highlight-color: transparent
+
   .waves-ripple
     position: absolute
     border-radius: 50%
@@ -41,20 +28,28 @@
     -webkit-transform: scale(0) translate(0, 0)
     transform: scale(0) translate(0, 0)
     pointer-events: none
+
   &.waves-light .waves-ripple
     background: rgba(255, 255, 255, 0.45)
+
   &.md-btn-flat
     background: none
+
   &.waves-default .waves-ripple
     background: rgba(153, 153, 153, 0.2)
+
   &.md-btn-flat-primary .waves-ripple
     background: rgba(33, 150, 243, 0.4)
+
   &.md-btn-flat-accent .waves-ripple
     background: rgba($accent_color, 0.4)
+
   &.md-btn-flat-danger .waves-ripple
     background: rgba(229, 57, 53, 0.4)
+
   &.md-btn-flat-warning .waves-ripple
     background: rgba(255, 160, 0, 0.4)
+
   &.md-btn-flat-success .waves-ripple
     background: rgba(124, 179, 66, 0.4)
 
@@ -69,8 +64,10 @@
 .waves-input-wrapper
   border-radius: 0.2em
   vertical-align: bottom
+
   &.waves-button
     padding: 0
+
   .waves-button-input
     position: relative
     top: 0

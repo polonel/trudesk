@@ -1,29 +1,19 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
 .top-nav,
 .top-bar
   background: $topbar_bg
   height: 65px
+
   .title-area
     .logo
       height: 65px
       line-height: 65px
+
       svg
         height: 65px
+
         path
           fill: $logo_text_color
+
         circle
           fill: $logo_circle_color
 
@@ -48,6 +38,7 @@
         color: $topbar_icons !important
         padding-top: 15px !important
         padding-bottom: 8px !important
+
         &:hover
           color: $topbar_icons_hover !important
 
@@ -64,8 +55,10 @@
 
         &:hover:not(.nohover)
           color: $topbar_icons_hover !important
+
           i
             color: $topbar_icons_hover !important
+
           svg
             fill: $topbar_icons_hover !important
 
@@ -79,19 +72,23 @@
           height: auto
           top: auto
           cursor: pointer
+
           &:hover
             color: $topbar_icons_hover !important
+
           i
             margin-right: 0
 
-        i,svg
+        i, svg
           color: $topbar_icons
           font-style: normal
           font-size: 26px
           fill: $topbar_icons
+
           &.material-icons
             margin-top: 2px
             line-height: 30px
+
             &.separator
               +rotate(90deg)
               color: topbar-separator-color() !important
@@ -100,7 +97,7 @@
           width: 32px !important
           height: 32px !important
           vertical-align: middle
-          //margin-top: 25px !important
+        //margin-top: 25px !important
 
         span.label
           display: block
@@ -121,6 +118,7 @@
           white-space: nowrap
           margin-bottom: auto
           vertical-align: middle
+
       &.top-bar-icon a
         padding: 0 !important
 
@@ -133,6 +131,7 @@
     display: inline-block
     margin: 0 20px 0 0
     color: $topbar_text_color !important
+
     &:hover
       color: inherit
 
@@ -156,10 +155,10 @@
   width: 300px !important
   height: auto !important
   background: lighten($page_content_right_bg, 5%)
-  border: 1px solid rgba(0,0,0,0.2)
+  border: 1px solid rgba(0, 0, 0, 0.2)
   //padding: 10px
   position: relative
-  +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
+  +boxShadow(0px 3px 8px 0px rgba(0, 0, 0, 0.247059))
   +transition(opacity 0.5s ease)
 
   &:before,
@@ -214,11 +213,12 @@
   .actions
     width: 100%
     height: auto
-    border-bottom: 1px solid rgba(0,0,0,0.2)
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2)
     line-height: 24px
     font-size: 12px
     color: $text_color
     font-family: "Roboto", sans-serif
+
     a
       width: 100%
       padding: 5px 10px
@@ -241,6 +241,7 @@
     max-height: 320px
     overflow-x: hidden
     overflow-y: auto
+
     ul
       float: left
       height: 100%
@@ -248,12 +249,14 @@
   li
     width: 100%
     background: lighten($page_content_right_bg, 10%) !important
-    border-bottom: 1px solid rgba(0,0,0,0.2)
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2)
     height: 70px !important
     max-height: 80px
     line-height: normal
+
     &:hover
       background: darken(lighten($page_content_right_bg, 10%), 4%) !important
+
     &:last-child
       border-bottom: none
 
@@ -282,8 +285,10 @@
         position: absolute
         top: 8px
         right: 3px
+
         &:before
           content: "\f111"
+
         &.read
           &:before
             content: "\f10c"
@@ -311,12 +316,16 @@
         text-align: center
         color: automatic-text-color(lighten($page_content_right_bg, 10%))
         background: transparent !important
+
         &.warn
           color: #e7a13c
+
         &.green
           color: #29b955
+
         &.red
           color: #b92929
+
         &.blue
           color: #017ebc
 
@@ -329,10 +338,13 @@
       left: 215px
 
     width: 240px !important
+
     div.notifications-Messages
       width: 100%
+
       ul
         width: 100%
+
         li
           height: 40px
           width: 100%

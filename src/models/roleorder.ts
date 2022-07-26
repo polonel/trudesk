@@ -28,7 +28,7 @@ export interface IRoleOrder extends Document {
 interface IRoleOrderModel extends Model<IRoleOrder> {
   getOrder(callback?: (err?: CallbackError, res?: HydratedDocument<IRoleOrder>) => void): Promise<HydratedDocument<IRoleOrder>>
 
-  getOrderLean(callback: (err?: CallbackError, res?: IRoleOrder) => void): Promise<IRoleOrder>
+  getOrderLean(callback?: (err?: CallbackError, res?: IRoleOrder) => void): Promise<IRoleOrder>
 }
 
 const schema = new Schema<IRoleOrder, IRoleOrderModel>({

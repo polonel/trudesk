@@ -29,7 +29,7 @@ import {
   TeamModel,
   TicketTagsModel,
   TicketTypeModel,
-  UserModel
+  UserModel,
 } from '../../models'
 import settingsUtil from '../../settings/settingsUtil'
 import buildSass from '../../sass/buildsass'
@@ -90,7 +90,7 @@ viewController.getData = function (request, cb) {
 
                 return done()
               })
-            }
+            },
           ],
           callback
         )
@@ -142,7 +142,7 @@ viewController.getData = function (request, cb) {
 
                 return done()
               })
-            }
+            },
           ],
           callback
         )
@@ -168,7 +168,7 @@ viewController.getData = function (request, cb) {
             settingSchema.create(
               {
                 name: 'gen:siteurl',
-                value: viewdata.hosturl
+                value: viewdata.hosturl,
               },
               function (err, setting) {
                 if (err) return callback()
@@ -233,25 +233,20 @@ viewController.getData = function (request, cb) {
           })
         })
       },
-      async function (callback) {
+      async function () {
         try {
           const hasCustomFavicon = await settingSchema.getSettingByName('gen:customfavicon')
-          viewdata.hasCustomFavicon = hasCustomFavicon && hasCustomFavicon.value === false
+          viewdata.hasCustomFavicon = hasCustomFavicon && hasCustomFavicon.value === true
+
           if (!viewdata.hasCustomFavicon) {
             viewdata.favicon = '/img/favicon.ico'
-            return callback()
+          } else {
+            const faviconFilename = await settingSchema.getSettingByName('gen:customfaviconfilename')
+            if (faviconFilename && faviconFilename.value) viewdata.favicon = `/assets/${faviconFilename.value}`
+            else viewdata.favicon = '/img/favicon.ico'
           }
-
-          const faviconFilename = await settingSchema.getSettingByName('gen:customfaviconfilename')
-          if (faviconFilename && faviconFilename.value)
-            viewdata.favicon = `/assets/${faviconFilename.value}`
-          else
-            viewdata.favicon = '/img/favicon.ico'
-
-          return callback()
         } catch (e) {
           viewdata.favicon = '/img/favicon.ico'
-          return callback()
         }
       },
       function (callback) {
@@ -373,15 +368,15 @@ viewController.getData = function (request, cb) {
       //     })
       //   })
       // },
-      function (callback) {
-        viewController.getShowTourSetting(request, function (err, data) {
-          if (err) return callback(err)
-
-          viewdata.showTour = data
-
-          return callback()
-        })
-      },
+      // function (callback) {
+      //   viewController.getShowTourSetting(request, function (err, data) {
+      //     if (err) return callback(err)
+      //
+      //     viewdata.showTour = data
+      //
+      //     return callback()
+      //   })
+      // },
       function (callback) {
         viewController.getOverdueSetting(request, function (err, data) {
           if (err) return callback(err)
@@ -417,7 +412,7 @@ viewController.getData = function (request, cb) {
 
           return callback()
         })
-      }
+      },
     ],
     function (err) {
       if (err) {
@@ -481,7 +476,7 @@ viewController.getConversations = function (request, callback) {
             _.findIndex(convo.userMeta, function (item) {
               return item.userId.toString() === request.user._id.toString()
             })
-            ]
+          ]
         if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
           return done()
         }

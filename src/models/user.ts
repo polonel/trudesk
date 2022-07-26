@@ -13,15 +13,15 @@
  */
 
 import { DocumentType, getModelForClass, modelOptions, pre, prop, Ref, ReturnModelType } from "@typegoose/typegoose";
-import utils from '../helpers/utils'
 import bcrypt from 'bcrypt'
-import _ from "lodash";
 import Chance from "chance";
+import _ from "lodash";
+import type { Types } from "mongoose";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import base32 from 'thirty-two'
-import type { RoleModel } from './role'
-import type { Types } from "mongoose";
+import utils from '../helpers/utils'
+import type { IRoleModel, RoleModel } from './role'
 
 type UserQueryObj = {
   limit?: number
@@ -78,7 +78,7 @@ class UserPreferences {
 })
 
 @modelOptions({ options: { customName: COLLECTION } })
-class UserModelClass {
+export class UserModelClass {
   @prop({ required: true, unique: true })
   public username!: string
   @prop({ required: true, select: false })
@@ -106,7 +106,7 @@ class UserModelClass {
   public twitterUrl?: string
 
   @prop({ ref: 'roles', required: true })
-  public role!: Ref<typeof RoleModel, string>
+  public role!: Ref<typeof RoleModel>
 
   @prop({ select: false })
   public resetPassHash?: string
@@ -128,6 +128,90 @@ class UserModelClass {
   public lastOnline?: Date
   @prop()
   public deleted?: boolean
+
+  // ----- STATICS
+  public static validatePassword(this: ReturnModelType<typeof UserModelClass>, password: string, dbPass: string): boolean {
+    return bcrypt.compareSync(password, dbPass)
+  }
+
+  public static async getUser(this: ReturnModelType<typeof UserModelClass>, oId: string | Types.ObjectId) {
+    if (!oId) throw new Error('Invalid Object Id (String | ObjectId)')
+    return this.findOne({ _id: oId })
+  }
+
+  public static async getByUsername(this: ReturnModelType<typeof UserModelClass>, username: string) {
+    if (!username) throw new Error('Invalid Username')
+    return this.findOne({ username: new RegExp(`^${username}$`, 'i') })
+      .populate('role', 'name description normalized _id')
+      .select('+password +accessToken')
+  }
+
+  public static async getByEmail(this: ReturnModelType<typeof UserModelClass>, email: string) {
+    if (!email) throw new Error('Invalid Email')
+
+    return this.findOne({ email: email.toLowerCase() })
+  }
+
+  public static async getUserByResetHash(this: ReturnModelType<typeof UserModelClass>, resethash: string) {
+    if (!resethash) throw new Error('Invalid ResetHash')
+
+    return this.findOne({ resetPassHash: resethash, deleted: false }, '+resetPassHash +resetPassExpire')
+  }
+
+  public static async getCustomers(this: ReturnModelType<typeof UserModelClass>, obj: UserQueryObj) {
+    const limit = obj.limit || 10
+    const page = obj.page || 0
+    const accounts = await this.find({}, '-password -resetPassHash -resetPassExpire')
+
+    const customerRoleIds = _.filter(accounts, a => {
+      return !(a.role as IRoleModel)?.isAdmin && !(a.role as IRoleModel)?.isAgent
+    }).map(a => {
+      return (a.role as IRoleModel)?._id
+    })
+
+    const query = this.find({ role: { $in: customerRoleIds } }, '-password -resetPassHash -resetPassExpire')
+      .sort({ fullname: 1 })
+      .skip(page * limit)
+      .limit(limit)
+
+    if (!obj.showDeleted) query.where({ deleted: false })
+
+    return query.exec()
+  }
+
+  public static async getAgents(this: ReturnModelType<typeof UserModelClass>, obj: UserQueryObj) {
+    const limit = obj.limit || 10
+    const page = obj.page || 0
+    const accounts = await this.find({})
+
+    const agentRoleIds = _.filter(accounts, a => (a.role as IRoleModel)?.isAgent).map(a => (a.role as IRoleModel)?._id)
+
+    const query = this.find({ role: { $in: agentRoleIds } }, '-password -resetPassHash -resetPassExpire')
+      .sort({ fullname: 1 })
+      .skip(page * limit)
+      .limit(limit)
+
+    if (!obj.showDeleted) query.where({ deleted: false })
+
+    return query.exec()
+  }
+
+  public static async getAdmins(this: ReturnModelType<typeof UserModelClass>, obj: UserQueryObj) {
+    const limit = obj.limit || 10
+    const page = obj.page || 0
+    const accounts = await this.find({})
+
+    const adminRoleIds = _.filter(accounts, a => (a.role as IRoleModel)?.isAdmin).map(a => (a.role as IRoleModel)?._id)
+
+    const query = this.find({ role: { $in: adminRoleIds } }, '-password -resetPassHash -resetPassExpire')
+      .sort({ fullname: 1 })
+      .skip(page * limit)
+      .limit(limit)
+
+    if (!obj.showDeleted) query.where({ deleted: false })
+
+    return query.exec()
+  }
 
   // ----- METHODS
   public async generateL2Auth(this: DocumentType<UserModelClass>) {
@@ -172,50 +256,6 @@ class UserModelClass {
         }
       })()
     })
-  }
-
-  // ----- STATICS
-  public static validatePassword(this: ReturnModelType<typeof UserModelClass>, password: string, dbPass: string): boolean {
-    return bcrypt.compareSync(password, dbPass)
-  }
-
-  public static async getUser(this: ReturnModelType<typeof UserModelClass>, oId: string | Types.ObjectId) {
-    if (!oId) throw new Error('Invalid Object Id (String | ObjectId)')
-    return this.findOne({ _id: oId })
-  }
-
-  public static async getByUsername(this: ReturnModelType<typeof UserModelClass>, username: string) {
-    if (!username) throw new Error('Invalid Username')
-    return this.findOne({ username: new RegExp(`^${username}$`, 'i') })
-      .populate('role', 'name description normalized _id')
-      .select('+password +accessToken')
-  }
-
-  public static async getByEmail(this: ReturnModelType<typeof UserModelClass>, email: string) {
-    if (!email) throw new Error('Invalid Email')
-
-    return this.findOne({ email: email.toLowerCase() })
-  }
-
-  public static async getCustomers(this: ReturnModelType<typeof UserModelClass>, obj: UserQueryObj) {
-    const limit = obj.limit || 10
-    const page = obj.page || 0
-    const accounts = await this.find({}, '-password -resetPassHash -resetPassExpire')
-
-    const customerRoleIds = _.filter(accounts, a => {
-      return !a.role.isAdmin && !a.role.isAgent
-    }).map(a => {
-      return a.role._id
-    })
-
-    const query = this.find({ role: { $in: customerRoleIds } }, '-password -resetPassHash -resetPassExpire')
-      .sort({ fullname: 1 })
-      .skip(page * limit)
-      .limit(limit)
-
-    if (!obj.showDeleted) query.where({ deleted: false })
-
-    return query.exec()
   }
 }
 

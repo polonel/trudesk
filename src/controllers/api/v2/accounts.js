@@ -142,12 +142,12 @@ accountsApi.get = async function (req, res) {
 
   switch (type) {
     case 'all':
-      User.getUserWithObject(obj, function (err, accounts) {
-        if (err) return apiUtil.sendApiError(res, 500, err.message)
-
-        return apiUtil.sendApiSuccess(res, { accounts: accounts, count: accounts.length })
-      })
-      break
+      try {
+        const accounts = await User.getUserWithObject(obj)
+        return apiUtil.sendApiSuccess(res, { accounts, count: accounts.length })
+      } catch (err) {
+        return apiUtil.sendApiError(res, 500, err)
+      }
     case 'customers':
       try {
         const accounts = await User.getCustomers(obj)
@@ -168,73 +168,41 @@ accountsApi.get = async function (req, res) {
         return apiUtil.sendApiError(res, 500, err.message)
       }
     case 'agents':
-      User.getAgents(obj, function (err, accounts) {
-        if (err) return apiUtil.sendApiError(res, 500, err.message)
-
+      try {
+        const accounts = await User.getAgents(obj)
         const resAccounts = []
-        async.eachSeries(
-          accounts,
-          function (account, next) {
-            const a = account.toObject()
-            Department.getUserDepartments(account._id, function (err, departments) {
-              if (err) return next(err)
 
-              a.departments = departments.map(function (department) {
-                return { name: department.name, _id: department._id }
-              })
+        for (const account of accounts) {
+          const accountObj = account.toObject()
+          const departments = await Department.getUserDepartments(account._id)
+          accountObj.departments = departments.map(department => ({ name: department.name, _id: department._id }))
+          const teams = await Team.getTeamsOfUser(account._id)
+          accountObj.teams = teams.map(team => ({ name: team.name, _id: team._id }))
+          resAccounts.push(accountObj)
+        }
 
-              Team.getTeamsOfUser(account._id, function (err, teams) {
-                if (err) return next(err)
-                a.teams = teams.map(function (team) {
-                  return { name: team.name, _id: team._id }
-                })
-                resAccounts.push(a)
-                next()
-              })
-            })
-          },
-          function (err) {
-            if (err) return apiUtil.sendApiError(res, 500, err.message)
-
-            return apiUtil.sendApiSuccess(res, { accounts: resAccounts, count: resAccounts.length })
-          }
-        )
-      })
-      break
+        return apiUtil.sendApiSuccess(res, { accounts: resAccounts, count: resAccounts.length })
+      } catch (err) {
+        return apiUtil.sendApiError(res, 500, err.message)
+      }
     case 'admins':
-      User.getAdmins(obj, function (err, accounts) {
-        if (err) return apiUtil.sendApiError(res, 500, err.message)
+      try {
+        const accounts = await User.getAdmins(obj)
+        const resAccounts = []
 
-        var resAccounts = []
-        async.eachSeries(
-          accounts,
-          function (account, next) {
-            var a = account.toObject()
-            Department.getUserDepartments(account._id, function (err, departments) {
-              if (err) return next(err)
+        for (const account of accounts) {
+          const accountObj = account.toObject()
+          const departments = await Department.getUserDepartments(account._id)
+          accountObj.departments = departments.map(department => ({ name: department.name, _id: department._id }))
+          const teams = await Team.getTeamsOfUser(account._id)
+          accountObj.teams = teams.map(team => ({ name: team.name, _id: team._id }))
+          resAccounts.push(accountObj)
+        }
 
-              a.departments = departments.map(function (department) {
-                return { name: department.name, _id: department._id }
-              })
-
-              Team.getTeamsOfUser(account._id, function (err, teams) {
-                if (err) return next(err)
-                a.teams = teams.map(function (team) {
-                  return { name: team.name, _id: team._id }
-                })
-                resAccounts.push(a)
-                next()
-              })
-            })
-          },
-          function (err) {
-            if (err) return apiUtil.sendApiError(res, 500, err.message)
-
-            return apiUtil.sendApiSuccess(res, { accounts: resAccounts, count: resAccounts.length })
-          }
-        )
-      })
-      break
+        return apiUtil.sendApiSuccess(res, { accounts: resAccounts, count: resAccounts.length })
+      } catch (err) {
+        return apiUtil.sendApiError(res, 500, err.message)
+      }
     default:
       return apiUtil.sendApiError_InvalidPostData(res)
   }
@@ -450,7 +418,7 @@ accountsApi.disableMFA = async (req, res) => {
     let user = await User.findOne({ _id: req.user }, '+password')
     if (!user) return apiUtil.sendApiError(res, 400, 'Invalid Account')
 
-    if (!User.validate(payload.confirmPassword, user.password))
+    if (!User.validatePassword(payload.confirmPassword, user.password))
       return apiUtil.sendApiError(res, 400, 'Invalid Credentials')
 
     user.tOTPKey = null
@@ -476,7 +444,7 @@ accountsApi.updatePassword = async (req, res) => {
     let dbUser = await User.findOne({ _id: user._id }, '+password')
     if (!dbUser) return apiUtil.sendApiError(res, 400, 'Invalid User')
 
-    if (!User.validate(payload.currentPassword, dbUser.password))
+    if (!User.validatePassword(payload.currentPassword, dbUser.password))
       return apiUtil.sendApiError(res, 400, 'Invalid Credentials')
 
     // SETTINGS

@@ -116,9 +116,9 @@ class AccountsContainer extends React.Component {
       this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map(user => {
         const userImage = user.get('image') || 'defaultProfile.jpg'
-        let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditAccountClicked(e, user)} />]
+        let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditAccountClicked(e, user)}/>]
         if (user.get('deleted'))
-          actionMenu.push(<DropdownItem key={2} text={'Enable'} onClick={e => this.onEnableAccountClicked(e, user)} />)
+          actionMenu.push(<DropdownItem key={2} text={'Enable'} onClick={e => this.onEnableAccountClicked(e, user)}/>)
         else
           actionMenu.push(
             <DropdownItem
@@ -144,7 +144,7 @@ class AccountsContainer extends React.Component {
               }
               header={
                 <div>
-                  <div className='account-image relative uk-display-inline-block'>
+                  <div className="account-image relative uk-display-inline-block">
                     <Avatar
                       size={82}
                       userId={user.get('_id')}
@@ -155,33 +155,33 @@ class AccountsContainer extends React.Component {
                       showLargerBubble={true}
                     />
                   </div>
-                  <h3 className='tru-card-head-text uk-text-center'>
+                  <h3 className="tru-card-head-text uk-text-center">
                     {user.get('fullname')}
-                    <span className='uk-text-truncate'>{user.get('title')}</span>
+                    <span className="uk-text-truncate">{user.get('title')}</span>
                   </h3>
                 </div>
               }
               content={
-                <ul className='tru-list'>
+                <ul className="tru-list">
                   <li>
-                    <div className='tru-list-content'>
-                      <span className='tru-list-heading'>Role</span>
-                      <span className='uk-text-small uk-text-muted'>{user.getIn(['role', 'name'])}</span>
+                    <div className="tru-list-content">
+                      <span className="tru-list-heading">Role</span>
+                      <span className="uk-text-small uk-text-muted">{user.getIn(['role', 'name'])}</span>
                     </div>
                   </li>
                   <li>
-                    <div className='tru-list-content'>
-                      <span className='tru-list-heading'>Email</span>
-                      <span className='uk-text-small uk-text-muted'>
+                    <div className="tru-list-content">
+                      <span className="tru-list-heading">Email</span>
+                      <span className="uk-text-small uk-text-muted">
                         <a href={`mailto:${user.get('email')}`}>{user.get('email')}</a>
                       </span>
                     </div>
                   </li>
                   <li>
                     {customer && user.get('groups') && (
-                      <div className='tru-list-content'>
-                        <span className='tru-list-heading'>Groups</span>
-                        <span className='uk-text-small uk-text-muted uk-text-truncate'>
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Groups</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
                           {user.get('groups').map(group => {
                             return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '')
                           })}
@@ -189,9 +189,9 @@ class AccountsContainer extends React.Component {
                       </div>
                     )}
                     {!customer && user.get('teams') && (
-                      <div className='tru-list-content'>
-                        <span className='tru-list-heading'>Teams</span>
-                        <span className='uk-text-small uk-text-muted uk-text-truncate'>
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Teams</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
                           {user.get('teams').map(team => {
                             return team.get('name') + (user.get('teams').toArray().length > 1 ? ', ' : '')
                           })}
@@ -201,9 +201,9 @@ class AccountsContainer extends React.Component {
                   </li>
                   {!customer && user.get('departments') && (
                     <li>
-                      <div className='tru-list-content'>
-                        <span className='tru-list-heading'>Departments</span>
-                        <span className='uk-text-small uk-text-muted uk-text-truncate'>
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Departments</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
                           {user.get('departments').map(department => {
                             return department.get('name') + (user.get('departments').toArray().length > 1 ? ', ' : '')
                           })}
@@ -272,7 +272,7 @@ class AccountsContainer extends React.Component {
             threshold={25}
             loader={
               <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                <i className={'uk-icon-refresh uk-icon-spin'} />
+                <i className={'uk-icon-refresh uk-icon-spin'}/>
               </div>
             }
             useWindow={false}

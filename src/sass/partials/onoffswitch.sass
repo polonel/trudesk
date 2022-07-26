@@ -1,96 +1,84 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
 .onoffswitch
-    position: relative 
-    width: 85px !important
-    -webkit-user-select: none 
-    -moz-user-select: none 
-    -ms-user-select: none
-    &.subscribeSwitch
-        width: 100px !important
+  position: relative
+  width: 85px !important
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+
+  &.subscribeSwitch
+    width: 100px !important
 
 .onoffswitch-checkbox
-    display: none 
+  display: none
 
 .onoffswitch-label
-    display: block !important
-    margin: auto !important
-    overflow: hidden 
-    cursor: pointer 
-    border: 1px solid darken($page_content_button_color, 10%)
-    border-radius: 5px
-    width: 100% !important
+  display: block !important
+  margin: auto !important
+  overflow: hidden
+  cursor: pointer
+  border: 1px solid darken($page_content_button_color, 10%)
+  border-radius: 5px
+  width: 100% !important
 
 .onoffswitch-inner
-    display: block 
-    width: 200% 
-    margin-left: -100% 
-    transition: margin 0.3s ease-in 0s 
+  display: block
+  width: 200%
+  margin-left: -100%
+  transition: margin 0.3s ease-in 0s
 
 .onoffswitch-inner:before,
 .onoffswitch-inner:after
-    display: block 
-    float: left 
-    width: 50% 
-    height: 28px 
-    padding: 0 
-    line-height: 28px 
-    font-size: 11px 
-    color: $page_content_button_color
-    font-family: Trebuchet, Arial, sans-serif 
-    font-weight: bold 
-    box-sizing: border-box 
+  display: block
+  float: left
+  width: 50%
+  height: 28px
+  padding: 0
+  line-height: 28px
+  font-size: 11px
+  color: $page_content_button_color
+  font-family: Trebuchet, Arial, sans-serif
+  font-weight: bold
+  box-sizing: border-box
 
 .onoffswitch-inner:before
-    content: "Refresh"
-    padding-left: 7px 
-    background-color: $accent_color
-    color: #fff
+  content: "Refresh"
+  padding-left: 7px
+  background-color: $accent_color
+  color: #fff
 
 .subscribeSwitch-inner:before
-    content: "Subscribe"
-    background-color: #29b955
+  content: "Subscribe"
+  background-color: #29b955
 
 .onSwitch-inner:before
-    content: "On"
-    background-color: #29b955
+  content: "On"
+  background-color: #29b955
 
 .onoffswitch-inner:after
-    content: "OFF"
-    padding-right: 7px 
-    background-color: lighten($page_content_bg, 25%)
-    color: automatic-text-color(lighten($page_content_bg, 25%))
-    text-align: right 
+  content: "OFF"
+  padding-right: 7px
+  background-color: lighten($page_content_bg, 25%)
+  color: automatic-text-color(lighten($page_content_bg, 25%))
+  text-align: right
 
 .onoffswitch-switch
-    display: block 
-    width: 28px 
-    margin: 0 
-    background: $page_content_button_color
-    position: absolute 
-    top: 0 
-    bottom: 0
-    right: 57px
-    border: 1px solid darken($page_content_button_color, 10%)
-    border-radius: 5px 
-    transition: all 0.3s ease-in 0s
-    &.subscribeSwitch-switch
-        right: 72px
+  display: block
+  width: 28px
+  margin: 0
+  background: $page_content_button_color
+  position: absolute
+  top: 0
+  bottom: 0
+  right: 57px
+  border: 1px solid darken($page_content_button_color, 10%)
+  border-radius: 5px
+  transition: all 0.3s ease-in 0s
+
+  &.subscribeSwitch-switch
+    right: 72px
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner
-    margin-left: 0 
+  margin-left: 0
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch
-    right: -2px
+  right: -2px

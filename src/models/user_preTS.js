@@ -8,8 +8,8 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:43 PM
- *  Copyright (c) 2014-2019. All rights reserved.
+ *  Updated:    7/24/22 2:27 AM
+ *  Copyright (c) 2014-2022. All rights reserved.
  */
 
 const async = require('async')
@@ -266,29 +266,10 @@ userSchema.statics.validate = function (password, dbPass) {
   return bcrypt.compareSync(password, dbPass)
 }
 
-/**
- * Gets all users
- *
- * @memberof User
- * @static
- * @method findAll
- *
- * @param {QueryCallback} callback MongoDB Query Callback
- */
 userSchema.statics.findAll = function (callback) {
   return this.model(COLLECTION).find({}, callback)
 }
 
-/**
- * Gets user via object _id
- *
- * @memberof User
- * @static
- * @method getUser
- *
- * @param {Object} oId Object _id to Query MongoDB
- * @param {QueryCallback} callback MongoDB Query Callback
- */
 userSchema.statics.getUser = function (oId, callback) {
   if (_.isUndefined(oId)) {
     return callback('Invalid ObjectId - UserSchema.GetUser()', null)
@@ -297,16 +278,6 @@ userSchema.statics.getUser = function (oId, callback) {
   return this.model(COLLECTION).findOne({ _id: oId }, callback)
 }
 
-/**
- * Gets user via username
- *
- * @memberof User
- * @static
- * @method getUserByUsername
- *
- * @param {String} user Username to Query MongoDB
- * @param {QueryCallback} callback MongoDB Query Callback
- */
 userSchema.statics.getUserByUsername = function (user, callback) {
   if (_.isUndefined(user)) {
     return callback('Invalid Username - UserSchema.GetUserByUsername()', null)
@@ -372,16 +343,6 @@ userSchema.statics.getUserByL2ResetHash = function (hash, callback) {
   )
 }
 
-/**
- * Gets user via API Access Token
- *
- * @memberof User
- * @static
- * @method getUserByAccessToken
- *
- * @param {String} token Access Token to Query MongoDB
- * @param {QueryCallback} callback MongoDB Query Callback
- */
 userSchema.statics.getUserByAccessToken = function (token, callback) {
   if (_.isUndefined(token)) {
     return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null)

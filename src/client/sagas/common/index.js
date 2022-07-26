@@ -20,10 +20,10 @@ import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, SET_SESSION_USER, UPDATE_SOCK
 import Log from '../../logger'
 import helpers from 'lib/helpers'
 
-function * initSocket ({ meta }) {
+function* initSocket({ meta }) {
   try {
     const s = io.connect({
-      transports: ['polling', 'websocket']
+      transports: ['polling', 'websocket'],
     })
 
     yield put({ type: INIT_SOCKET.SUCCESS, payload: { socket: s }, meta })
@@ -33,7 +33,7 @@ function * initSocket ({ meta }) {
   }
 }
 
-function * updateSocket ({ payload }) {
+function* updateSocket({ payload }) {
   try {
     const s = payload.socket
     yield put({ type: UPDATE_SOCKET.SUCCESS, payload: { socket: s } })
@@ -43,7 +43,7 @@ function * updateSocket ({ payload }) {
   }
 }
 
-function * setSessionUser ({ payload }) {
+function* setSessionUser({ payload }) {
   try {
     const response = yield call(api.common.getSessionUser, payload)
     yield put({ type: SET_SESSION_USER.SUCCESS, payload: { sessionUser: response } })
@@ -58,7 +58,7 @@ function * setSessionUser ({ payload }) {
   }
 }
 
-function * fetchRoles ({ payload }) {
+function* fetchRoles({ payload }) {
   try {
     const response = yield call(api.common.fetchRoles, payload)
     yield put({ type: FETCH_ROLES.SUCCESS, response })
@@ -70,7 +70,7 @@ function * fetchRoles ({ payload }) {
   }
 }
 
-function * fetchViewData ({ payload, meta }) {
+function* fetchViewData({ payload, meta }) {
   yield put({ type: FETCH_VIEWDATA.PENDING })
   try {
     const response = yield call(api.common.fetchViewData)
@@ -84,7 +84,7 @@ function * fetchViewData ({ payload, meta }) {
   }
 }
 
-export default function * watcher () {
+export default function* watcher() {
   yield takeLatest(INIT_SOCKET.ACTION, initSocket)
   yield takeLatest(UPDATE_SOCKET.ACTION, updateSocket)
   yield takeLatest(SET_SESSION_USER.ACTION, setSessionUser)

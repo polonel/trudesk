@@ -55,7 +55,7 @@ commonV1.login = function (req, res) {
     if (err) return res.status(401).json({ success: false, error: err.message })
     if (!user) return res.status(401).json({ success: false, error: 'Invalid User' })
 
-    if (!userModel.validate(password, user.password))
+    if (!userModel.validatePassword(password, user.password))
       return res.status(401).json({ success: false, error: 'Invalid Password' })
 
     var resUser = _.clone(user._doc)

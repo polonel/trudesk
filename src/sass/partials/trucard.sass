@@ -1,47 +1,44 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
 
 .tru-card
   background: $trupanel_bg
   position: relative
   border: none
-  box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24)
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24)
+
   &.tru-card-hover
-    transition: all 280ms cubic-bezier(.4,0,.2,1)
+    transition: all 280ms cubic-bezier(.4, 0, .2, 1)
+
     &:hover
-      box-shadow: 0 10px 20px rgba(0,0,0,.19), 0 6px 6px rgba(0,0,0,.23)
+      box-shadow: 0 10px 20px rgba(0, 0, 0, .19), 0 6px 6px rgba(0, 0, 0, .23)
+
   .tru-card-head
     //height: 165px
     position: relative
-    border-bottom: 1px solid rgba(0,0,0,.12)
+    border-bottom: 1px solid rgba(0, 0, 0, .12)
+
     &.tru-card-head-admin,
     &.tru-card-head-agent,
     &.tru-card-head-deleted
       background: $accent_blue
       border-bottom: none
+
       .tru-card-head-text
         color: white
+
       .tru-icon
         color: white !important
+
     &.tru-card-head-agent
       background: $accent_agent
+
     &.tru-card-head-deleted
       background: $accent_danger !important
+
   .tru-card-head-menu
     position: absolute
     right: 8px
     top: 8px
+
   .tru-card-head-avatar
     width: 82px
     height: 82px
@@ -49,6 +46,7 @@
     margin-top: 16px
     border: 2px solid #fff
     display: inline-block
+
   .tru-card-head-text
     padding: 8px 16px 16px
     font: 500 16px/22px $fontFamily
@@ -56,19 +54,24 @@
     margin: 0
     -ms-word-break: break-all
     word-break: break-all
+
     span
       display: block
       font: 400 12px/18px $fontFamily
       margin-top: -2px
+
   .tru-card-content
     padding: 16px
+
   &.tru-card-overlay
     overflow: hidden
     padding-bottom: 50px
+
     .tru-card-content
       height: 165px
       overflow: hidden
       box-sizing: border-box
+
     .tru-card-overlay-content
       position: absolute
       top: 100%
@@ -76,16 +79,17 @@
       right: 0
       padding: 0 16px
       margin-top: -50px
-      border-top: 1px solid rgba(0,0,0, 0.12)
+      border-top: 1px solid rgba(0, 0, 0, 0.12)
       text-align: left
       bottom: 0
       background: #eef1f7
       z-index: 10
-      -webkit-transition: all 280ms cubic-bezier(0.4,0,0.2,1)
-      transition: all 280ms cubic-bezier(0.4,0,0.2,1)
+      -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1)
+      transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1)
       font: 300 14px/1.42857143 $fontFamily
+
       .tru-card-overlay-header
-        h3,h4
+        h3, h4
           margin: 0
           text-overflow: ellipsis
           display: inline-block
@@ -95,8 +99,10 @@
           width: 100%
           padding-right: 40px
           box-sizing: border-box
+
         h3
           font: 300 22px/48px $fontFamily
+
         .tru-icon
           position: absolute
           top: 8px
@@ -117,6 +123,7 @@
   //top: 8px
   -webkit-transition: background 280ms ease-out, color 280ms ease-out
   transition: background 280ms ease-out, color 280ms ease-out
+
   &:hover, &:focus
     background: rgba(0, 0, 0, .08)
     color: darken($text_color, 3%)
@@ -130,41 +137,51 @@
   margin: 0
   font-size: 12px
   padding: 0
+
   &:after, &:before, *
     box-sizing: border-box
+
   > li
     list-style: none
     padding: 0
+
   .uk-nestable-list > li, > li
     min-height: 48px
     padding: 8px 4px
     box-sizing: border-box
-    border-bottom: 1px solid rgba(0,0,0,.12)
+    border-bottom: 1px solid rgba(0, 0, 0, .12)
     position: relative
+
     &:last-child
       border-bottom: none
+
     .tru-list-content
       overflow: hidden
+
       .tru-list-heading
         margin: 0
         font: 500 14px/1.42857143 $fontFamily
         display: block
         overflow: hidden
         padding-bottom: 1px
-  a,a:active,a:focus
+
+  a, a:active, a:focus
     color: $accent_color
+
     &:hover
       color: lighten($accent_color, 10%)
 
 .trupanel.card-disabled
   background: #9E9E9E !important
   cursor: not-allowed !important
+
   &:hover
-    box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,0.24) !important
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, 0.24) !important
 
 .epc_chart
   display: block
   position: relative
+
   .epc_chart_icon
     position: absolute
     top: 0
@@ -174,6 +191,7 @@
     text-align: center
     line-height: 129px
     display: block
+
     i
       color: #727272
       font-size: 48px

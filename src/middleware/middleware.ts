@@ -12,16 +12,16 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express'
 import * as _ from 'lodash'
+import mongoose from 'mongoose'
+import passport from 'passport'
 import { init as databaseInit, TrudeskDatabase } from '../database'
-import mongoose, { CallbackError, HydratedDocument } from 'mongoose'
-import winston from '../logger'
 import csrf from '../dependencies/csrf-td'
 import viewdata from '../helpers/viewdata'
-import passport from 'passport'
-import { UserModel } from "../models";
-import permissions from "../permissions";
+import winston from '../logger'
+import { UserModel } from '../models'
+import permissions from '../permissions'
 
 export type RouteMiddlewareType = {
   db?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => TrudeskDatabase | void
@@ -42,7 +42,6 @@ export type RouteMiddlewareType = {
   isAgent?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
   isSupport?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
   csrfCheck?: (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => void
-
 }
 
 interface MiddlewareRequest extends Request {
@@ -67,7 +66,7 @@ middleware.db = (req, res, next) => {
         return res.status(503).send()
       }
 
-      return req.db = database
+      return (req.db = database)
     })
   }
 
@@ -196,8 +195,7 @@ middleware.checkOrigin = function (req, res, next) {
   // TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
   if (!origin) {
     origin = host
-  } else
-    origin = origin.replace(/^https?:\/\//, '')
+  } else origin = origin.replace(/^https?:\/\//, '')
 
   if (origin !== host) {
     return res.status(400).json({ success: false, error: 'Invalid Origin!' })
@@ -207,7 +205,7 @@ middleware.checkOrigin = function (req, res, next) {
 }
 
 // API
-middleware.api = function (req, res, next) {
+middleware.api = async function (req, res, next) {
   const accessToken = req.headers.accesstoken
 
   if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
@@ -217,14 +215,22 @@ middleware.api = function (req, res, next) {
     return next()
   }
 
-  UserModel.getUserByAccessToken(accessToken, function (err?: CallbackError, user?: HydratedDocument<any>) {
-    if (err) return res.status(401).json({ error: err.message })
+  try {
+    const user = await UserModel.find(
+      {
+        accessToken,
+        deleted: false,
+      },
+      '+password'
+    )
     if (!user) return res.status(401).json({ error: 'Invalid Access Token' })
 
     req.user = user
 
     return next()
-  })
+  } catch (err: any) {
+    return res.status(401).json({ error: err.message })
+  }
 }
 
 middleware.hasAuth = middleware.api

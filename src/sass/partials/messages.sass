@@ -1,17 +1,3 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
-
 .message-list
   padding: 0 !important
   @media only screen and (min-width: 40.063em) and (max-width: 64em)
@@ -66,6 +52,7 @@
 
     &.unread
       border-left: 4px solid $accent_blue !important
+
       .message-from,
       .message-subject,
       .message-date
@@ -74,17 +61,21 @@
     .profile-pic
       float: left
       position: relative
+
       img
         height: 50px
         width: 50px
+
     .convo-info
       margin-left: 65px
       height: 50px
       max-height: 50px
+
     .message-subject,
     .message-from,
     .message-date
       padding: 0
+
     .message-subject
       margin-top: 3px
       color: lighten($text_color, 20%)
@@ -114,6 +105,7 @@
   color: #8891a3
   font-size: 13px
   font-family: "Source Sans Pro", sans-serif
+
 .invoice-date
   font-family: "Roboto", sans-serif
   top: 17px
@@ -152,6 +144,7 @@
   font-family: "Source Sans Pro", sans-serif
   font-size: 14px
   color: $text_color
+
 .invoice-payee
   padding-left: 0
   padding-top: 5px
@@ -159,6 +152,7 @@
 .message-content
   background: white
   position: relative
+
 .message-textbox
   position: absolute
   bottom: 1px
@@ -168,6 +162,7 @@
   border: none
   border-top: 1px solid $page_content_border_color
   background: darken($page_content_right_bg, 5%)
+
   button
     border: none
     margin: 0
@@ -181,6 +176,7 @@
     font-family: "Source Sans Pro", sans-serif
     font-size: 14px
     text-transform: uppercase
+
   input
     border: none
     float: left
@@ -191,8 +187,10 @@
     font-family: "Source Sans Pro", sans-serif
     background: darken($page_content_right_bg, 5%)
     color: automatic-text-color(darken($page_content_right_bg, 5%))
+
     &::placeholder
       color: automatic-text-color(darken($page_content_right_bg, 5%))
+
   a
     display: block
     float: right
@@ -209,7 +207,7 @@
   padding: 20px 30px 30px 30px
   position: relative
 
-  h1,h5
+  h1, h5
     display: block
     font-size: 30px
     font-family: $fontFamily
@@ -237,6 +235,7 @@
   max-height: 100%
   float: left
   margin-right: 25px
+
   img
     +borderRadius(50%)
 
@@ -279,6 +278,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   font-size: 11px
   color: automatic-text-color($page_content_right_bg, 'muted')
   font-family: "Roboto", sans-serif
+
 .conversation-deleted
   font-weight: 700
 
@@ -288,28 +288,34 @@ input[type="checkbox"]:checked.poloCheckbox + label
   width: auto
   max-width: 60%
   clear: both
+
   img
     +square(30px)
     +borderRadius(50%)
     float: left
+
   .message-body
     margin-left: 10px
     padding: 5px 8px
     background: darken($page_content_right_bg, 10%)
     +borderRadius(5px)
+
     p
       color: automatic-text-color(darken($page_content_right_bg, 10%))
       font-size: 13px
       //font-weight: 300
       margin: 0
+
   &.message-right
     float: right
+
     .message-body
       background: $accent_blue
       margin-left: 0
       margin-right: 10px
       float: right
       color: #fff
+
       p
         color: #fff
 
@@ -320,6 +326,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   li.active > button
     background: $accent_color
     color: white
+
   a.btn,
   button
     display: block
@@ -354,6 +361,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   padding: 0
   background: inherit
   margin: 20px 0 0 0
+
   &:hover
     color: $accent_color
 
@@ -365,6 +373,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   padding: 10px
   border-top: 1px solid $page_content_border_color
   border-right: 1px solid $page_content_border_color
+
   input
     width: 100%
     border: 1px solid $page_content_border_color
@@ -374,10 +383,13 @@ input[type="checkbox"]:checked.poloCheckbox + label
     font-size: 13px
     font-weight: 300
     +borderRadius(15px)
+
     &::placeholder
       color: automatic-text-color(lighten($page_bg_color, 20%), 'muted')
+
   &.withSeperator
     padding-left: 33px
+
     &::before
       content: "\E5D4"
       font-family: "Material Icons"

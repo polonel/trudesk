@@ -12,9 +12,9 @@
 
  **/
 
+import _ from 'lodash'
 import { CallbackError, Document, HydratedDocument, Model, model, Schema, Types } from 'mongoose'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
-import _ from 'lodash'
 import utils from '../helpers/utils'
 
 export const COLLECTION = 'roles'
@@ -26,44 +26,61 @@ export interface IRole extends Document {
   grants: Array<string>
   hierarchy: boolean
 
-  // Virtual
+  // Virtuals
   isAdmin: boolean
   isAgent: boolean
+}
 
+interface IRoleMethods {
   updateGrants(grants: Array<string>, callback: () => void): void
 
   updateGrantsAndHierarchy(grants: Array<string>, hierarchy: boolean, callback: () => void): void
 }
 
-export interface IRoleModel extends Model<IRole> {
-  getRoles(callback?: (err?: CallbackError, res?: Array<HydratedDocument<IRole>>) => void): Promise<Array<HydratedDocument<IRole>>>
+export interface IRoleModel extends Model<IRole, Record<string, never>, IRoleMethods> {
+  _id: Types.ObjectId
+  isAdmin: boolean
+  isAgent: boolean
 
-  getRolesLean(callback: (err: CallbackError, roles: Array<IRole>) => void): void
+  getRoles(
+    callback?: (err?: CallbackError, res?: Array<HydratedDocument<IRole>>) => void
+  ): Promise<Array<HydratedDocument<IRole>>>
 
-  get(id: string | Types.ObjectId, callback: (err?: CallbackError, res?: HydratedDocument<IRole>) => void): Promise<HydratedDocument<IRole>>
+  getRolesLean(callback?: (err: CallbackError, roles: Array<IRole>) => void): Promise<Array<IRole>>
 
-  getRole(id: Types.ObjectId, callback: (err: CallbackError, role: HydratedDocument<IRole>) => void): Promise<HydratedDocument<IRole>>
+  get(
+    id: string | Types.ObjectId,
+    callback: (err?: CallbackError, res?: HydratedDocument<IRole>) => void
+  ): Promise<HydratedDocument<IRole>>
 
-  getRoleByName(name: string, callback: (err: CallbackError, role: HydratedDocument<IRole>) => void): Promise<HydratedDocument<IRole>>
+  getRole(
+    id: Types.ObjectId,
+    callback: (err: CallbackError, role: HydratedDocument<IRole>) => void
+  ): Promise<HydratedDocument<IRole>>
+
+  getRoleByName(
+    name: string,
+    callback: (err: CallbackError, role: HydratedDocument<IRole>) => void
+  ): Promise<HydratedDocument<IRole>>
 }
 
-const roleSchema = new Schema<IRole, IRoleModel>(
+const roleSchema = new Schema<IRole, IRoleModel, IRoleMethods>(
   {
     name: { type: String, required: true, unique: true },
     normalized: String,
     description: String,
     grants: [{ type: String, required: true }],
-    hierarchy: { type: Boolean, required: true, default: true }
+    hierarchy: { type: Boolean, required: true, default: true },
   },
   {
     toObject: { getters: true, virtuals: true },
-    toJSON: { virtuals: true }
+    toJSON: { virtuals: true },
   }
 )
 
 roleSchema.virtual('isAdmin').get(function () {
   if (_.isUndefined(global.roles)) return false
-  const role = _.find(global.roles, r => r.normalized === this.normalized)
+  const role = _.find(global.roles, (r) => r.normalized === this.normalized)
   if (!role) return false
 
   return _.indexOf(role.grants, 'admin:*') !== -1
@@ -98,14 +115,11 @@ roleSchema.method('updateGrantsAndHierarchy', function (grants, hierarchy, callb
 })
 
 roleSchema.static('getRoles', function getRoles(callback) {
-  return this.find({})
-    .exec(callback)
+  return this.find({}).exec(callback)
 })
 
 roleSchema.static('getRolesLean', function (callback): void {
-  return this.find({})
-    .lean({ virtuals: true })
-    .exec(callback)
+  return this.find({}).lean({ virtuals: true }).exec(callback)
 })
 
 roleSchema.static('getRole', function getRole(id, callback) {
@@ -131,11 +145,6 @@ roleSchema.static('getAgentRoles', function getAgentRoles(callback) {
 
     return callback(null, rolesWithAgent)
   })
-})
-
-// Alias
-roleSchema.static('get', function get() {
-  return roleSchema.statics.getRole
 })
 
 export const RoleModel = model<IRole, IRoleModel>(COLLECTION, roleSchema)

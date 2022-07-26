@@ -17,20 +17,21 @@ var path = require('path')
 var sass = require('node-sass')
 var settingUtil = require('../settings/settingsUtil')
 var config = require('../config')
+var strip = require('strip-comments')
 
 var buildsass = {}
 
 var sassOptionsDefaults = {
   indentedSyntax: true,
   includePaths: [path.resolve(config.trudeskRoot(), 'src/sass')],
-  outputStyle: 'compressed'
+  outputStyle: 'compressed',
 }
 
-function sassVariable (name, value) {
+function sassVariable(name, value) {
   return '$' + name + ': ' + value + '\n'
 }
 
-function sassVariables (variablesObj) {
+function sassVariables(variablesObj) {
   return Object.keys(variablesObj)
     .map(function (name) {
       return sassVariable(name, variablesObj[name])
@@ -38,14 +39,15 @@ function sassVariables (variablesObj) {
     .join('\n')
 }
 
-function sassImport (path) {
-  return '@import \'' + path + '\'\n'
+function sassImport(path) {
+  return "@import '" + path + "'\n"
 }
 
-function dynamicSass (entry, vars, success, error) {
+function dynamicSass(entry, vars, success, error) {
   var dataString = sassVariables(vars) + sassImport(entry)
+
   var sassOptions = _.assign({}, sassOptionsDefaults, {
-    data: dataString
+    data: dataString,
   })
 
   sass.render(sassOptions, function (err, result) {
@@ -53,7 +55,7 @@ function dynamicSass (entry, vars, success, error) {
   })
 }
 
-function save (result) {
+function save(result) {
   var fs = require('fs')
   var themeCss = path.resolve(config.trudeskRoot(), 'public/css/app.min.css')
   fs.writeFileSync(themeCss, result)
@@ -84,7 +86,7 @@ buildsass.build = function (callback) {
           primary: settings.colorPrimary.value,
           secondary: settings.colorSecondary.value,
           tertiary: settings.colorTertiary.value,
-          quaternary: settings.colorQuaternary.value
+          quaternary: settings.colorQuaternary.value,
         },
         function (result) {
           save(result)

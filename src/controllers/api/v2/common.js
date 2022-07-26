@@ -27,7 +27,8 @@ commonV2.login = async (req, res) => {
     const user = await User.getUserByUsername(username)
     if (!user) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
 
-    if (!User.validate(password, user.password)) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
+    if (!User.validatePassword(password, user.password))
+      return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
 
     const tokens = await apiUtils.generateJWTToken(user)
 
@@ -42,7 +43,7 @@ commonV2.token = async (req, res) => {
   if (!refreshToken) return apiUtils.sendApiError_InvalidPostData(res)
 
   try {
-    const user = await User.getUserByAccessToken(refreshToken)
+    const user = await User.find({ accessToken: refreshToken })
     if (!user) return apiUtils.sendApiError(res, 401)
 
     const tokens = await apiUtils.generateJWTToken(user)

@@ -1,18 +1,5 @@
-/*!
- *       .                             .o8                     oooo
- *    .o8                             "888                     `888
- *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- *  ========================================================================
- *  Author:     Chris Brame
- *  Updated:    1/20/19 5:31 AM
- *  Copyright (c) 2014-2019. All rights reserved.
- */
-
 @import "../materialize/components/color";
+
 $primary-color: color("materialize-red", "lighten-2") !default;
 $primary-color-light: lighten($primary-color, 15%) !default;
 $primary-color-dark: darken($primary-color, 15%) !default;
@@ -32,7 +19,7 @@ $input-error-color: $error-color !default;
 $input-success-color: $success-color !default;
 $input-focus-color: $secondary-color !default;
 $label-font-size: .8rem !default;
-$input-disabled-color: rgba(0,0,0, .26) !default;
+$input-disabled-color: rgba(0, 0, 0, .26) !default;
 $input-disabled-solid-color: #BDBDBD !default;
 
 // Radio Buttons
@@ -66,7 +53,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   display: inline-block;
 }
 
-.md-switch input[type=checkbox]{
+.md-switch input[type=checkbox] {
   opacity: 0;
   width: 0;
   height: 0;
@@ -119,7 +106,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   height: 21px;
   background-color: lighten($page_content_bg, 15%);
   border-radius: 21px;
-  box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .4);
   left: -5px;
   top: -3px;
   transition: left 0.3s ease, background .3s ease, box-shadow 0.1s ease;
@@ -127,11 +114,11 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
 
 // Switch active style
 input[type=checkbox]:checked:not(:disabled) ~ .lever:active:after {
-  box-shadow: 0 1px 3px 1px rgba(0,0,0,.4), 0 0 0 15px transparentize(#fff, .9);
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .4), 0 0 0 15px transparentize(#fff, .9);
 }
 
 input[type=checkbox]:not(:disabled) ~ .lever:active:after {
-  box-shadow: 0 1px 3px 1px rgba(0,0,0,.4), 0 0 0 15px rgba(0, 0, 0, .08);
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .4), 0 0 0 15px rgba(0, 0, 0, .08);
 }
 
 .md-switch input[type=checkbox]:checked + .lever:after {
@@ -139,9 +126,10 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 }
 
 // Disabled Styles
-.md-switch input[type=checkbox][disabled] + .lever{
+.md-switch input[type=checkbox][disabled] + .lever {
   cursor: default;
 }
+
 .md-switch input[type=checkbox][disabled] + .lever:after,
 .md-switch input[type=checkbox][disabled]:checked + .lever:after {
   background-color: #ccc;
@@ -170,6 +158,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   vertical-align: middle;
   font: 500 14px / 31px "Roboto", sans-serif !important;
   margin-bottom: 0 !important;
+
   &:hover, &:focus, &:active {
     background: #fff;
     outline: none;
@@ -182,6 +171,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn {
   background: lighten($page_content_bg, 15%);
   color: automatic-text-color(lighten($page_content_bg, 15%));
+
   &:hover, &:focus, &:active {
     background: lighten($page_content_bg, 18%);
     color: automatic-text-color(lighten($page_content_bg, 18%));
@@ -204,11 +194,13 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   box-shadow: none !important;
   background: none;
   color: $text_color;
+
   &:hover, &:focus {
     //background: rgba(153, 153, 153, 0.2);
     background: darken($page_bg_color, 5%);
     color: $text_color;
   }
+
   &:active {
     //background: rgba(153, 153, 153, 0.4);
     background: darken($page_bg_color, 8%);
@@ -218,9 +210,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn-white {
   background: #fff;
+
   &:hover, &:focus {
     background: #fff
   }
+
   &:active {
     background: #fff;
   }
@@ -228,9 +222,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn-flat-accent {
   color: $accent_color;
+
   &:hover, &:focus, &:active {
     color: $accent_color;
   }
+
   &:hover, &:focus, &:active {
     background: automatic-text-color($accent_color)
   }
@@ -238,9 +234,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn-flat-danger {
   color: $accent_danger;
+
   &:hover, &:focus, &:active {
     color: $accent_color;
   }
+
   &:hover, &:focus, &:active {
     background: #fceaea;
   }
@@ -248,9 +246,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn-flat-primary {
   color: #1976d2;
+
   &:hover, &:focus, &:active {
     color: #1976d2;
   }
+
   &:hover, &:focus, &:active {
     background: #e3f2fd;
   }
@@ -258,9 +258,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn-flat-success {
   color: #7cb342;
+
   &:hover, &:focus, &:active {
     color: #7cb342;
   }
+
   &:hover, &:focus, &:active {
     background: #e1efd2;
   }
@@ -268,9 +270,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn-flat-warning {
   color: #ffa000;
+
   &:hover, &:focus, &:active {
     color: #ffa000;
   }
+
   &:hover, &:focus, &:active {
     background: #ffeccc;
   }
@@ -283,6 +287,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn-danger {
   background: #e53935;
   color: #fff;
+
   &:hover, &:focus, &:active {
     background: #e53935;
     color: #fff;
@@ -292,6 +297,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn-primary {
   background: #2196f3;
   color: #fff;
+
   &:hover, &:focus, &:active {
     background: #2196f3;
     color: #fff;
@@ -301,6 +307,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn-success {
   background: #7cb342;
   color: #fff;
+
   &:hover, &:focus, &:active {
     background: #7cb342;
     color: #fff;
@@ -310,6 +317,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn-warning {
   background: #ffa000;
   color: #fff;
+
   &:hover, &:focus, &:active {
     background: #ffa000;
     color: #fff;
@@ -322,6 +330,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   box-shadow: none !important;
   cursor: default;
   pointer-events: none;
+
   &:hover, &:focus, &:active {
     color: #a8a8a8;
     background: #eaeaea;
@@ -347,6 +356,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
     border: 0;
     padding: 0;
   }
+
   + .md-btn {
     margin-left: 8px;
   }
@@ -419,6 +429,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   border-radius: 50%;
   border: 2px solid $radio-empty-color;
 }
+
 [type="radio"]:not(:checked) + label:after {
   border-radius: 50%;
   border: 2px solid $radio-empty-color;
@@ -432,6 +443,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   border-radius: 50%;
   border: 2px solid transparent;
 }
+
 [type="radio"]:checked + label:after {
   border-radius: 50%;
   border: 2px solid $radio-fill-color;
@@ -445,6 +457,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   border-radius: 50%;
   border: 2px solid $radio-fill-color;
 }
+
 [type="radio"].with-gap:checked + label:after {
   border-radius: 50%;
   border: 2px solid $radio-fill-color;
@@ -457,6 +470,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 [type="radio"].with-gap:disabled:checked + label:before {
   border: 2px solid $input-disabled-color;
 }
+
 [type="radio"].with-gap:disabled:checked + label:after {
   border: none;
   background-color: $input-disabled-color;
@@ -468,12 +482,15 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   background-color: transparent;
   border-color: $input-disabled-color;
 }
+
 [type="radio"]:disabled + label {
   color: $input-disabled-color;
 }
+
 [type="radio"]:disabled:not(:checked) + label:before {
   border-color: $input-disabled-color;
 }
+
 [type="radio"]:disabled:checked + label:after {
   background-color: $input-disabled-color;
   border-color: $input-disabled-solid-color;

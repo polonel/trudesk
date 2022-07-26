@@ -4590,6 +4590,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"aphrodite@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "aphrodite@npm:2.4.0"
+  dependencies:
+    asap: ^2.0.3
+    inline-style-prefixer: ^5.1.0
+    string-hash: ^1.1.3
+  checksum: 85b741731e5bd6786c64b674b9355196ffaf4daab376e7b17d3c32b8e8e1477617c4a6b761b4680a3388034ac1f86c9a1b621925d9e98fedec14322461d8e6d2
+  languageName: node
+  linkType: hard
+
 "append-transform@npm:^2.0.0":
   version: 2.0.0
   resolution: "append-transform@npm:2.0.0"
@@ -4853,7 +4864,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asap@npm:^2.0.0, asap@npm:~2.0.3":
+"asap@npm:^2.0.0, asap@npm:^2.0.3, asap@npm:~2.0.3":
   version: 2.0.6
   resolution: "asap@npm:2.0.6"
   checksum: b296c92c4b969e973260e47523207cd5769abd27c245a68c26dc7a0fe8053c55bb04360237cb51cab1df52be939da77150ace99ad331fb7fb13b3423ed73ff3d
@@ -7063,6 +7074,16 @@ __metadata:
     tsscmp: 1.0.6
     uid-safe: 2.1.5
   checksum: bb151ccd76203bf4d443d01c63a9122cdcc3e7c6c6213518d836c440a4a9fc05543078086e45add14c0c1e1d57592068967b8ec9cc1fa67c01a49474c988c4e9
+  languageName: node
+  linkType: hard
+
+"css-in-js-utils@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "css-in-js-utils@npm:2.0.1"
+  dependencies:
+    hyphenate-style-name: ^1.0.2
+    isobject: ^3.0.1
+  checksum: c9964c4708216954c468b69bbee2d971fd759ada4f40637b8ca4d3f79caba4818d0532a4f190ac560227c08742ad063ffec7a30afddc4d96b66a18c3a008f0d8
   languageName: node
   linkType: hard
 
@@ -11234,6 +11255,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hyphenate-style-name@npm:^1.0.2":
+  version: 1.0.4
+  resolution: "hyphenate-style-name@npm:1.0.4"
+  checksum: 4f5bf4b055089754924babebaa23c17845937bcca6aee95d5d015f8fa1e6814279002bd6a9e541e3fac2cd02519fc76305396727066c57c8e21a7e73e7a12137
+  languageName: node
+  linkType: hard
+
 "i18n-locales@npm:^0.0.5":
   version: 0.0.5
   resolution: "i18n-locales@npm:0.0.5"
@@ -11476,6 +11504,15 @@ __metadata:
   version: 0.1.1
   resolution: "inline-style-parser@npm:0.1.1"
   checksum: 5d545056a3e1f2bf864c928a886a0e1656a3517127d36917b973de581bd54adc91b4bf1febcb0da054f204b4934763f1a4e09308b4d55002327cf1d48ac5d966
+  languageName: node
+  linkType: hard
+
+"inline-style-prefixer@npm:^5.1.0":
+  version: 5.1.2
+  resolution: "inline-style-prefixer@npm:5.1.2"
+  dependencies:
+    css-in-js-utils: ^2.0.0
+  checksum: 765feb078a2ab378006f8a300b328672c5db4b6a81a5f467da8e97dad713aec6cae1a669636aaf943cd8da6997a76a999f50ef63745260d91de5fe60469cfb0f
   languageName: node
   linkType: hard
 
@@ -12786,7 +12823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"klona@npm:^2.0.4":
+"klona@npm:^2.0.4, klona@npm:^2.0.5":
   version: 2.0.5
   resolution: "klona@npm:2.0.5"
   checksum: 8c976126ea252b766e648a4866e1bccff9d3b08432474ad80c559f6c7265cf7caede2498d463754d8c88c4759895edd8210c85c0d3155e6aae4968362889466f
@@ -17030,6 +17067,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-loader@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "postcss-loader@npm:7.0.1"
+  dependencies:
+    cosmiconfig: ^7.0.0
+    klona: ^2.0.5
+    semver: ^7.3.7
+  peerDependencies:
+    postcss: ^7.0.0 || ^8.0.1
+    webpack: ^5.0.0
+  checksum: 2a3cbcaaade598d4919824d384ae34ffbfc14a9c8db6cc3b154582356f4f44a1c9af9e731b81cf1947b089accf7d0ab7a0c51c717946985f89aa1708d2b4304d
+  languageName: node
+  linkType: hard
+
 "postcss-modules-extract-imports@npm:^3.0.0":
   version: 3.0.0
   resolution: "postcss-modules-extract-imports@npm:3.0.0"
@@ -20033,6 +20084,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"string-hash@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "string-hash@npm:1.1.3"
+  checksum: 104b8667a5e0dc71bfcd29fee09cb88c6102e27bfb07c55f95535d90587d016731d52299380052e514266f4028a7a5172e0d9ac58e2f8f5001be61dc77c0754d
+  languageName: node
+  linkType: hard
+
 "string-template@npm:~0.2.1":
   version: 0.2.1
   resolution: "string-template@npm:0.2.1"
@@ -20906,6 +20964,7 @@ __metadata:
     adm-zip: 0.5.9
     animejs: 3.0.1
     ansi_up: 5.1.0
+    aphrodite: ^2.4.0
     archiver: 5.3.1
     async: 3.2.4
     axios: 0.27.2
@@ -21012,6 +21071,7 @@ __metadata:
     pdfkit: 0.13.0
     piexifjs: 1.0.6
     pm2: 5.2.0
+    postcss-loader: ^7.0.1
     prop-types: 15.8.1
     rate-limiter-flexible: 2.3.7
     react: 17.0.2

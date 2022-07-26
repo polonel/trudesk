@@ -8,89 +8,43 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    7/24/22 12:25 AM
+ *  Updated:    7/25/22 2:14 AM
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-import { CallbackError, Document, HydratedDocument, model, Model, Schema } from 'mongoose'
+import { getModelForClass, modelOptions, prop, ReturnModelType, Severity } from '@typegoose/typegoose'
 
 const COLLECTION = 'settings'
 
-export interface ISetting extends Document {
-  name: string
-  value: string | boolean | number | object
+@modelOptions({ options: { customName: COLLECTION, allowMixed: Severity.ALLOW } })
+export class SettingModelClass {
+  @prop({ required: true, unique: true })
+  public name!: string
+  @prop({ required: true, unique: true })
+  public value!: string | number | boolean | object
+
+  public static async getSettings(this: ReturnModelType<typeof SettingModelClass>, callback: any) {
+    const query = this.find({}).select('name value')
+    if (typeof callback === 'function') return query.exec(callback)
+
+    return query.exec()
+  }
+
+  public static async getSettingByName(this: ReturnModelType<typeof SettingModelClass>, name: string, callback: any) {
+    const query = this.findOne({ name })
+    if (typeof callback === 'function') return query.exec(callback)
+
+    return query.exec()
+  }
+
+  public static async getSettingsByName(this: ReturnModelType<typeof SettingModelClass>, name: string, callback: any) {
+    const query = this.find({ name })
+    if (typeof callback === 'function') return query.exec(callback)
+
+    return query.exec
+  }
 }
 
-interface ISettingModel extends Model<ISetting> {
-  getSettings(callback?: (err?: CallbackError, res?: Array<HydratedDocument<ISetting>>) => void): Promise<Array<HydratedDocument<ISetting>>>
-
-  getSettingByName(name: string, callback?: (err?: CallbackError, res?: HydratedDocument<ISetting>) => void): Promise<HydratedDocument<ISetting>>
-
-  getSettingsByName(name: string, callback?: (err?: CallbackError, res?: Array<HydratedDocument<ISetting>>) => void): Promise<Array<HydratedDocument<ISetting>>>
-}
-
-const settingSchema = new Schema<ISetting, ISettingModel>({
-  name: { type: String, required: true, unique: true },
-  value: { type: Schema.Types.Mixed, required: true }
-})
-
-settingSchema.static('getSettings', function getSettings(callback) {
-  return new Promise<Array<HydratedDocument<ISetting>>>((resolve, reject) => {
-    (async () => {
-      try {
-        const q = this.find().select('name value')
-        if (typeof callback === 'function') return q.exec(callback)
-
-        const result = await q.exec()
-
-        return resolve(result)
-      } catch (e) {
-        if (typeof callback === 'function') return callback(e)
-
-        return reject(e)
-      }
-    })()
-  })
-})
-
-settingSchema.static('getSettingByName', async function getSettingByName(name, callback) {
-  return new Promise((resolve, reject) => {
-    (async () => {
-      const q = this.findOne({ name })
-
-      try {
-        const result = await q.exec()
-        if (typeof callback === 'function') callback(null, result)
-
-        return resolve(result)
-      } catch (e) {
-        if (typeof callback === 'function') callback(e)
-
-        return reject(e)
-      }
-    })()
-  })
-})
-
-settingSchema.static('getSettingsByName', async function getSettingByName(names, callback) {
-  return new Promise((resolve, reject) => {
-    (async () => {
-      try {
-        const q = this.find({ name: names })
-        const result = await q.exec()
-        if (typeof callback === 'function') callback(null, result)
-
-        return resolve(result)
-      } catch (e) {
-        if (typeof callback === 'function') callback(e)
-
-        return reject(e)
-      }
-    })()
-  })
-})
-
-export const SettingModel = model<ISetting, ISettingModel>(COLLECTION, settingSchema)
-
+const SettingModel = getModelForClass(SettingModelClass)
 export default SettingModel
 module.exports = SettingModel

@@ -28,6 +28,7 @@
       "error",
       30
     ],
+    "@typescript-eslint/no-extra-semi": 1,
     // Temp Typescript while converting
     "@typescript-eslint/no-explicit-any": 0
   },

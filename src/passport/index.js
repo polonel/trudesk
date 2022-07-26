@@ -18,7 +18,7 @@ const TotpStrategy = require('passport-totp').Strategy
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const base32 = require('thirty-two')
-const User = require('../models/user')
+const UserModel = require('../models').UserModel
 const config = require('../config')
 
 module.exports = function () {
@@ -30,8 +30,8 @@ module.exports = function () {
 
   passport.deserializeUser(async function (id, done) {
     try {
-      const user = await User.findById(id)
-      
+      const user = await UserModel.findById(id)
+
       return done(null, user)
     } catch (e) {
       return done(e)
@@ -44,19 +44,18 @@ module.exports = function () {
       {
         usernameField: 'login-username',
         passwordField: 'login-password',
-        passReqToCallback: true
+        passReqToCallback: true,
       },
       function (req, username, password, done) {
-        User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+        UserModel.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
           .select('+password +tOTPKey +tOTPPeriod')
           .exec(function (err, user) {
             if (err) {
               return done(err)
             }
 
-            if (!user || user.deleted || !User.validate(password, user.password)) {
-              req.flash('loginMessage', '')
-              return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+            if (!user || user.deleted || !UserModel.validatePassword(password, user.password)) {
+              return done(null, false, { flash: 'Invalid Username/Password' })
             }
 
             req.user = user
@@ -71,12 +70,12 @@ module.exports = function () {
     'totp',
     new TotpStrategy(
       {
-        window: 6
+        window: 6,
       },
       function (user, done) {
         if (!user.hasL2Auth) return done(false)
 
-        User.findOne({ _id: user._id }, '+tOTPKey +tOTPPeriod', function (err, user) {
+        UserModel.findOne({ _id: user._id }, '+tOTPKey +tOTPPeriod', function (err, user) {
           if (err) return done(err)
 
           if (!user.tOTPPeriod) {
@@ -93,7 +92,7 @@ module.exports = function () {
     'totp-verify',
     new TotpStrategy(
       {
-        window: 2
+        window: 2,
       },
       function (user, done) {
         if (!user.tOTPKey) return done(false)
@@ -110,7 +109,7 @@ module.exports = function () {
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: config.get('tokens') ? config.get('tokens').secret : false,
-        ignoreExpiration: true
+        ignoreExpiration: true,
       },
       function (jwtPayload, done) {
         if (jwtPayload.exp < Date.now() / 1000) return done({ type: 'exp' })

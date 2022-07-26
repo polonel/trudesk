@@ -1,16 +1,3 @@
-/*!
- /       .                             .o8                     oooo
- /    .o8                             "888                     `888
- /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- /  ========================================================================
- /  Author:     Chris Brame
- /  Updated:    1/20/19 5:31 AM
- /  Copyright (c) 2014-2019. All rights reserved.
- /
 
 #loader-wrapper,
 #dot-loader
@@ -83,6 +70,7 @@
 .dot-loader-wrapper
   width: 100%
   height: 100%
+
   svg.t,
   svg.bigdot
     position: absolute
@@ -96,11 +84,13 @@
     // transform: translate(2200px, 6400px) scale(256)
     circle
       fill: #E74C3C
+
     path
       transform-origin: 50% 100%
       -ms-transform-origin: 50% 100%
       -moz-transform-origin: 50% 100%
       -webkit-transform-origin: 50% 100%
+
   svg
     path
       fill: #323232
@@ -127,7 +117,6 @@ svg.bigdot circle
     opacity: 0.2
 
 
-
 // Top Preloader
 @function colour($value)
   @return map-get($colours, $value)
@@ -136,7 +125,7 @@ svg.bigdot circle
 // Variables
 $preloader-height: 5px
 
-$colours: (green:  $accent_success, red:    $accent_color, blue:   $accent_blue, yellow: white  )
+$colours: (green: $accent_success, red: $accent_color, blue: $accent_blue, yellow: white)
 
 $animation-duration: 3.5s
 

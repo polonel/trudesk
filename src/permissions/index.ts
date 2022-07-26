@@ -13,25 +13,32 @@
  */
 
 import _ from 'lodash'
+import type { Types } from 'mongoose'
 import winston from '../logger'
 import { RoleModel, RoleOrderModel } from '../models'
-import type { IRole } from "../models/role";
-import type { Types } from "mongoose";
+import type { IRole } from '../models/role'
 
-const register = function (callback: (err?: Error | undefined | null) => void) {
-  // Register Roles
-  RoleModel.getRolesLean(function (err, roles) {
-    if (err) return callback(err)
+const register = function (callback?: (err?: Error | undefined | null) => void) {
+  return new Promise<void>((resolve, reject) => {
+    ;(async () => {
+      try {
+        const roles = await RoleModel.getRolesLean()
+        const ro = await RoleOrderModel.getOrderLean()
 
-    RoleOrderModel.getOrderLean(function (err, ro) {
-      if (err) return callback(err)
+        winston.debug('Registering Permissions...')
+        global.roleOrder = ro
+        global.roles = roles
 
-      winston.debug('Registering Permissions...')
-      global.roleOrder = ro
-      global.roles = roles
+        if (typeof callback === 'function') return callback()
 
-      return callback()
-    })
+        return resolve()
+      } catch (e) {
+        winston.warn(e)
+
+        if (typeof callback === 'function') return callback(new Error(e.message))
+        return reject(e)
+      }
+    })()
   })
 }
 
@@ -54,7 +61,7 @@ const canThis = function (role: string | Types.ObjectId | IRole, a: string, admi
   const action = a.split(':')[1]
   if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-  const result = _.filter(rolePerm.grants, v => _.startsWith(v, actionType + ":"))
+  const result = _.filter(rolePerm.grants, (v) => _.startsWith(v, actionType + ':'))
 
   if (!result || result.length < 1) return false
   if (result.length === 1) {
@@ -170,7 +177,7 @@ function isAdminSync(roleId: string | Types.ObjectId): boolean {
   return role.isAdmin
 }
 
-function buildGrants(obj: { k: string, v: string }): string[] {
+function buildGrants(obj: { k: string; v: string }): string[] {
   return _.map(obj, function (v, k) {
     return k + ':' + _.join(v, ' ')
   })
@@ -187,7 +194,7 @@ const Permissions = {
   getRoles,
   isAdmin,
   isAdminSync,
-  buildGrants
+  buildGrants,
 }
 
 export default Permissions

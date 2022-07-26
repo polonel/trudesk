@@ -14,24 +14,24 @@
  */
 
 import async from 'async'
-import winston from './logger'
 import pkg from '../package.json'
+import { init as cacheInit } from './cache/cache'
 
 //
 import { checkForOldConfig, hasConfigFile, loadConfig } from './config'
-import webserver, { init as webServerInit, webServerListen } from './webserver'
-import { installServer } from './installserver'
 import { init as databaseInit, TrudeskDatabase, trudeskDatabase } from './database'
-import { init as tdDefaultInit } from './settings/defaults'
-import permissions from './permissions'
 import elasticsearch from './elasticsearch'
-import Models from './models'
+import { installServer } from './installserver'
+import winston from './logger'
 import mailCheck from './mailer/mailCheck'
 import migration from './migration'
+import Models from './models'
+import permissions from './permissions'
 import buildSass from './sass/buildsass'
-import { init as cacheInit } from './cache/cache'
+import { init as tdDefaultInit } from './settings/defaults'
+import { SocketServer } from './socketserver'
 import taskRunner from './taskrunner'
-import { SocketServer } from "./socketserver";
+import webserver, { init as webServerInit, webServerListen } from './webserver'
 
 const isDocker = process.env['TRUDESK_DOCKER'] || false
 
@@ -95,7 +95,6 @@ function launchServer(db: TrudeskDatabase) {
           permissions.register(next)
         },
         function (next) {
-
           elasticsearch.init(function (err?: Error) {
             if (err) {
               winston.error(err)
@@ -153,7 +152,7 @@ function launchServer(db: TrudeskDatabase) {
               TD_MONGODB_USERNAME: process.env['TD_MONGODB_USERNAME'],
               TD_MONGODB_PASSWORD: process.env['TD_MONGODB_PASSWORD'],
               TD_MONGODB_DATABASE: process.env['TD_MONGODB_DATABASE'],
-              TD_MONGODB_URI: process.env['TD_MONGODB_URI']
+              TD_MONGODB_URI: process.env['TD_MONGODB_URI'],
             }
           }
 
@@ -163,7 +162,7 @@ function launchServer(db: TrudeskDatabase) {
         },
         function (next) {
           return taskRunner.init(next)
-        }
+        },
       ],
       function (err) {
         if (err) throw err

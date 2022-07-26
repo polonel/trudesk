@@ -32,10 +32,11 @@ import ReportsContainer from 'containers/Reports'
 import AboutContainer from 'containers/About'
 
 export default function (store) {
+
   if (document.getElementById('dashboard-container')) {
     const DashboardContainerWithProvider = (
       <Provider store={store}>
-        <DashboardContainer />
+        <DashboardContainer/>
       </Provider>
     )
 
@@ -50,7 +51,7 @@ export default function (store) {
 
     const TicketsContainerWithProvider = (
       <Provider store={store}>
-        <TicketsContainer view={view} page={page} filter={filter} />
+        <TicketsContainer view={view} page={page} filter={filter}/>
       </Provider>
     )
 
@@ -62,7 +63,7 @@ export default function (store) {
     const ticketUid = document.getElementById('single-ticket-container').getAttribute('data-ticket-uid')
     const SingleTicketContainerWithProvider = (
       <Provider store={store}>
-        <SingleTicketContainer ticketId={ticketId} ticketUid={ticketUid} />
+        <SingleTicketContainer ticketId={ticketId} ticketUid={ticketUid}/>
       </Provider>
     )
 
@@ -72,7 +73,7 @@ export default function (store) {
   if (document.getElementById('profile-container')) {
     const ProfileContainerWithProvider = (
       <Provider store={store}>
-        <ProfileContainer />
+        <ProfileContainer/>
       </Provider>
     )
 
@@ -84,7 +85,7 @@ export default function (store) {
     const view = document.getElementById('accounts-container').getAttribute('data-view')
     const AccountsContainerWithProvider = (
       <Provider store={store}>
-        <AccountsContainer title={title} view={view} />
+        <AccountsContainer title={title} view={view}/>
       </Provider>
     )
 
@@ -94,7 +95,7 @@ export default function (store) {
   if (document.getElementById('accounts-import-container')) {
     const AccountsImportContainerWithProvider = (
       <Provider store={store}>
-        <AccountsImportContainer />
+        <AccountsImportContainer/>
       </Provider>
     )
 
@@ -104,7 +105,7 @@ export default function (store) {
   if (document.getElementById('groups-container')) {
     const GroupsContainerWithProvider = (
       <Provider store={store}>
-        <GroupsContainer />
+        <GroupsContainer/>
       </Provider>
     )
 
@@ -114,7 +115,7 @@ export default function (store) {
   if (document.getElementById('teams-container')) {
     const TeamsContainerWithProvider = (
       <Provider store={store}>
-        <TeamsContainer />
+        <TeamsContainer/>
       </Provider>
     )
 
@@ -124,7 +125,7 @@ export default function (store) {
   if (document.getElementById('departments-container')) {
     const TeamsContainerWithProvider = (
       <Provider store={store}>
-        <DepartmentsContainer />
+        <DepartmentsContainer/>
       </Provider>
     )
 
@@ -136,7 +137,7 @@ export default function (store) {
     const showNewConversation = document.getElementById('messages-container').getAttribute('data-show-new-convo')
     const MessagesContainterWithProvider = (
       <Provider store={store}>
-        <MessagesContainer initialConversation={conversation} showNewConvo={showNewConversation} />
+        <MessagesContainer initialConversation={conversation} showNewConvo={showNewConversation}/>
       </Provider>
     )
 
@@ -146,7 +147,7 @@ export default function (store) {
   if (document.getElementById('notices-container')) {
     const NoticeContainerWithProvider = (
       <Provider store={store}>
-        <NoticeContainer />
+        <NoticeContainer/>
       </Provider>
     )
 
@@ -156,7 +157,7 @@ export default function (store) {
   if (document.getElementById('reports-container')) {
     const ReportsContainerWithProvider = (
       <Provider store={store}>
-        <ReportsContainer />
+        <ReportsContainer/>
       </Provider>
     )
 
@@ -166,7 +167,7 @@ export default function (store) {
   if (document.getElementById('settings-container')) {
     const SettingsContainerWithProvider = (
       <Provider store={store}>
-        <SettingsContainer />
+        <SettingsContainer/>
       </Provider>
     )
 
@@ -176,7 +177,7 @@ export default function (store) {
   if (document.getElementById('about-container')) {
     const AboutContainerWithProvider = (
       <Provider store={store}>
-        <AboutContainer />
+        <AboutContainer/>
       </Provider>
     )
 
