@@ -35,7 +35,7 @@ const register = function (callback?: (err?: Error | undefined | null) => void) 
       } catch (e) {
         winston.warn(e)
 
-        if (typeof callback === 'function') return callback(new Error(e.message))
+        if (typeof callback === 'function') return callback(e as Error)
         return reject(e)
       }
     })()

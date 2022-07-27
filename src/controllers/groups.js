@@ -12,19 +12,18 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const async = require('async')
 const _ = require('lodash')
-const userSchema = require('../models/user')
-const groupSchema = require('../models/group')
+const UserModel = require('../models/user')
+const GroupModel = require('../models/group')
 const permissions = require('../permissions')
 
 const groupsController = {}
 
 groupsController.content = {}
 
-groupsController.get = function (req, res) {
+groupsController.get = async (req, res) => {
   const user = req.user
-  if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:view')) {
+  if (!user || !permissions.canThis(user.role, 'groups:view')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
@@ -39,22 +38,18 @@ groupsController.get = function (req, res) {
   content.data.groups = {}
   content.data.users = []
 
-  groupSchema.getAllGroups(function (err, groups) {
-    if (err) handleError(res, err)
+  try {
+    content.data.groups = await GroupModel.getAllGroups()
+    const users = await UserModel.find({})
+    content.data.users = _.sortBy(users, 'fullname')
 
-    content.data.groups = _.sortBy(groups, 'name')
-
-    userSchema.findAll(function (err, users) {
-      if (err) handleError(res, err)
-
-      content.data.users = _.sortBy(users, 'fullname')
-
-      res.render('groups', content)
-    })
-  })
+    return res.render('groups', content)
+  } catch (err) {
+    return handleError(res, err)
+  }
 }
 
-groupsController.getCreate = function (req, res) {
+groupsController.getCreate = async function (req, res) {
   const user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:create')) {
     req.flash('message', 'Permission Denied.')
@@ -71,13 +66,14 @@ groupsController.getCreate = function (req, res) {
   content.data.groups = {}
   content.data.users = []
 
-  userSchema.findAll(function (err, users) {
-    if (err) return handleError(res, err)
-
+  try {
+    const users = await UserModel.find({})
     content.data.users = _.sortBy(users, 'fullname')
 
     res.render('subviews/createGroup', content)
-  })
+  } catch (e) {
+    return handleError(res, e)
+  }
 }
 
 groupsController.edit = function (req, res) {
@@ -98,32 +94,19 @@ groupsController.edit = function (req, res) {
   const groupId = req.params.id
   if (_.isUndefined(groupId)) return res.redirect('/groups/')
 
-  async.parallel(
-    {
-      users: function (next) {
-        userSchema.findAll(function (err, users) {
-          if (err) return next(err)
+  try {
+    const getUsers = UserModel.find({})
+    const getGroup = GroupModel.getGroupById(groupId)
 
-          next(null, users)
-        })
-      },
-      group: function (next) {
-        groupSchema.getGroupById(groupId, function (err, group) {
-          if (err) return next(err)
+    const [users, group] = Promise.all([getUsers, getGroup])
 
-          next(null, group)
-        })
-      }
-    },
-    function (err, done) {
-      if (err) return handleError(res, err)
+    content.data.users = _.sortBy(users, 'fullname')
+    content.data.group = group
 
-      content.data.users = _.sortBy(done.users, 'fullname')
-      content.data.group = done.group
-
-      res.render('subviews/editGroup', content)
-    }
-  )
+    return res.render('subviews/editGroup', content)
+  } catch (err) {
+    return handleError(res, err)
+  }
 }
 
 function handleError (res, err) {
