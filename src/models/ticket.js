@@ -23,15 +23,12 @@ const xss = require('xss')
 const utils = require('../helpers/utils')
 
 // Needed - For Population
-const groupSchema = require('./group')
-require('./tickettype')
-const userSchema = require('./user')
+import { GroupModel as groupSchema, UserModel as userSchema } from '../models'
+
 const commentSchema = require('./comment')
 const noteSchema = require('./note')
 const attachmentSchema = require('./attachment')
 const historySchema = require('./history')
-require('./tag')
-require('./ticketpriority')
 
 const COLLECTION = 'tickets'
 
@@ -72,16 +69,16 @@ const ticketSchema = mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'accounts'
+    ref: 'accounts',
   },
   group: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'groups'
+    ref: 'groups',
   },
   assignee: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'accounts'
+    ref: 'accounts',
   },
   date: { type: Date, default: Date.now, required: true, index: true },
   updated: { type: Date },
@@ -89,14 +86,14 @@ const ticketSchema = mongoose.Schema({
   type: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'tickettypes'
+    ref: 'tickettypes',
   },
   status: { type: Number, default: 0, required: true, index: true },
 
   priority: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'priorities',
-    required: true
+    required: true,
   },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags', autopopulate: true }],
   subject: { type: String, required: true },
@@ -107,7 +104,7 @@ const ticketSchema = mongoose.Schema({
   notes: [noteSchema],
   attachments: [attachmentSchema],
   history: [historySchema],
-  subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
+  subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
 })
 
 ticketSchema.index({ deleted: -1, group: 1, status: 1 })
@@ -151,7 +148,7 @@ ticketSchema.post('save', async function (doc, next) {
       const savedTicket = await doc.populate([
         {
           path: 'owner assignee comments.owner notes.owner subscribers history.owner',
-          select: '_id username fullname email role image title'
+          select: '_id username fullname email role image title',
         },
         { path: 'type tags' },
         {
@@ -161,15 +158,15 @@ ticketSchema.post('save', async function (doc, next) {
             {
               path: 'members',
               model: userSchema,
-              select: '-__v -accessToken -tOTPKey'
+              select: '-__v -accessToken -tOTPKey',
             },
             {
               path: 'sendMailTo',
               model: userSchema,
-              select: '-__v -accessToken -tOTPKey'
-            }
-          ]
-        }
+              select: '-__v -accessToken -tOTPKey',
+            },
+          ],
+        },
       ])
 
       emitter.emit('ticket:updated', savedTicket)
@@ -250,7 +247,7 @@ ticketSchema.methods.setStatus = function (ownerId, status, callback) {
     const historyItem = {
       action: 'ticket:set:status:' + status,
       description: 'Ticket Status set to: ' + statusToString(status),
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -287,7 +284,7 @@ ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
     const historyItem = {
       action: 'ticket:set:assignee',
       description: user.fullname + ' was set as assignee',
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -307,12 +304,12 @@ ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
  */
 ticketSchema.methods.clearAssignee = function (ownerId, callback) {
   const self = this
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     self.assignee = undefined
     const historyItem = {
       action: 'ticket:set:assignee',
       description: 'Assignee was cleared',
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -344,7 +341,7 @@ ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
     const historyItem = {
       action: 'ticket:set:type',
       description: 'Ticket type set to: ' + type.name,
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -371,7 +368,7 @@ ticketSchema.methods.setTicketPriority = function (ownerId, priority, callback) 
   const historyItem = {
     action: 'ticket:set:priority',
     description: 'Ticket Priority set to: ' + priority.name,
-    owner: ownerId
+    owner: ownerId,
   }
   self.history.push(historyItem)
 
@@ -405,7 +402,7 @@ ticketSchema.methods.setTicketGroup = function (ownerId, groupId, callback) {
     const historyItem = {
       action: 'ticket:set:group',
       description: 'Ticket Group set to: ' + ticket.group.name,
-      owner: ownerId
+      owner: ownerId,
     }
     self.history.push(historyItem)
 
@@ -420,7 +417,7 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
   const historyItem = {
     action: 'ticket:set:duedate',
     description: 'Ticket Due Date set to: ' + self.dueDate,
-    owner: ownerId
+    owner: ownerId,
   }
 
   self.history.push(historyItem)
@@ -449,7 +446,7 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
 ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
   const marked = require('marked')
   const self = this
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
     issue = sanitizeHtml(issue).trim()
     self.issue = xss(marked.parse(issue))
@@ -457,7 +454,7 @@ ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
     const historyItem = {
       action: 'ticket:update:issue',
       description: 'Ticket Issue was updated.',
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -470,12 +467,12 @@ ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
 
 ticketSchema.methods.setSubject = function (ownerId, subject, callback) {
   const self = this
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     self.subject = subject
     const historyItem = {
       action: 'ticket:update:subject',
       description: 'Ticket Subject was updated.',
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -522,7 +519,7 @@ ticketSchema.methods.updateComment = function (ownerId, commentId, commentText, 
     const historyItem = {
       action: 'ticket:comment:updated',
       description: 'Comment was updated: ' + commentId,
-      owner: ownerId
+      owner: ownerId,
     }
     self.history.push(historyItem)
 
@@ -544,7 +541,7 @@ ticketSchema.methods.updateComment = function (ownerId, commentId, commentText, 
  */
 ticketSchema.methods.removeComment = function (ownerId, commentId, callback) {
   const self = this
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     self.comments = _.reject(self.comments, function (o) {
       return o._id.toString() === commentId.toString()
     })
@@ -552,7 +549,7 @@ ticketSchema.methods.removeComment = function (ownerId, commentId, callback) {
     const historyItem = {
       action: 'ticket:delete:comment',
       description: 'Comment was deleted: ' + commentId,
-      owner: ownerId
+      owner: ownerId,
     }
 
     self.history.push(historyItem)
@@ -598,7 +595,7 @@ ticketSchema.methods.updateNote = function (ownerId, noteId, noteText, callback)
     const historyItem = {
       action: 'ticket:note:updated',
       description: 'Note was updated: ' + noteId,
-      owner: ownerId
+      owner: ownerId,
     }
     self.history.push(historyItem)
 
@@ -620,7 +617,7 @@ ticketSchema.methods.updateNote = function (ownerId, noteId, noteText, callback)
  */
 ticketSchema.methods.removeNote = function (ownerId, noteId, callback) {
   const self = this
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     self.notes = _.reject(self.notes, function (o) {
       return o._id.toString() === noteId.toString()
     })
@@ -628,7 +625,7 @@ ticketSchema.methods.removeNote = function (ownerId, noteId, callback) {
     const historyItem = {
       action: 'ticket:delete:note',
       description: 'Note was deleted: ' + noteId,
-      owner: ownerId
+      owner: ownerId,
     }
     self.history.push(historyItem)
 
@@ -663,7 +660,7 @@ ticketSchema.methods.removeAttachment = function (ownerId, attachmentId, callbac
   const historyItem = {
     action: 'ticket:delete:attachment',
     description: 'Attachment was deleted: ' + attachment.name,
-    owner: ownerId
+    owner: ownerId,
   }
 
   self.history.push(historyItem)
@@ -736,13 +733,7 @@ ticketSchema.statics.getForCache = function (callback) {
   return new Promise((resolve, reject) => {
     ;(async () => {
       try {
-        const t365 = moment
-          .utc()
-          .hour(23)
-          .minute(59)
-          .second(50)
-          .subtract(365, 'd')
-          .toDate()
+        const t365 = moment.utc().hour(23).minute(59).second(50).subtract(365, 'd').toDate()
 
         const query = self
           .model(COLLECTION)
@@ -766,11 +757,7 @@ ticketSchema.statics.getForCache = function (callback) {
 
 ticketSchema.statics.getAllNoPopulate = function (callback) {
   const self = this
-  const q = self
-    .model(COLLECTION)
-    .find({ deleted: false })
-    .sort({ status: 1 })
-    .lean()
+  const q = self.model(COLLECTION).find({ deleted: false }).sort({ status: 1 }).lean()
 
   return q.exec(callback)
 }
@@ -873,7 +860,7 @@ ticketSchema.statics.getTicketsByDepartments = function (departments, object, ca
   }
 }
 
-function buildQueryWithObject (SELF, grpId, object, count) {
+function buildQueryWithObject(SELF, grpId, object, count) {
   const limit = object.limit || 10
   const page = object.page || 0
   let _status = object.status
@@ -888,7 +875,7 @@ function buildQueryWithObject (SELF, grpId, object, count) {
   if (object.filter && object.filter.groups)
     grpId = _.intersection(
       object.filter.groups,
-      _.map(grpId, g => g._id.toString())
+      _.map(grpId, (g) => g._id.toString())
     )
 
   let query
@@ -1108,14 +1095,14 @@ ticketSchema.statics.getTicketById = async function (id, callback) {
             {
               path: 'members',
               model: userSchema,
-              select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+              select: '-__v -iOSDeviceTokens -accessToken -tOTPKey',
             },
             {
               path: 'sendMailTo',
               model: userSchema,
-              select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
-            }
-          ]
+              select: '-__v -iOSDeviceTokens -accessToken -tOTPKey',
+            },
+          ],
         })
 
       try {
@@ -1124,7 +1111,7 @@ ticketSchema.statics.getTicketById = async function (id, callback) {
         return resolve(result)
       } catch (e) {
         if (typeof callback === 'function') callback(e)
-
+        console.log(e)
         return reject(e)
       }
     })()
@@ -1161,14 +1148,14 @@ ticketSchema.statics.getTicketsByRequester = function (userId, callback) {
         {
           path: 'members',
           model: userSchema,
-          select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+          select: '-__v -iOSDeviceTokens -accessToken -tOTPKey',
         },
         {
           path: 'sendMailTo',
           model: userSchema,
-          select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
-        }
-      ]
+          select: '-__v -iOSDeviceTokens -accessToken -tOTPKey',
+        },
+      ],
     })
 
   return q.exec(callback)
@@ -1190,7 +1177,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
           .find({
             group: { $in: grps },
             deleted: false,
-            $where: '/^' + search + '.*/.test(this.uid)'
+            $where: '/^' + search + '.*/.test(this.uid)',
           })
           .populate(
             'owner assignee comments.owner notes.owner subscribers history.owner',
@@ -1212,7 +1199,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
           .find({
             group: { $in: grps },
             deleted: false,
-            subject: { $regex: search, $options: 'i' }
+            subject: { $regex: search, $options: 'i' },
           })
           .populate(
             'owner assignee comments.owner notes.owner subscribers history.owner',
@@ -1234,7 +1221,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
           .find({
             group: { $in: grps },
             deleted: false,
-            issue: { $regex: search, $options: 'i' }
+            issue: { $regex: search, $options: 'i' },
           })
           .populate(
             'owner assignee comments.owner notes.owner subscribers history.owner',
@@ -1249,7 +1236,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
 
           return callback(null)
         })
-      }
+      },
     ],
     function (err) {
       if (err) return callback(err, null)
@@ -1294,7 +1281,7 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
           .find({
             group: { $in: grpId },
             status: { $in: [0, 1] },
-            deleted: false
+            deleted: false,
           })
           .select('_id date updated')
           .lean()
@@ -1349,7 +1336,7 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
           .select('_id uid subject updated date')
           .lean()
           .exec(next)
-      }
+      },
     ],
     function (err, tickets) {
       if (err) return callback(err, null)
@@ -1546,26 +1533,17 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
 
   const self = this
 
-  const today = moment
-    .utc()
-    .hour(23)
-    .minute(59)
-    .second(59)
+  const today = moment.utc().hour(23).minute(59).second(59)
   const tsDate = today.clone().subtract(timespan, 'd')
   let query = {
     date: { $gte: tsDate.toDate(), $lte: today.toDate() },
-    deleted: false
+    deleted: false,
   }
   if (timespan === -1) {
     query = { deleted: false }
   }
 
-  const q = self
-    .model(COLLECTION)
-    .find(query)
-    .select('group')
-    .populate('group', 'name')
-    .lean()
+  const q = self.model(COLLECTION).find(query).select('group').populate('group', 'name').lean()
 
   let topCount = []
   const ticketsDb = []
@@ -1583,7 +1561,7 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
             if (ticket.group) {
               ticketsDb.push({
                 ticketId: ticket._id,
-                groupId: ticket.group._id
+                groupId: ticket.group._id,
               })
               const o = {}
               o._id = ticket.group._id
@@ -1618,7 +1596,7 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
         topCount = topCount.slice(0, top)
 
         return next(null, topCount)
-      }
+      },
     ],
     function (err, result) {
       if (err) return callback(err, null)
@@ -1649,9 +1627,7 @@ ticketSchema.statics.getTypeCount = function (typeId, callback) {
 }
 
 ticketSchema.statics.getCount = function (callback) {
-  const q = this.model(COLLECTION)
-    .countDocuments({ deleted: false })
-    .lean()
+  const q = this.model(COLLECTION).countDocuments({ deleted: false }).lean()
   return q.exec(callback)
 }
 
@@ -1689,15 +1665,10 @@ ticketSchema.statics.restoreDeleted = function (oId, callback) {
 }
 
 ticketSchema.statics.getDeleted = function (callback) {
-  return this.model(COLLECTION)
-    .find({ deleted: true })
-    .populate('group')
-    .sort({ uid: -1 })
-    .limit(1000)
-    .exec(callback)
+  return this.model(COLLECTION).find({ deleted: true }).populate('group').sort({ uid: -1 }).limit(1000).exec(callback)
 }
 
-function statusToString (status) {
+function statusToString(status) {
   let str
   switch (status) {
     case 0:

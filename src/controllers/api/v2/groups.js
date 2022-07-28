@@ -14,95 +14,91 @@
 
 var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
-var Group = require('../../../models/group')
-var Department = require('../../../models/department')
+var GroupModel = require('../../../models').GroupModel
+var DepartmentModel = require('../../../models').DepartmentModel
 
-var apiGroups = {}
+var apiGroupModels = {}
 
-apiGroups.create = function (req, res) {
-  var postGroup = req.body
-  if (!postGroup) return apiUtils.sendApiError_InvalidPostData(res)
+apiGroupModels.create = function (req, res) {
+  var postGroupModel = req.body
+  if (!postGroupModel) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Group.create(postGroup, function (err, group) {
+  GroupModel.create(postGroupModel, function (err, GroupModel) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-    group.populate('members sendMailTo', function (err, group) {
+    GroupModel.populate('members sendMailTo', function (err, GroupModel) {
       if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-      return apiUtils.sendApiSuccess(res, { group: group })
+      return apiUtils.sendApiSuccess(res, { GroupModel: GroupModel })
     })
   })
 }
 
-apiGroups.get = function (req, res) {
-  var limit = Number(req.query.limit) || 50
-  var page = Number(req.query.page) || 0
-  var type = req.query.type || 'user'
+apiGroupModels.get = async function (req, res) {
+  const limit = Number(req.query.limit) || 50
+  const page = Number(req.query.page) || 0
+  const type = req.query.type || 'user'
 
-  if (type === 'all') {
-    Group.getWithObject({ limit: limit, page: page }, function (err, groups) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
-    })
-  } else {
-    if (req.user.role.isAdmin || req.user.role.isAgent) {
-      Department.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
-        if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-        return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
-      })
+  try {
+    if (type === 'all') {
+      const groups = await GroupModel.getWithObject({ limit, page })
+      return apiUtils.sendApiSuccess(res, { groups, count: groups.length })
     } else {
-      Group.getAllGroupsOfUser(req.user._id, function (err, groups) {
-        if (err) return apiUtils.sendApiError(res, 500, err.message)
+      if (req.user.role.isAdmin || req.user.role.isAgent) {
+        const groups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
+        return apiUtils.sendApiSuccess(res, { groups, count: groups.length })
+      } else {
+        const groups = await GroupModel.getAllGroupsOfUser(req.user._id)
 
-        return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
-      })
+        return apiUtils.sendApiSuccess(res, { groups, count: groups.length })
+      }
     }
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
   }
 }
 
-apiGroups.update = function (req, res) {
+apiGroupModels.update = function (req, res) {
   var id = req.params.id
-  if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Group Id')
+  if (!id) return apiUtils.sendApiError(res, 400, 'Invalid GroupModel Id')
 
   var putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Group.findOne({ _id: id }, function (err, group) {
-    if (err || !group) return apiUtils.sendApiError(res, 400, 'Invalid Group')
+  GroupModel.findOne({ _id: id }, function (err, GroupModel) {
+    if (err || !GroupModel) return apiUtils.sendApiError(res, 400, 'Invalid GroupModel')
 
-    if (putData.name) group.name = putData.name
-    if (putData.members) group.members = putData.members
-    if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
+    if (putData.name) GroupModel.name = putData.name
+    if (putData.members) GroupModel.members = putData.members
+    if (putData.sendMailTo) GroupModel.sendMailTo = putData.sendMailTo
 
-    group.save(function (err, group) {
+    GroupModel.save(function (err, GroupModel) {
       if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-      group.populate('members sendMailTo', function (err, group) {
+      GroupModel.populate('members sendMailTo', function (err, GroupModel) {
         if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-        return apiUtils.sendApiSuccess(res, { group: group })
+        return apiUtils.sendApiSuccess(res, { GroupModel: GroupModel })
       })
     })
   })
 }
 
-apiGroups.delete = function (req, res) {
+apiGroupModels.delete = function (req, res) {
   var id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Ticket.countDocuments({ group: { $in: [id] } }, function (err, tickets) {
+  Ticket.countDocuments({ GroupModel: { $in: [id] } }, function (err, tickets) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
-    if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete group with tickets.')
+    if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete GroupModel with tickets.')
 
-    Group.deleteOne({ _id: id }, function (err, success) {
+    GroupModel.deleteOne({ _id: id }, function (err, success) {
       if (err) return apiUtils.sendApiError(res, 500, err.message)
-      if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete group. Contact your administrator.')
+      if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete GroupModel. Contact your administrator.')
 
       return apiUtils.sendApiSuccess(res, { _id: id })
     })
   })
 }
 
-module.exports = apiGroups
+module.exports = apiGroupModels

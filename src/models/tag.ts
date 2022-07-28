@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import utils from '../helpers/utils'
-import { DocumentType, getModelForClass, modelOptions, pre, prop, ReturnModelType } from "@typegoose/typegoose";
+import { DocumentType, modelOptions, pre, prop, ReturnModelType } from "@typegoose/typegoose";
 import type { Types } from "mongoose"
+import utils from '../helpers/utils'
 
 const COLLECTION = 'tags'
 
@@ -24,7 +24,7 @@ const COLLECTION = 'tags'
 })
 
 @modelOptions({ options: { customName: COLLECTION } })
-class TicketTagClass {
+export class TicketTagClass {
   @prop({ required: true, unique: true })
   public name!: string
 
@@ -59,8 +59,3 @@ class TicketTagClass {
     return this.countDocuments({}).lean()
   }
 }
-
-const TagModel = getModelForClass(TicketTagClass)
-
-export default TagModel
-module.exports = TagModel

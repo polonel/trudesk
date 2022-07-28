@@ -20,7 +20,7 @@ const simpleParser = require('mailparser').simpleParser
 const cheerio = require('cheerio')
 
 const emitter = require('../emitter')
-const userSchema = require('../models/user')
+const userSchema = require('../models').UserModel
 const groupSchema = require('../models/group')
 const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
@@ -411,4 +411,5 @@ function handleMessages (messages, done) {
 function openInbox (cb) {
   mailCheck.Imap.openBox('INBOX', cb)
 }
+
 module.exports = mailCheck

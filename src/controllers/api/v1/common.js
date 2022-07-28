@@ -43,7 +43,7 @@ const commonV1 = {}
  *
  */
 commonV1.login = function (req, res) {
-  var userModel = require('../../../models/user')
+  var userModel = require('../../../models').UserModel
   var username = req.body.username
   var password = req.body.password
 
@@ -76,7 +76,7 @@ commonV1.login = function (req, res) {
     return res.json({
       success: true,
       accessToken: resUser.accessToken,
-      user: resUser
+      user: resUser,
     })
   })
 }
@@ -124,7 +124,7 @@ commonV1.logout = function (req, res) {
 
           callback()
         })
-      }
+      },
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err.message })

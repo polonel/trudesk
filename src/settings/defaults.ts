@@ -12,16 +12,15 @@
 
  **/
 
-import _ from 'lodash'
-import fs from 'fs-extra'
-import path from 'path'
 import async, { series } from 'async'
-import winston from '../logger'
+import fs from 'fs-extra'
+import _ from 'lodash'
 import moment from 'moment-timezone'
+import path from 'path'
+import config from '../config'
 import { trudeskDatabase } from '../database'
-import { PriorityModel, SettingModel } from '../models'
-import RoleModel from '../models/role'
-import config from "../config";
+import winston from '../logger'
+import { PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel } from '../models'
 
 type DefaultGrants = {
   userGrants: Array<string>
@@ -39,7 +38,7 @@ const roleDefaults: DefaultGrants = {
     'teams:create update view',
     'comments:create view update create delete',
     'reports:view create',
-    'notices:*'
+    'notices:*',
   ],
   adminGrants: [
     'admin:*',
@@ -54,8 +53,8 @@ const roleDefaults: DefaultGrants = {
     'reports:*',
     'notices:*',
     'settings:*',
-    'api:*'
-  ]
+    'api:*',
+  ],
 }
 
 settingsDefaults.roleDefaults = roleDefaults
@@ -72,7 +71,7 @@ function rolesDefault(callback: () => void) {
             {
               name: 'User',
               description: 'Default role for users',
-              grants: roleDefaults.userGrants
+              grants: roleDefaults.userGrants,
             },
             function (err, userRole) {
               if (err) return done(err)
@@ -83,7 +82,7 @@ function rolesDefault(callback: () => void) {
                 SettingModel.create(
                   {
                     name: 'role:user:default',
-                    value: userRole._id
+                    value: userRole._id,
                   },
                   done
                 )
@@ -103,7 +102,7 @@ function rolesDefault(callback: () => void) {
               {
                 name: 'Support',
                 description: 'Default role for agents',
-                grants: roleDefaults.supportGrants
+                grants: roleDefaults.supportGrants,
               },
               done
             )
@@ -119,7 +118,7 @@ function rolesDefault(callback: () => void) {
               {
                 name: 'Admin',
                 description: 'Default role for admins',
-                grants: roleDefaults.adminGrants
+                grants: roleDefaults.adminGrants,
               },
               done
             )
@@ -142,13 +141,13 @@ function rolesDefault(callback: () => void) {
 
             roleOrderSchema.create(
               {
-                order: roleOrder
+                order: roleOrder,
               },
               done
             )
           })
         })
-      }
+      },
     ],
     function (err) {
       if (err) throw err
@@ -172,7 +171,7 @@ function defaultUserRole(callback) {
       SettingModel.create(
         {
           name: 'role:user:default',
-          value: lastId
+          value: lastId,
         },
         callback
       )
@@ -188,7 +187,7 @@ function createDirectories(callback) {
       },
       function (done) {
         fs.ensureDir(path.resolve(config.trudeskRoot(), 'restores'), done)
-      }
+      },
     ],
     callback
   )
@@ -254,7 +253,7 @@ function timezoneDefault(callback) {
     if (!setting) {
       var defaultTimezone = new SettingModel({
         name: 'gen:timezone',
-        value: 'America/New_York'
+        value: 'America/New_York',
       })
 
       defaultTimezone.save(function (err, setting) {
@@ -292,7 +291,7 @@ function showTourSettingDefault(callback) {
     if (!setting) {
       var defaultShowTour = new SettingModel({
         name: 'showTour:enable',
-        value: 0
+        value: 0,
       })
 
       defaultShowTour.save(function (err) {
@@ -334,7 +333,7 @@ function ticketTypeSettingDefault(callback) {
         // Save default ticket type
         var defaultTicketType = new SettingModel({
           name: 'ticket:type:default',
-          value: type._id
+          value: type._id,
         })
 
         defaultTicketType.save(function (err) {
@@ -364,21 +363,21 @@ function ticketPriorityDefaults(callback) {
   var normal = new PriorityModel({
     name: 'Normal',
     migrationNum: 1,
-    default: true
+    default: true,
   })
 
   var urgent = new PriorityModel({
     name: 'Urgent',
     migrationNum: 2,
     htmlColor: '#8e24aa',
-    default: true
+    default: true,
   })
 
   var critical = new PriorityModel({
     name: 'Critical',
     migrationNum: 3,
     htmlColor: '#e65100',
-    default: true
+    default: true,
   })
 
   priorities.push(normal)
@@ -400,8 +399,7 @@ function ticketPriorityDefaults(callback) {
 }
 
 function normalizeTags(callback) {
-  var tagSchema = require('../models/tag')
-  tagSchema.find({}, function (err, tags) {
+  TicketTagModel.find({}, function (err, tags) {
     if (err) return callback(err)
     async.each(
       tags,
@@ -414,31 +412,30 @@ function normalizeTags(callback) {
 }
 
 function checkPriorities(callback) {
-  var ticketSchema = require('../models/ticket')
-  var migrateP1 = false
-  var migrateP2 = false
-  var migrateP3 = false
+  let migrateP1 = false
+  let migrateP2 = false
+  let migrateP3 = false
 
   async.parallel(
     [
       function (done) {
-        ticketSchema.collection.countDocuments({ priority: 1 }).then(function (count) {
+        TicketModel.collection.countDocuments({ priority: 1 }).then(function (count) {
           migrateP1 = count > 0
           return done()
         })
       },
       function (done) {
-        ticketSchema.collection.countDocuments({ priority: 2 }).then(function (count) {
+        TicketModel.collection.countDocuments({ priority: 2 }).then(function (count) {
           migrateP2 = count > 0
           return done()
         })
       },
       function (done) {
-        ticketSchema.collection.countDocuments({ priority: 3 }).then(function (count) {
+        TicketModel.collection.countDocuments({ priority: 3 }).then(function (count) {
           migrateP3 = count > 0
           return done()
         })
-      }
+      },
     ],
     function () {
       async.parallel(
@@ -448,7 +445,7 @@ function checkPriorities(callback) {
             PriorityModel.getByMigrationNum(1, function (err, normal) {
               if (!err) {
                 winston.debug('Converting Priority: Normal')
-                ticketSchema.collection
+                TicketModel.collection
                   .updateMany({ priority: 1 }, { $set: { priority: normal._id } })
                   .then(function (res) {
                     if (res && res.result) {
@@ -471,7 +468,7 @@ function checkPriorities(callback) {
             PriorityModel.getByMigrationNum(2, function (err, urgent) {
               if (!err) {
                 winston.debug('Converting Priority: Urgent')
-                ticketSchema.collection
+                TicketModel.collection
                   .updateMany({ priority: 2 }, { $set: { priority: urgent._id } })
                   .then(function (res) {
                     if (res && res.result) {
@@ -494,7 +491,7 @@ function checkPriorities(callback) {
             PriorityModel.getByMigrationNum(3, function (err, critical) {
               if (!err) {
                 winston.debug('Converting Priority: Critical')
-                ticketSchema.collection
+                TicketModel.collection
                   .updateMany({ priority: 3 }, { $set: { priority: critical._id } })
                   .then(function (res) {
                     if (res && res.result) {
@@ -511,7 +508,7 @@ function checkPriorities(callback) {
                 return done()
               }
             })
-          }
+          },
         ],
         callback
       )
@@ -556,7 +553,7 @@ function addedDefaultPrioritiesToTicketTypes(callback) {
             }
           )
         })
-      }
+      },
     ],
     callback
   )
@@ -587,7 +584,7 @@ function mailTemplates(callback) {
 
           return done()
         })
-      }
+      },
     ],
     callback
   )
@@ -598,7 +595,7 @@ function elasticSearchConfToDB(callback) {
   const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
     host: nconf.get('elasticsearch:host') || '',
-    port: nconf.get('elasticsearch:port') || 9200
+    port: nconf.get('elasticsearch:port') || 9200,
   }
 
   nconf.set('elasticsearch', {})
@@ -616,7 +613,7 @@ function elasticSearchConfToDB(callback) {
             SettingModel.create(
               {
                 name: 'es:enable',
-                value: elasticsearch.enable
+                value: elasticsearch.enable,
               },
               done
             )
@@ -631,7 +628,7 @@ function elasticSearchConfToDB(callback) {
             SettingModel.create(
               {
                 name: 'es:host',
-                value: elasticsearch.host
+                value: elasticsearch.host,
               },
               done
             )
@@ -646,13 +643,13 @@ function elasticSearchConfToDB(callback) {
             SettingModel.create(
               {
                 name: 'es:port',
-                value: elasticsearch.port
+                value: elasticsearch.port,
               },
               done
             )
           } else done()
         })
-      }
+      },
     ],
     callback
   )
@@ -667,7 +664,7 @@ function installationID(callback) {
       SettingModel.create(
         {
           name: 'gen:installid',
-          value: chance.guid()
+          value: chance.guid(),
         },
         callback
       )
@@ -679,7 +676,7 @@ function installationID(callback) {
 
 async function maintenanceModeDefault() {
   return new Promise<void>((resolve, reject) => {
-    (async () => {
+    ;(async () => {
       try {
         const setting = await SettingModel.getSettingByName('maintenanceMode:enable')
         if (!setting) {
@@ -742,7 +739,7 @@ export const init = function (callback: () => void) {
       },
       function (done) {
         return installationID(done)
-      }
+      },
     ],
     function (err) {
       if (err) winston.warn(err)

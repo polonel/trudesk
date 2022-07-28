@@ -21,14 +21,14 @@ var emitter = require('../emitter')
 var socketEvents = require('./socketEventConsts')
 var ticketSchema = require('../models/ticket')
 var prioritySchema = require('../models/ticketpriority')
-var userSchema = require('../models/user')
+var userSchema = require('../models').UserModel
 var roleSchema = require('../models/role')
 var permissions = require('../permissions')
 var xss = require('xss')
 
 var events = {}
 
-function register (socket) {
+function register(socket) {
   events.onUpdateTicketGrid(socket)
   events.onUpdateTicketStatus(socket)
   events.onUpdateTicket(socket)
@@ -46,7 +46,7 @@ function register (socket) {
   events.onAttachmentsUIUpdate(socket)
 }
 
-function eventLoop () {}
+function eventLoop() {}
 
 events.onUpdateTicketGrid = function (socket) {
   socket.on('ticket:updategrid', function () {
@@ -54,22 +54,22 @@ events.onUpdateTicketGrid = function (socket) {
   })
 }
 
-events.onUpdateTicketStatus = socket => {
-  socket.on(socketEvents.TICKETS_STATUS_SET, async data => {
+events.onUpdateTicketStatus = (socket) => {
+  socket.on(socketEvents.TICKETS_STATUS_SET, async (data) => {
     const ticketId = data._id
     const status = data.value
     const ownerId = socket.request.user._id
 
     try {
       let ticket = await ticketSchema.getTicketById(ticketId)
+      
       ticket = await ticket.setStatus(ownerId, status)
       ticket = await ticket.save()
-
       // emitter.emit('ticket:updated', t)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
         tid: ticket._id,
         owner: ticket.owner,
-        status: status
+        status: status,
       })
     } catch (e) {
       // Blank
@@ -78,7 +78,7 @@ events.onUpdateTicketStatus = socket => {
 }
 
 events.onUpdateTicket = function (socket) {
-  socket.on(socketEvents.TICKETS_UPDATE, async data => {
+  socket.on(socketEvents.TICKETS_UPDATE, async (data) => {
     try {
       const ticket = await ticketSchema.getTicketById(data._id)
 
@@ -123,7 +123,7 @@ events.onSetAssignee = function (socket) {
             ticket.addSubscriber(userId, function (err, ticket) {
               callback(err, ticket)
             })
-          }
+          },
         },
         function (err, results) {
           if (err) return true
@@ -136,14 +136,14 @@ events.onSetAssignee = function (socket) {
 
               emitter.emit('ticket:subscriber:update', {
                 user: userId,
-                subscribe: true
+                subscribe: true,
               })
 
               emitter.emit(socketEvents.TICKETS_ASSIGNEE_SET, {
                 assigneeId: ticket.assignee._id,
                 ticketId: ticket._id,
                 ticketUid: ticket.uid,
-                hostname: socket.handshake.headers.host
+                hostname: socket.handshake.headers.host,
               })
 
               // emitter.emit('ticket:updated', ticket)
@@ -183,8 +183,8 @@ events.onSetTicketType = function (socket) {
   })
 }
 
-events.onUpdateTicketTags = socket => {
-  socket.on(socketEvents.TICKETS_UI_TAGS_UPDATE, async data => {
+events.onUpdateTicketTags = (socket) => {
+  socket.on(socketEvents.TICKETS_UI_TAGS_UPDATE, async (data) => {
     const ticketId = data.ticketId
     if (_.isUndefined(ticketId)) return true
 
@@ -227,8 +227,8 @@ events.onSetTicketPriority = function (socket) {
   })
 }
 
-events.onClearAssignee = socket => {
-  socket.on(socketEvents.TICKETS_ASSIGNEE_CLEAR, async id => {
+events.onClearAssignee = (socket) => {
+  socket.on(socketEvents.TICKETS_ASSIGNEE_CLEAR, async (id) => {
     const ownerId = socket.request.user._id
 
     try {
@@ -298,8 +298,8 @@ events.onSetTicketDueDate = function (socket) {
   })
 }
 
-events.onSetTicketIssue = socket => {
-  socket.on(socketEvents.TICKETS_ISSUE_SET, async data => {
+events.onSetTicketIssue = (socket) => {
+  socket.on(socketEvents.TICKETS_ISSUE_SET, async (data) => {
     const ticketId = data._id
     const issue = data.value
     const subject = data.subject
@@ -320,8 +320,8 @@ events.onSetTicketIssue = socket => {
   })
 }
 
-events.onCommentNoteSet = socket => {
-  socket.on(socketEvents.TICKETS_COMMENT_NOTE_SET, async data => {
+events.onCommentNoteSet = (socket) => {
+  socket.on(socketEvents.TICKETS_COMMENT_NOTE_SET, async (data) => {
     const ownerId = socket.request.user._id
     const ticketId = data._id
     const itemId = data.item
@@ -331,7 +331,7 @@ events.onCommentNoteSet = socket => {
     if (_.isUndefined(ticketId) || _.isUndefined(itemId) || _.isUndefined(text)) return true
 
     marked.setOptions({
-      breaks: true
+      breaks: true,
     })
 
     text = sanitizeHtml(text).trim()
@@ -350,8 +350,8 @@ events.onCommentNoteSet = socket => {
   })
 }
 
-events.onRemoveCommentNote = socket => {
-  socket.on(socketEvents.TICKETS_COMMENT_NOTE_REMOVE, async data => {
+events.onRemoveCommentNote = (socket) => {
+  socket.on(socketEvents.TICKETS_COMMENT_NOTE_REMOVE, async (data) => {
     const ownerId = socket.request.user._id
     const ticketId = data._id
     const itemId = data.value
@@ -371,8 +371,8 @@ events.onRemoveCommentNote = socket => {
   })
 }
 
-events.onAttachmentsUIUpdate = socket => {
-  socket.on(socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, async data => {
+events.onAttachmentsUIUpdate = (socket) => {
+  socket.on(socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, async (data) => {
     const ticketId = data._id
 
     if (_.isUndefined(ticketId)) return true
@@ -386,7 +386,7 @@ events.onAttachmentsUIUpdate = socket => {
 
       const data = {
         ticket,
-        canRemoveAttachments
+        canRemoveAttachments,
       }
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, data)
@@ -399,5 +399,5 @@ events.onAttachmentsUIUpdate = socket => {
 module.exports = {
   events: events,
   eventLoop: eventLoop,
-  register: register
+  register: register,
 }

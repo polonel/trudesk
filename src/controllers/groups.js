@@ -13,8 +13,8 @@
  */
 
 const _ = require('lodash')
-const UserModel = require('../models/user')
-const GroupModel = require('../models/group')
+const UserModel = require('../models').UserModel
+const GroupModel = require('../models').GroupModel
 const permissions = require('../permissions')
 
 const groupsController = {}
@@ -109,12 +109,12 @@ groupsController.edit = function (req, res) {
   }
 }
 
-function handleError (res, err) {
+function handleError(res, err) {
   if (err) {
     return res.render('error', {
       layout: false,
       error: err,
-      message: err.message
+      message: err.message,
     })
   }
 }

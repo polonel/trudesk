@@ -12,26 +12,30 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+import jsStringEscape from 'js-string-escape'
 import _ from 'lodash'
 import config from '../config'
-import jsStringEscape from 'js-string-escape'
 import {
   PriorityModel,
   RoleModel,
   RoleOrderModel,
   SettingModel,
   TemplateModel,
-  TicketTagsModel,
-  TicketTypeModel
-} from "../models";
-import type { SettingsObjectType, SettingsObjectType_Base } from "./settings";
+  TicketTagModel,
+  TicketTypeModel,
+} from '../models'
+import type { SettingsObjectType, SettingsObjectType_Base } from './settings'
 
 export interface ISettingsUtil {
   setSetting: (setting: string, value: string | object | boolean | number) => Promise<void>
   getSettings: (callback: (err?: Error | null | undefined, settings?: ContentData) => void) => Promise<ContentData>
 }
 
-function parseSetting(settings: Array<SettingsObjectType_Base>, name: string, defaultValue: string | boolean | object | number) {
+function parseSetting(
+  settings: Array<SettingsObjectType_Base>,
+  name: string,
+  defaultValue: string | boolean | object | number
+) {
   let s = _.find(settings, function (x) {
     return x.name === name
   })
@@ -43,11 +47,11 @@ function parseSetting(settings: Array<SettingsObjectType_Base>, name: string, de
 
 async function setSetting(setting: string, value: string | object | boolean | number) {
   return new Promise<void>((resolve, reject) => {
-    (async () => {
+    ;(async () => {
       try {
         const s = {
           name: setting,
-          value: value
+          value: value,
         }
 
         await SettingModel.updateOne({ name: s.name }, s, { upsert: true })
@@ -68,9 +72,11 @@ interface ContentData {
   settings?: SettingsObjectType
 }
 
-async function getSettings(callback: (err?: Error | null | undefined, data?: ContentData) => void): Promise<ContentData> {
+async function getSettings(
+  callback: (err?: Error | null | undefined, data?: ContentData) => void
+): Promise<ContentData> {
   return new Promise<ContentData>((resolve, reject) => {
-    (async () => {
+    ;(async () => {
       try {
         const settings = await SettingModel.getSettings()
         const result: ContentData = {}
@@ -134,7 +140,9 @@ async function getSettings(callback: (err?: Error | null | undefined, data?: Con
           elasticSearchPort: parseSetting(settings, 'es:port', 9200),
           elasticSearchConfigured: {
             name: 'es:configured',
-            value: parseSetting(settings, 'es:enable', false).value && !_.isEmpty(parseSetting(settings, 'es:host', '').value)
+            value:
+              parseSetting(settings, 'es:enable', false).value &&
+              !_.isEmpty(parseSetting(settings, 'es:host', '').value),
           },
 
           allowAgentUserTickets: parseSetting(settings, 'allowAgentUserTickets:enable', false),
@@ -152,9 +160,9 @@ async function getSettings(callback: (err?: Error | null | undefined, data?: Con
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)
 
         const types = await TicketTypeModel.getTypes()
-        result.ticketTypes = _.sortBy(types, o => o.name)
+        result.ticketTypes = _.sortBy(types, (o) => o.name)
 
-        _.each(result.ticketTypes, type => {
+        _.each(result.ticketTypes, (type) => {
           type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name'])
         })
 
@@ -164,20 +172,20 @@ async function getSettings(callback: (err?: Error | null | undefined, data?: Con
         const templates = await TemplateModel.find({})
         result.mailTemplates = _.sortBy(templates, 'name')
 
-        const tagCount = await TicketTagsModel.getTagCount()
+        const tagCount = await TicketTagModel.getTagCount()
         result.tags = { count: tagCount }
 
         const roles = await RoleModel.getRoles()
         const roleOrder = await RoleOrderModel.getOrder()
         if (!roleOrder) {
-          if (typeof callback === 'function') callback(new Error("Invalid Role Order"))
-          return reject(new Error("Invalid Role Order"))
+          if (typeof callback === 'function') callback(new Error('Invalid Role Order'))
+          return reject(new Error('Invalid Role Order'))
         }
 
         const roleOrderIds = roleOrder.order
 
         if (roleOrderIds && roleOrderIds.length > 0) {
-          result.roles = _.map(roleOrder, roID => {
+          result.roles = _.map(roleOrder, (roID) => {
             return _.find(roles, { _id: roID })
           })
         } else result.roles = roles
@@ -198,7 +206,7 @@ async function getSettings(callback: (err?: Error | null | undefined, data?: Con
 
 export const SettingsUtil: ISettingsUtil = {
   setSetting,
-  getSettings
+  getSettings,
 }
 
 export default SettingsUtil

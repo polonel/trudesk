@@ -14,8 +14,8 @@ const async = require('async')
 const path = require('path')
 const _ = require('lodash')
 const winston = require('../logger')
-const groupSchema = require('../models/group')
-const departmentSchema = require('../models/department')
+const GroupModel = require('../models').GroupModel
+const DepartmentModel = require('../models').DepartmentModel
 const permissions = require('../permissions')
 const xss = require('xss')
 const fs = require('fs-extra')
@@ -90,13 +90,13 @@ ticketsController.getByStatus = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: []
+    status: [],
   }
 
   const fullUrl = url.format({
     protocol: req.protocol,
     host: req.get('host'),
-    pathname: req.originalUrl
+    pathname: req.originalUrl,
   })
 
   const pathname = new url.URL(fullUrl).pathname
@@ -145,7 +145,7 @@ ticketsController.getActive = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: [0, 1, 2]
+    status: [0, 1, 2],
   }
 
   req.processor = processor
@@ -176,7 +176,7 @@ ticketsController.getAssigned = function (req, res, next) {
     page: page,
     status: [0, 1, 2],
     assignedSelf: true,
-    user: req.user._id
+    user: req.user._id,
   }
 
   req.processor = processor
@@ -207,7 +207,7 @@ ticketsController.getUnassigned = function (req, res, next) {
     page: page,
     status: [0, 1, 2],
     unassigned: true,
-    user: req.user._id
+    user: req.user._id,
   }
 
   req.processor = processor
@@ -253,7 +253,7 @@ ticketsController.filter = function (req, res, next) {
     issue: issue,
     date: {
       start: dateStart,
-      end: dateEnd
+      end: dateEnd,
     },
     status: status,
     priority: priority,
@@ -261,7 +261,7 @@ ticketsController.filter = function (req, res, next) {
     tags: tags,
     types: types,
     assignee: assignee,
-    raw: rawNoPage
+    raw: rawNoPage,
   }
 
   const processor = {}
@@ -275,7 +275,7 @@ ticketsController.filter = function (req, res, next) {
     page: page,
     status: filter.status,
     user: req.user._id,
-    filter: filter
+    filter: filter,
   }
 
   req.processor = processor
@@ -367,13 +367,11 @@ ticketsController.print = function (req, res) {
     let hasAccess = false
     async.series(
       [
-        function (next) {
-          if (user.role.isAdmin || user.role.isAgent) {
-            departmentSchema.getDepartmentGroupsOfUser(user._id, function (err, groups) {
-              if (err) return res.redirect('/tickets')
-              const gIds = groups.map(function (g) {
-                return g._id
-              })
+        async function (next) {
+          try {
+            if (user.role.isAdmin || user.role.isAgent) {
+              const groups = await DepartmentModel.getDepartmentGroupsOfUser()
+              const gIds = groups.map((g) => g._id)
 
               if (_.some(gIds, ticket.group._id)) {
                 if (!permissions.canThis(user.role, 'tickets:notes')) {
@@ -385,9 +383,11 @@ ticketsController.print = function (req, res) {
               } else {
                 return next('UNAUTHORIZED_GROUP_ACCESS')
               }
-            })
-          } else {
-            return next()
+            } else {
+              return next()
+            }
+          } catch (e) {
+            return res.redirect('/tickets')
           }
         },
         function (next) {
@@ -410,7 +410,7 @@ ticketsController.print = function (req, res) {
           }
 
           return next()
-        }
+        },
       ],
       function (err) {
         if (err) {
@@ -471,74 +471,44 @@ ticketsController.single = function (req, res) {
   content.data.common = req.viewdata
   content.data.ticket = {}
 
-  ticketSchema.getTicketByUid(uid, function (err, ticket) {
+  ticketSchema.getTicketByUid(uid, async function (err, ticket) {
     if (err) return handleError(res, err)
-    if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
+    if (!ticket) return res.redirect('/tickets')
 
-    const departmentSchema = require('../models/department')
-    async.waterfall(
-      [
-        function (next) {
-          if (!req.user.role.isAdmin && !req.user.role.isAgent) {
-            return groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, next)
-          }
+    try {
+      let groups
+      if (!user.role.isAdmin && !user.role.isAgent) groups = await GroupModel.getAllGroupsOfUserNoPopulate(user._id)
+      else groups = await DepartmentModel.getDepartmentGroupsOfUser(user._id)
 
-          departmentSchema.getUserDepartments(req.user._id, function (err, departments) {
-            if (err) return next(err)
-            if (_.some(departments, { allGroups: true })) {
-              return groupSchema.find({}, next)
-            }
+      const hasPublic = permissions.canThis(user.role, 'tickets:public')
+      const groupIds = groups.map((g) => g._id.toString())
 
-            const groups = _.flattenDeep(
-              departments.map(function (d) {
-                return d.groups
-              })
-            )
-
-            return next(null, groups)
-          })
-        },
-        function (userGroups, next) {
-          const hasPublic = permissions.canThis(user.role, 'tickets:public')
-          const groupIds = userGroups.map(function (g) {
-            return g._id.toString()
-          })
-
-          if (!groupIds.includes(ticket.group._id.toString())) {
-            if (ticket.group.public && hasPublic) {
-              // Blank to bypass
-            } else {
-              winston.warn('User access ticket outside of group - UserId: ' + user._id)
-              return res.redirect('/tickets')
-            }
-          }
-
-          if (
-            ticket.owner._id.toString() !== req.user._id.toString() &&
-            !permissions.canThis(user.role, 'tickets:viewall')
-          ) {
-            return res.redirect('/tickets')
-          }
-
-          if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
-
-          if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
-
-          content.data.ticket = ticket
-          content.data.ticket.priorityname = ticket.priority.name
-
-          return next()
-        }
-      ],
-      function (err) {
-        if (err) {
-          winston.warn(err)
+      if (!groupIds.includes(ticket.group._id.toString())) {
+        if (ticket.group.public && !hasPublic) {
+          winston.warn('User access ticket outside of group - UserId: ' + user._id)
           return res.redirect('/tickets')
         }
-
-        return res.render('subviews/singleticket', content)
       }
-    )
+
+      if (
+        ticket.owner._id.toString() !== req.user._id.toString() &&
+        !permissions.canThis(user.role, 'tickets:viewall')
+      ) {
+        winston.warn('User trying to access ticket outside of permission: ' + user._id)
+        return res.redirect('/tickets')
+      }
+
+      if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
+      if (!permissions.canThis(user.role, 'ticket:notes')) ticket.notes = []
+
+      content.data.ticket = ticket
+      content.data.ticket.priorityname = ticket.priority.name
+
+      return res.render('subviews/singleticket', content)
+    } catch (e) {
+      winston.warn(e)
+      return res.redirect('/tickets')
+    }
   })
 }
 
@@ -551,8 +521,8 @@ ticketsController.uploadImageMDE = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 5 * 1024 * 1024 // 5mb limit
-    }
+      fileSize: 5 * 1024 * 1024, // 5mb limit
+    },
   })
 
   const object = {}
@@ -567,7 +537,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 500,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -589,13 +559,13 @@ ticketsController.uploadImageMDE = function (req, res) {
       '.bmp',
       '.dib',
       '.heif',
-      '.heic'
+      '.heic',
     ]
 
     if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
       error = {
         status: 400,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -613,7 +583,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     if (fs.existsSync(object.filePath)) {
       error = {
         status: 500,
-        message: 'File already exists'
+        message: 'File already exists',
       }
 
       return file.resume()
@@ -622,7 +592,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     file.on('limit', function () {
       error = {
         status: 500,
-        message: 'File too large'
+        message: 'File too large',
       }
 
       // Delete the temp file
@@ -658,12 +628,12 @@ ticketsController.uploadAttachment = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 10 * 1024 * 1024 // 10mb limit
-    }
+      fileSize: 10 * 1024 * 1024, // 10mb limit
+    },
   })
 
   const object = {
-    ownerId: req.user._id
+    ownerId: req.user._id,
   }
   let error
 
@@ -694,7 +664,7 @@ ticketsController.uploadAttachment = function (req, res) {
     ) {
       error = {
         status: 400,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -726,14 +696,14 @@ ticketsController.uploadAttachment = function (req, res) {
       '.mpeg',
       '.eps',
       '.ai',
-      '.psd'
+      '.psd',
     ]
     const badExts = ['.html', '.htm', '.js', '.svg']
 
     if (!allowedExts.includes(ext)) {
       error = {
         status: 400,
-        message: 'Invalid File Type'
+        message: 'Invalid File Type',
       }
 
       return file.resume()
@@ -756,7 +726,7 @@ ticketsController.uploadAttachment = function (req, res) {
     if (fs.existsSync(object.filePath)) {
       error = {
         status: 400,
-        message: 'File already exists'
+        message: 'File already exists',
       }
 
       return file.resume()
@@ -765,7 +735,7 @@ ticketsController.uploadAttachment = function (req, res) {
     file.on('limit', function () {
       error = {
         status: 400,
-        message: 'File too large'
+        message: 'File too large',
       }
 
       // Delete the temp file
@@ -807,14 +777,14 @@ ticketsController.uploadAttachment = function (req, res) {
           owner: object.ownerId,
           name: object.filename,
           path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
-          type: object.mimetype
+          type: object.mimetype,
         }
         ticket.attachments.push(attachment)
 
         const historyItem = {
           action: 'ticket:added:attachment',
           description: 'Attachment ' + object.filename + ' was added.',
-          owner: object.ownerId
+          owner: object.ownerId,
         }
         ticket.history.push(historyItem)
 
@@ -827,7 +797,7 @@ ticketsController.uploadAttachment = function (req, res) {
           }
 
           const returnData = {
-            ticket: t
+            ticket: t,
           }
 
           return res.json(returnData)
@@ -839,7 +809,7 @@ ticketsController.uploadAttachment = function (req, res) {
   req.pipe(busboy)
 }
 
-function handleError (res, err) {
+function handleError(res, err) {
   if (err) {
     winston.warn(err)
     if (!err.status) res.status = 500
@@ -847,7 +817,7 @@ function handleError (res, err) {
     return res.render('error', {
       layout: false,
       error: err,
-      message: err.message
+      message: err.message,
     })
   }
 }

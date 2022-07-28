@@ -103,7 +103,7 @@ describe('ticket.js', function () {
   })
 
   it('should set assignee to user', function (done) {
-    var userSchema = require('../../src/models/user')
+    var userSchema = require('../../src/models').UserModel
     async.waterfall(
       [
         function (cb) {

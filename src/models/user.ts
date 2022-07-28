@@ -12,11 +12,11 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-import { DocumentType, getModelForClass, modelOptions, pre, prop, Ref, ReturnModelType } from "@typegoose/typegoose";
+import { DocumentType, modelOptions, pre, prop, Ref, ReturnModelType } from '@typegoose/typegoose'
 import bcrypt from 'bcrypt'
-import Chance from "chance";
-import _ from "lodash";
-import type { Types } from "mongoose";
+import Chance from 'chance'
+import _ from 'lodash'
+import type { Types } from 'mongoose'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import base32 from 'thirty-two'
@@ -48,7 +48,6 @@ class UserPreferences {
 @pre<UserModelClass>(['findOne', 'find'], function () {
   this.populate('role', 'name description normalized _id')
 })
-
 @pre<UserModelClass>('save', function (this: DocumentType<UserModelClass>, next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this
@@ -76,9 +75,9 @@ class UserPreferences {
     })
   })
 })
-
 @modelOptions({ options: { customName: COLLECTION } })
 export class UserModelClass {
+  public _id!: Types.ObjectId
   @prop({ required: true, unique: true })
   public username!: string
   @prop({ required: true, select: false })
@@ -130,7 +129,11 @@ export class UserModelClass {
   public deleted?: boolean
 
   // ----- STATICS
-  public static validatePassword(this: ReturnModelType<typeof UserModelClass>, password: string, dbPass: string): boolean {
+  public static validatePassword(
+    this: ReturnModelType<typeof UserModelClass>,
+    password: string,
+    dbPass: string
+  ): boolean {
     return bcrypt.compareSync(password, dbPass)
   }
 
@@ -163,9 +166,9 @@ export class UserModelClass {
     const page = obj.page || 0
     const accounts = await this.find({}, '-password -resetPassHash -resetPassExpire')
 
-    const customerRoleIds = _.filter(accounts, a => {
+    const customerRoleIds = _.filter(accounts, (a) => {
       return !(a.role as IRoleModel)?.isAdmin && !(a.role as IRoleModel)?.isAgent
-    }).map(a => {
+    }).map((a) => {
       return (a.role as IRoleModel)?._id
     })
 
@@ -184,7 +187,9 @@ export class UserModelClass {
     const page = obj.page || 0
     const accounts = await this.find({})
 
-    const agentRoleIds = _.filter(accounts, a => (a.role as IRoleModel)?.isAgent).map(a => (a.role as IRoleModel)?._id)
+    const agentRoleIds = _.filter(accounts, (a) => (a.role as IRoleModel)?.isAgent).map(
+      (a) => (a.role as IRoleModel)?._id
+    )
 
     const query = this.find({ role: { $in: agentRoleIds } }, '-password -resetPassHash -resetPassExpire')
       .sort({ fullname: 1 })
@@ -201,7 +206,9 @@ export class UserModelClass {
     const page = obj.page || 0
     const accounts = await this.find({})
 
-    const adminRoleIds = _.filter(accounts, a => (a.role as IRoleModel)?.isAdmin).map(a => (a.role as IRoleModel)?._id)
+    const adminRoleIds = _.filter(accounts, (a) => (a.role as IRoleModel)?.isAdmin).map(
+      (a) => (a.role as IRoleModel)?._id
+    )
 
     const query = this.find({ role: { $in: adminRoleIds } }, '-password -resetPassHash -resetPassExpire')
       .sort({ fullname: 1 })
@@ -221,13 +228,10 @@ export class UserModelClass {
 
         const genOTPKey = chance.string({
           length: 7,
-          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789',
         })
 
-        const base32GenOTPKey = base32
-          .encode(genOTPKey)
-          .toString()
-          .replace(/=/g, '')
+        const base32GenOTPKey = base32.encode(genOTPKey).toString().replace(/=/g, '')
 
         return resolve(base32GenOTPKey)
       } else {
@@ -246,7 +250,7 @@ export class UserModelClass {
 
   public async softDelete(this: DocumentType<UserModelClass>): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      (async () => {
+      ;(async () => {
         try {
           this.deleted = true
           await this.save()
@@ -258,9 +262,3 @@ export class UserModelClass {
     })
   }
 }
-
-const UserModel = getModelForClass(UserModelClass)
-
-export default UserModel
-module.exports = UserModel
-

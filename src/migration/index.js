@@ -19,12 +19,12 @@ var semver = require('semver')
 var version = require('../../package.json').version
 
 var SettingsSchema = require('../models/setting')
-var userSchema = require('../models/user')
+var userSchema = require('../models').UserModel
 var roleSchema = require('../models/role')
 
 var migrations = {}
 
-function saveVersion (callback) {
+function saveVersion(callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) {
       winston.warn(err)
@@ -35,7 +35,7 @@ function saveVersion (callback) {
     if (!setting) {
       var s = new SettingsSchema({
         name: 'gen:version',
-        value: version
+        value: version,
       })
       s.save(function (err) {
         if (err) {
@@ -60,7 +60,7 @@ function saveVersion (callback) {
   })
 }
 
-function getDatabaseVersion (callback) {
+function getDatabaseVersion(callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) return callback(err)
 
@@ -74,7 +74,7 @@ function getDatabaseVersion (callback) {
   })
 }
 
-function migrateUserRoles (callback) {
+function migrateUserRoles(callback) {
   winston.debug('Migrating Roles...')
   async.waterfall(
     [
@@ -137,16 +137,16 @@ function migrateUserRoles (callback) {
           .catch(function (err) {
             return next(err)
           })
-      }
+      },
     ],
     callback
   )
 }
 
-function createAdminTeamDepartment (callback) {
-  const Team = require('../models/team')
+function createAdminTeamDepartment(callback) {
+  const Team = require('../models').TeamModel
   const Department = require('../models/department')
-  const Account = require('../models/user')
+  const Account = require('../models').UserModel
 
   async.waterfall(
     [
@@ -154,14 +154,14 @@ function createAdminTeamDepartment (callback) {
         Account.getAdmins({}, next)
       },
       function (admins, next) {
-        const adminsIds = admins.map(admin => {
+        const adminsIds = admins.map((admin) => {
           return admin._id.toString()
         })
 
         Team.create(
           {
             name: 'Support (Default)',
-            members: adminsIds
+            members: adminsIds,
           },
           next
         )
@@ -172,17 +172,17 @@ function createAdminTeamDepartment (callback) {
             name: 'Support - All Groups (Default)',
             teams: adminTeam._id,
             allGroups: true,
-            groups: []
+            groups: [],
           },
           next
         )
-      }
+      },
     ],
     callback
   )
 }
 
-function removeAgentsFromGroups (callback) {
+function removeAgentsFromGroups(callback) {
   // winston.debug('Migrating Agents from Groups...')
   var groupSchema = require('../models/group')
   groupSchema.getAllGroups(function (err, groups) {
@@ -226,14 +226,14 @@ migrations.run = function (callback) {
               },
               function (done) {
                 createAdminTeamDepartment(done)
-              }
+              },
             ],
             next
           )
         } else {
           return next()
         }
-      }
+      },
     ],
     function (err) {
       if (err) return callback(err)

@@ -14,7 +14,7 @@
 
 var _ = require('lodash')
 var async = require('async')
-var userSchema = require('../../../models/user')
+var userSchema = require('../../../models').UserModel
 var permissions = require('../../../permissions')
 const socketEventConsts = require('../../../socketio/socketEventConsts')
 

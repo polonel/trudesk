@@ -20,6 +20,7 @@ const pkg = require('../../package')
 const xss = require('xss')
 const { trudeskRoot } = require('../config')
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
+const userSchema = require('../models').UserModel
 
 const limiterSlowBruteByIP = new RateLimiterMemory({
   keyPrefix: 'login_fail_ip_per_day',
@@ -213,7 +214,6 @@ mainController.forgotL2Auth = function (req, res) {
   }
 
   const email = data['forgotl2auth-email']
-  const userSchema = require('../models/user')
   userSchema.getUserByEmail(email, function (err, user) {
     if (err) {
       return res.status(400).send(err.message)
@@ -290,8 +290,7 @@ mainController.forgotPass = async function (req, res) {
       return res.status(400).send('No Form Data')
     }
 
-    const UserModel = require('../models/user')
-    let user = await UserModel.findOne({ email: postEmail.toLowerCase(), deleted: false })
+    let user = await userSchema.findOne({ email: postEmail.toLowerCase(), deleted: false })
     if (!user) {
       return res.status(400).json({ success: false, error: 'Invalid Email: Account not found!' })
     }
@@ -381,7 +380,6 @@ mainController.resetl2auth = function (req, res) {
     return res.status(400).send('Invalid Link!')
   }
 
-  const userSchema = require('../models/user')
   userSchema.getUserByL2ResetHash(hash, function (err, user) {
     if (err) {
       return res.status(400).send('Invalid Link!')
@@ -460,7 +458,6 @@ mainController.resetPass = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid Link!' })
     }
 
-    const userSchema = require('../models/user')
     let user = await userSchema.getUserByResetHash(hash)
     if (!user) return res.status(400).json({ success: false, error: 'Invalid' })
 

@@ -17,10 +17,10 @@ const async = require('async')
 const winston = require('../../../logger')
 const Chance = require('chance')
 const apiUtil = require('../apiUtils')
-const User = require('../../../models/user')
-const Group = require('../../../models/group')
-const Team = require('../../../models/team')
-const Department = require('../../../models/department')
+const User = require('../../../models').UserModel
+const Group = require('../../../models').GroupModel
+const Team = require('../../../models').TeamModel
+const Department = require('../../../models').DepartmentModel
 const passwordComplexity = require('../../../settings/passwordComplexity')
 
 const accountsApi = {}
@@ -36,7 +36,7 @@ accountsApi.sessionUser = async (req, res) => {
     if (dbUser.role.isAdmin || dbUser.role.isAgent) groups = await Department.getDepartmentGroupsOfUser(dbUser._id)
     else groups = await Group.getAllGroupsOfUser(dbUser._id)
 
-    groups = groups.map(g => {
+    groups = groups.map((g) => {
       return g._id
     })
 
@@ -78,7 +78,7 @@ accountsApi.create = async function (req, res) {
       fullname: postData.fullname,
       title: postData.title,
       role: postData.role,
-      accessToken: chance.hash()
+      accessToken: chance.hash(),
     })
 
     savedId = user._id
@@ -107,16 +107,16 @@ accountsApi.create = async function (req, res) {
 
     const departments = await Department.getUserDepartments(savedId)
     user = userPopulated.toJSON()
-    user.groups = groups.map(g => {
+    user.groups = groups.map((g) => {
       return { _id: g._id, name: g.name }
     })
 
     if ((user.role.isAgent || user.role.isAdmin) && teams.length > 0) {
-      user.teams = teams.map(t => {
+      user.teams = teams.map((t) => {
         return { _id: t._id, name: t.name }
       })
 
-      user.departments = departments.map(d => {
+      user.departments = departments.map((d) => {
         return { _id: d._id, name: d.name }
       })
     }
@@ -137,7 +137,7 @@ accountsApi.get = async function (req, res) {
   const obj = {
     limit: limit === -1 ? 999999 : limit,
     page: page,
-    showDeleted: query.showDeleted && query.showDeleted === 'true'
+    showDeleted: query.showDeleted && query.showDeleted === 'true',
   }
 
   switch (type) {
@@ -156,7 +156,7 @@ accountsApi.get = async function (req, res) {
         for (const account of accounts) {
           const groups = await Group.getAllGroupsOfUser(account._id)
           const accountObj = account.toObject()
-          accountObj.groups = groups.map(group => {
+          accountObj.groups = groups.map((group) => {
             return { name: group.name, _id: group._id }
           })
 
@@ -175,9 +175,9 @@ accountsApi.get = async function (req, res) {
         for (const account of accounts) {
           const accountObj = account.toObject()
           const departments = await Department.getUserDepartments(account._id)
-          accountObj.departments = departments.map(department => ({ name: department.name, _id: department._id }))
+          accountObj.departments = departments.map((department) => ({ name: department.name, _id: department._id }))
           const teams = await Team.getTeamsOfUser(account._id)
-          accountObj.teams = teams.map(team => ({ name: team.name, _id: team._id }))
+          accountObj.teams = teams.map((team) => ({ name: team.name, _id: team._id }))
           resAccounts.push(accountObj)
         }
 
@@ -193,9 +193,9 @@ accountsApi.get = async function (req, res) {
         for (const account of accounts) {
           const accountObj = account.toObject()
           const departments = await Department.getUserDepartments(account._id)
-          accountObj.departments = departments.map(department => ({ name: department.name, _id: department._id }))
+          accountObj.departments = departments.map((department) => ({ name: department.name, _id: department._id }))
           const teams = await Team.getTeamsOfUser(account._id)
-          accountObj.teams = teams.map(team => ({ name: team.name, _id: team._id }))
+          accountObj.teams = teams.map((team) => ({ name: team.name, _id: team._id }))
           resAccounts.push(accountObj)
         }
 
@@ -233,7 +233,8 @@ accountsApi.update = async function (req, res) {
       !_.isUndefined(postData.passwordConfirm) &&
       !_.isEmpty(postData.passwordConfirm)
     ) {
-      if (postData.password.length < 4 || postData.passwordConfirm.length < 4) throw new Error('Password length is too short.')
+      if (postData.password.length < 4 || postData.passwordConfirm.length < 4)
+        throw new Error('Password length is too short.')
       if (postData.password === postData.passwordConfirm) {
         if (passwordComplexityEnabled) {
           if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
@@ -305,16 +306,16 @@ accountsApi.update = async function (req, res) {
     const departments = await Department.getUserDepartments(postData._id)
 
     user = resUser.toJSON()
-    user.groups = groups.map(g => {
+    user.groups = groups.map((g) => {
       return { _id: g._id, name: g.name }
     })
 
     if ((user.role.isAgent || user.role.isAdmin) && teams.length > 0) {
-      user.teams = teams.map(t => {
+      user.teams = teams.map((t) => {
         return { _id: t._id, name: t.name }
       })
 
-      user.departments = departments.map(d => {
+      user.departments = departments.map((d) => {
         return { _id: d._id, name: d.name }
       })
     }

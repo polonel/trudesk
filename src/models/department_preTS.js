@@ -12,15 +12,11 @@
 
  **/
 
-var _ = require('lodash')
-var async = require('async')
-var mongoose = require('mongoose')
-var utils = require('../helpers/utils')
-
-// Refs
-require('./group')
-var Teams = require('./team')
-var Groups = require('./group')
+import _ from 'lodash'
+import * as mongoose from 'mongoose'
+import utils from '../helpers/utils'
+import { TeamModel as Teams } from '../models'
+import { GroupModel as Groups } from '../models'
 
 var COLLECTION = 'departments'
 
@@ -30,7 +26,7 @@ var departmentSchema = mongoose.Schema({
   teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams', autopopulate: true }],
   allGroups: { type: Boolean, default: false },
   publicGroups: { type: Boolean, default: false },
-  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'groups', autopopulate: true }]
+  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'groups', autopopulate: true }],
 })
 
 departmentSchema.plugin(require('mongoose-autopopulate'))
@@ -85,13 +81,13 @@ departmentSchema.statics.getDepartmentGroupsOfUser = function (userId, callback)
           return resolve(allGroups)
         } else if (hasPublicGroups) {
           const publicGroups = await Groups.getAllPublicGroups()
-          const mapped = departments.map(department => {
+          const mapped = departments.map((department) => {
             return department.groups
           })
 
           let merged = _.concat(publicGroups, mapped)
           merged = _.flattenDeep(merged)
-          merged = _.uniqBy(merged, i => {
+          merged = _.uniqBy(merged, (i) => {
             return i._id
           })
 

@@ -38,7 +38,7 @@ installController.elastictest = function (req, res) {
   const CONNECTION_URI = data.host + ':' + data.port
 
   const child = require('child_process').fork(path.join(__dirname, '../../src/install/elasticsearchtest'), {
-    env: { FORK: 1, NODE_ENV: global.env, ELASTICSEARCH_URI: CONNECTION_URI }
+    env: { FORK: 1, NODE_ENV: global.env, ELASTICSEARCH_URI: CONNECTION_URI },
   })
   global.forks.push({ name: 'elastictest', fork: child })
 
@@ -62,7 +62,7 @@ installController.mongotest = function (req, res) {
     CONNECTION_URI = 'mongodb+srv://' + data.username + ':' + dbPassword + '@' + data.host + '/' + data.database
 
   const child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
-    env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
+    env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI },
   })
 
   global.forks.push({ name: 'mongotest', fork: child })
@@ -99,12 +99,12 @@ installController.existingdb = function (req, res) {
       port: port,
       username: username,
       password: password,
-      database: database
+      database: database,
     },
     tokens: {
       secret: chance.hash() + chance.md5(),
-      expires: 900 // 15min
-    }
+      expires: 900, // 15min
+    },
   }
 
   fs.writeFile(configFile, YAML.stringify(conf), function (err) {
@@ -121,7 +121,7 @@ installController.install = function (req, res) {
   const db = require('../database')
   const roleSchema = require('../models/role')
   const roleOrderSchema = require('../models/roleorder')
-  const UserSchema = require('../models/user')
+  const UserSchema = require('../models').UserModel
   const GroupSchema = require('../models/group')
   const Counters = require('../models/counters')
   const TicketTypeSchema = require('../models/tickettype')
@@ -149,7 +149,7 @@ installController.install = function (req, res) {
     password: data['account[password]'],
     passconfirm: data['account[cpassword]'],
     email: data['account[email]'],
-    fullname: data['account[fullname]']
+    fullname: data['account[fullname]'],
   }
 
   const dbPassword = encodeURIComponent(password)
@@ -166,7 +166,7 @@ installController.install = function (req, res) {
       function (next) {
         const s = new SettingsSchema({
           name: 'gen:version',
-          value: require('../../package.json').version
+          value: require('../../package.json').version,
         })
 
         return s.save(function (err) {
@@ -181,7 +181,7 @@ installController.install = function (req, res) {
               SettingsSchema.create(
                 {
                   name: 'es:enable',
-                  value: typeof eEnabled === 'undefined' ? false : eEnabled
+                  value: typeof eEnabled === 'undefined' ? false : eEnabled,
                 },
                 done
               )
@@ -191,7 +191,7 @@ installController.install = function (req, res) {
               SettingsSchema.create(
                 {
                   name: 'es:host',
-                  value: eHost
+                  value: eHost,
                 },
                 done
               )
@@ -201,11 +201,11 @@ installController.install = function (req, res) {
               SettingsSchema.create(
                 {
                   name: 'es:port',
-                  value: ePort
+                  value: ePort,
                 },
                 done
               )
-            }
+            },
           ],
           function (err) {
             return next(err)
@@ -215,7 +215,7 @@ installController.install = function (req, res) {
       function (next) {
         const Counter = new Counters({
           _id: 'tickets',
-          next: 1001
+          next: 1001,
         })
 
         Counter.save(function (err) {
@@ -225,7 +225,7 @@ installController.install = function (req, res) {
       function (next) {
         const Counter = new Counters({
           _id: 'reports',
-          next: 1001
+          next: 1001,
         })
 
         Counter.save(function (err) {
@@ -234,7 +234,7 @@ installController.install = function (req, res) {
       },
       function (next) {
         const type = new TicketTypeSchema({
-          name: 'Issue'
+          name: 'Issue',
         })
 
         type.save(function (err) {
@@ -243,7 +243,7 @@ installController.install = function (req, res) {
       },
       function (next) {
         const type = new TicketTypeSchema({
-          name: 'Task'
+          name: 'Task',
         })
 
         type.save(function (err) {
@@ -260,7 +260,7 @@ installController.install = function (req, res) {
                 {
                   name: 'Admin',
                   description: 'Default role for admins',
-                  grants: defaults.roleDefaults.adminGrants
+                  grants: defaults.roleDefaults.adminGrants,
                 },
                 function (err, role) {
                   if (err) return done(err)
@@ -274,7 +274,7 @@ installController.install = function (req, res) {
                 {
                   name: 'Support',
                   description: 'Default role for agents',
-                  grants: defaults.roleDefaults.supportGrants
+                  grants: defaults.roleDefaults.supportGrants,
                 },
                 function (err, role) {
                   if (err) return done(err)
@@ -288,7 +288,7 @@ installController.install = function (req, res) {
                 {
                   name: 'User',
                   description: 'Default role for users',
-                  grants: defaults.roleDefaults.userGrants
+                  grants: defaults.roleDefaults.userGrants,
                 },
                 function (err, role) {
                   if (err) return done(err)
@@ -296,7 +296,7 @@ installController.install = function (req, res) {
                   return done()
                 }
               )
-            }
+            },
           ],
           function (err) {
             return next(err, roleResults)
@@ -304,11 +304,11 @@ installController.install = function (req, res) {
         )
       },
       function (roleResults, next) {
-        const TeamSchema = require('../models/team')
+        const TeamSchema = require('../models').TeamModel
         TeamSchema.create(
           {
             name: 'Support (Default)',
-            members: []
+            members: [],
           },
           function (err, team) {
             return next(err, team, roleResults)
@@ -338,7 +338,7 @@ installController.install = function (req, res) {
             email: user.email,
             role: roleResults.adminRole._id,
             title: 'Administrator',
-            accessToken: chance.hash()
+            accessToken: chance.hash(),
           })
 
           adminUser.save(function (err, savedUser) {
@@ -376,7 +376,7 @@ installController.install = function (req, res) {
             name: 'Support - All Groups (Default)',
             teams: [defaultTeam._id],
             allGroups: true,
-            groups: []
+            groups: [],
           },
           function (err) {
             return next(err)
@@ -388,7 +388,7 @@ installController.install = function (req, res) {
         const S = require('../models/setting')
         const installed = new S({
           name: 'installed',
-          value: true
+          value: true,
         })
 
         installed.save(function (err) {
@@ -415,12 +415,12 @@ installController.install = function (req, res) {
             username: username,
             password: password,
             database: database,
-            shard: port === '---'
+            shard: port === '---',
           },
           tokens: {
             secret: chance.hash() + chance.md5(),
-            expires: 900 // 15min
-          }
+            expires: 900, // 15min
+          },
         }
 
         fs.writeFile(configFile, YAML.stringify(conf), function (err) {
@@ -431,7 +431,7 @@ installController.install = function (req, res) {
 
           return next(null)
         })
-      }
+      },
     ],
     function (err) {
       if (err) {

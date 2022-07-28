@@ -14,7 +14,7 @@
 
 var _ = require('lodash')
 var async = require('async')
-var Team = require('../../../models/team')
+var Team = require('../../../models').TeamModel
 var apiUtils = require('../apiUtils')
 
 var apiTeams = {}

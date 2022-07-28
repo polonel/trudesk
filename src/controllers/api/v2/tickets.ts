@@ -12,19 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import _ from 'lodash'
 import async from 'async'
+import _ from 'lodash'
 import logger from '../../../logger'
-import apiUtils from '../apiUtils'
-import permissions from '../../../permissions'
 import {
   DepartmentModel,
   GroupModel,
   PriorityModel,
   TicketModel,
   TicketTagsModel,
-  TicketTypeModel
-} from "../../../models";
+  TicketTypeModel,
+} from '../../../models'
+import permissions from '../../../permissions'
+import apiUtils from '../apiUtils'
 
 const ticketsV2 = {}
 
@@ -54,19 +54,19 @@ ticketsV2.get = async (req, res) => {
 
   const queryObject = {
     limit,
-    page
+    page,
   }
 
   try {
     let groups = []
     if (req.user.role.isAdmin || req.user.role.isAgent) {
       const dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
-      groups = dbGroups.map(g => g._id)
+      groups = dbGroups.map((g) => g._id)
     } else {
       groups = await GroupModel.getAllGroupsOfUser(req.user._id)
     }
 
-    const mappedGroups = groups.map(g => g._id)
+    const mappedGroups = groups.map((g) => g._id)
 
     switch (type.toLowerCase()) {
       case 'active':
@@ -74,7 +74,7 @@ ticketsV2.get = async (req, res) => {
         break
       case 'assigned':
         queryObject.filter = {
-          assignee: [req.user._id]
+          assignee: [req.user._id],
         }
         break
       case 'unassigned':
@@ -113,7 +113,7 @@ ticketsV2.get = async (req, res) => {
       totalCount,
       page,
       prevPage: page === 0 ? 0 : page - 1,
-      nextPage: page * limit + limit <= totalCount ? page + 1 : page
+      nextPage: page * limit + limit <= totalCount ? page + 1 : page,
     })
   } catch (err) {
     logger.warn(err)
@@ -122,28 +122,24 @@ ticketsV2.get = async (req, res) => {
 }
 
 ticketsV2.single = async function (req, res) {
-  const uid = req.params.uid
-  if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
-  TicketModel.getTicketByUid(uid, function (err, ticket) {
-    if (err) return apiUtils.sendApiError(res, 500, err)
+  try {
+    const uid = req.params.uid
+    if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+    TicketModel.getTicketByUid(uid, async function (err, ticket) {
+      if (err) return apiUtils.sendApiError(res, 500, err)
 
-    if (req.user.role.isAdmin || req.user.role.isAgent) {
-      DepartmentModel.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
-        if (err) return apiUtils.sendApiError(res, 500, err)
+      if (req.user.role.isAdmin || req.user.role.isAgent) {
+        const dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
 
-        const groups = dbGroups.map(function (g) {
-          return g._id.toString()
-        })
+        const groups = dbGroups.map((g) => g?._id.toString())
 
         if (groups.includes(ticket.group._id.toString())) {
           return apiUtils.sendApiSuccess(res, { ticket })
         } else {
           return apiUtils.sendApiError(res, 403, 'Forbidden')
         }
-      })
-    } else {
-      GroupModel.getAllGroupsOfUser(req.user._id, function (err, userGroups) {
-        if (err) return apiUtils.sendApiError(res, 500, err)
+      } else {
+        const userGroups = await GroupModel.getAllGroupsOfUser(req.user._id)
 
         const groupIds = userGroups.map(function (m) {
           return m._id.toString()
@@ -154,9 +150,11 @@ ticketsV2.single = async function (req, res) {
         } else {
           return apiUtils.sendApiError(res, 403, 'Forbidden')
         }
-      })
-    }
-  })
+      }
+    })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
 ticketsV2.update = function (req, res) {
@@ -187,7 +185,7 @@ ticketsV2.batchUpdate = function (req, res) {
           const HistoryItem = {
             action: 'ticket:set:status',
             description: 'status set to: ' + batchTicket.status,
-            owner: req.user._id
+            owner: req.user._id,
           }
 
           ticket.history.push(HistoryItem)
@@ -249,7 +247,7 @@ ticketsV2.transferToThirdParty = async (req, res) => {
       description: ticket.issue,
       email: ticket.owner.email,
       status: 2,
-      priority: 2
+      priority: 2,
     }
 
     await request.post(url, ticketObj, { auth: { username: thirdParty.apikey, password: '1' } })

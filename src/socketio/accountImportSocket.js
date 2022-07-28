@@ -15,7 +15,7 @@ const _ = require('lodash')
 const async = require('async')
 const winston = require('../logger')
 const utils = require('../helpers/utils')
-const UserSchema = require('../models/user')
+const UserSchema = require('../models').UserModel
 const Role = require('../models/role')
 const permissions = require('../permissions')
 

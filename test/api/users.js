@@ -114,7 +114,7 @@ describe('api/users.js', function () {
     async.waterfall(
       [
         function (cb) {
-          var userSchema = require('../../src/models/user')
+          var userSchema = require('../../src/models').UserModel
           userSchema.getUserByUsername('fake.user', function (err, user) {
             if (err) return cb(err)
 
@@ -148,7 +148,7 @@ describe('api/users.js', function () {
 
   it('should add user to group', function (done) {
     var groupSchema = require('../../src/models/group')
-    var userSchema = require('../../src/models/user')
+    var userSchema = require('../../src/models').UserModel
 
     groupSchema.getGroupByName('TEST', function (err, group) {
       expect(err).to.not.exist
@@ -183,7 +183,7 @@ describe('api/users.js', function () {
 
   it('should remove user from group', function (done) {
     var groupSchema = require('../../src/models/group')
-    var userSchema = require('../../src/models/user')
+    var userSchema = require('../../src/models').UserModel
 
     groupSchema.getGroupByName('TEST', function (err, group) {
       expect(err).to.not.exist

@@ -17,8 +17,9 @@ const _ = require('lodash')
 const winston = require('../../../logger')
 const permissions = require('../../../permissions')
 const emitter = require('../../../emitter')
-const UserSchema = require('../../../models/user')
-const groupSchema = require('../../../models/group')
+const UserSchema = require('../../../models').UserModel
+const groupSchema = require('../../../models').GroupModel
+const DepartmentModel = require('../../../models').DepartmentModel
 const notificationSchema = require('../../../models/notification')
 const SettingUtil = require('../../../settings/settingsUtil')
 const Chance = require('chance')
@@ -56,7 +57,7 @@ apiUsers.getWithLimit = function (req, res) {
   const obj = {
     limit: limit,
     page: page,
-    search: search
+    search: search,
   }
 
   async.waterfall(
@@ -101,14 +102,14 @@ apiUsers.getWithLimit = function (req, res) {
                   return cc(null, result)
                 }
               )
-            }
+            },
           ],
           function (err, results) {
             if (err) return callback(err)
             return callback(null, results)
           }
         )
-      }
+      },
     ],
     function (err, rr) {
       if (err) return res.status(400).json({ error: 'Error: ' + err.message })
@@ -202,7 +203,7 @@ apiUsers.create = async function (req, res) {
           fullname: postData.aFullname,
           email: postData.aEmail,
           accessToken: chance.hash(),
-          role: postData.aRole
+          role: postData.aRole,
         })
 
         if (postData.aTitle) {
@@ -248,7 +249,7 @@ apiUsers.create = async function (req, res) {
             )
           })
         })
-      }
+      },
     ],
     function (e) {
       if (e) {
@@ -338,13 +339,13 @@ apiUsers.createPublicAccount = function (req, res) {
         })
       },
       function (roleDefault, next) {
-        const UserSchema = require('../../../models/user')
+        const UserSchema = require('../../../models').UserModel
         user = new UserSchema({
           username: postData.user.email,
           password: postData.user.password,
           fullname: postData.user.fullname,
           email: postData.user.email,
-          role: roleDefault.value
+          role: roleDefault.value,
         })
 
         user.save(function (err, savedUser) {
@@ -359,7 +360,7 @@ apiUsers.createPublicAccount = function (req, res) {
           name: savedUser.email,
           members: [savedUser._id],
           sendMailTo: [savedUser._id],
-          public: true
+          public: true,
         })
 
         group.save(function (err, savedGroup) {
@@ -367,7 +368,7 @@ apiUsers.createPublicAccount = function (req, res) {
 
           return next(null, { user: savedUser, group: savedGroup })
         })
-      }
+      },
     ],
     function (err, result) {
       if (err) winston.debug(err)
@@ -378,7 +379,7 @@ apiUsers.createPublicAccount = function (req, res) {
 
       return res.json({
         success: true,
-        userData: { user: result.user, group: result.group }
+        userData: { user: result.user, group: result.group },
       })
     }
   )
@@ -398,7 +399,7 @@ apiUsers.profileUpdate = function (req, res) {
     title: data.aTitle,
     password: data.aPassword,
     passconfirm: data.aPassConfirm,
-    email: data.aEmail
+    email: data.aEmail,
   }
 
   let passwordComplexityEnabled = true
@@ -459,7 +460,7 @@ apiUsers.profileUpdate = function (req, res) {
       },
       groups: function (done) {
         groupSchema.getAllGroupsOfUser(obj._id, done)
-      }
+      },
     },
     async function (err, results) {
       if (err) {
@@ -528,7 +529,7 @@ apiUsers.update = function (req, res) {
     passconfirm: data.aPassConfirm,
     email: data.aEmail,
     role: data.aRole,
-    groups: data.aGrps
+    groups: data.aGrps,
   }
 
   if (_.isNull(obj.groups) || _.isUndefined(obj.groups)) {
@@ -645,7 +646,7 @@ apiUsers.update = function (req, res) {
             )
           })
         }
-      }
+      },
     },
     async function (err, results) {
       if (err) {
@@ -822,7 +823,7 @@ apiUsers.deleteUser = function (req, res) {
             return cb(null, false)
           })
         }
-      }
+      },
     ],
     function (err, disabled) {
       if (err) return res.status(400).json({ success: false, error: err.message })
@@ -910,7 +911,7 @@ apiUsers.single = function (req, res) {
 
   const response = {
     success: true,
-    groups: []
+    groups: [],
   }
 
   async.waterfall(
@@ -937,7 +938,7 @@ apiUsers.single = function (req, res) {
 
           done(null, response.groups)
         })
-      }
+      },
     ],
     function (err) {
       if (err) return res.status(400).json({ error: err })
@@ -1210,31 +1211,30 @@ apiUsers.getAssingees = function (req, res) {
   })
 }
 
-apiUsers.getGroups = function (req, res) {
-  if (req.user.role.isAdmin || req.user.role.isAgent) {
-    const departmentSchema = require('../../../models/department')
-    departmentSchema.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
-      if (err) return res.status(400).json({ success: false, error: err.message })
+apiUsers.getGroups = async function (req, res) {
+  try {
+    if (req.user.role.isAdmin || req.user.role.isAgent) {
+      const groups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
 
-      const mappedGroups = groups.map(function (g) {
-        return g._id
-      })
+      const mappedGroups = groups.map(g => g._id)
 
       return res.json({ success: true, groups: mappedGroups })
-    })
-  } else {
-    if (req.user.username !== req.params.username)
-      return res.status(400).json({ success: false, error: 'Invalid API Call' })
+    } else {
+      if (req.user.username !== req.params.username)
+        return res.status(400).json({ success: false, error: 'Invalid API Call' })
 
-    groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, groups) {
-      if (err) return res.status(400).json({ success: false, error: err.message })
+      groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, groups) {
+        if (err) return res.status(400).json({ success: false, error: err.message })
 
-      const mappedGroups = groups.map(function (g) {
-        return g._id
+        const mappedGroups = groups.map(function (g) {
+          return g._id
+        })
+
+        return res.json({ success: true, groups: mappedGroups })
       })
-
-      return res.json({ success: true, groups: mappedGroups })
-    })
+    }
+  } catch (e) {
+    return res.json({ success: false, error: e.message })
   }
 }
 

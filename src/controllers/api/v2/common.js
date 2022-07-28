@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const User = require('../../../models/user')
+const User = require('../../../models').UserModel
 const apiUtils = require('../apiUtils')
 
 const commonV2 = {}

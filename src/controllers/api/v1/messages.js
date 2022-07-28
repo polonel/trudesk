@@ -17,7 +17,7 @@ const _ = require('lodash')
 const winston = require('../../../logger')
 const ConversationSchema = require('../../../models/chat/conversation')
 const MessageSchema = require('../../../models/chat/message')
-const UserSchema = require('../../../models/user')
+const UserSchema = require('../../../models').UserModel
 
 const apiMessages = {}
 
@@ -192,10 +192,10 @@ apiMessages.send = function (req, res) {
       message = message.replace(
         m,
         '<a href="/tickets/' +
-          m.replace('T#', '').replace('t#', '') +
-          '">T#' +
-          m.replace('T#', '').replace('t#', '') +
-          '</a>'
+        m.replace('T#', '').replace('t#', '') +
+        '">T#' +
+        m.replace('T#', '').replace('t#', '') +
+        '</a>'
       )
     })
   }
