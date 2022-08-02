@@ -21,13 +21,15 @@ import { middleware as thunkMiddleware } from 'redux-saga-thunk'
 import IndexReducer from './reducers'
 import IndexSagas from './sagas'
 import { SingletonHooksContainer } from 'react-singleton-hook'
+
+import App from './app/App'
 import TopbarContainer from './containers/Topbar/TopbarContainer'
 import Sidebar from './components/Nav/Sidebar/index.jsx'
 import ModalRoot from './containers/Modals'
 import renderer from './renderer'
 
 import SocketGlobal from 'containers/Global/SocketGlobal'
-import SessionLoader from 'lib2/sessionLoader'
+import SessionLoader from 'lib/sessionLoader'
 import HotKeysGlobal from 'containers/Global/HotKeysGlobal'
 import BackupRestoreOverlay from 'containers/Global/BackupRestoreOverlay'
 import ChatDock from 'containers/Global/ChatDock'
@@ -49,7 +51,9 @@ const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddle
 
 // This is need to call an action from angular
 // Goal: remove this once angular is fully removed
-window.react.redux = { store }
+window.react = {
+  redux: store
+}
 
 sagaMiddleware.run(IndexSagas)
 
@@ -72,14 +76,6 @@ if (document.getElementById('globals')) {
   ReactDOM.render(GlobalsRoot, document.getElementById('globals'))
 }
 
-const sidebarWithProvider = (
-  <Provider store={store}>
-    <Sidebar />
-  </Provider>
-)
-
-ReactDOM.render(sidebarWithProvider, document.getElementById('sidebar'))
-
 if (document.getElementById('modal-wrapper')) {
   const RootModal = (
     <Provider store={store}>
@@ -89,17 +85,13 @@ if (document.getElementById('modal-wrapper')) {
   ReactDOM.render(RootModal, document.getElementById('modal-wrapper'))
 }
 
-if (document.getElementById('topbar')) {
-  const TopbarRoot = (
-    <Provider store={store}>
-      <TopbarContainer />
-    </Provider>
-  )
+if (document.getElementById('trudesk')) {
+  const AppWithStore = <App store={store} />
 
-  ReactDOM.render(TopbarRoot, document.getElementById('topbar'))
+  ReactDOM.render(AppWithStore, document.getElementById('trudesk'))
 }
 
 window.react.renderer = renderer
 window.react.dom = ReactDOM
 
-renderer(store)
+export { store }

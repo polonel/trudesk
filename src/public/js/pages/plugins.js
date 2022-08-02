@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('pages/plugins', ['jquery', 'modules/helpers', 'tether', 'history'], function ($, helpers, Tether) {
+define('pages/plugins', ['jquery', 'helpers', 'tether', 'history'], function ($, helpers, Tether) {
   var pluginsPage = {}
 
   pluginsPage.init = function (callback) {

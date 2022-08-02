@@ -6,16 +6,17 @@ import { makeObservable, observable } from 'mobx'
 import Input from 'components/Input'
 import Button from 'components/Button'
 import axios from 'axios'
-import 'history'
 import $ from 'jquery'
 import ForgotPasswordContainer from 'containers/Login/forgotPassword'
 import clsx from 'clsx'
+import '../../../../public/img/defaultLogoDark.png'
+import '../../../../public/img/defaultLogoLight.png'
 
 const GLOBALS = '__GLOBAL_STYLES__'
 
 const globalExtension = {
   selectorHandler: (selector, baseSelector, generateSubtreeStyles) =>
-    baseSelector.includes(GLOBALS) ? generateSubtreeStyles(selector) : null,
+    baseSelector.includes(GLOBALS) ? generateSubtreeStyles(selector) : null
 }
 
 const extended = StyleSheet.extend([globalExtension])
@@ -34,30 +35,30 @@ class LoginContainer extends React.Component {
   loginFormRef = createRef()
   forgotPasswordRef = createRef()
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     makeObservable(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     setTimeout(function () {
       $('#login-username').focus()
     }, 700)
 
     axios
       .get('/api/v2/viewdata')
-      .then((res) => {
+      .then(res => {
         const viewData = res.data.viewdata
         if (viewData.hasCustomPageLogo && viewData.customPageLogoFilename)
           this.pageLogo = viewData.customPageLogoFilename
       })
-      .catch((error) => {
+      .catch(error => {
         // eslint-disable-next-line no-console
         console.log(error)
       })
   }
 
-  onShowForgotPassword(e) {
+  onShowForgotPassword (e) {
     e.preventDefault()
     if (this.loginFormRef.current && this.forgotPasswordRef.current) {
       const $loginForm = $(this.loginFormRef.current)
@@ -69,7 +70,7 @@ class LoginContainer extends React.Component {
     }
   }
 
-  onForgotPasswordComplete(err, result) {
+  onForgotPasswordComplete (err, result) {
     if (err) {
       this.flashSuccess = false
       this.flashMessage = err
@@ -81,7 +82,7 @@ class LoginContainer extends React.Component {
     }
   }
 
-  onLoginFormSubmit(e) {
+  onLoginFormSubmit (e) {
     e.preventDefault()
     if (this.username.length < 4 || this.password.length < 4) return
 
@@ -92,9 +93,9 @@ class LoginContainer extends React.Component {
     axios
       .post('/login', {
         'login-username': this.username,
-        'login-password': this.password,
+        'login-password': this.password
       })
-      .then((res) => {
+      .then(res => {
         if (res.data?.success && res.data?.redirectUrl) {
           this.flashSuccess = false
           this.flashMessage = ''
@@ -102,7 +103,7 @@ class LoginContainer extends React.Component {
           return (window.location.href = res.data.redirectUrl)
         }
       })
-      .catch((err) => {
+      .catch(err => {
         if (err.response) {
           const response = err.response
           if (response.status === 429) {
@@ -118,7 +119,7 @@ class LoginContainer extends React.Component {
       })
   }
 
-  onBackClicked() {
+  onBackClicked () {
     if (this.loginFormRef.current && this.forgotPasswordRef.current) {
       const $loginForm = $(this.loginFormRef.current)
       const $forgotPasswordForm = $(this.forgotPasswordRef.current)
@@ -129,7 +130,7 @@ class LoginContainer extends React.Component {
     }
   }
 
-  render() {
+  render () {
     const { aur, me } = this.props
     return (
       <div>
@@ -144,43 +145,43 @@ class LoginContainer extends React.Component {
           </div>
         )}
 
-        <div className="login-wrapper">
-          <img src={this.pageLogo} alt="Logo" className="site-logo-login" />
+        <div className='login-wrapper'>
+          <img src={this.pageLogo} alt='Logo' className='site-logo-login' />
 
-          <div ref={this.loginFormRef} className="loginForm">
-            <form id="loginForm" className="uk-form-stacked uk-clearfix" onSubmit={(e) => this.onLoginFormSubmit(e)}>
-              <div className="uk-margin-medium-bottom">
-                <div className="uk-margin-medium-bottom">
+          <div ref={this.loginFormRef} className='loginForm'>
+            <form id='loginForm' className='uk-form-stacked uk-clearfix' onSubmit={e => this.onLoginFormSubmit(e)}>
+              <div className='uk-margin-medium-bottom'>
+                <div className='uk-margin-medium-bottom'>
                   <Input
                     type={'text'}
                     name={'login-username'}
                     id={'login-username'}
                     showLabel={true}
                     labelText={'Username'}
-                    onChange={(val) => (this.username = val)}
+                    onChange={val => (this.username = val)}
                   />
                 </div>
               </div>
-              <div className="uk-margin-medium-bottom">
+              <div className='uk-margin-medium-bottom'>
                 <Input
                   type={'password'}
                   name={'login-password'}
                   id={'login-password'}
                   showLabel={true}
                   labelText={'Password'}
-                  onChange={(val) => (this.password = val)}
+                  onChange={val => (this.password = val)}
                 />
               </div>
               <Button type={'submit'} text={'login'} flat={true} waves={true} style={'accent'} extraClass={'btn'} />
             </form>
             {aur === 'true' || (me === 'true' && <hr />)}
             {aur === 'true' && (
-              <a href="/signup" className="no-ajaxy left">
+              <a href='/signup' className='no-ajaxy left'>
                 Create an Account
               </a>
             )}
             {me === 'true' && (
-              <a href="#" className="no-ajaxy right" onClick={(e) => this.onShowForgotPassword(e)}>
+              <a href='#' className='no-ajaxy right' onClick={e => this.onShowForgotPassword(e)}>
                 Forgot your password?
               </a>
             )}
@@ -188,35 +189,35 @@ class LoginContainer extends React.Component {
 
           <ForgotPasswordContainer
             forwardRef={this.forgotPasswordRef}
-            onBackClicked={(e) => this.onBackClicked(e)}
+            onBackClicked={e => this.onBackClicked(e)}
             onCompleted={(err, result) => this.onForgotPasswordComplete(err, result)}
           />
         </div>
 
-        <div className="bottom">Trudesk v1.2.5-CE</div>
+        <div className='bottom'>Trudesk v1.2.5-CE</div>
       </div>
     )
   }
 }
 
 const globalStyles = extended.StyleSheet.create({
-  [GLOBALS]: {},
+  [GLOBALS]: {}
 })
 
 extended.css(globalStyles[GLOBALS])
 
 const styles = StyleSheet.create({
   body: {
-    background: 'blue',
+    background: 'blue'
   },
   red: {
-    background: 'red',
-  },
+    background: 'red'
+  }
 })
 
 LoginContainer.propTypes = {
   aur: PropTypes.string,
-  me: PropTypes.string,
+  me: PropTypes.string
 }
 
 export default LoginContainer

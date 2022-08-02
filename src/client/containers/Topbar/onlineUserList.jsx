@@ -20,7 +20,7 @@ import { observable, entries, makeObservable, configure } from 'mobx'
 import { isUndefined } from 'lodash'
 
 import { MESSAGES_SPAWN_CHAT_WINDOW } from 'serverSocket/socketEventConsts'
-import { startConversation } from 'lib2/chat'
+import { startConversation } from 'lib/chat'
 
 import OffCanvas from 'components/OffCanvas'
 

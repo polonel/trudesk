@@ -14,7 +14,7 @@
 
 global.react = {} // Global react var for calling state outside react.
 
-require(['jquery', 'modules/helpers', 'async', 'singleton/sessionSingleton', 'singleton/settingsSingleton'], function (
+require(['jquery', 'helpers', 'async', 'singleton/sessionSingleton', 'singleton/settingsSingleton'], function (
   $,
   helpers,
   async,

@@ -30,7 +30,7 @@ import PageTitle from 'components/PageTitle'
 import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
 
-import { startConversation } from 'lib2/chat'
+import { startConversation } from 'lib/chat'
 import UIKit from 'uikit'
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -413,11 +413,16 @@ class MessagesContainer extends React.Component {
                 style={{ marginBottom: '41px !important' }}
               >
                 <span className={'conversation-start'}>
-                  Conversation Started on {helpers.formatDate(currentConversation.get('createdAt'), helpers.getLongDateWithTimeFormat())}
+                  Conversation Started on{' '}
+                  {helpers.formatDate(currentConversation.get('createdAt'), helpers.getLongDateWithTimeFormat())}
                 </span>
                 {currentConversation.get('requestingUserMeta').get('deletedAt') && (
                   <span className={'conversation-deleted'}>
-                    Conversation Deleted at {helpers.formatDate(currentConversation.get('requestingUserMeta').get('deletedAt'), helpers.getLongDateWithTimeFormat())}
+                    Conversation Deleted at{' '}
+                    {helpers.formatDate(
+                      currentConversation.get('requestingUserMeta').get('deletedAt'),
+                      helpers.getLongDateWithTimeFormat()
+                    )}
                   </span>
                 )}
                 <div ref={this.conversationScrollSpy} className={clsx('uk-text-center', 'uk-hidden')}>

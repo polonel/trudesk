@@ -1,0 +1,2579 @@
+/* animations */
+[class^="uk-animation-"] {
+    -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-animation-duration: 280ms;
+    animation-duration: 280ms;
+}
+/* alerts */
+.uk-alert {
+    border: 1px solid rgba(45, 112, 145, 0.3);
+    background: #ebf7fd;
+    color: #2d7091;
+    text-shadow: none;
+    padding-right: 32px;
+    position: relative;
+    display: block;
+    border-radius: 3px;
+}
+.uk-alert-success {
+    border-color: rgba(100, 145, 48, .3) !important;
+    background: #e1efd0 !important;
+    color: #496a23;
+}
+.uk-alert-danger {
+    background: #e53935 !important;
+}
+.uk-alert-warning {
+    background: #fffceb !important;
+    color: #e28327;
+    border-color: rgba(226,131,39,.3) !important;
+}
+.uk-alert-info {
+    background: #0097a7 !important;
+}
+.uk-alert-large {
+    padding: 24px 32px 24px 24px;
+}
+.uk-alert-close {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    float: none !important;
+    margin: 0 !important;
+}
+.uk-alert-close:after {
+    color: #fff !important;
+}
+/* badges */
+.uk-badge {
+    background: #0097a7;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 2px;
+    text-shadow: none;
+    font-size: 13px;
+    line-height: 15px;
+    font-weight: 400;
+}
+.uk-badge-primary {
+    background: #2196f3;
+}
+.uk-badge-danger {
+    background: #e53935;
+}
+.uk-badge-warning {
+    background: #ffa000;
+}
+.uk-badge-success {
+    background: #7cb342;
+}
+.uk-badge-muted {
+    background: #bdbdbd;
+}
+.uk-badge-notification {
+    border-radius: 20px;
+}
+.uk-badge.inline-label {
+    vertical-align: 1px;
+    margin-left: 4px;
+}
+.uk-badge-outline {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    color: #212121;
+    padding-bottom: 0;
+    line-height: 16px;
+}
+/* buttons */
+.uk-button {
+    font-weight: 400;
+    border-radius: 2px;
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* comments */
+.uk-comment-list > li + li {
+    border-top: 1px dashed rgba(0, 0, 0, 0.12);
+    margin-top: 16px !important;
+}
+.uk-comment-list .uk-comment + ul {
+    margin: 8px 0 0 0;
+}
+@media only screen and (min-width: 768px) {
+    .uk-comment-list .uk-comment + ul {
+        padding-left: 48px;
+    }
+}
+.uk-comment-header {
+    padding: 16px 8px 8px;
+    border: none;
+    background: none;
+    margin-bottom: 0;
+}
+.uk-comment-title {
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+}
+/* dialog modals */
+.uk-modal {
+    z-index: 1304;
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-transition: opacity 250ms ease-out;
+    transition: opacity 250ms ease-out;
+    overflow: auto !important;
+}
+.uk-modal.uk-modal-no-backdrop {
+    background: transparent;
+}
+.uk-modal-dialog {
+    border-radius: 2px;
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 24px;
+    display: block !important;
+    -webkit-animation: none !important;
+    animation: none !important;
+    -webkit-transition: -webkit-transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms ease-in;
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms ease-in;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+}
+.uk-open .uk-modal-dialog {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+.uk-modal-dialog .uk-modal-header {
+    background: none;
+    border-bottom: none;
+    margin: 0 -24px 24px;
+    padding: 0 32px 0 24px;
+    overflow: hidden;
+}
+.uk-modal-dialog .uk-modal-header .uk-modal-title {
+    margin: 0;
+    font: 500 18px / 28px "Roboto", sans-serif;
+}
+.uk-modal-dialog .uk-modal-header .uk-modal-title span {
+    font-size: 16px;
+    display: block;
+    color: #727272;
+}
+.uk-modal-dialog .uk-modal-footer {
+    margin: 16px -16px -16px;
+    padding: 16px;
+    background: #fff;
+    border-top: none;
+}
+.uk-modal-dialog .uk-modal-footer:before,
+.uk-modal-dialog .uk-modal-footer:after {
+    content: " ";
+    display: table;
+}
+.uk-modal-dialog .uk-modal-footer:after {
+    clear: both;
+}
+.uk-modal-dialog .uk-modal-footer:before,
+.uk-modal-dialog .uk-modal-footer:after {
+    content: " ";
+    display: table;
+}
+.uk-modal-dialog .uk-modal-footer:after {
+    clear: both;
+}
+.uk-modal-dialog .uk-modal-footer .md-icon-btn {
+    margin-top: 2px;
+}
+.uk-modal-dialog .uk-modal-caption {
+    bottom: 16px;
+    margin: 0 32px;
+}
+.uk-modal-dialog > .uk-close:first-child {
+    top: 8px;
+    right: 8px;
+    position: absolute;
+    float: none;
+    margin: 0;
+}
+.uk-modal-dialog-lightbox {
+    padding: 0;
+}
+.uk-modal-dialog-lightbox > .uk-close:first-child {
+    top: -11px;
+    right: -11px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    border: none;
+}
+.uk-modal-dialog .uk-overflow-container {
+    margin: 16px 0;
+}
+.uk-modal .uk-margin.uk-modal-content {
+    margin-bottom: 0;
+}
+.uk-modal.uk-modal-dialog-replace .uk-modal-content {
+    font-size: 18px;
+}
+/* dropdowns */
+.uk-dropdown {
+    -webkit-transform: scale(0.25, 0);
+    transform: scale(0.25, 0);
+    opacity: 0;
+    -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-animation: none !important;
+    animation: none !important;
+    -webkit-transform-origin: 50% 0 !important;
+    transform-origin: 50% 0 !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    border: none;
+    border-radius: 2px;
+}
+.uk-dropdown.uk-dropdown-xlarge {
+    width: 360px;
+}
+@media only screen and (max-width: 479px) {
+    .uk-dropdown.uk-dropdown-xlarge {
+        width: 260px;
+    }
+}
+.uk-dropdown.uk-dropdown-large {
+    width: 260px;
+}
+.uk-dropdown.uk-dropdown-small {
+    width: 160px;
+}
+.uk-dropdown.uk-dropdown-xsmall {
+    min-width: 130px !important;
+    width: 130px !important;
+    padding: 5px 15px !important;
+}
+.uk-dropdown > ul > li > a {
+    font-size: 14px;
+    color: #212121;
+}
+.uk-dropdown > ul > li > a:hover {
+    background: rgba(0, 0, 0, 0.085);
+}
+.uk-dropdown > ul > li.uk-active > a {
+    background: rgba(0, 0, 0, 0.085);
+}
+.uk-dropdown.dropdown-modal {
+    z-index: 1310;
+}
+.uk-dropdown.dropdown-fs {
+    z-index: 9999;
+}
+.uk-dropdown.uk-dropdown-scrollable {
+    -webkit-overflow-scrolling: touch;
+}
+[data-uk-dropdown*="top-"] .uk-dropdown {
+    -webkit-transform-origin: 50% 100% !important;
+    transform-origin: 50% 100% !important;
+}
+[data-uk-dropdown*="left-"] .uk-dropdown {
+    -webkit-transform-origin: 100% 50% !important;
+    transform-origin: 100% 50% !important;
+}
+[data-uk-dropdown*="right-"] .uk-dropdown {
+    -webkit-transform-origin: 0 50% !important;
+    transform-origin: 0 50% !important;
+}
+[data-uk-dropdown*='justify'] {
+    position: static !important;
+}
+[data-uk-dropdown*='justify'] [class*="uk-dropdown-width"] {
+    left: 0 !important;
+    width: 100% !important;
+    min-width: inherit !important;
+    margin-left: 0 !important;
+}
+.uk-dropdown-active {
+    display: block !important;
+}
+.uk-dropdown-shown {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+    opacity: 1;
+}
+.uk-nav-dropdown > li > a:focus,
+.uk-nav-dropdown > li > a:hover {
+    text-shadow: none;
+    box-shadow: none;
+    color: #212121;
+    background: rgba(153, 153, 153, 0.2);
+}
+/* forms */
+.uk-form input:not([type]),
+.uk-form input[type=color],
+.uk-form input[type=date],
+.uk-form input[type=datetime-local],
+.uk-form input[type=email],
+.uk-form input[type=month],
+.uk-form input[type=number],
+.uk-form input[type=password],
+.uk-form input[type=search],
+.uk-form input[type=tel],
+.uk-form input[type=text],
+.uk-form input[type=time],
+.uk-form input[type=url],
+.uk-form input[type=week],
+.uk-form select,
+.uk-form textarea {
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    -webkit-transition: border 200ms ease-in;
+    transition: border 200ms ease-in;
+    resize: none;
+}
+.uk-form input:not([type]):focus,
+.uk-form input[type=color]:focus,
+.uk-form input[type=date]:focus,
+.uk-form input[type=datetime-local]:focus,
+.uk-form input[type=email]:focus,
+.uk-form input[type=month]:focus,
+.uk-form input[type=number]:focus,
+.uk-form input[type=password]:focus,
+.uk-form input[type=search]:focus,
+.uk-form input[type=tel]:focus,
+.uk-form input[type=text]:focus,
+.uk-form input[type=time]:focus,
+.uk-form input[type=url]:focus,
+.uk-form input[type=week]:focus,
+.uk-form select:focus,
+.uk-form textarea:focus {
+    background: none;
+    border-color: #2196f3;
+}
+.uk-form textarea {
+    -webkit-transition: border-color 200ms ease-in, height 280ms ease-in;
+    transition: border-color 200ms ease-in, height 280ms ease-in;
+}
+.uk-form-row {
+    -webkit-transition: all 200ms ease-out;
+    transition: all 200ms ease-out;
+}
+.uk-form-row + .uk-form-row {
+    margin-top: 24px;
+}
+.uk-form-stacked .uk-form-label {
+    font-weight: 500;
+    font-size: 13px;
+    display: block;
+    padding-bottom: 8px;
+}
+.uk-form-stacked .uk-form-label + p {
+    margin-top: 0;
+}
+.uk-form-help-block {
+    display: block;
+    font-size: 12px;
+    color: #727272;
+    padding: 4px 0 0 0;
+    font-style: italic;
+}
+.uk-form-width-large,
+.uk-form-width-medium,
+.uk-form-width-small,
+.uk-form-width-mini {
+    max-width: 100%;
+}
+/* grid */
+.uk-grid + .uk-grid,
+.uk-grid-margin,
+.uk-grid > * > .uk-panel + .uk-panel {
+    margin-top: 24px;
+}
+.uk-grid.uk-grid-small + .uk-grid-small,
+.uk-grid.uk-grid-small > * > .uk-panel + .uk-panel,
+.uk-grid.uk-grid-small > .uk-grid-margin {
+    margin-top: 10px;
+}
+/* icons */
+[class*="uk-icon-"] {
+    color: #727272;
+}
+/* input groups */
+.uk-input-group {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+    /*&-icon {
+          font-size: 20px !important;
+          vertical-align: -3px;
+      }*/
+}
+.uk-input-group > input[type=text] {
+    position: relative;
+    z-index: 2;
+    float: left;
+    width: 100%;
+    margin-bottom: 0;
+}
+.uk-input-group-addon,
+.uk-input-group > input[type=text] {
+    display: table-cell;
+}
+.uk-input-group-addon {
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+    line-height: 1;
+    text-align: center;
+    padding: 0 16px;
+    font-size: 16px;
+    min-width: 22px;
+}
+.uk-input-group > .md-input-wrapper {
+    display: inline-block;
+}
+.uk-input-group.uk-input-group-danger .uk-input-group-addon i {
+    color: #e53935 !important;
+}
+.uk-input-group.uk-input-group-danger + .parsley-errors-list {
+    margin-left: 58px;
+}
+.uk-input-group.uk-input-group-success .uk-input-group-addon i {
+    color: #7cb342 !important;
+}
+/* pagination */
+.uk-pagination {
+    margin: 0;
+}
+.uk-pagination > li {
+    outline: none !important;
+}
+.uk-pagination > li > a,
+.uk-pagination > li > span {
+    border: none;
+    padding: 4px 8px;
+    min-width: 32px;
+    line-height: 24px;
+    height: 32px;
+    box-sizing: border-box;
+    text-shadow: none;
+    color: #212121;
+    border-radius: 4px;
+}
+.uk-pagination > li > a [class*="uk-icon-"],
+.uk-pagination > li > span [class*="uk-icon-"] {
+    font-size: 16px;
+}
+.uk-pagination > li > a {
+    background: transparent;
+}
+.uk-pagination > li > a:hover {
+    background: #e1efd2;
+}
+.uk-pagination > li.uk-active > a,
+.uk-pagination > li.uk-active > span {
+    background: #7cb342;
+}
+.uk-pagination > li.uk-active > a,
+.uk-pagination > li.uk-active > span,
+.uk-pagination > li.uk-active > a:hover,
+.uk-pagination > li.uk-active > span:hover {
+    color: #fff;
+}
+.uk-pagination > li.uk-disabled > a,
+.uk-pagination > li.uk-disabled > span {
+    border: none;
+    text-shadow: none;
+    background: transparent !important;
+    color: #aaa;
+    cursor: default;
+}
+/* panels */
+.uk-panel-box {
+    border-radius: 2px;
+    background: #fff;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+.uk-panel-box .uk-panel-teaser {
+    border-radius: 2px 2px 0 0;
+}
+/* tables */
+.uk-table td {
+    border-bottom-color: rgba(0, 0, 0, 0.12);
+}
+.uk-table th {
+    border-bottom: 1px #444;
+}
+.uk-table-nowrap td,
+.uk-table-nowrap th {
+    white-space: nowrap;
+}
+.uk-table-align-vertical td,
+.uk-table-align-vertical th {
+    vertical-align: middle;
+}
+.uk-table-no-border td {
+    border-bottom-color: transparent;
+}
+/* sticky */
+.uk-sticky-placeholder .uk-active {
+    z-index: 1094;
+}
+/* subnav */
+.uk-subnav-pill > * > * {
+    color: #212121;
+}
+.uk-subnav-pill > .uk-active > * {
+    background: #7cb342;
+}
+/* tables */
+.uk-table thead th {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+}
+.uk-table thead th,
+.uk-table tfoot td,
+.uk-table tfoot th {
+    font-style: normal;
+    font-weight: 400;
+    color: #727272;
+    font-size: 14px;
+}
+.uk-table td {
+    border-bottom-color: #e0e0e0;
+}
+.uk-table tfoot td,
+.uk-table tfoot th {
+    border-top: 2px solid rgba(0, 0, 0, 0.12);
+    border-bottom: none;
+}
+.uk-table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(0, 0, 0, 0.085);
+}
+.uk-table-hover tbody tr:hover {
+    background: rgba(0, 0, 0, 0.085);
+}
+/* thumbnails */
+.uk-thumbnail {
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+.uk-thumbnail-caption {
+    padding: 4px 4px 0;
+    line-height: 20px;
+    color: #727272;
+    font-size: 12px;
+}
+/* utilities */
+.uk-text-small {
+    font-size: 12px;
+}
+.uk-text-muted {
+    color: #757575 !important;
+}
+.uk-text-primary {
+    color: #2196f3 !important;
+}
+.uk-text-danger {
+    color: #e53935 !important;
+}
+.uk-text-success {
+    color: #7cb342 !important;
+}
+.uk-text-warning {
+    color: #ffa000 !important;
+}
+.uk-margin-bottom {
+    margin-bottom: 16px !important;
+}
+.uk-margin-small-bottom {
+    margin-bottom: 8px !important;
+}
+.uk-margin-medium-bottom {
+    margin-bottom: 32px !important;
+}
+.uk-margin-large-bottom {
+    margin-bottom: 48px !important;
+}
+.uk-margin-medium-top {
+    margin-top: 32px !important;
+}
+.uk-margin-large-top {
+    margin-top: 48px !important;
+}
+.uk-close {
+    font-size: 18px;
+    opacity: 1;
+}
+.uk-close:hover,
+.uk-close:focus {
+    opacity: 1;
+}
+.uk-close:after {
+    opacity: 1 !important;
+    color: #727272;
+    content: '\e5cd';
+    font-family: "Material Icons";
+}
+/* ------------ Components ------------ */
+/* accordion */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Accordion
+ ========================================================================== */
+/* Sub-object: `uk-accordion-title`
+ ========================================================================== */
+.uk-accordion-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding: 5px 15px;
+    background: #f5f5f5;
+    font-size: 18px;
+    line-height: 24px;
+    cursor: pointer;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+}
+/* Sub-object: `uk-accordion-content`
+ ========================================================================== */
+.uk-accordion-content {
+    padding: 0 15px 15px 15px;
+}
+/*
+ * Micro clearfix to make panels more robust
+ */
+.uk-accordion-content:before,
+.uk-accordion-content:after {
+    content: "";
+    display: table;
+}
+.uk-accordion-content:after {
+    clear: both;
+}
+/*
+ * Remove margin from the last-child
+ */
+.uk-accordion-content > :last-child {
+    margin-bottom: 0;
+}
+.uk-accordion-title {
+    background: rgba(153, 153, 153, 0.2);
+    border-radius: 0;
+    border: none;
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 8px 24px 8px 16px;
+    position: relative;
+}
+.uk-accordion-title:after {
+    content: '\e313';
+    font-family: "Material Icons";
+    font-size: 18px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: block;
+    color: #727272;
+    -webkit-transition: -webkit-transform 280ms;
+    transition: transform 280ms;
+}
+.uk-accordion-title.uk-active:after {
+    -webkit-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+}
+.uk-accordion-title-primary {
+    background: #2196f3;
+    color: #fff;
+}
+.uk-accordion-title-primary:after {
+    color: #fff;
+}
+.uk-accordion-title-danger {
+    background: #e53935;
+    color: #fff;
+}
+.uk-accordion-title-danger:after {
+    color: #fff;
+}
+.uk-accordion-title-success {
+    background: #7cb342;
+    color: #fff;
+}
+.uk-accordion-title-success:after {
+    color: #fff;
+}
+.uk-accordion-title-warning {
+    background: #ffa000;
+    color: #fff;
+}
+.uk-accordion-title-warning:after {
+    color: #fff;
+}
+.uk-accordion-content {
+    padding: 16px;
+}
+.uk-accordion-alt .uk-accordion-title {
+    background: #fff;
+    margin: 0;
+    padding: 16px 24px 16px 48px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+.uk-accordion-alt .uk-accordion-title:first-child {
+    border-top: none;
+}
+.uk-accordion-alt .uk-accordion-title:after {
+    color: #2196f3;
+    content: '\e145';
+    right: auto;
+    left: 16px;
+    top: 16px;
+}
+.uk-accordion-alt .uk-accordion-title.uk-active:after {
+    -webkit-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+    content: '\e15b';
+}
+.uk-accordion-alt .uk-accordion-content {
+    padding: 24px;
+}
+/* dotnav */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Dotnav
+ ========================================================================== */
+/*
+ * 1. Gutter
+ * 2. Remove default list style
+ */
+.uk-dotnav {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    /* 1 */
+    margin-left: -15px;
+    margin-top: -15px;
+    /* 2 */
+    padding: 0;
+    list-style: none;
+}
+/*
+ * 1. Space is allocated solely based on content dimensions
+ * 2. Horizontal gutter is using `padding` so `uk-width-*` classes can be applied
+ */
+.uk-dotnav > * {
+    /* 1 */
+    -ms-flex: none;
+    -webkit-flex: none;
+    -webkit-box-flex: 0;
+    flex: none;
+    /* 2 */
+    padding-left: 15px;
+    margin-top: 15px;
+}
+/*
+ * DEPRECATED IE9 Support
+ */
+.uk-dotnav:before,
+.uk-dotnav:after {
+    content: "";
+    display: block;
+    overflow: hidden;
+}
+.uk-dotnav:after {
+    clear: both;
+}
+.uk-dotnav > * {
+    float: left;
+}
+/* Items
+ ========================================================================== */
+/*
+ * Items
+ * 1. Hide text if present
+ */
+.uk-dotnav > * > * {
+    display: block;
+    box-sizing: content-box;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(50, 50, 50, 0.1);
+    /* 1 */
+    text-indent: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ * 2. Remove default focus style
+ */
+.uk-dotnav > * > :hover,
+.uk-dotnav > * > :focus {
+    background: rgba(50, 50, 50, 0.4);
+    /* 2 */
+    outline: none;
+}
+/* OnClick */
+.uk-dotnav > * > :active {
+    background: rgba(50, 50, 50, 0.6);
+}
+/* Active */
+.uk-dotnav > .uk-active > * {
+    background: rgba(50, 50, 50, 0.4);
+}
+/* Modifier: `uk-dotnav-contrast`
+ ========================================================================== */
+.uk-dotnav-contrast > * > * {
+    background: rgba(255, 255, 255, 0.4);
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ */
+.uk-dotnav-contrast > * > :hover,
+.uk-dotnav-contrast > * > :focus {
+    background: rgba(255, 255, 255, 0.7);
+}
+/* OnClick */
+.uk-dotnav-contrast > * > :active {
+    background: rgba(255, 255, 255, 0.9);
+}
+/* Active */
+.uk-dotnav-contrast > .uk-active > * {
+    background: rgba(255, 255, 255, 0.9);
+}
+/* Modifier: 'uk-dotnav-vertical'
+ ========================================================================== */
+/*
+ * DEPRECATED
+ */
+.uk-dotnav-vertical {
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+}
+/*
+ * DEPRECATED IE9 Support
+ */
+.uk-dotnav-vertical > * {
+    float: none;
+}
+/* progress */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Progress
+ ========================================================================== */
+/*
+ * 1. Clearing
+ * 2. Vertical alignment if text is used
+ */
+.uk-progress {
+    box-sizing: border-box;
+    height: 20px;
+    margin-bottom: 15px;
+    background: #f5f5f5;
+    /* 1 */
+    overflow: hidden;
+    /* 2 */
+    line-height: 20px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+}
+/*
+ * Add margin if adjacent element
+ */
+* + .uk-progress {
+    margin-top: 15px;
+}
+/* Sub-object: `uk-progress-bar`
+ ========================================================================== */
+/*
+ * 1. Transition
+ * 2. Needed for text
+ */
+.uk-progress-bar {
+    width: 0;
+    height: 100%;
+    background: #00a8e6;
+    float: left;
+    /* 1 */
+    -webkit-transition: width 0.6s ease;
+    transition: width 0.6s ease;
+    /* 2 */
+    font-size: 12px;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+/* Size modifiers
+ ========================================================================== */
+/* Mini */
+.uk-progress-mini {
+    height: 6px;
+}
+/* Small */
+.uk-progress-small {
+    height: 12px;
+}
+/* Color modifiers
+ ========================================================================== */
+.uk-progress-success .uk-progress-bar {
+    background-color: #8cc14c;
+}
+.uk-progress-warning .uk-progress-bar {
+    background-color: #faa732;
+}
+.uk-progress-danger .uk-progress-bar {
+    background-color: #da314b;
+}
+/* Modifier: `uk-progress-striped`
+ ========================================================================== */
+.uk-progress-striped .uk-progress-bar {
+    background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 30px 30px;
+}
+/*
+ * Animation
+ */
+.uk-progress-striped.uk-active .uk-progress-bar {
+    -webkit-animation: uk-progress-bar-stripes 2s linear infinite;
+    animation: uk-progress-bar-stripes 2s linear infinite;
+}
+@-webkit-keyframes uk-progress-bar-stripes {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 30px 0;
+    }
+}
+@keyframes uk-progress-bar-stripes {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 30px 0;
+    }
+}
+/* Size modifiers
+     ========================================================================== */
+.uk-progress-mini,
+.uk-progress-small {
+    border-radius: 500px;
+}
+.uk-progress {
+    box-shadow: none;
+    border-radius: 2px;
+}
+.uk-progress-bar {
+    background: #009688;
+}
+.uk-progress-success .uk-progress-bar {
+    background-color: #7cb342;
+}
+.uk-progress-danger .uk-progress-bar {
+    background-color: #e53935;
+}
+.uk-progress-warning .uk-progress-bar {
+    background-color: #ffa000;
+}
+/* htmleditor */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: HTML editor
+ ========================================================================== */
+/* Sub-object `uk-htmleditor-navbar`
+ ========================================================================== */
+.uk-htmleditor-navbar {
+    background: #f5f5f5;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+/*
+ * Micro clearfix
+ */
+.uk-htmleditor-navbar:before,
+.uk-htmleditor-navbar:after {
+    content: "";
+    display: table;
+}
+.uk-htmleditor-navbar:after {
+    clear: both;
+}
+/* Sub-object `uk-htmleditor-navbar-nav`
+ ========================================================================== */
+.uk-htmleditor-navbar-nav {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    float: left;
+}
+.uk-htmleditor-navbar-nav > li {
+    float: left;
+}
+/*
+ * 1. Dimensions
+ * 2. Style
+ */
+.uk-htmleditor-navbar-nav > li > a {
+    display: block;
+    box-sizing: border-box;
+    text-decoration: none;
+    /* 1 */
+    height: 41px;
+    padding: 0 15px;
+    line-height: 40px;
+    /* 2 */
+    color: #444444;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: -1px;
+    margin-left: -1px;
+    border: 1px solid transparent;
+    border-bottom-width: 0;
+    text-shadow: 0 1px 0 #ffffff;
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ * 2. Remove default focus style
+ */
+.uk-htmleditor-navbar-nav > li:hover > a,
+.uk-htmleditor-navbar-nav > li > a:focus {
+    background-color: #fafafa;
+    color: #444444;
+    outline: none;
+    /* 2 */
+    position: relative;
+    z-index: 1;
+    border-left-color: rgba(0, 0, 0, 0.1);
+    border-right-color: rgba(0, 0, 0, 0.1);
+    border-top-color: rgba(0, 0, 0, 0.1);
+}
+/* OnClick */
+.uk-htmleditor-navbar-nav > li > a:active {
+    background-color: #eeeeee;
+    color: #444444;
+    border-left-color: rgba(0, 0, 0, 0.1);
+    border-right-color: rgba(0, 0, 0, 0.1);
+    border-top-color: rgba(0, 0, 0, 0.2);
+}
+/* Active */
+.uk-htmleditor-navbar-nav > li.uk-active > a {
+    background-color: #fafafa;
+    color: #444444;
+    border-left-color: rgba(0, 0, 0, 0.1);
+    border-right-color: rgba(0, 0, 0, 0.1);
+    border-top-color: rgba(0, 0, 0, 0.1);
+}
+/* Sub-object: `uk-htmleditor-navbar-flip`
+ ========================================================================== */
+.uk-htmleditor-navbar-flip {
+    float: right;
+}
+/* Sub-object for special buttons
+ ========================================================================== */
+[data-mode='split'] .uk-htmleditor-button-code,
+[data-mode='split'] .uk-htmleditor-button-preview {
+    display: none;
+}
+/* Sub-object `uk-htmleditor-content`
+ ========================================================================== */
+.uk-htmleditor-content {
+    border-left: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    background: #ffffff;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+/*
+ * Micro clearfix
+ */
+.uk-htmleditor-content:before,
+.uk-htmleditor-content:after {
+    content: "";
+    display: table;
+}
+.uk-htmleditor-content:after {
+    clear: both;
+}
+/* Modifier `uk-htmleditor-fullscreen`
+ ========================================================================== */
+.uk-htmleditor-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 990;
+}
+.uk-htmleditor-fullscreen .uk-htmleditor-content {
+    position: absolute;
+    top: 41px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.uk-htmleditor-fullscreen .uk-icon-expand:before {
+    content: "\f066";
+}
+/* Sub-objects `uk-htmleditor-code` and `uk-htmleditor-preview`
+ ========================================================================== */
+.uk-htmleditor-code,
+.uk-htmleditor-preview {
+    box-sizing: border-box;
+}
+.uk-htmleditor-preview {
+    padding: 20px;
+    overflow-y: scroll;
+    position: relative;
+}
+/*
+ * Tab view
+ */
+[data-mode='tab'][data-active-tab='code'] .uk-htmleditor-preview,
+[data-mode='tab'][data-active-tab='preview'] .uk-htmleditor-code {
+    display: none;
+}
+/*
+ * Split view
+ */
+[data-mode='split'] .uk-htmleditor-code,
+[data-mode='split'] .uk-htmleditor-preview {
+    float: left;
+    width: 50%;
+}
+[data-mode='split'] .uk-htmleditor-code {
+    border-right: 1px solid #eeeeee;
+}
+/* Sub-object `uk-htmleditor-iframe`
+ ========================================================================== */
+.uk-htmleditor-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+/* CodeMirror modifications
+ ========================================================================== */
+.uk-htmleditor .CodeMirror {
+    padding: 10px;
+    box-sizing: border-box;
+}
+/*
+     * Apply same `border-radius` as `uk-htmleditor-navbar`
+     */
+.uk-htmleditor-navbar-nav:first-child > li:first-child > a {
+    border-top-left-radius: 4px;
+}
+/*
+     * Sub-modifier `uk-htmleditor-navbar-flip`
+     */
+/* Collapse border */
+.uk-htmleditor-navbar-flip .uk-htmleditor-navbar-nav > li > a {
+    margin-left: 0;
+    margin-right: -1px;
+}
+/* Apply same `border-radius` as `uk-htmleditor-navbar` */
+.uk-htmleditor-navbar-flip .uk-htmleditor-navbar-nav:first-child > li:first-child > a {
+    border-top-left-radius: 0;
+}
+.uk-htmleditor-navbar-flip .uk-htmleditor-navbar-nav:last-child > li:last-child > a {
+    border-top-right-radius: 4px;
+}
+/*
+     * Sub-modifier `uk-htmleditor-fullscreen`
+     */
+.uk-htmleditor-fullscreen .uk-htmleditor-navbar {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+.uk-htmleditor-fullscreen .uk-htmleditor-content {
+    border: none;
+    border-radius: 0;
+}
+.uk-htmleditor-fullscreen .uk-htmleditor-navbar-nav > li > a {
+    border-radius: 0 !important;
+}
+.uk-htmleditor-navbar {
+    border-radius: 0;
+    background: #f9f9f9;
+    border-width: 1px 1px 0;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+.uk-htmleditor-navbar-nav > li > a {
+    border: none;
+    border-radius: 0 !important;
+    height: 38px;
+}
+.uk-htmleditor-navbar-nav > li.uk-active > a {
+    background: #ebebeb;
+}
+.uk-htmleditor-navbar-nav > li:hover > a,
+.uk-htmleditor-navbar-nav > li > a:focus {
+    background: #ebebeb;
+}
+.uk-htmleditor-content {
+    border-radius: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+.uk-htmleditor-fullscreen {
+    z-index: 1154;
+}
+.uk-htmleditor-fullscreen .uk-htmleditor-navbar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.uk-htmleditor-fullscreen .uk-htmleditor-content {
+    top: 38px;
+}
+/* upload */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Form file
+ ========================================================================== */
+/*
+ * 1. Behave like form elements
+ * 2. Create position context for dropdowns
+ * 3. Clip content
+ */
+.uk-form-file {
+    /* 1 */
+    display: inline-block;
+    vertical-align: middle;
+    /* 2 */
+    position: relative;
+    /* 3 */
+    overflow: hidden;
+}
+/*
+ * 1. Required for Firefox
+ * 2. Expand height and required for the cursor
+ */
+.uk-form-file input[type="file"] {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+    /* 1 */
+    left: 0;
+    /* 2 */
+    font-size: 500px;
+}
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Upload
+ ========================================================================== */
+/*
+ * Create a box-shadow when dragging a file over the upload area
+ */
+.uk-dragover {
+    box-shadow: 0 0 20px rgba(100, 100, 100, 0.3);
+}
+.uk-file-upload {
+    width: 100%;
+    padding: 32px 16px;
+    box-sizing: border-box;
+    background: #f5f5f5;
+    text-align: center;
+    -webkit-transition: all 200ms ease-in;
+    transition: all 200ms ease-in;
+}
+.uk-file-upload p {
+    margin: 0;
+}
+.uk-file-upload.uk-dragover {
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+div.uk-form-file {
+    padding: 3px 2px;
+}
+.uk-form-file input[type="file"] {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+    left: 0;
+    font-size: 500px;
+}
+.uk-form-file input[type="file"]::-webkit-file-upload-button {
+    cursor: pointer;
+}
+/* form select */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Form select
+ ========================================================================== */
+/*
+ * 1. Behave like form elements
+ * 2. Create position context for dropdowns
+ * 3. Clip content
+ */
+.uk-form-select {
+    /* 1 */
+    display: inline-block;
+    vertical-align: middle;
+    /* 2 */
+    position: relative;
+    /* 3 */
+    overflow: hidden;
+}
+/*
+ * 1. Required for Firefox
+ * 1. Required for Webkit to make `height` work
+ */
+.uk-form-select select {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    /* 1 */
+    left: 0;
+    /* 2 */
+    -webkit-appearance: none;
+}
+/* datepicker */
+.uk-datepicker {
+    z-index: 1094;
+    width: auto;
+    padding: 0;
+}
+.uk-datepicker-nav {
+    margin-bottom: 15px;
+    text-align: center;
+    line-height: 20px;
+    background: #009688;
+    padding: 10px 0;
+}
+.uk-datepicker-nav a,
+.uk-datepicker-nav a:hover {
+    text-decoration: none;
+    color: #fff;
+}
+.uk-datepicker-nav .uk-form-select {
+    font: 400 16px / 22px "Roboto", sans-serif;
+    color: #fff;
+    text-transform: uppercase;
+}
+.uk-datepicker-previous {
+    float: left;
+    margin-left: 8px;
+}
+.uk-datepicker-previous:after {
+    content: "\f053";
+}
+.uk-datepicker-next {
+    float: right;
+    margin-right: 8px;
+}
+.uk-datepicker-next:after {
+    content: "\f054";
+}
+.uk-datepicker-previous:after,
+.uk-datepicker-next:after {
+    width: 20px;
+    font-family: FontAwesome;
+}
+.uk-datepicker.dp-top {
+    -webkit-transform-origin: 50% 100% !important;
+    transform-origin: 50% 100% !important;
+}
+.uk-datepicker-table {
+    width: 100%;
+}
+.uk-datepicker-table th,
+.uk-datepicker-table td {
+    padding: 2px;
+    font: 400 13px / 15px "Roboto", sans-serif;
+}
+.uk-datepicker-table th {
+    color: #727272;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+.uk-datepicker-table a {
+    display: block;
+    width: 30px;
+    line-height: 30px;
+    height: 30px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 50%;
+    color: #212121;
+}
+.uk-datepicker-table a:hover {
+    background-color: rgba(0, 0, 0, 0.085);
+    color: #212121;
+    outline: none;
+}
+.uk-datepicker-table a.uk-active {
+    background-color: #009688;
+    color: #fff;
+}
+a.uk-datepicker-table-muted {
+    color: #999;
+}
+/* autocomplete, timepicker */
+.uk-autocomplete .uk-dropdown {
+    display: block;
+    max-height: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 0;
+    border: none;
+    -webkit-transform: scale(0.25, 0);
+    transform: scale(0.25, 0);
+    opacity: 0;
+    -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-animation: none !important;
+    animation: none !important;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+.uk-autocomplete.uk-open .uk-dropdown {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 1;
+    max-height: 210px;
+}
+/* password toggle */
+.uk-form-password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 16px;
+    color: #727272;
+}
+.uk-form-password-toggle:hover {
+    color: #727272;
+}
+/* nestable */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Nestable
+ ========================================================================== */
+.uk-nestable {
+    padding: 0;
+    list-style: none;
+}
+/*
+ * Disables the default callout shown when you touch and hold a touch target
+ * Currently only works in Webkit
+ */
+.uk-nestable a,
+.uk-nestable img {
+    -webkit-touch-callout: none;
+}
+/* Sub-object `uk-nestable-list`
+ ========================================================================== */
+.uk-nestable-list {
+    margin: 0;
+    padding-left: 40px;
+    list-style: none;
+}
+/* Sub-modifier `uk-nestable-item`
+ ========================================================================== */
+/*
+ * 1. Deactivate browser touch actions in IE11
+ */
+.uk-nestable-item {
+    /* 1 */
+    -ms-touch-action: none;
+    touch-action: none;
+}
+.uk-nestable-item + .uk-nestable-item {
+    margin-top: 10px;
+}
+.uk-nestable-list:not(.uk-nestable-dragged) > .uk-nestable-item:first-child {
+    margin-top: 10px;
+}
+/* Sub-modifier `uk-nestable-dragged`
+ ========================================================================== */
+/*
+ * 1. Reset style
+ */
+.uk-nestable-dragged {
+    position: absolute;
+    z-index: 1050;
+    pointer-events: none;
+    /* 1 */
+    padding-left: 0;
+}
+/* Sub-modifier `uk-nestable-placeholder`
+ ========================================================================== */
+.uk-nestable-placeholder {
+    position: relative;
+}
+.uk-nestable-placeholder > * {
+    opacity: 0;
+}
+.uk-nestable-placeholder:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 1px dashed #dddddd;
+    opacity: 1;
+}
+/* Empty List
+ ========================================================================== */
+.uk-nestable-empty {
+    min-height: 30px;
+}
+/* Sub-object `uk-nestable-handle`
+ ========================================================================== */
+/*
+ * Deactivate browser touch actions in IE11
+ */
+.uk-nestable-handle {
+    -ms-touch-action: none;
+    touch-action: none;
+}
+/* Hover */
+.uk-nestable-handle:hover {
+    cursor: move;
+}
+/* Sub-object `uk-nestable-moving`
+ ========================================================================== */
+.uk-nestable-moving,
+.uk-nestable-moving * {
+    cursor: move;
+}
+/* [data-nestable-action='toggle']
+ ========================================================================== */
+/*
+ * 1. Makes text unselectable. Happens if double clicked by mistake
+ */
+[data-nestable-action='toggle'] {
+    cursor: pointer;
+    /* 1 */
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+/* Sub-object `.uk-nestable-toggle`
+ ========================================================================== */
+.uk-nestable-toggle {
+    display: inline-block;
+    visibility: hidden;
+}
+.uk-nestable-toggle:after {
+    content: "\f147";
+    font-family: FontAwesome;
+}
+.uk-parent > :not(.uk-nestable-list) .uk-nestable-toggle {
+    visibility: visible;
+}
+/*
+ * Collapsed
+ */
+.uk-collapsed .uk-nestable-list {
+    display: none;
+}
+.uk-collapsed .uk-nestable-toggle:after {
+    content: "\f196";
+}
+/* Sub-object `uk-nestable-panel`
+ ========================================================================== */
+.uk-nestable-panel {
+    padding: 5px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    text-shadow: 0 1px 0 #ffffff;
+}
+.uk-nestable-handle {
+    margin-right: 16px;
+}
+.uk-nestable-panel {
+    padding: 8px 16px;
+    background: #fff;
+    border-radius: 4px;
+    border: none;
+    text-shadow: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+.uk-nestable-placeholder:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: none;
+    background: rgba(0, 0, 0, 0.085);
+    opacity: 1;
+}
+.uk-nestable-toggle {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-right: 8px;
+    display: none;
+}
+.uk-nestable-toggle:after {
+    vertical-align: top;
+    content: '\e316';
+    font-family: "Material Icons";
+}
+.uk-parent > .uk-nestable-panel .uk-nestable-toggle {
+    display: inline-block;
+}
+.uk-collapsed .uk-nestable-toggle:after {
+    content: "\e313";
+}
+/* notify */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Notify
+ ========================================================================== */
+/*
+ * Message container for positioning
+ */
+.uk-notify {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1040;
+    box-sizing: border-box;
+    width: 350px;
+}
+/* Position modifiers
+========================================================================== */
+.uk-notify-top-right,
+.uk-notify-bottom-right {
+    left: auto;
+    right: 10px;
+}
+.uk-notify-top-center,
+.uk-notify-bottom-center {
+    left: 50%;
+    margin-left: -175px;
+}
+.uk-notify-bottom-left,
+.uk-notify-bottom-right,
+.uk-notify-bottom-center {
+    top: auto;
+    bottom: 10px;
+}
+/* Responsiveness
+========================================================================== */
+/* Phones portrait and smaller */
+@media (max-width: 479px) {
+    /*
+       * Fit in small screen
+       */
+    .uk-notify {
+        left: 10px;
+        right: 10px;
+        width: auto;
+        margin: 0;
+    }
+}
+/* Sub-object: `uk-notify-message`
+========================================================================== */
+.uk-notify-message {
+    position: relative;
+    margin-bottom: 10px;
+    padding: 15px;
+    background: #444444;
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 22px;
+    cursor: pointer;
+    border: 1px solid #444444;
+    border-radius: 4px;
+}
+/* Close in notify
+ ========================================================================== */
+.uk-notify-message > .uk-close {
+    visibility: hidden;
+    float: right;
+}
+.uk-notify-message:hover > .uk-close {
+    visibility: visible;
+}
+/* Modifier: `uk-alert-info`
+ ========================================================================== */
+.uk-notify-message-primary {
+    background: #ebf7fd;
+    color: #2d7091;
+    border-color: rgba(45, 112, 145, 0.3);
+}
+/* Modifier: `uk-alert-success`
+ ========================================================================== */
+.uk-notify-message-success {
+    background: #f2fae3;
+    color: #659f13;
+    border-color: rgba(101, 159, 19, 0.3);
+}
+/* Modifier: `uk-notify-message-warning`
+ ========================================================================== */
+.uk-notify-message-warning {
+    background: #fffceb;
+    color: #e28327;
+    border-color: rgba(226, 131, 39, 0.3);
+}
+/* Modifier: `uk-notify-message-danger`
+ ========================================================================== */
+.uk-notify-message-danger {
+    background: #fff1f0;
+    color: #d85030;
+    border-color: rgba(216, 80, 48, 0.3);
+}
+.uk-notify {
+    z-index: 1114;
+    width: 400px;
+    top: 56px;
+    max-width: 100%;
+}
+.uk-notify-top-center,
+.uk-notify-bottom-center {
+    margin-left: -200px;
+}
+.uk-notify-top-left {
+    left: 24px;
+}
+.uk-notify-top-right {
+    right: 24px;
+}
+.uk-notify-bottom-left {
+    left: 24px;
+}
+.uk-notify-bottom-right {
+    right: 24px;
+}
+.uk-notify-bottom-center,
+.uk-notify-bottom-left,
+.uk-notify-bottom-right {
+    top: auto;
+    bottom: 8px;
+}
+.uk-notify-message {
+    background: #323232;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 18px;
+    border: none;
+}
+.uk-notify .uk-close {
+    display: none;
+}
+.uk-notify .notify-action {
+    float: right;
+    text-transform: uppercase;
+    color: #8bc34a;
+    margin-left: 16px;
+}
+.uk-notify .notify-action:hover {
+    color: #689f38;
+}
+.uk-notify .notify-content {
+    overflow: hidden;
+}
+.uk-notify-message-info {
+    background: #1976d2;
+    color: #fff;
+}
+.uk-notify-message-success {
+    background: #7cb342;
+}
+.uk-notify-message-warning {
+    background: #ffa000;
+}
+.uk-notify-message-danger {
+    background: #e53935;
+}
+.uk-notify-message-info,
+.uk-notify-message-success,
+.uk-notify-message-warning,
+.uk-notify-message-danger {
+    color: #fff;
+}
+.uk-notify-message-info .notify-action,
+.uk-notify-message-success .notify-action,
+.uk-notify-message-warning .notify-action,
+.uk-notify-message-danger .notify-action {
+    color: #fff;
+}
+.uk-notify-message-info .notify-action:hover,
+.uk-notify-message-success .notify-action:hover,
+.uk-notify-message-warning .notify-action:hover,
+.uk-notify-message-danger .notify-action:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+@media only screen and (max-width: 767px) {
+    .uk-notify-top-center,
+    .uk-notify-top-left,
+    .uk-notify-top-right,
+    .uk-notify-bottom-center,
+    .uk-notify-bottom-left,
+    .uk-notify-bottom-right {
+        width: 100%;
+        margin: 0;
+        left: 0;
+        right: 0;
+    }
+    .uk-notify-top-center > .uk-notify-message,
+    .uk-notify-top-left > .uk-notify-message,
+    .uk-notify-top-right > .uk-notify-message,
+    .uk-notify-bottom-center > .uk-notify-message,
+    .uk-notify-bottom-left > .uk-notify-message,
+    .uk-notify-bottom-right > .uk-notify-message {
+        border-radius: 0;
+        padding: 16px 32px;
+    }
+    .uk-notify-top-center,
+    .uk-notify-top-left,
+    .uk-notify-top-right {
+        top: 0;
+        bottom: auto;
+    }
+    .uk-notify-bottom-center,
+    .uk-notify-bottom-left,
+    .uk-notify-bottom-right {
+        top: auto;
+        bottom: -10px;
+    }
+}
+@media only screen and (min-width: 960px) {
+    .sidebar_main_active .uk-notify-top-left,
+    .sidebar_main_open .uk-notify-top-left {
+        left: 256px;
+    }
+    .sidebar_main_active .uk-notify-top-center,
+    .sidebar_main_open .uk-notify-top-center {
+        margin-left: -80px;
+    }
+    .sidebar_main_active .uk-notify-bottom-left,
+    .sidebar_main_open .uk-notify-bottom-left {
+        left: 256px;
+    }
+    .sidebar_main_active .uk-notify-bottom-center,
+    .sidebar_main_open .uk-notify-bottom-center {
+        margin-left: -80px;
+    }
+}
+/* slideshow */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Slideshow
+ ========================================================================== */
+/*
+ * 1. Create position context
+ * 2. Create stacking context to prevent z-index issues with other components
+ * 3. Set width because child elements are positioned absolute. Height is set via JS
+ * 4. Reset list style
+ * 5. Clip child elements
+ * 6. Deactivate browser history navigation in IE11
+ */
+.uk-slideshow {
+    /* 1 */
+    position: relative;
+    /* 2 */
+    z-index: 0;
+    /* 3 */
+    width: 100%;
+    /* 4 */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    /* 5 */
+    overflow: hidden;
+    /* 6 */
+    -ms-touch-action: pan-y;
+    touch-action: pan-y;
+}
+/*
+ * Sub-object item
+ * 1. Position items above each other
+ * 2. Expand to parent container width
+ * 3. Hide by default
+ */
+.uk-slideshow > li {
+    /* 1 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* 2 */
+    width: 100%;
+    /* 3 */
+    opacity: 0;
+}
+/*
+ * Active
+ * 1. Stack at first
+ * 2. Show slide
+ */
+.uk-slideshow > .uk-active {
+    /* 1 */
+    z-index: 10;
+    /* 2 */
+    opacity: 1;
+}
+/*
+ * Hide default images which is only relevant to keep existing proportions
+ */
+.uk-slideshow > li > img {
+    visibility: hidden;
+}
+/*
+ * Pointer for controls
+ */
+[data-uk-slideshow-slide] {
+    cursor: pointer;
+}
+/* Modifier: `uk-slideshow-fullscreen`
+ ========================================================================== */
+.uk-slideshow-fullscreen,
+.uk-slideshow-fullscreen > li {
+    height: 100vh;
+}
+/* Animations
+ ========================================================================== */
+/*
+ * Fade
+ */
+.uk-slideshow-fade-in {
+    -webkit-animation: uk-fade 0.5s linear;
+    animation: uk-fade 0.5s linear;
+}
+.uk-slideshow-fade-out {
+    -webkit-animation: uk-fade 0.5s linear reverse;
+    animation: uk-fade 0.5s linear reverse;
+}
+/*
+ * Scroll
+ */
+.uk-slideshow-scroll-forward-in {
+    -webkit-animation: uk-slide-right 0.5s ease-in-out;
+    animation: uk-slide-right 0.5s ease-in-out;
+}
+.uk-slideshow-scroll-forward-out {
+    -webkit-animation: uk-slide-left 0.5s ease-in-out reverse;
+    animation: uk-slide-left 0.5s ease-in-out reverse;
+}
+.uk-slideshow-scroll-backward-in {
+    -webkit-animation: uk-slide-left 0.5s ease-in-out;
+    animation: uk-slide-left 0.5s ease-in-out;
+}
+.uk-slideshow-scroll-backward-out {
+    -webkit-animation: uk-slide-right 0.5s ease-in-out reverse;
+    animation: uk-slide-right 0.5s ease-in-out reverse;
+}
+/*
+ * Scale
+ */
+.uk-slideshow-scale-out {
+    -webkit-animation: uk-fade-scale-15 0.5s ease-in-out reverse;
+    animation: uk-fade-scale-15 0.5s ease-in-out reverse;
+}
+/*
+ * Swipe
+ */
+.uk-slideshow-swipe-forward-in {
+    -webkit-animation: uk-slide-left-33 0.5s ease-in-out;
+    animation: uk-slide-left-33 0.5s ease-in-out;
+}
+.uk-slideshow-swipe-forward-out {
+    -webkit-animation: uk-slide-left 0.5s ease-in-out reverse;
+    animation: uk-slide-left 0.5s ease-in-out reverse;
+}
+.uk-slideshow-swipe-backward-in {
+    -webkit-animation: uk-slide-right-33 0.5s ease-in-out;
+    animation: uk-slide-right-33 0.5s ease-in-out;
+}
+.uk-slideshow-swipe-backward-out {
+    -webkit-animation: uk-slide-right 0.5s ease-in-out reverse;
+    animation: uk-slide-right 0.5s ease-in-out reverse;
+}
+.uk-slideshow-swipe-forward-in:before,
+.uk-slideshow-swipe-backward-in:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-animation: uk-fade 0.5s ease-in-out reverse;
+    animation: uk-fade 0.5s ease-in-out reverse;
+}
+/* slidenav */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Slidenav
+ ========================================================================== */
+/*
+ * 1. Required for `a` elements
+ * 2. Dimension
+ * 3. Style
+ */
+.uk-slidenav {
+    /* 1 */
+    display: inline-block;
+    /* 2 */
+    box-sizing: border-box;
+    width: 60px;
+    height: 60px;
+    /* 3 */
+    line-height: 60px;
+    color: rgba(50, 50, 50, 0.4);
+    font-size: 60px;
+    text-align: center;
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ * 2. Remove default focus style
+ * 3. Required for `a` elements
+ * 4. Style
+ */
+.uk-slidenav:hover,
+.uk-slidenav:focus {
+    /* 2 */
+    outline: none;
+    /* 3 */
+    text-decoration: none;
+    /* 4 */
+    color: rgba(50, 50, 50, 0.7);
+    cursor: pointer;
+}
+/* Active */
+.uk-slidenav:active {
+    color: rgba(50, 50, 50, 0.9);
+}
+/*
+ * Icons
+ */
+.uk-slidenav-previous:before {
+    content: "\f104";
+    font-family: FontAwesome;
+}
+.uk-slidenav-next:before {
+    content: "\f105";
+    font-family: FontAwesome;
+}
+/* Sub-object: `uk-slidenav-position`
+ ========================================================================== */
+/*
+ * Create position context
+ */
+.uk-slidenav-position {
+    position: relative;
+}
+/*
+ * Center vertically
+ */
+.uk-slidenav-position .uk-slidenav {
+    display: none;
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    margin-top: -30px;
+}
+.uk-slidenav-position:hover .uk-slidenav {
+    display: block;
+}
+.uk-slidenav-position .uk-slidenav-previous {
+    left: 20px;
+}
+.uk-slidenav-position .uk-slidenav-next {
+    right: 20px;
+}
+/* Modifier: `uk-slidenav-contrast`
+ ========================================================================== */
+.uk-slidenav-contrast {
+    color: rgba(255, 255, 255, 0.5);
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ */
+.uk-slidenav-contrast:hover,
+.uk-slidenav-contrast:focus {
+    color: rgba(255, 255, 255, 0.7);
+}
+/* Active */
+.uk-slidenav-contrast:active {
+    color: rgba(255, 255, 255, 0.9);
+}
+/* tooltips */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Tooltip
+ ========================================================================== */
+/*
+ * 1. Hide by default
+ * 2. Set fixed position
+ * 3. Set dimensions
+ * 4. Set style
+ */
+.uk-tooltip {
+    /* 1 */
+    display: none;
+    /* 2 */
+    position: absolute;
+    z-index: 1030;
+    /* 3 */
+    box-sizing: border-box;
+    max-width: 200px;
+    padding: 5px 8px;
+    /* 4 */
+    background: #424242;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    line-height: 18px;
+    border-radius: 3px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+/* Triangle
+ ========================================================================== */
+/*
+ * 1. Dashed is less antialised than solid
+ */
+.uk-tooltip:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    /* 1 */
+    border: 5px dashed #424242;
+}
+/* Direction modifiers
+ ========================================================================== */
+/*
+ * Top
+ */
+.uk-tooltip-top:after,
+.uk-tooltip-top-left:after,
+.uk-tooltip-top-right:after {
+    bottom: -5px;
+    border-top-style: solid;
+    border-bottom: none;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: #424242;
+}
+/*
+ * Bottom
+ */
+.uk-tooltip-bottom:after,
+.uk-tooltip-bottom-left:after,
+.uk-tooltip-bottom-right:after {
+    top: -5px;
+    border-bottom-style: solid;
+    border-top: none;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: #424242;
+}
+/*
+ * Top/Bottom center
+ */
+.uk-tooltip-top:after,
+.uk-tooltip-bottom:after {
+    left: 50%;
+    margin-left: -5px;
+}
+/*
+ * Top/Bottom left
+ */
+.uk-tooltip-top-left:after,
+.uk-tooltip-bottom-left:after {
+    left: 10px;
+}
+/*
+ * Top/Bottom right
+ */
+.uk-tooltip-top-right:after,
+.uk-tooltip-bottom-right:after {
+    right: 10px;
+}
+/*
+ * Left
+ */
+.uk-tooltip-left:after {
+    right: -5px;
+    top: 50%;
+    margin-top: -5px;
+    border-left-style: solid;
+    border-right: none;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: #424242;
+}
+/*
+ * Right
+ */
+.uk-tooltip-right:after {
+    left: -5px;
+    top: 50%;
+    margin-top: -5px;
+    border-right-style: solid;
+    border-left: none;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-right-color: #424242;
+}
+.uk-tooltip {
+    background: #424242;
+    color: #fff;
+    font-size: 13px;
+    padding: 3px 16px;
+    line-height: 22px;
+    text-shadow: none;
+    min-width: 80px;
+    text-align: center;
+    z-index: 1114;
+}
+.uk-tooltip .uk-tooltip-inner {
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: top;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+}
+.uk-tooltip.long-text {
+    text-align: left;
+}
+.uk-tooltip.long-text .uk-tooltip-inner {
+    white-space: normal;
+    overflow: visible;
+    line-height: 18px;
+    padding: 4px 0;
+}
+.uk-tooltip-small {
+    -webkit-transform: scale(0.85);
+    transform: scale(0.85);
+}
+/* tabs */
+.uk-tab {
+    border-bottom-color: rgba(0, 0, 0, 0.12);
+}
+.uk-sticky-placeholder .uk-tab {
+    background: #fff;
+    padding-top: 8px;
+}
+.uk-tab > li {
+    margin-bottom: 0;
+    margin-top: 0 ;
+    z-index: 1;
+}
+.uk-tab > li > a {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #212121;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0 !important;
+    font-weight: 500;
+    min-width: 100px;
+    max-width: 100%;
+    text-align: center;
+    -webkit-transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    position: relative;
+    top: 1px;
+}
+.uk-tab > li > a:hover,
+.uk-tab > li > a:focus {
+    background: none;
+    color: #212121;
+    border-bottom-color: #b2dbfb;
+}
+.uk-tab > li.uk-active > a {
+    background: transparent !important;
+    border-bottom-color: #2196f3;
+}
+.uk-tab > li.uk-disabled > a,
+.uk-tab > li.uk-disabled > a:hover,
+.uk-tab > li.uk-disabled > a:focus {
+    color: #aaa;
+}
+.uk-tab-bottom li {
+    margin-top: 0;
+}
+.uk-tab-bottom li > a {
+    border-top: 2px solid transparent;
+    border-bottom: none;
+    top: auto;
+    bottom: 1px;
+}
+.uk-tab-bottom li > a:hover,
+.uk-tab-bottom li > a:focus {
+    border-top-color: #b2dbfb;
+}
+.uk-tab-bottom li.uk-active > a {
+    border-top-color: #2196f3;
+}
+.uk-tab-left {
+    border-bottom: none;
+}
+.uk-tab-left li > a {
+    border-right: 2px solid transparent;
+    border-bottom: none;
+    text-align: right;
+    top: auto;
+    bottom: auto;
+}
+.uk-tab-left li > a:hover,
+.uk-tab-left li > a:focus {
+    border-right-color: #b2dbfb;
+}
+.uk-tab-left li.uk-active > a {
+    border-right-color: #2196f3;
+}
+.uk-tab-right {
+    border-bottom: none;
+}
+.uk-tab-right li > a {
+    border-left: 2px solid transparent;
+    border-bottom: none;
+    text-align: left;
+    top: auto;
+    bottom: auto;
+}
+.uk-tab-right li > a:hover,
+.uk-tab-right li > a:focus {
+    border-left-color: #b2dbfb;
+}
+.uk-tab-right li.uk-active > a {
+    border-left-color: #2196f3;
+}
+.uk-tab-responsive li a {
+    border: none !important;
+}
+.uk-tab-responsive > a:before {
+    content: '\e5d2';
+    font-family: "Material Icons";
+    color: #727272;
+    margin-right: 8px;
+    vertical-align: -4px;
+    font-size: 18px;
+}
+.uk-tab-icons > li > a {
+    min-width: 64px;
+}
+.uk-tab-icons > li > a > .material-icons {
+    font-size: 24px;
+}
+/* text truncate */
+.uk-text-truncate {
+    display: block;
+}
+/* sortable */
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/* ========================================================================
+   Component: Sortable
+ ========================================================================== */
+.uk-sortable {
+    position: relative;
+}
+/*
+ * Deactivate browser touch actions in IE11
+ */
+.uk-sortable > * {
+    -ms-touch-action: none;
+    touch-action: none;
+}
+/*
+ * Disables the default callout shown when you touch and hold a touch target
+ * Currently only works in Webkit
+ */
+.uk-sortable a,
+.uk-sortable img {
+    -webkit-touch-callout: none;
+}
+/*
+ * Remove margin from the last-child
+ */
+.uk-sortable > :last-child {
+    margin-bottom: 0;
+}
+/* Sub-modifier `uk-sortable-dragged`
+ ========================================================================== */
+.uk-sortable-dragged {
+    position: absolute;
+    z-index: 1050;
+    pointer-events: none;
+}
+/* Sub-modifier `uk-sortable-placeholder`
+ ========================================================================== */
+.uk-sortable-placeholder {
+    opacity: 0;
+}
+/* Empty List
+ ========================================================================== */
+.uk-sortable-empty {
+    min-height: 30px;
+}
+/* Sub-object `uk-sortable-handle`
+ ========================================================================== */
+/*
+ * Deactivate browser touch actions in IE11
+ */
+.uk-sortable-handle {
+    -ms-touch-action: none;
+    touch-action: none;
+}
+/* Hover */
+.uk-sortable-handle:hover {
+    cursor: move;
+}
+/* Sub-object `uk-sortable-moving`
+ ========================================================================== */
+.uk-sortable-moving,
+.uk-sortable-moving * {
+    cursor: move;
+}
+.uk-sortable > * {
+    -ms-touch-action: auto;
+    touch-action: auto;
+}
+.uk-sortable.sortable-handler > * {
+    cursor: move;
+}
+.uk-sortable .sortable-handler {
+    cursor: move;
+}
+.uk-switcher {
+    overflow: hidden;
+}
+/*
+* add extra Uikit grid sizes
+*
+* usage:
+* set custom breakpoint (1480px) and name ("xlarge-x")
+* @media (min-width: 1480px) {
+*  .add-grid-sizes(xlarge-x);
+* }
+*/
+@media (min-width: 1480px) {
+    /* Whole */
+    .uk-width-xLarge-1-1,
+    .uk-grid-width-xLarge-1-1 > * {
+        width: 100%;
+    }
+    /* Halves */
+    .uk-width-xLarge-1-2,
+    .uk-width-xLarge-2-4,
+    .uk-width-xLarge-3-6,
+    .uk-width-xLarge-5-10,
+    .uk-grid-width-xLarge-1-2 > *,
+    .uk-grid-width-xLarge-2-4 > *,
+    .uk-grid-width-xLarge-3-6 > *,
+    .uk-grid-width-xLarge-5-10 > * {
+        width: 50%;
+    }
+    /* Thirds */
+    .uk-width-xLarge-1-3,
+    .uk-width-xLarge-2-6,
+    .uk-grid-width-xLarge-1-3 > *,
+    .uk-grid-width-xLarge-2-6 > * {
+        width: 33.333%;
+    }
+    .uk-width-xLarge-2-3,
+    .uk-width-xLarge-4-6,
+    .uk-grid-width-xLarge-2-3 > *,
+    .uk-grid-width-xLarge-4-6 > * {
+        width: 66.666%;
+    }
+    /* Quarters */
+    .uk-width-xLarge-1-4,
+    .uk-grid-width-xLarge-1-4 > * {
+        width: 25%;
+    }
+    .uk-width-xLarge-3-4,
+    .uk-grid-width-xLarge-3-4 > * {
+        width: 75%;
+    }
+    /* Fifths */
+    .uk-width-xLarge-1-5,
+    .uk-width-xLarge-2-10,
+    .uk-grid-width-xLarge-1-5 > *,
+    .uk-grid-width-xLarge-2-10 > * {
+        width: 20%;
+    }
+    .uk-width-xLarge-2-5,
+    .uk-width-xLarge-4-10,
+    .uk-grid-width-xLarge-2-5 > *,
+    .uk-grid-width-xLarge-4-10 > * {
+        width: 40%;
+    }
+    .uk-width-xLarge-3-5,
+    .uk-width-xLarge-6-10,
+    .uk-grid-width-xLarge-3-5 > *,
+    .uk-grid-width-xLarge-6-10 > * {
+        width: 60%;
+    }
+    .uk-width-xLarge-4-5,
+    .uk-width-xLarge-8-10,
+    .uk-grid-width-xLarge-4-5 > *,
+    .uk-grid-width-xLarge-8-10 > * {
+        width: 80%;
+    }
+    /* Sixths */
+    .uk-width-xLarge-1-6,
+    .uk-grid-width-xLarge-1-6 > * {
+        width: 16.666%;
+    }
+    .uk-width-xLarge-5-6,
+    .uk-grid-width-xLarge-5-6 > * {
+        width: 83.333%;
+    }
+    /* Tenths */
+    .uk-width-xLarge-1-10,
+    .uk-grid-width-xLarge-1-10 > * {
+        width: 10%;
+    }
+    .uk-width-xLarge-3-10,
+    .uk-grid-width-xLarge-3-10 > * {
+        width: 30%;
+    }
+    .uk-width-xLarge-7-10,
+    .uk-grid-width-xLarge-7-10 > * {
+        width: 70%;
+    }
+    .uk-width-xLarge-9-10,
+    .uk-grid-width-xLarge-9-10 > * {
+        width: 90%;
+    }
+}
+/* ie9 fixes */
+.lte-ie9 *[class*="uk-animation-"] {
+    opacity: 1 !important;
+}

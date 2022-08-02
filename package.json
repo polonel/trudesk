@@ -5,9 +5,9 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "bin": "./dist/app.js",
+  "bin": "./dist/src/app.js",
   "scripts": {
-    "start": "node ./dist/app",
+    "start": "node ./dist/src/app",
     "build": "npm run clean && grunt build",
     "test": "ts-mocha --recursive",
     "lint": "eslint \"src/**\"",
@@ -15,9 +15,9 @@
     "format": "npx prettier \"./*.js\" \"src/*.js\" \"src/**/*.js\" \"src/**/*.jsx\" \"!src/public/js/vendor/**/*.js\" \"!src/public/js/plugins/**/*.js\"",
     "coverage": "nyc --reporter=lcovonly npm run test",
     "codacy": "npm run coverage && bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./coverage/lcov.info && rm -rf ./coverage",
-    "webpackwatch": "webpack --config webpack.config.js --watch",
-    "webpackdev": "webpack --config webpack.config.js",
-    "webpackdist": "rimraf public/js/* && webpack --env production --node-env production --config webpack.config.js",
+    "webpackwatch": "webpack --config webpack.config.js --watch --progress",
+    "webpackdev": "webpack --config webpack.config.js --progress",
+    "webpackdist": "rimraf dist/public && webpack --env production --node-env production --config webpack.config.js",
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
@@ -103,12 +103,14 @@
     "react-colorful": "5.5.1",
     "react-dom": "17.0.2",
     "react-grid-layout": "1.3.4",
+    "react-helmet-async": "^1.3.0",
     "react-hot-keys": "2.7.2",
     "react-html-parser": "2.0.2",
     "react-idle-timer": "5.4.1",
     "react-infinite-scroller": "1.2.6",
     "react-markdown": "8.0.3",
     "react-redux": "8.0.2",
+    "react-router-dom": "6",
     "react-singleton-hook": "3.4.0",
     "react-sizeme": "3.0.2",
     "redis": "4.2.0",
@@ -144,6 +146,7 @@
     "@babel/eslint-parser": "7.18.2",
     "@babel/plugin-proposal-class-properties": "7.18.6",
     "@babel/plugin-proposal-decorators": "7.18.6",
+    "@babel/plugin-transform-runtime": "^7.18.9",
     "@babel/preset-env": "7.18.6",
     "@babel/preset-react": "7.18.6",
     "@commitlint/cli": "17.0.3",
@@ -172,6 +175,7 @@
     "babel-eslint": "10.0.1",
     "babel-loader": "8.2.5",
     "chai": "*",
+    "clean-webpack-plugin": "^4.0.0",
     "codacy-coverage": "3.0.0",
     "compression-webpack-plugin": "10.0.0",
     "cross-env": "7.0.3",
@@ -187,6 +191,7 @@
     "eslint-plugin-react": "7.30.1",
     "exports-loader": "4.0.0",
     "expose-loader": "4.0.0",
+    "file-loader": "^6.2.0",
     "grunt": "1.5.3",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "4.0.0",
@@ -197,7 +202,7 @@
     "grunt-parallel": "0.5.1",
     "grunt-sass": "3.1.0",
     "grunt-shell": "4.0.0",
-    "html-webpack-plugin": "5.5.0",
+    "html-webpack-plugin": "^5.5.0",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",
     "lorem-ipsum": "2.0.8",
@@ -267,6 +272,8 @@
     "ignore": [
       "/public/",
       "/mobile/",
+      "/src/client/lib/vendor/",
+      "/src/client/lib/plugins/",
       "/src/public/js/plugins/",
       "/src/public/js/vendor/"
     ],
@@ -276,8 +283,7 @@
       "Snackbar",
       "ROLES",
       "io",
-      "d3",
-      "History"
+      "d3"
     ]
   },
   "prettier": {

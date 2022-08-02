@@ -17,8 +17,8 @@ define('pages/messages', [
   'underscore',
   'uikit',
   'moment',
-  'modules/helpers',
-  'modules/socket',
+  'helpers',
+  'socket',
   'history',
   'isinview'
 ], function ($, _, UIKit, moment, helpers) {

@@ -18,7 +18,7 @@ import PropTypes from 'prop-types'
 import IsArray from 'lodash/isArray'
 import $ from 'jquery'
 
-import Helpers from 'modules/helpers'
+import Helpers from 'helpers'
 
 //Sass
 // import './style.sass';

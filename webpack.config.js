@@ -3,35 +3,27 @@ const webpack = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const WebpackBar = require('webpackbar')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+const IS_PROD = process.env.NODE_ENV === 'production'
 
 module.exports = {
-  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  mode: IS_PROD ? 'production' : 'development',
   target: 'web',
   entry: {
-    vendor: [
-      'jquery',
-      'jquery_custom',
-      'datatables',
-      'dt_responsive',
-      'dt_grouping',
-      'dt_ipaddress',
-      'modernizr',
-      'underscore',
-    ],
-    'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js'),
-    'common.min': path.resolve(__dirname, 'src/client/loginRenderer.jsx'),
-    truRequire: 'expose-loader?exposes=truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
+    'js/trudesk': path.resolve(__dirname, 'src/client/app.jsx')
   },
   output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'public/js'),
-    publicPath: '/js/',
+    filename: '[name].[chunkhash:8].js',
+    chunkFilename: 'js/[name].[chunkhash:8].bundle.js',
+    path: path.resolve(__dirname, 'dist/public/'),
+    publicPath: '/'
   },
   resolve: {
-    modules: [path.resolve(__dirname, 'src/public/js/'), 'node_modules'],
+    modules: [path.resolve(__dirname, 'src/client/lib/'), 'node_modules'],
     alias: {
-      truRequire: 'truRequire',
       // client side
       handlebars: 'vendor/handlebars/handlebars',
       jquery: 'vendor/jquery/jquery',
@@ -43,8 +35,6 @@ module.exports = {
       uikit: 'vendor/uikit/js/uikit_combined.min',
       modernizr: 'vendor/modernizr/modernizr',
       underscore: 'vendor/underscore/underscore',
-      history: 'vendor/history/jquery.history',
-      app: 'app',
 
       async: 'vendor/async/async',
       jquery_custom: 'plugins/jquery.custom',
@@ -88,43 +78,62 @@ module.exports = {
       snackbar: 'plugins/snackbar',
 
       sass: path.resolve(__dirname, 'src/sass'),
+      app: path.resolve(__dirname, 'src/client/app'),
       components: path.resolve(__dirname, 'src/client/components'),
       containers: path.resolve(__dirname, 'src/client/containers'),
       actions: path.resolve(__dirname, 'src/client/actions'),
       api: path.resolve(__dirname, 'src/client/api'),
-      lib: path.resolve(__dirname, 'src/public/js/modules'),
-      lib2: path.resolve(__dirname, 'src/client/lib'),
-      serverSocket: path.resolve(__dirname, 'src/socketio'),
+      lib: path.resolve(__dirname, 'src/client/lib'),
+      serverSocket: path.resolve(__dirname, 'src/socketio')
     },
 
-    extensions: ['.js', '.jsx', '.ts', 'tsx'],
+    extensions: ['.js', '.jsx', '.ts', 'tsx']
   },
   externals: {
     // These are bunbled already
     jsdom: 'jsdom',
-    canvas: 'canvas',
+    canvas: 'canvas'
   },
   module: {
     rules: [
       {
         test: /uikit_combined\.min\.js/,
         loader: 'exports-loader',
-        options: { type: 'commonjs', exports: 'single UIkit' },
+        options: { type: 'commonjs', exports: 'single UIkit' }
       },
       {
-        test: /\.sass$/,
+        test: /\.(sa|sc|c)ss$/,
         exclude: path.resolve(__dirname, 'node_modules'),
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: '/public/css',
-            },
+              publicPath: '/css/'
+            }
           },
           'css-loader',
-          'postcss-loader',
-          'sass-loader',
-        ],
+          'sass-loader'
+        ]
+      },
+      {
+        test: /\.(ttf|eot|woff|woff2|svg)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: 'fonts/[name].[ext]',
+            publicPath: '/fonts/'
+          }
+        }
+      },
+      {
+        test: /\.(gif|jpg|jpeg|png)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: 'img/[name].[ext]',
+            publicPath: '/img/'
+          }
+        }
       },
       {
         test: /\.jsx$/,
@@ -136,45 +145,69 @@ module.exports = {
             plugins: [
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               ['@babel/plugin-proposal-class-properties', { loose: true }],
-            ],
-          },
-        },
-      },
-    ],
+              '@babel/plugin-transform-runtime'
+            ]
+          }
+        }
+      }
+    ]
   },
   optimization: {
-    chunkIds: 'total-size',
-    moduleIds: 'size',
     minimizer: [
       new TerserPlugin({
         parallel: true,
         terserOptions: {
           format: { comments: false },
           ecma: 6,
-          mangle: false,
+          mangle: true
         },
-        extractComments: false,
-      }),
+        extractComments: false
+      })
     ],
     splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      minSize: 0,
       cacheGroups: {
+        reactVendor: {
+          test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+          name: 'js/vendor/react.bundle'
+        },
+        utilityVendor: {
+          test: /[\\/]node_modules[\\/](lodash|moment|moment-timezone)[\\/]/,
+          name: 'js/vendor/utility.bundle'
+        },
+        lib: {
+          test: /[\\/]lib[\\/]vendor[\\/]/,
+          name: 'js/lib/vendor/vendor.bundle',
+          // name: function (module) {
+          //   const packageName = module.context.match(/[\\/]lib[\\/]vendor[\\/](.+)/)[1]
+          //   return 'js/lib/vendor/' + packageName
+          // },
+          enforce: true
+        },
+        plugins: {
+          test: /[\\/]lib[\\/]plugins[\\/]/,
+          name: 'js/lib/plugins.bundle'
+        },
         vendor: {
-          name: 'vendor',
-          test: 'vendor',
-          chunks: 'initial',
-          enforce: true,
-        },
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true,
-        },
-      },
-    },
+          test: /[\\/]node_modules[\\/]/,
+          name: 'js/lib/vendor/npm.bundle',
+          // name: function (module) {
+          //   const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
+          //   return 'js/vendor/npm.' + packageName.replace('@', '')
+          // },
+          enforce: true
+        }
+      }
+    }
   },
   plugins: [
     new WebpackBar({ name: 'Frontend' }),
+    new CleanWebpackPlugin({
+      cleanStaleWebpackAssets: true,
+      cleanOnceBeforeBuildPatterns: ['**/*', '!.gitkeep']
+    }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
@@ -187,17 +220,24 @@ module.exports = {
       'window.Modernizr': 'modernizr',
       moment: 'moment',
       'window.moment': 'moment',
-      setImmediate: 'async',
+      setImmediate: 'async'
     }),
     new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/ }),
     new MiniCssExtractPlugin({
-      filename: 'app.min.css',
+      filename: '[name].css',
+      chunkFilename: 'css/[name].[contenthash:8].css'
     }),
-    new CompressionPlugin(),
+    new HtmlWebpackPlugin({
+      minify: IS_PROD,
+      template: path.resolve(__dirname, 'src/client/index.html'),
+      filename: '../index.html',
+      chunksSortMode: 'none'
+    }),
+    new CompressionPlugin()
   ],
   performance: {
     hints: 'warning',
     maxEntrypointSize: 400000,
-    maxAssetSize: 1000000,
-  },
+    maxAssetSize: 1000000
+  }
 }

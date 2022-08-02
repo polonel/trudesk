@@ -15,10 +15,10 @@
 define('pages/accountsImport', [
   'jquery',
   'underscore',
-  'modules/helpers',
+  'helpers',
   'velocity',
   'uikit',
-  'modules/socket',
+  'socket',
 
   'jquery_steps',
   'jquery_actual',

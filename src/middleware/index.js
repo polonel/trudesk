@@ -59,11 +59,11 @@ module.exports = function (app, db, callback) {
 
   if (global.env === 'production') {
     app.use(
-      expressStaticGzip(path.resolve(config.trudeskRoot(), 'public'), {
+      expressStaticGzip(path.resolve(config.trudeskRoot(), 'dist/public'), {
         index: false
       })
     )
-  } else app.use(express.static(path.resolve(config.trudeskRoot(), 'public')))
+  } else app.use(express.static(path.resolve(config.trudeskRoot(), 'dist/public')))
 
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
@@ -183,7 +183,7 @@ function allowCrossDomain (req, res, next) {
     'Access-Control-Allow-Headers',
     'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken,X-RToken,X-Token'
   )
-  res.setHeader('Content-Security-Policy', 'frame-ancestors \'none\';')
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'none';")
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200)

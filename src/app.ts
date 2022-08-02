@@ -16,8 +16,6 @@
 import async from 'async'
 import pkg from '../package.json'
 import { init as cacheInit } from './cache/cache'
-
-//
 import { checkForOldConfig, hasConfigFile, loadConfig } from './config'
 import { init as databaseInit, TrudeskDatabase, trudeskDatabase } from './database'
 import elasticsearch from './elasticsearch'

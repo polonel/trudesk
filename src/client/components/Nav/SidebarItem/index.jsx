@@ -15,7 +15,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import Helpers from 'modules/helpers'
+import Helpers from 'helpers'
 
 // import './style.sass';
 

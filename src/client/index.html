@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trudesk &middot;</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <!--    <link href="/css/normalize.min.css" rel="stylesheet"/>-->
+    <!--    <link href="/css/plugins.min.css" rel="stylesheet"/>-->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<!--<div class="uk-visible-small uk-hidden-medium uk-hidden-large" id="nomobile" style="-->
+<!--    position: fixed;-->
+<!--    top: 0;-->
+<!--    left: 0;-->
+<!--    height: 100vh;-->
+<!--    width: 100vw;-->
+<!--    z-index: 99999999;-->
+<!--    background: #f6f6f6;-->
+<!--">-->
+<!--    <div style="position: absolute; top: 50%; left: 0; width: 100%;text-align: center;font-size: 28px; font-weight: 300;">-->
+<!--        <a-->
+<!--                href="/mobile">View Mobile Site...</a></div>-->
+<!--</div>-->
+
+<div class="disconnected loader-wrapper" style="display: none; opacity: 0; z-index: 999997;">
+    <div class="shadow-wrapper">
+        <svg class="shadow">
+            <defs>
+                <radialGradient cx="0.5" cy="0.5" id="shadow" r="0.5">
+                    <stop offset="0" stop-color="#323232"/>
+                    <stop offset="1" stop-color="#323232" stop-opacity="0"/>
+                </radialGradient>
+            </defs>
+            <ellipse class="shadow" cx="90" cy="65" fill="url(#shadow)" id="svg_1" opacity="0.2" rx="35" ry="6"
+                     stroke="#323232" stroke-linecap="null" stroke-linejoin="null" stroke-width="0"/>
+        </svg>
+    </div>
+    <div class="test-wrapper">
+        <svg class="t" id="t" preserveAspectRatio="xMidYMid meet" style="width: 140px; height: 75px;"
+             viewBox="0 0 288.9 70.1">
+            <g id="g" style="width: 100%; height: 100%;">
+                <path class="s1"
+                      d="M28.5,28.4c-0.1,1.6-0.7,3.4-1.6,5.4c-2.4-0.3-4.6-0.4-6.8-0.4h-1.7c-2.9,13.9-4.3,22.6-4.3,26.1 c0,1.8,0.4,2.7,1.2,2.7c0.8,0,2.9-0.8,6.2-2.3l1.7,3.1C17.7,67.7,12.5,70,7.8,70c-2.2,0-4-0.7-5.4-2.1c-1.4-1.4-2.1-3.2-2.1-5.5	c0-2.3,0.3-4.9,0.8-7.7c0.5-2.9,1.3-6.4,2.2-10.6c0.9-4.2,1.6-7.5,2.1-10.1c-2.3,0.2-4,0.4-5.2,0.6c-0.1-0.8-0.2-1.8-0.2-3	c0-1.3,0.1-2.3,0.3-3.1h5.9c0.5-3.4,0.8-6.6,0.8-9.6L6.8,16v-0.3c4.9-1.7,9.5-2.5,13.8-2.5c0.2,1.3,0.4,2.8,0.4,4.7	c0,1.9-0.5,5.4-1.6,10.6H28.5z"
+                      style="fill: white !important;"/>
+                <circle class="s1" cx="35.9" cy="82" r="4"/>
+            </g>
+        </svg>
+    </div>
+    <div style="position:absolute;width: 400px;top:50%; left: 50%;transform: translate(-50%, -50%);">
+        <p style="padding-top: 75px;">Disconnected... Trying to reconnect</p>
+    </div>
+</div>
+<!--<div class="tour-fader hide" style="top: 0; left: 0; position: absolute; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); z-index: 1;"></div>-->
+
+<!--Tour Start Here-->
+<div class="wrapper uk-hidden-small" style="overflow: hidden; height: 100%;">
+    <div id="trudesk"></div>
+    <div id="modal-wrapper"></div>
+</div>
+
+<audio class="uk-hidden" id="TICKET_CREATED_audio" src="/sounds/newticket.ogg"></audio>
+<audio class="uk-hidden" id="newmessageaudio" src="/sounds/newmessage.ogg"></audio>
+<audio class="uk-hidden" id="sendChatMessage_audio" src="/sounds/messagesent.ogg"></audio>
+<audio class="uk-hidden" id="receivedChatMessage_audio" src="/sounds/messagereceived.ogg"></audio>
+<audio class="uk-hidden" id="success_audio" src="/sounds/success.ogg"></audio>
+<audio class="uk-hidden" id="error_audio" src="/sounds/error.ogg"></audio>
+<audio class="uk-hidden" id="clicksound" src="/sounds/click.ogg"></audio>
+
+<script type="text/javascript">
+  if (screen.width <= 800) {
+    document.location = '/mobile'
+  }
+</script>
+
+</body>
+
+</html>

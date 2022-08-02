@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { initSocket, updateSocket } from 'actions/common'
 import helpers from 'lib/helpers'
-import TicketSocketEvents from 'lib2/socket/ticketSocketEvents'
-import UserIdleTimer from 'lib2/userIdleTimer'
+import TicketSocketEvents from 'lib/socket/ticketSocketEvents'
+import UserIdleTimer from 'lib/userIdleTimer'
 
 class SocketGlobal extends React.Component {
   constructor (props) {
