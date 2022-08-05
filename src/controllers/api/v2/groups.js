@@ -16,7 +16,8 @@ var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
 var Group = require('../../../models/group')
 var Department = require('../../../models/department')
-
+var winston = require('../../../logger')
+var mongoose = require('mongoose')
 var apiGroups = {}
 
 apiGroups.create = function (req, res) {
@@ -65,7 +66,6 @@ apiGroups.get = function (req, res) {
 apiGroups.update = function (req, res) {
   var id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Group Id')
-
   var putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
@@ -75,6 +75,17 @@ apiGroups.update = function (req, res) {
     if (putData.name) group.name = putData.name
     if (putData.members) group.members = putData.members
     if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
+    //++ ShaturaPro LIN 03.08.2022
+    group.domainName = 'shatura.pro';//Запись имени домена
+   
+    var collections = mongoose.connection.collections();
+    winston.info(collections);
+    mongoose.model('domains').find({name:group.domainName}, function (err, items) { // Поиск домена в базе данных
+      if (err) return callback(err);
+      winston.info(items);
+      winston.info(items[0]);
+      if (items.length > 0) group.domainID = items[0]._id; //Запись id домена
+    })
 
     group.save(function (err, group) {
       if (err) return apiUtils.sendApiError(res, 500, err.message)

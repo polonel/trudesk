@@ -42,6 +42,9 @@ if (!process.env.FORK) {
   winston.info('==========================================================================')
   winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2022 Chris Brame')
   winston.info('')
+  winston.info('_______________________________________________----------------------------_________________________')
+  winston.info('Logs')
+  winston.info('_______________________________________________----------------------------_________________________')
   winston.info('Running in: ' + global.env)
   winston.info('Server Time: ' + new Date())
 }

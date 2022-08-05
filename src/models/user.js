@@ -149,7 +149,7 @@ userSchema.methods.removeAccessToken = function (callback) {
 userSchema.methods.generateL2Auth = function (callback) {
   const user = this
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    ; (async () => {
       if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
         const chance = new Chance()
         const base32 = require('thirty-two')
@@ -525,10 +525,10 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
     })
 
     var user = new self({
-      username: email,
+      username: email.split('@')[0],
       email: email,
       password: plainTextPass,
-      fullname: email,
+      fullname: email.split('@')[0],
       role: userRoleDefault.value
     })
 
@@ -538,73 +538,72 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
 
       user.save(function (err, savedUser) {
         if (err) return callback(err)
-
-        // Create a group for this user
-        var GroupSchema = require('./group')
-        var group = new GroupSchema({
-          name: savedUser.email,
-          members: [savedUser._id],
-          sendMailTo: [savedUser._id],
-          public: true
+        //++ ShaturaPro LIN 03.08.2022
+        var DomainSchema = require('./domain'); //Получение модели домена
+        var domain = new DomainSchema({
+          name: savedUser.email.split('@')[1],
         })
-
-        group.save(function (err, group) {
-          if (err) return callback(err)
-
-          // Send welcome email
-          var path = require('path')
-          var mailer = require('../mailer')
-          var Email = require('email-templates')
-          var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-
-          var email = new Email({
-            views: {
-              root: templateDir,
-              options: {
-                extension: 'handlebars'
-              }
-            }
-          })
-
-          var settingSchema = require('./setting')
-          settingSchema.getSetting('gen:siteurl', function (err, setting) {
+        mongoose.model('domains').find({ name: domain.name }, function (err, items) { // Поиск домена в базе данных
+          if (err) return callback(err);
+          if (_.size(items) > 0) return callback('Domain already exist');
+          domain.save(function (err, domain) {
             if (err) return callback(err)
 
-            if (!setting) {
-              setting = { value: '' }
-            }
+            // Send welcome email
+            var path = require('path')
+            var mailer = require('../mailer')
+            var Email = require('email-templates')
+            var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-            var dataObject = {
-              user: savedUser,
-              plainTextPassword: plainTextPass,
-              baseUrl: setting.value
-            }
-
-            email
-              .render('public-account-created', dataObject)
-              .then(function (html) {
-                var mailOptions = {
-                  to: savedUser.email,
-                  subject: 'Welcome to trudesk! - Here are your account details.',
-                  html: html,
-                  generateTextFromHTML: true
+            var email = new Email({
+              views: {
+                root: templateDir,
+                options: {
+                  extension: 'handlebars'
                 }
+              }
+            })
 
-                mailer.sendMail(mailOptions, function (err) {
-                  if (err) {
-                    winston.warn(err)
-                    return callback(err)
+            var settingSchema = require('./setting')
+            settingSchema.getSetting('gen:siteurl', function (err, setting) {
+              if (err) return callback(err)
+
+              if (!setting) {
+                setting = { value: '' }
+              }
+
+              var dataObject = {
+                user: savedUser,
+                plainTextPassword: plainTextPass,
+                baseUrl: setting.value
+              }
+
+              email
+                .render('public-account-created', dataObject)
+                .then(function (html) {
+                  var mailOptions = {
+                    to: savedUser.email,
+                    subject: 'Welcome to trudesk! - Here are your account details.',
+                    html: html,
+                    generateTextFromHTML: true
                   }
 
-                  return callback(null, { user: savedUser, group: group })
+                  mailer.sendMail(mailOptions, function (err) {
+                    if (err) {
+                      winston.warn(err)
+                      return callback(err)
+                    }
+
+                    return callback(null, { user: savedUser, domain: domain })
+                  })
                 })
-              })
-              .catch(function (err) {
-                winston.warn(err)
-                return callback(err)
-              })
-          })
-        })
+                .catch(function (err) {
+                  winston.warn(err)
+                  return callback(err)
+                })
+            })
+          });
+        });
       })
     })
   })

@@ -39,7 +39,9 @@ var groupSchema = mongoose.Schema({
     }
   ],
   sendMailTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
-  public: { type: Boolean, required: true, default: false }
+  public: { type: Boolean, required: true, default: false },
+  domainName: {type: String, required: true, default: false},
+  domainID: { type: mongoose.Schema.Types.ObjectId, ref: 'domain' }
 })
 
 groupSchema.plugin(require('mongoose-autopopulate'))
