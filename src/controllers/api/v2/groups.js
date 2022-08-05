@@ -80,28 +80,32 @@ apiGroups.update = function (req, res) {
     winston.info(JSON.stringify(group.sendMailTo));
     //++ ShaturaPro LIN 03.08.2022
     group.domainName = 'shatura.pro';//Запись имени домена
-    let domainID = [];
     winston.info(JSON.stringify(group));
-    Domain.find({name:group.domainName}, function (err, items) { // Поиск домена в базе данных
+    Domain.findOne({name:group.domainName}, function (err, domain) { // Поиск домена в базе данных
       if (err) return callback(err);
-
-      if (items.length > 0)  {
-        domainID = [items[0]._id];
-        winston.info(JSON.stringify(domainID));
-       
+      if (domain !== null)  {
+        let domainArray = group.domainID;
+        if (!domainArray.includes || group.domainID.length == 0) {
+          domainArray.push(domain._id);
+          group.domainID = domainArray; 
+          domain.groupID = group._id;
+          domain.save(function(err,domain){
+            if (err) return callback(err);
+            winston.info('Save group for domain ' + domain);
+          })
+        }
+        group.save(function (err, group) {
+          if (err) return apiUtils.sendApiError(res, 500, err.message)
+    
+          group.populate('members sendMailTo', function (err, group) {
+            if (err) return apiUtils.sendApiError(res, 500, err.message)
+    
+            return apiUtils.sendApiSuccess(res, { group: group })
+          })
+        })
       } //Запись id домена
     })
-    group.domainID = domainID; 
-    winston.info(JSON.stringify(group));
-    group.save(function (err, group) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      group.populate('members sendMailTo', function (err, group) {
-        if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-        return apiUtils.sendApiSuccess(res, { group: group })
-      })
-    })
+  
   })
 }
 

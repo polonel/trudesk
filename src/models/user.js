@@ -505,7 +505,7 @@ userSchema.statics.createUser = function (data, callback) {
  * @param email
  * @param callback
  */
-userSchema.statics.createUserFromEmail = function (email, callback) {
+userSchema.statics.createUserFromEmail = async function (email, callback) {
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
   }
@@ -537,14 +537,14 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
       if (err) return callback(err)
       if (_.size(items) > 0) return callback('Username already exists')
 
-      user.save(function (err, savedUser) {
+      user.save(async function (err, savedUser) {
         if (err) return callback(err)
         //++ ShaturaPro LIN 03.08.2022
         var DomainSchema = require('./domain'); //Получение модели домена
         var domain = new DomainSchema({
           name: savedUser.email.split('@')[1],
         })
-        mongoose.model('domains').find({ name: domain.name }, function (err, items) { // Поиск домена в базе данных
+      mongoose.model('domains').find({ name: domain.name }, function (err, items) { // Поиск домена в базе данных
           if (err) return callback(err);
           if (_.size(items) > 0) return callback('Domain already exist');
           domain.save(function (err, domain) {
@@ -607,7 +607,18 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
             })
           });
         });
+        // Если уже существует группа с данным доменом, то добавить туда пользователя
+       mongoose.model('groups').findOne({ domainName: email.split('@')[0] }, function (err, group) {
+          if (err) return callback(err);
+          if (group == null) return callback('The group with this domain does not exist. Link the domain to the group');
+          group.addMember(user._id, function (err, user) {
+            if (err) return callback(err);
+            return callback(`The user ${user.username} has been added to the group ${group.name}`)
+          })
+        })
       })
+
+      
     })
   })
 }
