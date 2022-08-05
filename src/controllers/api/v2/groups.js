@@ -15,6 +15,7 @@
 var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
 var Group = require('../../../models/group')
+var Domain = require('../../../models/domain')
 var Department = require('../../../models/department')
 var winston = require('../../../logger')
 var mongoose = require('mongoose')
@@ -22,6 +23,7 @@ var apiGroups = {}
 
 apiGroups.create = function (req, res) {
   var postGroup = req.body
+  winston.info(JSON.stringify(req.body))
   if (!postGroup) return apiUtils.sendApiError_InvalidPostData(res)
 
   Group.create(postGroup, function (err, group) {
@@ -75,18 +77,22 @@ apiGroups.update = function (req, res) {
     if (putData.name) group.name = putData.name
     if (putData.members) group.members = putData.members
     if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
+    winston.info(JSON.stringify(group.sendMailTo));
     //++ ShaturaPro LIN 03.08.2022
     group.domainName = 'shatura.pro';//Запись имени домена
-   
-    var collections = mongoose.connection.collections();
-    winston.info(collections);
-    mongoose.model('domains').find({name:group.domainName}, function (err, items) { // Поиск домена в базе данных
+    let domainID = [];
+    winston.info(JSON.stringify(group));
+    Domain.find({name:group.domainName}, function (err, items) { // Поиск домена в базе данных
       if (err) return callback(err);
-      winston.info(items);
-      winston.info(items[0]);
-      if (items.length > 0) group.domainID = items[0]._id; //Запись id домена
-    })
 
+      if (items.length > 0)  {
+        domainID = [items[0]._id];
+        winston.info(JSON.stringify(domainID));
+       
+      } //Запись id домена
+    })
+    group.domainID = domainID; 
+    winston.info(JSON.stringify(group));
     group.save(function (err, group) {
       if (err) return apiUtils.sendApiError(res, 500, err.message)
 
