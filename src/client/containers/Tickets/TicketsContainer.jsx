@@ -42,6 +42,8 @@ import helpers from 'lib/helpers'
 import anime from 'animejs'
 import moment from 'moment-timezone'
 import SearchResults from 'components/SearchResults'
+import TitleContext from 'app/TitleContext'
+import { Helmet } from 'react-helmet-async'
 
 @observer
 class TicketsContainer extends React.Component {
@@ -252,6 +254,13 @@ class TicketsContainer extends React.Component {
 
     return (
       <div>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Tickets</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <PageTitle
           title={'Tickets'}
           shadow={false}

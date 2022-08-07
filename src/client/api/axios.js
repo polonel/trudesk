@@ -67,7 +67,7 @@ customAxios.interceptors.response.use(
     // if (!errorResponse) console.log(error)
     // Enable the below to get a new token on expired token error from the server.
     // (Currently we are doing this on the client in the request interceptor.)
-    // if (isTokenExpiredError(errorResponse)) return refreshTokenAndReattemptRequest(error)
+    if (isTokenExpiredError(errorResponse)) return refreshTokenAndReattemptRequest(error)
     return Promise.reject(error)
   }
 )

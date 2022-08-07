@@ -26,7 +26,7 @@ import helpers from 'lib/helpers'
 import './login.styles.sass'
 import pkg from '../../../../package.json'
 import { Helmet } from 'react-helmet-async'
-// import TitleContext from 'app/TitleContext'
+import TitleContext from 'app/TitleContext'
 import LoginBackground from '../../components/LoginBackground'
 import $ from 'jquery'
 
@@ -46,13 +46,13 @@ const Login = ({ theme, common }) => {
 
   return (
     <div style={{ overflow: 'auto' }}>
-      {/*<TitleContext.Consumer>*/}
-      {/*  {({ title }) => (*/}
-      {/*    <Helmet>*/}
-      {/*      <title>{title} Login - Powered by Trudesk</title>*/}
-      {/*    </Helmet>*/}
-      {/*  )}*/}
-      {/*</TitleContext.Consumer>*/}
+      <TitleContext.Consumer>
+        {({ title }) => (
+          <Helmet>
+            <title>{title} Login - Powered by Trudesk</title>
+          </Helmet>
+        )}
+      </TitleContext.Consumer>
       {error && (
         <div
           className={'mb-15 uk-text-center'}
@@ -88,7 +88,9 @@ const Login = ({ theme, common }) => {
           </svg>
           {/*)}*/}
           <div className='login-wrapper' style={{ background: 'var(--pagecontentlight10)' }}>
-            <h2 className='uk-text-left font-light uk-margin-large-bottom'>Sign into your account</h2>
+            <h2 className='uk-text-left font-light uk-margin-large-bottom' style={{ color: 'var(--primary)' }}>
+              Sign into your account
+            </h2>
             <div className='loginForm'>
               <SessionContext.Consumer>
                 {({ setSession }) => (
@@ -98,6 +100,11 @@ const Login = ({ theme, common }) => {
                     url={'/api/v2/login'}
                     method={'post'}
                     data={{ username, password }}
+                    onValidate={(e, data) => {
+                      if (!data.username || !data.password) return false
+
+                      return true
+                    }}
                     onCompleted={({ data }) => {
                       setError('')
                       setSession(saveSession(data))
@@ -130,7 +137,14 @@ const Login = ({ theme, common }) => {
                         onChange={e => setPassword(e.target.value)}
                       />
                     </div>
-                    <Button flat={false} waves={true} text={'LOGIN'} type={'submit'} extraClass={'btn md-btn-accent'} />
+                    <Button
+                      flat={false}
+                      waves={true}
+                      text={'Continue'}
+                      type={'submit'}
+                      extraClass={'btn'}
+                      styleOverride={{ background: 'var(--tertiary)', color: 'var(--tertiarytextcolor)' }}
+                    />
                   </Form>
                 )}
               </SessionContext.Consumer>
@@ -157,13 +171,7 @@ const Login = ({ theme, common }) => {
           </div>
         </div>
         <div className='thebottom'>
-          <span>© Trudesk</span>
-          <span>
-            <a href='mailto:support@trudesk.io'>Contact</a>
-          </span>
-          <span>
-            <a href={'https://trudesk.io/privacy-policy/'}>Privacy Policy</a>
-          </span>
+          <span>Trudesk v{pkg.version}</span>
         </div>
       </div>
     </div>

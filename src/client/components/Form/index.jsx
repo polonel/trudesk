@@ -25,6 +25,11 @@ class Form extends React.Component {
 
     if (this.props.onBeforeSend && typeof this.props.onBeforeSend === 'function') this.props.onBeforeSend(e)
 
+    if (this.props.onValidate) {
+      const result = this.props.onValidate(e, data)
+      if (!result) return
+    }
+
     axios({
       url,
       method,
@@ -41,7 +46,9 @@ class Form extends React.Component {
   }
 
   render () {
-    const { children, onBeforeSend, onCompleted, onError, url, method, data, headers, ...rest } = this.props
+    // We need to extract all the props that are not valid for an HTML Form
+    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+    const { children, onBeforeSend, onValidate, onCompleted, onError, url, method, data, headers, ...rest } = this.props
 
     return (
       <form onSubmit={e => this.onSubmit(e)} {...rest}>
@@ -59,7 +66,8 @@ Form.propTypes = {
   children: PropTypes.any.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func,
-  onBeforeSend: PropTypes.func
+  onBeforeSend: PropTypes.func,
+  onValidate: PropTypes.func
 }
 
 export default Form

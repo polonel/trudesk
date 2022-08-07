@@ -57,6 +57,37 @@ apiSettings.get = async (req, res) => {
   }
 }
 
+apiSettings.updateBatch = async (req, res) => {
+  let postData = req.body
+  if (!postData) return apiUtils.sendApiError_InvalidPostData(res)
+  if (!Array.isArray(postData)) postData = [postData]
+
+  const updatedSettings = []
+
+  try {
+    for (const item of postData) {
+      let setting = await SettingModel.findOne({ name: item.name })
+      if (!setting) {
+        setting = new SettingModel({
+          name: item.name
+        })
+      }
+
+      if (setting.name === 'legal:privacypolicy') item.value = sanitizeHtml(item.value, { allowedTags: false })
+
+      setting.value = item.value
+
+      setting = await setting.save()
+
+      updatedSettings.push(setting)
+    }
+
+    return apiUtils.sendApiSuccess(res, { updatedSettings })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
 apiSettings.theme = async (req, res) => {
   try {
     // const settings = await SettingModel.getSettingsByName([

@@ -59,6 +59,8 @@ import Log from '../../logger'
 import UIkit from 'uikit'
 import moment from 'moment'
 import SpinLoader from 'components/SpinLoader'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 const fetchTicket = parent => {
   axios
@@ -286,6 +288,14 @@ class SingleTicketContainer extends React.Component {
 
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{`${title} Ticket ${this.ticket ? this.ticket.uid : ''}`}</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
+
         {!this.ticket && <SpinLoader active={true} />}
         {this.ticket && (
           <Fragment>

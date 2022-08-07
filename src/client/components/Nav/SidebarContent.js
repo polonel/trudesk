@@ -153,6 +153,54 @@ export const menu = [
         icon: 'settings',
         url: '/settings/accounts',
         perm: 'admin:*'
+      },
+      {
+        label: 'Appearance',
+        icon: 'settings',
+        url: '/settings/appearance',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Permissions',
+        icon: 'settings',
+        url: '/settings/permissions',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Tickets',
+        icon: 'settings',
+        url: '/settings/tickets',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Mailer',
+        icon: 'settings',
+        url: '/settings/mailer',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Elasticsearch',
+        icon: 'settings',
+        url: '/settings/elasticsearch',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Backup/Restore',
+        icon: 'settings',
+        url: '/settings/backup',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Server',
+        icon: 'settings',
+        url: '/settings/server',
+        perm: 'admin:*'
+      },
+      {
+        label: 'Legal',
+        icon: 'settings',
+        url: '/settings/legal',
+        perm: 'admin:*'
       }
     ]
   },

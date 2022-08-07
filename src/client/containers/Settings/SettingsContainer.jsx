@@ -34,6 +34,8 @@ import LegalSettingsContainer from 'containers/Settings/Legal'
 
 import helpers from 'lib/helpers'
 import history from 'lib/lib-history'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 class SettingsContainer extends React.Component {
   constructor (props) {
@@ -73,6 +75,13 @@ class SettingsContainer extends React.Component {
   render () {
     return (
       <div className='uk-grid uk-grid-collapse'>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Settings</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <div className='uk-width-1-6 uk-width-xLarge-1-10 message-list full-height' data-offset='68'>
           <div
             className='page-title noshadow nopadding-right'

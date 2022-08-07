@@ -12,12 +12,11 @@
  */
 
 import React from 'react'
-import PropTypes from 'prop-types'
 
 class LoginBackground extends React.Component {
   render () {
     return (
-      <div className='login-background'>
+      <div className='login-background' style={{ background: 'var(--pagecontentdark5)' }}>
         <div
           className={'bg-dot'}
           style={{

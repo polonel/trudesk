@@ -44,9 +44,17 @@ $accent_blue: #2196F3
 $text_color: $primary
 $p_color: $primary
 
+$text_color: $primary
+$muted_text: automatic-text-color($secondary, 'muted')
+
 //THEME
 $logo_text_color: #FFFFFF
 $logo_circle_color: #E74C3C
+
+$tertiary_fade: rgba($tertiary, 0.4)
+$tertiary_light_5: lighten($tertiary, 5%)
+$tertiary_dark_10: darken($tertiary, 10%)
+$tertiary_text_color: automatic-text-color($tertiary)
 
 $topbar_bg: $header_background
 $topbar_text_color: $header_primary
@@ -55,6 +63,7 @@ $topbar_icons: $header_primary
 $topbar_icons_hover: darken($topbar_icons, 10%)
 $topbar_badge: $accent_color
 $topbar_border: 1px solid darken($topbar_bg, 5%)
+$topbar_border_color: darken($topbar_bg, 5%)
 
 $page_bg_color: $secondary
 
@@ -63,6 +72,7 @@ $sidebar_box_shadow: none
 $sidebar_bg: $quaternary
 //$sidebar_bg: darken($page_bg_color, 5%)
 $sidebar_border_right: 1px solid darken($sidebar_bg, 5%)
+$sidebar_border_right_color: darken($sidebar_bg, 5%)
 $sidebar_text: automatic-text-color($sidebar_bg, 'sidebar')
 $sidebar_text_hover: $sidebar_text
 $sidebar_item_hover: darken($sidebar_bg, 8%)
@@ -77,10 +87,16 @@ $sidebar_subnav_active: automatic-text-color($sidebar_subnav_bg, 'sidebar')
 $sidebar_subnav_hr: darken($sidebar_subnav_bg, 5%)
 
 $page_content_bg: $secondary
-//$page_content_border_color: rgba(darken($page_content_bg, 25%), 0.25)
 $page_content_border_color: rgba(0, 0, 0, 0.15)
 $page_content_right_bg: lighten($secondary, 10%)
+$page_content_light_5: lighten($page_content_bg, 5%)
+$page_content_light_10: $page_content_right_bg
+$page_content_light_20: lighten($secondary, 20%)
+$page_content_dark_5: darken($page_content_bg, 5%)
+$page_content_dark_10: darken($secondary, 10%)
+$page_content_dark_20: darken($secondary, 20%)
 $page_content_left_bg: $secondary
+$page_content_left_item_hover: lighten($page_content_left_bg, 5%)
 $page_content_title_bg: $secondary
 $page_content_title_shadow: 2px 2px 2px 0px rgba(44, 62, 80, 0.1)
 $page_content_title_border_color: $page_content_border_color
@@ -113,3 +129,9 @@ $graph_path_color: #2196f3 !default
 
 $selectize_bg: lighten($page_content_bg, 7%)
 $selectize_text: automatic-text-color($selectize_bg)
+
+$offline: #9e9e9e
+$online: $accent_success
+$idle: $accent_warn
+$away: $idle
+$busy: $accent_danger

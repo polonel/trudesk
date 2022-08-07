@@ -1,10 +1,10 @@
 import React, { lazy, Fragment } from 'react'
 import { Navigate, Route, Routes, Link, useParams } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
 import SessionContext from './SessionContext'
 import Login from 'containers/Login'
 
 const LogoutContainer = lazy(() => import(/* webpackChunkName: "auth" */ 'containers/Logout'))
+const ProfileContainer = lazy(() => import(/* webpackChunkName:"profile" */ 'containers/Profile'))
 const DashboardContainer = lazy(() => import(/* webpackChunkName: "dashboard" */ 'containers/Dashboard'))
 const TC_Lazy = lazy(() => import(/* webpackChunkName: "tickets" */ 'containers/Tickets/TicketsContainer'))
 const SingleTicketContainer = lazy(() =>
@@ -39,6 +39,7 @@ const BaseRouter = ({ user, setSession }) => {
       <Routes>
         <Route path={'/'} element={<Navigate to={'/tickets'} />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
+        <Route path={'profile'} element={<ProfileContainer setSession={setSession} />} exact />
         <Route path={'dashboard'} element={<DashboardContainer />} exact />
 
         {/* TICKETS */}
@@ -57,9 +58,17 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'tickets/:uid'} element={<SingleTicket sessionUser={user} />} exact />
 
         {/*Settings*/}
-        <Route path={'settings'} element={<SettingsLazy key={0} />} />
-        <Route path={'settings/general'} element={<SettingsLazy key={1} />} />
-        <Route path={'settings/accounts'} element={<SettingsLazy key={2} />} />
+        <Route path={'settings'} element={<SettingsLazy />} />
+        <Route path={'settings/general'} element={<SettingsLazy key={0} />} />
+        <Route path={'settings/accounts'} element={<SettingsLazy key={1} />} />
+        <Route path={'settings/appearance'} element={<SettingsLazy key={2} />} />
+        <Route path={'settings/permissions'} element={<SettingsLazy key={3} />} />
+        <Route path={'settings/tickets'} element={<SettingsLazy key={4} />} />
+        <Route path={'settings/mailer'} element={<SettingsLazy key={5} />} />
+        <Route path={'settings/elasticsearch'} element={<SettingsLazy key={6} />} />
+        <Route path={'settings/backup'} element={<SettingsLazy key={7} />} />
+        <Route path={'settings/server'} element={<SettingsLazy key={8} />} />
+        <Route path={'settings/legal'} element={<SettingsLazy key={9} />} />
 
         <Route path={'*'} element={<NotFound />} />
       </Routes>

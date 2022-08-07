@@ -91,7 +91,7 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/settings', apiv2Auth, isAdmin, apiv2.settings.get)
   // router.get('/api/v2/settings/common', apiv2.settings.common)
   router.get('/api/v2/settings/theme', apiv2.settings.theme)
-  // router.put('/api/v2/settings', apiv2Auth, isAdmin, apiv2.settings.updateBatch)
+  router.put('/api/v2/settings', apiv2Auth, isAdmin, apiv2.settings.updateBatch)
   // router.put('/api/v2/settings/:id', apiv2Auth, isAdmin, apiv2.settings.update)
   // router.get('/api/v2/backups', apiv2Auth, isAdmin, apiv2.settings.backups)
   // router.post('/api/v2/backups/restore', apiv2Auth, isAdmin, apiv2.settings.restore)

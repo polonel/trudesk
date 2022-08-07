@@ -14,8 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import $ from 'jquery'
+import { Link } from 'react-router-dom'
 
 class TitlePagination extends React.Component {
   static formatNumber (num) {
@@ -58,22 +57,22 @@ class TitlePagination extends React.Component {
         </span>
         <ul className={'button-group'}>
           <li className='pagination'>
-            <a
-              href={prevEnabled ? link(prevPage) : '#'}
+            <Link
+              to={prevEnabled ? link(prevPage) : '#'}
               title={'Previous Page'}
               className={'btn md-btn-wave-light' + (!prevEnabled ? ' no-ajaxy' : '')}
             >
               <i className='fa-solid fa-large fa-chevron-left'></i>
-            </a>
+            </Link>
           </li>
           <li className='pagination'>
-            <a
-              href={nextEnabled ? link(nextPage) : '#'}
+            <Link
+              to={nextEnabled ? link(nextPage) : '#'}
               title={'Next Page'}
               className={'btn md-btn-wave-light' + (!nextEnabled ? ' no-ajaxy' : '')}
             >
               <i className='fa-solid fa-large fa-chevron-right' />
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
