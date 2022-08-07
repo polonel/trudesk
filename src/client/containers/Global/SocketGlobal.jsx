@@ -18,12 +18,23 @@ class SocketGlobal extends React.Component {
     this.props.initSocket().then(this.onSocketInitialized)
   }
 
+  componentDidMount () {
+    if (this.props.socket) {
+      this.onSocketInitialized()
+      if (!this.props.socket.connected) {
+        this.props.socket.connect()
+      }
+    }
+  }
+
   componentWillUnmount () {
     if (this.props.socket) {
       this.props.socket.off('connect', this.refreshSocketState)
       this.props.socket.off('connecting', this.refreshSocketState)
       this.props.socket.io.off('reconnect', this.onReconnect)
       this.props.socket.off('disconnect', this.onDisconnect)
+
+      this.props.socket.disconnect()
     }
   }
 
@@ -76,7 +87,7 @@ class SocketGlobal extends React.Component {
 SocketGlobal.propTypes = {
   initSocket: PropTypes.func.isRequired,
   updateSocket: PropTypes.func.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object
 }
 
 const mapStateToProps = state => ({

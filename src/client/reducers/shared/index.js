@@ -34,7 +34,7 @@ const initialState = {
   loadingViewData: true,
   viewdata: Map({}),
 
-  socket: {},
+  socket: null,
   socketInitialized: false
 }
 
@@ -54,6 +54,7 @@ const sharedReducer = handleActions(
     },
 
     [SET_SESSION_USER.SUCCESS]: (state, action) => {
+      if (!action.payload || !action.payload.sessionUser) return { ...state }
       return {
         ...state,
         sessionUser: action.payload.sessionUser

@@ -116,6 +116,7 @@ const reducer = handleActions(
     },
 
     [FETCH_DASHBOARD_OVERDUE_TICKETS.SUCCESS]: (state, action) => {
+      console.log(action.response)
       return {
         ...state,
         loadingOverdueTickets: false,

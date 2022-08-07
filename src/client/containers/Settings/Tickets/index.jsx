@@ -49,6 +49,27 @@ class TicketsSettings extends React.Component {
     this.getTicketTags = this.getTicketTags.bind(this)
   }
 
+  static toggleEditPriority (e) {
+    const $parent = $(e.target).parents('.priority-wrapper')
+    const $v = $parent.find('.view-priority')
+    const $e = $parent.find('.edit-priority')
+    if ($v && $e) {
+      $v.toggleClass('hide')
+      $e.toggleClass('hide')
+    }
+  }
+
+  static toggleEditTag (e) {
+    const $target = $(e.target)
+    const $parent = $target.parents('.tag-wrapper')
+    const $v = $parent.find('.view-tag')
+    const $e = $parent.find('.edit-tag')
+    if ($v && $e) {
+      $v.toggleClass('hide')
+      $e.toggleClass('hide')
+    }
+  }
+
   componentDidMount () {
     this.getTicketTags(null, 0)
     const $tagPagination = $('#tagPagination')
@@ -139,30 +160,9 @@ class TicketsSettings extends React.Component {
     this.props.showModal(modal, props)
   }
 
-  static toggleEditPriority (e) {
-    const $parent = $(e.target).parents('.priority-wrapper')
-    const $v = $parent.find('.view-priority')
-    const $e = $parent.find('.edit-priority')
-    if ($v && $e) {
-      $v.toggleClass('hide')
-      $e.toggleClass('hide')
-    }
-  }
-
   onRemovePriorityClicked (e, priority) {
     e.preventDefault()
     this.props.showModal('DELETE_PRIORITY', { priority })
-  }
-
-  static toggleEditTag (e) {
-    const $target = $(e.target)
-    const $parent = $target.parents('.tag-wrapper')
-    const $v = $parent.find('.view-tag')
-    const $e = $parent.find('.edit-tag')
-    if ($v && $e) {
-      $v.toggleClass('hide')
-      $e.toggleClass('hide')
-    }
   }
 
   onSubmitUpdateTag (e, tagId) {

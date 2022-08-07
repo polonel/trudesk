@@ -16,11 +16,14 @@
 import { Document, model, Model, Schema, Types } from 'mongoose'
 import winston from '../logger'
 
-const COLLECTION = 'sessions'
+const COLLECTION = 'sessions_jwt'
 
 interface ISession extends Document {
+  _id: string
+  user: Types.ObjectId
   expires: Date
   session: string
+  refreshToken: string
 }
 
 interface ISessionModel extends Model<ISession> {
@@ -29,19 +32,27 @@ interface ISessionModel extends Model<ISession> {
 
 const SessionSchema = new Schema<ISession, ISessionModel>(
   {
-    _id: String,
+    user: { type: Schema.Types.ObjectId, ref: 'accounts' },
     expires: Date,
-    session: String
+    session: String,
+    refreshToken: String,
   },
   { strict: false }
 )
 
-SessionSchema.statics.getAllSessionUsers = async function () {
+SessionSchema.statics.getAllSessionUsers = async function () {}
+
+SessionSchema.statics.getSession = async function (id) {
+  return this.findOne({ id }).populate('user').exec()
+}
+
+SessionSchema.statics.getUserSessions = async function (userId) {
+  return this.find({ user: userId }).populate('user').exec()
 }
 
 async function destroyUserSession(userId: string | Types.ObjectId): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    (async () => {
+    ;(async () => {
       try {
         if (!userId) return reject(new Error('Invalid User Id'))
 

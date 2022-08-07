@@ -14,6 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 class SubmenuItem extends React.Component {
   render () {
@@ -21,10 +22,10 @@ class SubmenuItem extends React.Component {
       <div>
         {this.props.hasSeperator && <hr />}
         <li className={this.props.active ? ' active ' : ''}>
-          <a href={this.props.href}>
+          <Link to={this.props.href}>
             <i className='material-icons fa-sub-icon'>{this.props.icon}</i>
             {this.props.text}
-          </a>
+          </Link>
         </li>
       </div>
     )

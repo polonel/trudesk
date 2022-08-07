@@ -257,6 +257,16 @@ ticketsV2.transferToThirdParty = async (req, res) => {
   }
 }
 
+ticketsV2.getDeleted = async (req, res) => {
+  try {
+    const deletedTickets = await TicketModel.find({ deleted: true })
+
+    return apiUtils.sendApiSuccess(res, { deletedTickets, count: deletedTickets.length })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
 ticketsV2.info = {}
 ticketsV2.info.types = async (req, res) => {
   try {

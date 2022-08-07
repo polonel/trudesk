@@ -27,6 +27,7 @@ export const SET_SESSION_USER = defineAction('SET_SESSION_USER', [SUCCESS, PENDI
 export const FETCH_ROLES = defineAction('FETCH_ROLES', [SUCCESS, ERROR])
 export const UPDATE_ROLE_ORDER = defineAction('UPDATE_ROLE_ORDER', [SUCCESS, ERROR])
 export const FETCH_VIEWDATA = defineAction('FETCH_VIEWDATA', [SUCCESS, PENDING, ERROR])
+export const FETCH_THEME = defineAction('FETCH_THEME', [SUCCESS, PENDING, ERROR])
 
 // Common Nav Change
 export const NAV_CHANGE = defineAction('NAV_CHANGE')

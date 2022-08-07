@@ -33,6 +33,7 @@ import ServerSettingsController from './Server'
 import LegalSettingsContainer from 'containers/Settings/Legal'
 
 import helpers from 'lib/helpers'
+import history from 'lib/lib-history'
 
 class SettingsContainer extends React.Component {
   constructor (props) {
@@ -58,7 +59,7 @@ class SettingsContainer extends React.Component {
 
   onMenuItemClick (e, category) {
     if (this.state.activeCategory === 'settings-' + category) return
-
+    // history.push('/settings/' + category)
     this.setState(
       {
         activeCategory: 'settings-' + category

@@ -12,28 +12,30 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+import cookie from 'cookie'
 import type { IncomingMessage } from 'http'
-import passportSocketIo         from 'passport.socketio'
-import { Server, Socket }       from 'socket.io'
-import type { ExtendedError }   from 'socket.io/dist/namespace'
-import config                   from './config'
-import winston                  from './logger'
-import { UserModel }            from './models'
-import type { UserModelClass }  from './models/user'
-import accountsImportSocket     from './socketio/accountImportSocket'
-import backupRestoreSocket      from './socketio/backupRestoreSocket'
-import chatSocket               from './socketio/chatSocket'
-import logsSocket               from './socketio/logsSocket'
-import noticeSocket             from './socketio/noticeSocket'
-import notificationSocket       from './socketio/notificationSocket'
-import ticketSocket             from './socketio/ticketSocket'
-import type { WebServer }       from './webserver'
+import jwt from 'jsonwebtoken'
+import { Server, Socket } from 'socket.io'
+import type { ExtendedError } from 'socket.io/dist/namespace'
+import config from './config'
+import winston from './logger'
+import { SessionModel, UserModel } from './models'
+import type { UserModelClass } from './models/user'
+import accountsImportSocket from './socketio/accountImportSocket'
+import backupRestoreSocket from './socketio/backupRestoreSocket'
+import chatSocket from './socketio/chatSocket'
+import logsSocket from './socketio/logsSocket'
+import noticeSocket from './socketio/noticeSocket'
+import notificationSocket from './socketio/notificationSocket'
+import ticketSocket from './socketio/ticketSocket'
+import type { WebServer } from './webserver'
 
 interface ServerToClientEvents {
   unauthorized: () => void
 }
 
-interface ClientToServerEvents {}
+interface ClientToServerEvents {
+}
 
 interface InterServerEvents {
   ping: () => void
@@ -54,6 +56,7 @@ interface ExtendedSocket extends Socket {
 }
 
 interface QueryIncomingMessage extends IncomingMessage {
+  name: string
   _query: { token: string }
   user: ExtendedUser
 }
@@ -94,13 +97,33 @@ export const SocketServer = function (ws: WebServer) {
           return accept()
         }
 
-        return passportSocketIo.authorize({
-          key: 'connect.sid',
-          store: ws.sessionStore,
-          secret: socketConfig.secret,
-          success: onAuthorizeSuccess,
-        })(extendedSocket, accept)
+        const parsedCookies = cookie.parse(extendedSocket.handshake?.headers?.cookie as string)
+        const rftJWT = parsedCookies['_rft_']
+
+        if (!rftJWT) {
+          data.emit('unauthorized')
+          data.disconnect(true)
+          return accept(new Error('Invalid Token'))
+        }
+
+        const decoded = jwt.verify(rftJWT, config.get('tokens:secret'))
+        const session = await SessionModel.findOne({ _id: decoded.s, refreshToken: decoded.r }).populate('user')
+        if (!session) throw new Error('Invalid Session')
+
+        queryRequest.user = session.user
+        queryRequest.user.logged_in = true
+
+        onAuthorizeSuccess(queryRequest, accept)
+
+        // return passportSocketIo.authorize({
+        //   key: 'connect.sid',
+        //   store: ws.sessionStore,
+        //   secret: socketConfig.secret,
+        //   success: onAuthorizeSuccess,
+        // })(extendedSocket, accept)
       } catch (err) {
+        data.emit('unauthorized')
+        winston.warn((err as ExtendedError).message)
         return accept(err as ExtendedError)
       }
     })()

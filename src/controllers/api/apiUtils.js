@@ -13,6 +13,9 @@
  */
 
 const _ = require('lodash')
+const nconf = require('nconf')
+const jwt = require('jsonwebtoken')
+const { GroupModel, DepartmentModel } = require('../../models')
 
 const apiUtils = {}
 
@@ -30,36 +33,59 @@ apiUtils.sendApiError_InvalidPostData = function (res) {
   return apiUtils.sendApiError(res, 400, 'Invalid Post Data')
 }
 
-apiUtils.generateJWTToken = function (dbUser, callback) {
-  const nconf = require('nconf')
-  const jwt = require('jsonwebtoken')
+apiUtils.generateJWTToken = async function (dbUser, session, callback) {
+  return new Promise((resolve, reject) => {
+    if (!dbUser || !session) return reject(new Error('Invalid Args'))
+    ;(async () => {
+      const resUser = _.clone(dbUser._doc)
+      const refreshToken = resUser.accessToken
+      delete resUser.resetPassExpire
+      delete resUser.resetPassHash
+      delete resUser.password
+      delete resUser.iOSDeviceTokens
+      delete resUser.tOTPKey
+      delete resUser.__v
+      delete resUser.preferences
+      delete resUser.accessToken
+      delete resUser.deleted
+      delete resUser.hasL2Auth
 
-  const resUser = _.clone(dbUser._doc)
-  const refreshToken = resUser.accessToken
-  delete resUser.resetPassExpire
-  delete resUser.resetPassHash
-  delete resUser.password
-  delete resUser.iOSDeviceTokens
-  delete resUser.tOTPKey
-  delete resUser.__v
-  delete resUser.preferences
-  delete resUser.accessToken
-  delete resUser.deleted
-  delete resUser.hasL2Auth
+      const secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
+      const expires = nconf.get('tokens') ? nconf.get('tokens').expires : 3600
+      if (!secret || !expires) return callback({ message: 'Invalid Server Configuration' })
 
-  const secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
-  const expires = nconf.get('tokens') ? nconf.get('tokens').expires : 3600
-  if (!secret || !expires) return callback({ message: 'Invalid Server Configuration' })
+      try {
+        if (dbUser.role.isAdmin || dbUser.role.isAgent) {
+          const groups = await DepartmentModel.getDepartmentGroupsOfUser(dbUser._id)
+          resUser.groups = groups.map(g => g._id)
 
-  require('../../models/group').getAllGroupsOfUserNoPopulate(dbUser._id, function (err, grps) {
-    if (err) return callback(err)
-    resUser.groups = grps.map(function (g) {
-      return g._id
-    })
+          const token = jwt.sign({ user: resUser, session: session._id }, secret, { expiresIn: expires })
+          const refreshToken = jwt.sign({ s: session._id, r: session.refreshToken }, secret, { expiresIn: '96h' })
+          const result = { session: session._id, token, refreshToken }
 
-    const token = jwt.sign({ user: resUser }, secret, { expiresIn: expires })
+          if (typeof callback === 'function') return callback(null, result)
 
-    return callback(null, { token: token, refreshToken: refreshToken })
+          return resolve(result)
+        } else {
+          const grps = await GroupModel.getAllGroupsOfUser(dbUser._id)
+          resUser.groups = grps.map(function (g) {
+            return g._id
+          })
+
+          const token = jwt.sign({ user: resUser, session: session._id }, secret, { expiresIn: expires })
+          const refreshToken = jwt.sign({ s: session._id, r: session.refreshToken }, secret, { expiresIn: '96h' })
+          const result = { session: session._id, token, refreshToken }
+
+          if (typeof callback === 'function') return callback(null, result)
+
+          return resolve(result)
+        }
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
+
+        return reject(e)
+      }
+    })()
   })
 }
 

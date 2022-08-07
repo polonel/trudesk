@@ -65,6 +65,7 @@ class AssigneeDropdownPartial extends React.Component {
             onClick={() => {
               helpers.hideAllpDropDowns()
               if (this.props.onClearClick) this.props.onClearClick()
+
               this.props.socket.emit(TICKETS_ASSIGNEE_CLEAR, this.props.ticketId)
             }}
           >
@@ -79,6 +80,7 @@ class AssigneeDropdownPartial extends React.Component {
               onClick={() => {
                 if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent })
                 helpers.hideAllpDropDowns()
+
                 this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId })
               }}
             >

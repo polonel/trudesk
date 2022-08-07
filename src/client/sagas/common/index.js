@@ -12,18 +12,20 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { call, put, takeLatest } from 'redux-saga/effects'
+import { call, put, takeLatest, select } from 'redux-saga/effects'
 
 import api from '../../api'
-import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, SET_SESSION_USER, UPDATE_SOCKET } from 'actions/types'
+import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, SET_SESSION_USER, UPDATE_SOCKET, FETCH_THEME } from 'actions/types'
 
 import Log from '../../logger'
 import helpers from 'lib/helpers'
 
-function* initSocket({ meta }) {
+function * initSocket ({ meta }) {
   try {
+    const socketInitialized = yield select(state => state.shared.socketInitialized)
+    if (socketInitialized) return
     const s = io.connect({
-      transports: ['polling', 'websocket'],
+      transports: ['polling', 'websocket']
     })
 
     yield put({ type: INIT_SOCKET.SUCCESS, payload: { socket: s }, meta })
@@ -33,7 +35,7 @@ function* initSocket({ meta }) {
   }
 }
 
-function* updateSocket({ payload }) {
+function * updateSocket ({ payload }) {
   try {
     const s = payload.socket
     yield put({ type: UPDATE_SOCKET.SUCCESS, payload: { socket: s } })
@@ -43,10 +45,10 @@ function* updateSocket({ payload }) {
   }
 }
 
-function* setSessionUser({ payload }) {
+function * setSessionUser ({ payload }) {
   try {
-    const response = yield call(api.common.getSessionUser, payload)
-    yield put({ type: SET_SESSION_USER.SUCCESS, payload: { sessionUser: response } })
+    // const response = yield call(api.common.getSessionUser, payload)
+    yield put({ type: SET_SESSION_USER.SUCCESS, payload })
   } catch (error) {
     console.log(error)
     const errorText = error.response ? error.response.data.error : error
@@ -58,7 +60,22 @@ function* setSessionUser({ payload }) {
   }
 }
 
-function* fetchRoles({ payload }) {
+function * fetchTheme ({ payload }) {
+  try {
+    const response = yield call(api.common.fetchTheme, payload)
+    yield put({ type: FETCH_THEME.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: FETCH_THEME.ERROR, error })
+  }
+}
+
+function * fetchRoles ({ payload }) {
   try {
     const response = yield call(api.common.fetchRoles, payload)
     yield put({ type: FETCH_ROLES.SUCCESS, response })
@@ -70,7 +87,7 @@ function* fetchRoles({ payload }) {
   }
 }
 
-function* fetchViewData({ payload, meta }) {
+function * fetchViewData ({ payload, meta }) {
   yield put({ type: FETCH_VIEWDATA.PENDING })
   try {
     const response = yield call(api.common.fetchViewData)
@@ -84,10 +101,11 @@ function* fetchViewData({ payload, meta }) {
   }
 }
 
-export default function* watcher() {
+export default function * watcher () {
   yield takeLatest(INIT_SOCKET.ACTION, initSocket)
   yield takeLatest(UPDATE_SOCKET.ACTION, updateSocket)
   yield takeLatest(SET_SESSION_USER.ACTION, setSessionUser)
+  yield takeLatest(FETCH_THEME.ACTION, fetchTheme)
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
   yield takeLatest(FETCH_VIEWDATA.ACTION, fetchViewData)
 }

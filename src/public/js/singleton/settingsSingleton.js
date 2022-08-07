@@ -23,7 +23,7 @@ SettingsService.getSettings = () => settings
 
 SettingsService.refresh = callback => {
   axios
-    .get('/api/v1/settings')
+    .get('/api/v2/settings')
     .then(res => {
       settings = res.data.settings.settings
 

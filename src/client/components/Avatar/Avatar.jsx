@@ -149,7 +149,7 @@ class Avatar extends React.Component {
     return (
       <Fragment>
         <div
-          className="relative uk-clearfix uk-float-left uk-display-inline-block"
+          className='relative uk-clearfix uk-float-left uk-display-inline-block'
           style={wrapperStyle}
           onMouseOver={() => this.onMouseOver()}
           onMouseOut={() => this.onMouseOut()}
@@ -160,7 +160,7 @@ class Avatar extends React.Component {
                 <input
                   ref={this.imageUploadInput}
                   className={'uk-hidden'}
-                  type="file"
+                  type='file'
                   hidden={true}
                   accept={'image/*'}
                   onChange={e => this.onImageInputChange(e)}
@@ -195,10 +195,10 @@ class Avatar extends React.Component {
             </>
           )}
           <img
-            className="profile-pic uk-border-circle"
+            className='profile-pic uk-border-circle'
             style={{ height: size, width: size }}
             src={`/uploads/users/${image || 'defaultProfile.jpg'}`}
-            alt=""
+            alt=''
           />
           {showOnlineBubble && (
             <span

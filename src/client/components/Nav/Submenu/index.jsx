@@ -14,62 +14,78 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
+import { useNavigate } from 'react-router-dom'
+import clsx from 'clsx'
 import IsArray from 'lodash/isArray'
 import $ from 'jquery'
 
-import Helpers from 'helpers'
+import Helpers from 'lib/helpers'
 
-//Sass
-// import './style.sass';
+const SubmenuWithNavigate = props => {
+  const navigate = useNavigate()
+
+  return <Submenu navigate={navigate} {...props} />
+}
 
 class Submenu extends Component {
+  constructor (props) {
+    super(props)
+
+    this.buildFloatingMenu = this.buildFloatingMenu.bind(this)
+  }
+
   componentDidMount () {
-    this.buildFloatingMenu(this.props.id)
+    this.buildFloatingMenu(this.props.id, this.props.title)
   }
 
   componentDidUpdate () {
-    this.buildFloatingMenu(this.props.id)
+    this.buildFloatingMenu(this.props.id, this.props.title)
   }
 
   shouldComponentUpdate (nextProps) {
     return this.props.children !== nextProps.children
   }
 
-  buildFloatingMenu (navId) {
+  buildFloatingMenu (navId, title) {
+    const self = this
     if (this.props.children) {
-      let $sideBarToRight = $('.sidebar-to-right')
+      const $sideBarToRight = $('.sidebar-to-right')
       $sideBarToRight.find('#side-nav-sub-' + navId).remove()
-      let ul = $('<ul id="side-nav-sub-' + this.props.id + '" class="side-nav-sub side-nav-floating"></ul>')
+      const ul = $('<ul id="side-nav-sub-' + this.props.id + '" class="side-nav-sub side-nav-floating"></ul>')
       let li = null
       if (!IsArray(this.props.children)) {
-        if (this.props.children.type.name === 'NavSeperator') return
+        const child = this.props.children
+        if (child.type && child.type.name === 'NavSeparator') return
 
-        li = $(
-          '<li class="' +
-            (this.props.children.props.active ? ' active ' : '') +
-            '"><a href="' +
-            this.props.children.props.href +
-            '"><span>' +
-            this.props.children.props.text +
-            '</span></a></li>'
-        )
+        li = $(`<li class="${child.props.active && 'active'}"></li>`)
+        const anchor = $('<a href="#"></a>')
+        anchor.click(function (e) {
+          e.preventDefault()
+          self.props.navigate(child.props.href)
+        })
+        anchor.append(`<span>${child.props.text}</span>`)
+        li.append(anchor)
         ul.append(li)
       } else {
+        if (title) {
+          li = $(`<li class='uk-nav-header'>${title}</li>`)
+          ul.append(li)
+          ul.append('<hr />')
+        }
         for (let i = 0; i < this.props.children.length; i++) {
-          if (!this.props.children[i]) continue
-          if (this.props.children[i].type.name === 'NavSeperator') ul.append('<hr />')
+          if (!this.props.children[i] || !this.props.children[i].type) continue
+          const child = this.props.children[i]
+          if (child.type.name === 'NavSeparator') ul.append('<hr />')
           else {
-            if (this.props.children[i].props.hasSeperator) ul.append('<hr />')
-            li = $(
-              '<li class="' +
-                (this.props.children[i].props.active ? ' active ' : '') +
-                '"><a href="' +
-                this.props.children[i].props.href +
-                '"><span>' +
-                this.props.children[i].props.text +
-                '</span></a></li>'
-            )
+            if (child.props.hasSeparator) ul.append('<hr />')
+            li = $(`<li class="${child.props.active && 'active'}"></li>`)
+            const anchor = $(`<a href="#"></a>`)
+            anchor.click(function (e) {
+              e.preventDefault()
+              self.props.navigate(`${child.props.href}`)
+            })
+            anchor.append(`<span>${child.props.text}</span>`)
+            li.append(anchor)
             ul.append(li)
           }
         }
@@ -78,17 +94,15 @@ class Submenu extends Component {
       $sideBarToRight.append(ul)
 
       Helpers.UI.setupSidebarTether()
-
-      //Ajaxify new floating menu links
-      $('body').ajaxify()
     }
   }
 
   render () {
+    const { sidebarOpen, subMenuOpen } = this.props
     return (
       <ul
         id={'side-nav-accordion-' + this.props.id}
-        className={'side-nav-sub side-nav-accordion' + (this.props.subMenuOpen === true ? ' subMenuOpen' : '')}
+        className={clsx('side-nav-sub', 'side-nav-accordion', sidebarOpen && subMenuOpen && 'subMenuOpen')}
       >
         {this.props.children}
       </ul>
@@ -98,8 +112,11 @@ class Submenu extends Component {
 
 Submenu.propTypes = {
   id: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   subMenuOpen: PropTypes.bool,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  sidebarOpen: PropTypes.bool,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+  navigate: PropTypes.func.isRequired
 }
 
-export default Submenu
+export default SubmenuWithNavigate

@@ -240,6 +240,9 @@ middleware.apiv2 = function (req, res, next) {
   if (req.user) return next()
 
   passport.authenticate('jwt', { session: true }, function (err, user) {
+    if (err && err.type === 'exp')
+      return res.status(401).json({ success: false, error: { type: 'exp', message: 'invalid_token' } })
+
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
     if (user) {
       req.user = user
@@ -263,8 +266,7 @@ middleware.canUser = function (action) {
 
 middleware.isAdmin = function (req, res, next) {
   const roles = global.roles
-
-  const role = _.find(roles, { _id: req.user.role._id })
+  const role = _.find(roles, (role) => role._id.toString() === req.user.role._id.toString())
   if (role) {
     role.isAdmin = role.grants.indexOf('admin:*') !== -1
 
@@ -275,7 +277,7 @@ middleware.isAdmin = function (req, res, next) {
 }
 
 middleware.isAgentOrAdmin = function (req, res, next) {
-  const role = _.find(global.roles, { _id: req.user.role._id })
+  const role = _.find(global.roles, (role) => role._id.toString() === req.user.role._id.toString())
   if (role) {
     role.isAdmin = role.grants.indexOf('admin:*') !== -1
     role.isAgent = role.grants.indexOf('agent:*') !== -1

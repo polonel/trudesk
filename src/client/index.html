@@ -4,8 +4,6 @@
     <title>Trudesk &middot;</title>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <!--    <link href="/css/normalize.min.css" rel="stylesheet"/>-->
-    <!--    <link href="/css/plugins.min.css" rel="stylesheet"/>-->
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -23,7 +21,8 @@
 <!--                href="/mobile">View Mobile Site...</a></div>-->
 <!--</div>-->
 
-<div class="disconnected loader-wrapper" style="display: none; opacity: 0; z-index: 999997;">
+<div class="disconnected loader-wrapper"
+     style="display: none; opacity: 0; z-index: 999997; background: rgba(0,0,0,0.8)">
     <div class="shadow-wrapper">
         <svg class="shadow">
             <defs>
@@ -55,6 +54,7 @@
 
 <!--Tour Start Here-->
 <div class="wrapper uk-hidden-small" style="overflow: hidden; height: 100%;">
+    <div id="globals"></div>
     <div id="trudesk"></div>
     <div id="modal-wrapper"></div>
 </div>

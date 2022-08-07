@@ -15,7 +15,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import Helpers from 'helpers'
+import Helpers from 'lib/helpers'
+import { Link } from 'react-router-dom'
 
 // import './style.sass';
 
@@ -31,10 +32,10 @@ class NavButton extends Component {
 
   renderAnchorLink () {
     return (
-      <a href={this.props.href} className={this.props.class} target={this.props.target || ''}>
+      <Link to={this.props.href} className={this.props.class} target={this.props.target || ''}>
         <i className='material-icons'>{this.props.icon}</i>
         {this.props.text}
-      </a>
+      </Link>
     )
   }
 

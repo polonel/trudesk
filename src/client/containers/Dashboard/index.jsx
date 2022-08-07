@@ -161,7 +161,7 @@ class DashboardContainer extends React.Component {
                       height={250}
                       x_accessor={'date'}
                       y_accessor={'value'}
-                      data={this.props.dashboardState.ticketBreakdownData.toJS() || []}
+                      data={this.props.dashboardState.ticketBreakdownData?.toJS() || []}
                     />
                   </div>
                 }

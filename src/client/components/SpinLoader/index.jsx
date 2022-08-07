@@ -44,11 +44,26 @@ class SpinLoader extends React.Component {
   }
 
   render () {
+    let style = this.props.style
+    if (this.props.fullScreen) {
+      const fullScreen = {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: '100vh',
+        width: '100vw',
+        zIndex: 9999999
+      }
+
+      style = { ...style, ...fullScreen }
+    }
     return (
       <div
         ref={this.spinnerRef}
         className={clsx('card-spinner', this.props.extraClass, !this.props.active && !this.props.animate && 'hide')}
-        style={this.props.style}
+        style={style}
       >
         <div className='spinner' style={this.props.spinnerStyle} />
       </div>
@@ -62,12 +77,14 @@ SpinLoader.propTypes = {
   style: PropTypes.object,
   spinnerStyle: PropTypes.object,
   animate: PropTypes.bool,
-  animateDelay: PropTypes.number
+  animateDelay: PropTypes.number,
+  fullScreen: PropTypes.bool
 }
 
 SpinLoader.defaultProps = {
   animate: false,
-  animateDelay: 700
+  animateDelay: 700,
+  fullScreen: false
 }
 
 export default SpinLoader

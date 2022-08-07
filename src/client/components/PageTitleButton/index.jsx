@@ -27,7 +27,7 @@ class PageTitleButton extends React.Component {
               style={{ borderRadius: 3 }}
               onClick={this.props.onButtonClick}
             >
-              {this.props.fontAwesomeIcon && <i className={`fa fa-large ${this.props.fontAwesomeIcon}`} />}
+              {this.props.fontAwesomeIcon && <i className={`fa-solid fa-large ${this.props.fontAwesomeIcon}`} />}
               {this.props.mdIcon && <i className={'material-icons'}>{this.props.mdIcon}</i>}
             </a>
           </li>

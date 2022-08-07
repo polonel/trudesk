@@ -12,35 +12,39 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import axios from 'axios'
+import customAxios from './axios'
+
+const axios = customAxios
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 // const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 // axios.defaults.headers['CSRF-TOKEN'] = token
 
 const api = {}
+api.axios = axios
 
 api.dashboard = {}
 api.dashboard.getData = payload => {
   const timespan = payload.timespan || 30
-  return axios.get(`/api/v1/tickets/stats/${timespan}`).then(res => {
+  return axios.get(`/api/v2/tickets/stats/${timespan}`).then(res => {
     return res.data
   })
 }
 api.dashboard.getTopGroups = payload => {
   const timespan = payload.timespan || 30
-  return axios.get(`/api/v1/tickets/count/topgroups/${timespan}/5`).then(res => {
+  return axios.get(`/api/v2/tickets/count/topgroups/${timespan}/5`).then(res => {
     return res.data
   })
 }
 api.dashboard.getTopTags = payload => {
   const timespan = payload.timespan || 30
-  return axios.get(`/api/v1/tickets/count/tags/${timespan}`).then(res => {
+  return axios.get(`/api/v2/tickets/count/tags/${timespan}`).then(res => {
     return res.data
   })
 }
 api.dashboard.getOverdueTickets = () => {
-  return axios.get('/api/v1/tickets/overdue').then(res => {
+  return { tickets: [] }
+  return axios.get('/api/v2/tickets/overdue').then(res => {
     return res.data
   })
 }
@@ -52,42 +56,42 @@ api.tickets.getWithPage = payload => {
   const type = payload.type ? payload.type : 'all'
   const filter = payload.filter ? encodeURIComponent(JSON.stringify(payload.filter, null, 2)) : undefined
   const fullFilter = filter ? `&filter=${filter}` : undefined
-  return axios.get(`/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}`).then(res => {
+  return axios.get(`/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter || ''}`).then(res => {
     return res.data
   })
 }
 api.tickets.search = payload => {
-  return axios.get(`/api/v1/tickets/search/?search=${payload.searchString}&limit=100`).then(res => {
+  return axios.get(`/api/v2/tickets/search/?search=${payload.searchString}&limit=100`).then(res => {
     return res.data
   })
 }
 api.tickets.create = payload => {
-  return axios.post('/api/v1/tickets/create', payload).then(res => {
+  return axios.post('/api/v2/tickets/create', payload).then(res => {
     return res.data
   })
 }
 
 api.tickets.delete = ({ id }) => {
-  return axios.delete(`/api/v1/tickets/${id}`).then(res => {
+  return axios.delete(`/api/v2/tickets/${id}`).then(res => {
     return res.data
   })
 }
 
 api.tickets.renameTicketType = (id, name) => {
-  return axios.put('/api/v1/tickets/types/' + id, { name }).then(res => {
+  return axios.put('/api/v2/tickets/types/' + id, { name }).then(res => {
     return res.data
   })
 }
 
 api.tickets.createTicketType = ({ name }) => {
-  return axios.post('/api/v1/tickets/types/create', { name }).then(res => {
+  return axios.post('/api/v2/tickets/types/create', { name }).then(res => {
     return res.data
   })
 }
 
 api.tickets.addPriorityToType = ({ typeId, priority }) => {
   return axios
-    .post(`/api/v1/tickets/type/${typeId}/addpriority`, {
+    .post(`/api/v2/tickets/type/${typeId}/addpriority`, {
       priority
     })
     .then(res => {
@@ -97,7 +101,7 @@ api.tickets.addPriorityToType = ({ typeId, priority }) => {
 
 api.tickets.removePriorityFromType = ({ typeId, priority }) => {
   return axios
-    .post(`/api/v1/tickets/type/${typeId}/removepriority`, {
+    .post(`/api/v2/tickets/type/${typeId}/removepriority`, {
       priority
     })
     .then(res => {
@@ -106,19 +110,19 @@ api.tickets.removePriorityFromType = ({ typeId, priority }) => {
 }
 
 api.tickets.deleteTicketType = ({ id, newTypeId }) => {
-  return axios.delete(`/api/v1/tickets/types/${id}`, { data: { newTypeId } }).then(res => {
+  return axios.delete(`/api/v2/tickets/types/${id}`, { data: { newTypeId } }).then(res => {
     return res.data
   })
 }
 
 api.tickets.fetchPriorities = () => {
-  return axios.get('/api/v1/tickets/priorities').then(res => {
+  return axios.get('/api/v2/tickets/priorities').then(res => {
     return res.data
   })
 }
 api.tickets.createPriority = ({ name, overdueIn, htmlColor }) => {
   return axios
-    .post('/api/v1/tickets/priority/create', {
+    .post('/api/v2/tickets/priority/create', {
       name,
       overdueIn,
       htmlColor
@@ -129,7 +133,7 @@ api.tickets.createPriority = ({ name, overdueIn, htmlColor }) => {
 }
 api.tickets.updatePriority = ({ id, name, overdueIn, htmlColor }) => {
   return axios
-    .put(`/api/v1/tickets/priority/${id}`, {
+    .put(`/api/v2/tickets/priority/${id}`, {
       name,
       overdueIn,
       htmlColor
@@ -140,7 +144,7 @@ api.tickets.updatePriority = ({ id, name, overdueIn, htmlColor }) => {
 }
 api.tickets.deletePriority = ({ id, newPriority }) => {
   return axios
-    .post(`/api/v1/tickets/priority/${id}/delete`, {
+    .post(`/api/v2/tickets/priority/${id}/delete`, {
       newPriority
     })
     .then(res => {
@@ -151,13 +155,13 @@ api.tickets.deletePriority = ({ id, newPriority }) => {
 api.tickets.getTagsWithPage = ({ limit, page }) => {
   limit = limit ? limit : 10
   page = page ? page : 0
-  return axios.get(`/api/v1/tags/limit?limit=${limit}&page=${page}`).then(res => {
+  return axios.get(`/api/v2/tags/limit?limit=${limit}&page=${page}`).then(res => {
     return res.data
   })
 }
 
 api.tickets.createTag = ({ name }) => {
-  return axios.post(`/api/v1/tags/create`, { tag: name }).then(res => {
+  return axios.post(`/api/v2/tags/create`, { tag: name }).then(res => {
     return res.data
   })
 }
@@ -201,12 +205,12 @@ api.accounts.updateUser = payload => {
   })
 }
 api.accounts.deleteAccount = ({ username }) => {
-  return axios.delete(`/api/v1/users/${username}`).then(res => {
+  return axios.delete(`/api/v2/users/${username}`).then(res => {
     return res.data
   })
 }
 api.accounts.enableAccount = ({ username }) => {
-  return axios.get(`/api/v1/users/${username}/enable`).then(res => {
+  return axios.get(`/api/v2/users/${username}/enable`).then(res => {
     return res.data
   })
 }
@@ -306,12 +310,12 @@ api.messages.getSingleConversation = ({ _id }) => {
   })
 }
 api.messages.deleteConversation = payload => {
-  return axios.delete(`/api/v1/messages/conversation/${payload.convoId}`, payload).then(res => {
+  return axios.delete(`/api/v2/messages/conversation/${payload.convoId}`, payload).then(res => {
     return res.data
   })
 }
 api.messages.send = payload => {
-  return axios.post('/api/v1/messages/send', payload).then(res => {
+  return axios.post('/api/v2/messages/send', payload).then(res => {
     return res.data
   })
 }
@@ -343,7 +347,7 @@ api.notices.delete = ({ _id }) => {
 
 api.reports = {}
 api.reports.generate = payload => {
-  return axios.post(`/api/v1/reports/generate/${payload.type}`, payload)
+  return axios.post(`/api/v2/reports/generate/${payload.type}`, payload)
 }
 
 api.search = {}
@@ -356,37 +360,37 @@ api.search.search = ({ limit, term }) => {
 
 api.settings = {}
 api.settings.update = settings => {
-  return axios.put('/api/v1/settings', settings).then(res => {
+  return axios.put('/api/v2/settings', settings).then(res => {
     return res.data
   })
 }
 api.settings.hasMongoDBTools = () => {
-  return axios.get('/api/v1/backup/hastools').then(res => {
+  return axios.get('/api/v2/backup/hastools').then(res => {
     return res.data
   })
 }
 api.settings.fetchBackups = () => {
-  return axios.get('/api/v1/backups').then(res => {
+  return axios.get('/api/v2/backups').then(res => {
     return res.data
   })
 }
 api.settings.backupNow = () => {
-  return axios.post('/api/v1/backup').then(res => {
+  return axios.post('/api/v2/backup').then(res => {
     return res.data
   })
 }
 api.settings.getBackups = () => {
-  return axios.get('/api/v1/backups').then(res => {
+  return axios.get('/api/v2/backups').then(res => {
     return res.data
   })
 }
 api.settings.fetchDeletedTickets = () => {
-  return axios.get('/api/v1/tickets/deleted').then(res => {
+  return axios.get('/api/v2/tickets/deleted').then(res => {
     return res.data
   })
 }
 api.settings.restoreDeletedTicket = ({ _id }) => {
-  return axios.post('/api/v1/tickets/deleted/restore', { _id }).then(res => {
+  return axios.post('/api/v2/tickets/deleted/restore', { _id }).then(res => {
     return res.data
   })
 }
@@ -397,7 +401,7 @@ api.settings.permDeleteTicket = ({ _id }) => {
 }
 api.settings.updateRoleOrder = ({ roleOrder }) => {
   return axios
-    .put('/api/v1/settings/updateroleorder', {
+    .put('/api/v2/settings/updateroleorder', {
       roleOrder
     })
     .then(res => {
@@ -405,22 +409,22 @@ api.settings.updateRoleOrder = ({ roleOrder }) => {
     })
 }
 api.settings.updatePermissions = payload => {
-  return axios.put(`/api/v1/roles/${payload._id}`, payload).then(res => {
+  return axios.put(`/api/v2/roles/${payload._id}`, payload).then(res => {
     return res.data
   })
 }
 api.settings.createRole = ({ name }) => {
-  return axios.post('/api/v1/roles', { name }).then(res => {
+  return axios.post('/api/v2/roles', { name }).then(res => {
     return res.data
   })
 }
 api.settings.deleteRole = ({ _id, newRoleId }) => {
-  return axios.delete(`/api/v1/roles/${_id}`, { data: { newRoleId } }).then(res => {
+  return axios.delete(`/api/v2/roles/${_id}`, { data: { newRoleId } }).then(res => {
     return res.data
   })
 }
 api.settings.buildSass = () => {
-  return axios.get(`/api/v1/settings/buildsass`).then(res => {
+  return axios.get(`/api/v2/settings/buildsass`).then(res => {
     return res.data
   })
 }
@@ -432,7 +436,7 @@ api.common.getSessionUser = () => {
   })
 }
 api.common.fetchRoles = () => {
-  return axios.get('/api/v1/roles').then(res => {
+  return axios.get('/api/v2/roles').then(res => {
     return res.data
   })
 }
@@ -440,6 +444,9 @@ api.common.fetchViewData = () => {
   return axios.get('/api/v2/viewdata').then(res => {
     return res.data
   })
+}
+api.common.fetchTheme = () => {
+  return axios.get('/api/v2/settings/theme').then(res => res.data)
 }
 
 export default api

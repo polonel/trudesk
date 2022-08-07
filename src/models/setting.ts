@@ -37,8 +37,14 @@ export class SettingModelClass {
     return query.exec()
   }
 
-  public static async getSettingsByName(this: ReturnModelType<typeof SettingModelClass>, name: string, callback: any) {
+  public static async getSettingsByName(
+    this: ReturnModelType<typeof SettingModelClass>,
+    name: string[],
+    callback?: any,
+    select?: string
+  ) {
     const query = this.find({ name })
+    if (select) query.select(select)
     if (typeof callback === 'function') return query.exec(callback)
 
     return query.exec

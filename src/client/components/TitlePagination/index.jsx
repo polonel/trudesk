@@ -18,11 +18,6 @@ import PropTypes from 'prop-types'
 import $ from 'jquery'
 
 class TitlePagination extends React.Component {
-  componentDidMount () {}
-  componentDidUpdate () {
-    $(this.parent).ajaxify()
-  }
-
   static formatNumber (num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
@@ -34,6 +29,12 @@ class TitlePagination extends React.Component {
     const end = page === 0 ? limit : page * limit + limit
 
     return { start, end }
+  }
+
+  componentDidMount () {}
+
+  componentDidUpdate () {
+    // $(this.parent).ajaxify()
   }
 
   render () {
@@ -62,7 +63,7 @@ class TitlePagination extends React.Component {
               title={'Previous Page'}
               className={'btn md-btn-wave-light' + (!prevEnabled ? ' no-ajaxy' : '')}
             >
-              <i className='fa fa-large fa-chevron-left' />
+              <i className='fa-solid fa-large fa-chevron-left'></i>
             </a>
           </li>
           <li className='pagination'>
@@ -71,7 +72,7 @@ class TitlePagination extends React.Component {
               title={'Next Page'}
               className={'btn md-btn-wave-light' + (!nextEnabled ? ' no-ajaxy' : '')}
             >
-              <i className='fa fa-large fa-chevron-right' />
+              <i className='fa-solid fa-large fa-chevron-right' />
             </a>
           </li>
         </ul>

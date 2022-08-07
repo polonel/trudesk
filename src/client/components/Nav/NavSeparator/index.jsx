@@ -14,10 +14,10 @@
 
 import React from 'react'
 
-class NavSeperator extends React.Component {
+class NavSeparator extends React.Component {
   render () {
     return <hr />
   }
 }
 
-export default NavSeperator
+export default NavSeparator

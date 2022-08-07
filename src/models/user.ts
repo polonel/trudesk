@@ -46,7 +46,7 @@ class UserPreferences {
 }
 
 @pre<UserModelClass>(['findOne', 'find'], function () {
-  this.populate('role', 'name description normalized _id')
+  this.populate('role', 'name description normalized _id grants')
 })
 @pre<UserModelClass>('save', function (this: DocumentType<UserModelClass>, next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -144,9 +144,7 @@ export class UserModelClass {
 
   public static async getByUsername(this: ReturnModelType<typeof UserModelClass>, username: string) {
     if (!username) throw new Error('Invalid Username')
-    return this.findOne({ username: new RegExp(`^${username}$`, 'i') })
-      .populate('role', 'name description normalized _id')
-      .select('+password +accessToken')
+    return this.findOne({ username: new RegExp(`^${username}$`, 'i') }).select('+password +accessToken')
   }
 
   public static async getByEmail(this: ReturnModelType<typeof UserModelClass>, email: string) {

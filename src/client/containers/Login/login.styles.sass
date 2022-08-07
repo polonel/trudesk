@@ -1,0 +1,133 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Updated:    6/29/19 12:57 AM
+ /  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
+ /
+
+.login-background
+  width: 100%
+  height: 100vh
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 0
+  overflow: hidden
+  pointer-events: none
+
+.bg-dot
+  display: block
+  position: absolute
+  border-radius: 50%
+//opacity: 0.7
+
+.login-container
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  align-items: center
+  width: 100%
+  height: 100vh
+  padding: 15px
+  overflow: auto
+
+.login-wrapper,
+.login-wrapper-flex
+  display: flex
+  flex-direction: column
+  width: 450px
+  min-height: 450px
+  padding: 55px
+  //background: white
+  border-radius: 3px
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15)
+  z-index: 1
+
+  img
+    margin-bottom: 50px
+
+  label
+    text-align: left
+
+  *:focus
+    outline: 0
+
+  a
+    display: inline-block
+    padding-right: 10px
+    color: var(--tertiary)
+    font-size: 14px
+    float: right
+    text-decoration: none
+    font-weight: 300
+
+    &:hover
+      color: var(--tertiary)
+
+  .btn
+    width: 100%
+    height: 50px
+    margin-bottom: 24px !important
+
+  .alert-message
+    padding: 0
+    position: fixed
+    top: 75px
+    left: 50%
+    width: 380px
+    height: 50px
+    /*margin-bottom: 50px;
+    background: red
+    border-radius: 5px
+    -webkit-border-radius: 5px
+    -moz-border-radius: 5px
+    transform: translate(-50%, 0)
+
+    p
+      margin-top: 8px
+      margin-bottom: 0
+      color: white
+      font-weight: 300
+      text-align: center
+      font-size: 22px
+
+  button.button.noCap
+    text-transform: none
+
+  .green
+    background: #29b955
+
+  input
+    color: var(--primary)
+
+  .md-input-bar
+    &:before, &:after
+      background: var(--tertiary) !important
+
+
+.site-logo-login
+  fill: var(--primary)
+  margin-bottom: 45px
+  z-index: 9
+  max-width: 225px
+
+  circle
+    fill: var(--tertiary)
+
+.thebottom
+  text-align: center
+  font-size: 14px
+  font-family: "Roboto", Arial, sans-serif
+  //margin: 0 0 35px 15px
+  color: var(--pagecontentbuttontext)
+
+  span
+    display: inline-block
+    margin: 0 15px

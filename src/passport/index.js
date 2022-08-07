@@ -44,7 +44,7 @@ module.exports = function () {
       {
         usernameField: 'login-username',
         passwordField: 'login-password',
-        passReqToCallback: true,
+        passReqToCallback: true
       },
       function (req, username, password, done) {
         UserModel.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
@@ -70,7 +70,7 @@ module.exports = function () {
     'totp',
     new TotpStrategy(
       {
-        window: 6,
+        window: 6
       },
       function (user, done) {
         if (!user.hasL2Auth) return done(false)
@@ -92,7 +92,7 @@ module.exports = function () {
     'totp-verify',
     new TotpStrategy(
       {
-        window: 2,
+        window: 2
       },
       function (user, done) {
         if (!user.tOTPKey) return done(false)
@@ -103,13 +103,16 @@ module.exports = function () {
     )
   )
 
+  const jwtSecret = config.get('tokens') ? config.get('tokens').secret : false
+  if (!jwtSecret) throw new Error('[PANIC] - Invalid JWT Secret!!')
+
   passport.use(
     'jwt',
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: config.get('tokens') ? config.get('tokens').secret : false,
-        ignoreExpiration: true,
+        ignoreExpiration: true
       },
       function (jwtPayload, done) {
         if (jwtPayload.exp < Date.now() / 1000) return done({ type: 'exp' })

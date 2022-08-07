@@ -52,7 +52,7 @@ const canThis = function (role: string | Types.ObjectId | IRole, a: string, admi
 
   const roles = global.roles
   if (_.isUndefined(roles)) return false
-  const rolePerm = _.find(roles, { _id: roleId }) as IRole
+  const rolePerm = _.find(roles, (role) => role._id.toString() === roleId.toString()) as IRole
   if (!rolePerm) return false
   if (adminOverride && rolePerm.isAdmin) return true
   if (_.indexOf(rolePerm.grants, '*') !== -1) return true

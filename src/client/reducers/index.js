@@ -16,6 +16,7 @@ import { combineReducers } from 'redux'
 
 import shared from './shared'
 import common from './shared/common'
+import theme from './shared/themeReducer'
 import modal from './shared/modalReducer'
 import sidebar from './sidebarReducer'
 import settings from './settings'
@@ -49,6 +50,7 @@ import messagesState from './messagesReducer'
 const IndexReducer = combineReducers({
   shared,
   common,
+  theme,
   searchState,
   modal,
   sidebar,

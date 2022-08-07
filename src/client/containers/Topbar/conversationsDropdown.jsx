@@ -22,7 +22,7 @@ import { MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS } from 'serverSocket/sock
 import PDropDown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
-import 'history'
+import history from 'lib/lib-history'
 
 @observer
 class ConversationsDropdownPartial extends React.Component {
@@ -51,7 +51,7 @@ class ConversationsDropdownPartial extends React.Component {
   onConversationClicked (e, id) {
     e.preventDefault()
 
-    History.pushState(null, null, `/messages/${id}`)
+    history.push(`/messages/${id}`)
   }
 
   render () {
@@ -78,7 +78,7 @@ class ConversationsDropdownPartial extends React.Component {
             <a
               className={'no-ajaxy hoverUnderline'}
               onClick={() => {
-                History.pushState(null, null, '/messages')
+                history.push('/messages')
               }}
             >
               View All Conversations

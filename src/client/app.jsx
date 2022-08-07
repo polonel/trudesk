@@ -23,10 +23,7 @@ import IndexSagas from './sagas'
 import { SingletonHooksContainer } from 'react-singleton-hook'
 
 import App from './app/App'
-import TopbarContainer from './containers/Topbar/TopbarContainer'
-import Sidebar from './components/Nav/Sidebar/index.jsx'
 import ModalRoot from './containers/Modals'
-import renderer from './renderer'
 
 import SocketGlobal from 'containers/Global/SocketGlobal'
 import SessionLoader from 'lib/sessionLoader'
@@ -47,7 +44,7 @@ const composeSetup =
 localStorage.setItem('debug', 'trudesk:*') // Enable logger
 // }
 
-const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddleware, sagaMiddleware)))
+export const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddleware, sagaMiddleware)))
 
 // This is need to call an action from angular
 // Goal: remove this once angular is fully removed
@@ -67,13 +64,13 @@ if (document.getElementById('globals')) {
         <SocketGlobal />
         {/*<HotKeysGlobal />*/}
 
-        <ChatDock />
+        {/*<ChatDock />*/}
         <BackupRestoreOverlay />
       </>
     </Provider>
   )
 
-  ReactDOM.render(GlobalsRoot, document.getElementById('globals'))
+  // ReactDOM.render(GlobalsRoot, document.getElementById('globals'))
 }
 
 if (document.getElementById('modal-wrapper')) {
@@ -90,8 +87,3 @@ if (document.getElementById('trudesk')) {
 
   ReactDOM.render(AppWithStore, document.getElementById('trudesk'))
 }
-
-window.react.renderer = renderer
-window.react.dom = ReactDOM
-
-export { store }

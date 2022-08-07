@@ -23,7 +23,7 @@ import PDropdown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
 import { NOTIFICATIONS_UPDATE, NOTIFICATIONS_MARK_READ, NOTIFICATIONS_CLEAR } from 'serverSocket/socketEventConsts'
-import 'history'
+import history from 'lib/lib-history'
 
 @observer
 class NotificationsDropdownPartial extends React.Component {
@@ -63,7 +63,7 @@ class NotificationsDropdownPartial extends React.Component {
 
     this.props.socket.emit(NOTIFICATIONS_MARK_READ, notification._id)
 
-    History.pushState(null, null, `/tickets/${notification.data.ticket.uid}`)
+    history.push(`/tickets/${notification.data.ticket.uid}`)
   }
 
   render () {
@@ -105,7 +105,7 @@ class NotificationsDropdownPartial extends React.Component {
                   {notification.unread && <div className={'messageUnread'} />}
                   {notification.type === 0 && (
                     <div className={'messageIcon left'}>
-                      <i className='fa fa-check green' />
+                      <i className='fa-solid fa-check green' />
                     </div>
                   )}
                   {notification.type === 1 && (

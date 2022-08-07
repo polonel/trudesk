@@ -13,9 +13,9 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects'
-import axios from 'axios'
+import axios from 'api/axios'
 
-import api from '../../api'
+import api from 'api'
 import {
   BACKUP_NOW,
   CREATE_ROLE,
@@ -40,7 +40,7 @@ import helpers from 'lib/helpers'
 
 function fetchSettings () {
   return axios
-    .get('/api/v1/settings')
+    .get('/api/v2/settings')
     .then(res => {
       return res.data
     })

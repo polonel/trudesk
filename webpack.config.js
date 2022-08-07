@@ -103,36 +103,31 @@ module.exports = {
       },
       {
         test: /\.(sa|sc|c)ss$/,
-        exclude: path.resolve(__dirname, 'node_modules'),
+        // exclude: path.resolve(__dirname, 'node_modules'),
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: '/css/'
+              publicPath: '/'
             }
           },
           'css-loader',
+          'postcss-loader',
           'sass-loader'
         ]
       },
       {
         test: /\.(ttf|eot|woff|woff2|svg)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: 'fonts/[name].[ext]',
-            publicPath: '/fonts/'
-          }
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext][query]'
         }
       },
       {
         test: /\.(gif|jpg|jpeg|png)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: 'img/[name].[ext]',
-            publicPath: '/img/'
-          }
+        type: 'asset/resource',
+        generator: {
+          filename: 'img/[name][ext][query]'
         }
       },
       {
@@ -224,8 +219,8 @@ module.exports = {
     }),
     new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/ }),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: 'css/[name].[contenthash:8].css'
+      filename: 'css/[name].css'
+      // chunkFilename: 'css/[name].[contenthash:8].css'
     }),
     new HtmlWebpackPlugin({
       minify: IS_PROD,

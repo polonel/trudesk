@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 
@@ -25,13 +26,14 @@ class ProfileDropdownPartial extends React.Component {
   }
 
   componentDidMount () {
-    helpers.ajaxify('#profile-drop')
+    // helpers.ajaxify('#profile-drop')
 
-    if (this.props.sessionUser) this.keyboardShortcutsChecked = this.props.sessionUser.preferences.keyboardShortcuts
+    if (this.props.sessionUser && this.props.sessionUser.preferences)
+      this.keyboardShortcutsChecked = this.props.sessionUser.preferences.keyboardShortcuts
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
-    if (prevProps.sessionUser !== this.props.sessionUser) {
+    if (prevProps.sessionUser !== this.props.sessionUser && this.props.sessionUser.preferences) {
       this.keyboardShortcutsChecked = this.props.sessionUser.preferences.keyboardShortcuts
     }
   }
@@ -79,7 +81,7 @@ class ProfileDropdownPartial extends React.Component {
                   {this.props.sessionUser.fullname}
                 </span>
                 <span>{this.props.sessionUser.email}</span>
-                <a href='/profile'>Profile Settings</a>
+                <Link to='/profile'>Profile Settings</Link>
               </div>
             </div>
           </div>
@@ -110,7 +112,7 @@ class ProfileDropdownPartial extends React.Component {
           <div className={'profile-drop-actions'}>
             <div className={'action-logout'}>
               <i className='material-icons'>logout</i>
-              <a href='/logout'>Logout</a>
+              <Link to='/logout'>Logout</Link>
             </div>
           </div>
         </div>

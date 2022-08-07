@@ -51,6 +51,8 @@ function * fetchTickets ({ payload }) {
 
     yield put({ type: FETCH_TICKETS.SUCCESS, response })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response ? error.response.data.error : error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     yield put({ type: FETCH_TICKETS.ERROR, error })
@@ -65,6 +67,7 @@ function * createTicket ({ payload }) {
     yield put({ type: CREATE_TICKET.SUCCESS, response, sessionUser })
     yield put({ type: HIDE_MODAL.ACTION })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
@@ -77,6 +80,8 @@ function * deleteTicket ({ payload }) {
     const response = yield call(api.tickets.delete, payload)
     yield put({ type: DELETE_TICKET.SUCCESS, payload, response })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response ? error.response.data.error : error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     yield put({ type: DELETE_TICKET.ERROR, error })
@@ -117,6 +122,8 @@ function * createTicketType ({ payload }) {
     yield put({ type: HIDE_MODAL.ACTION })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
@@ -131,6 +138,8 @@ function * deleteTicketType ({ payload }) {
     yield put({ type: HIDE_MODAL.ACTION })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
@@ -143,6 +152,8 @@ function * getTagsWithPage ({ payload }) {
     const response = yield call(api.tickets.getTagsWithPage, payload)
     yield put({ type: GET_TAGS_WITH_PAGE.SUCCESS, response })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     if (!error.response) return Log.error(error)
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
@@ -155,6 +166,8 @@ function * fetchPriorities ({ payload, meta }) {
     const response = yield call(api.tickets.fetchPriorities, payload)
     yield put({ type: FETCH_PRIORITIES.SUCCESS, response, meta })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response ? error.response.data.error : error
     if (error.response && error.response.status !== (401 || 403)) {
       Log.error(errorText, error)
@@ -172,6 +185,8 @@ function * createPriority ({ payload }) {
     yield put({ type: HIDE_MODAL.ACTION })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
@@ -185,6 +200,8 @@ function * updatePriority ({ payload }) {
     yield put({ type: UPDATE_PRIORITY.SUCCESS, response })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     yield put({ type: UPDATE_PRIORITY.ERROR, error })
@@ -198,6 +215,8 @@ function * deletePriority ({ payload }) {
     yield put({ type: HIDE_MODAL.ACTION })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
@@ -215,6 +234,8 @@ function * createTag ({ payload }) {
     }
     helpers.UI.showSnackbar(`Tag ${payload.name} successfully created`)
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     if (!error.response) return Log.error(error)
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
@@ -228,6 +249,8 @@ function * transferToThirdParty ({ payload }) {
     yield put({ type: TRANSFER_TO_THIRDPARTY.SUCCESS, response })
     helpers.UI.showSnackbar(`Ticket Transferred Successfully`, false)
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response ? error.response.data.error : error
     if (error.response && error.response.status !== (401 || 403)) {
       Log.error(errorText, error)
@@ -244,6 +267,8 @@ function * fetchTicketTypes ({ payload }) {
     const response = yield call(api.tickets.fetchTicketTypes, payload)
     yield put({ type: FETCH_TICKET_TYPES.SUCCESS, response })
   } catch (error) {
+    if (error.code === 'ERR_CANCELED') return
+
     const errorText = error.response ? error.response.data.error : error
     if (error.response && error.response.status !== (401 || 403)) {
       Log.error(errorText, error)

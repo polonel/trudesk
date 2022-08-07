@@ -37,6 +37,7 @@ import Dropdown from 'components/Dropdown'
 import DropdownItem from 'components/Dropdown/DropdownItem'
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
 
+import history from 'lib/lib-history'
 import helpers from 'lib/helpers'
 import anime from 'animejs'
 import moment from 'moment-timezone'
@@ -47,6 +48,7 @@ class TicketsContainer extends React.Component {
   @observable searchTerm = ''
 
   selectedTickets = []
+
   constructor (props) {
     super(props)
     makeObservable(this)
@@ -400,7 +402,7 @@ class TicketsContainer extends React.Component {
                       const td = e.target.closest('td')
                       const input = td.getElementsByTagName('input')
                       if (input.length > 0) return false
-                      History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`)
+                      history.push(`/tickets/${ticket.get('uid')}`)
                     }}
                   >
                     <TableCell
@@ -448,7 +450,7 @@ class TicketsContainer extends React.Component {
 TicketsContainer.propTypes = {
   socket: PropTypes.object.isRequired,
   view: PropTypes.string.isRequired,
-  page: PropTypes.string.isRequired,
+  page: PropTypes.string,
   prevPage: PropTypes.number.isRequired,
   nextPage: PropTypes.number.isRequired,
   prevEnabled: PropTypes.bool.isRequired,
@@ -464,12 +466,12 @@ TicketsContainer.propTypes = {
   showModal: PropTypes.func.isRequired,
   fetchSearchResults: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
-  filter: PropTypes.object.isRequired
+  filter: PropTypes.object
 }
 
 TicketsContainer.defaultProps = {
   view: 'active',
-  page: 0,
+  page: '0',
   prevEnabled: true,
   nextEnabled: true
 }

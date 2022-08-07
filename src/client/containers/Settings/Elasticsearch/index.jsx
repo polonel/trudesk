@@ -24,7 +24,7 @@ import SettingItem from 'components/Settings/SettingItem'
 import EnableSwitch from 'components/Settings/EnableSwitch'
 
 import Log from '../../../logger'
-import axios from 'axios'
+import axios from 'api/axios'
 import helpers from 'lib/helpers'
 import UIKit from 'uikit'
 
@@ -52,19 +52,6 @@ class ElasticsearchSettingsContainer extends React.Component {
     this.rebuildIndex = this.rebuildIndex.bind(this)
   }
 
-  componentDidMount () {
-    helpers.UI.inputs()
-  }
-
-  componentDidUpdate () {
-    helpers.UI.reRenderInputs()
-
-    if (!this.loaded && this.state.configured) {
-      this.getStatus()
-      this.loaded = true
-    }
-  }
-
   static getDerivedStateFromProps (nextProps, state) {
     if (nextProps.settings) {
       let stateObj = { ...state }
@@ -79,6 +66,19 @@ class ElasticsearchSettingsContainer extends React.Component {
     }
 
     return null
+  }
+
+  componentDidMount () {
+    helpers.UI.inputs()
+  }
+
+  componentDidUpdate () {
+    helpers.UI.reRenderInputs()
+
+    if (!this.loaded && this.state.configured) {
+      this.getStatus()
+      this.loaded = true
+    }
   }
 
   getSetting (name) {

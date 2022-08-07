@@ -24,7 +24,8 @@ import {
   UPDATE_ROLE_ORDER,
   FETCH_VIEWDATA,
   SHOW_NOTICE,
-  CLEAR_NOTICE
+  CLEAR_NOTICE,
+  FETCH_THEME
 } from 'actions/types'
 
 export const initSocket = createAction(
@@ -46,6 +47,7 @@ export const clearNotice = createAction(CLEAR_NOTICE.ACTION)
 export const fetchRoles = createAction(FETCH_ROLES.ACTION)
 export const updateRoleOrder = createAction(UPDATE_ROLE_ORDER.ACTION)
 
+export const fetchTheme = createAction(FETCH_THEME.ACTION)
 export const fetchViewData = createAction(
   FETCH_VIEWDATA.ACTION,
   payload => payload,

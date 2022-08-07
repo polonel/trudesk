@@ -52,5 +52,5 @@ export default {
   ConversationModel: Conversation,
   NoticeModel: Notice,
   NotificationModel: Notification,
-  TemplateModel: Template,
+  TemplateModel: Template
 }

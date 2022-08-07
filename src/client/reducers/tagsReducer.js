@@ -27,6 +27,7 @@ const initialState = {
 const tagsReducer = handleActions(
   {
     [GET_TAGS_WITH_PAGE.SUCCESS]: (state, action) => {
+      if (!action.response.tags) return { ...state }
       return {
         ...state,
         loading: false,

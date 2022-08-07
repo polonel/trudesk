@@ -32,6 +32,7 @@ function mainRoutes (router, middleware, controllers) {
   // router.get('/l2auth', controllers.main.l2authget)
   // router.post('/l2auth', controllers.main.l2AuthPost)
   // router.get('/logout', controllers.main.logout)
+  // router.get('/logout', controllers.api.v2.common.logout)
   router.post('/forgotpass', controllers.main.forgotPass)
   router.get('/resetpassword/:hash', controllers.main.resetPass)
   router.post('/forgotl2auth', controllers.main.forgotL2Auth)

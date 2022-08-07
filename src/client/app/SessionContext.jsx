@@ -12,53 +12,65 @@
  */
 
 import { createContext } from 'react'
+import jwt_decode from 'jwt-decode'
 
-// TODO: remove once redux is gone
-import { store } from '../app'
+import { store } from 'app'
 
 const SESSIONKEY = 'trudesk/session'
 
 const memory = { data: null }
 const defaultData = {}
 
+export let sessionMemory = memory.data || {}
+
 export function getSession () {
-  if (!memory.data) {
-    try {
-      const data = JSON.parse(localStorage.getItem(SESSIONKEY))
-      if (data && data.token && data.refreshToken && data.user && data.session) {
-        // Part of Redux Shit
-        store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: data.user } })
-
-        memory.data = data
-        return memory.data
-      }
-
-      memory.data = defaultData
-    } catch (error) {
-      memory.data = defaultData
-    }
-  }
+  // if (!memory.data) {
+  //   try {
+  //     const response = await axios.post('/api/v2/token')
+  //     const data = response.data
+  //     if (data && data.token) {
+  //       const decoded = jwt_decode(data.token)
+  //       if (decoded.user) {
+  //         const saveData = { user: decoded.user, token: data.token }
+  //
+  //         store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: decoded.user } })
+  //
+  //         memory.data = saveData
+  //         console.log(memory.data)
+  //         return memory.data
+  //       }
+  //     }
+  //
+  //     memory.data = defaultData
+  //   } catch (error) {
+  //     memory.data = defaultData
+  //   }
+  // }
 
   return memory.data || defaultData
 }
 
 export function saveSession (session) {
-  if (!session.session || !session.token || !session.refreshToken || !session.user) {
+  if (!session.token) {
     throw new Error('Invalid Session')
   }
 
-  memory.data = session
-  localStorage.setItem(SESSIONKEY, JSON.stringify(session))
+  const decoded = jwt_decode(session.token)
+  if (!decoded.user) throw new Error('Invalid Session')
 
-  // Part of Redux Shit
-  store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: session.user } })
+  memory.data = { user: decoded.user, token: session.token }
+
+  // sessionStorage.setItem(SESSIONKEY, JSON.stringify(saveData))
+
+  store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: decoded.user } })
 
   return memory.data
 }
 
 export function clearSession () {
   memory.data = defaultData
-  localStorage.removeItem(SESSIONKEY)
+  store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: null } })
+
   return memory.data
 }
 

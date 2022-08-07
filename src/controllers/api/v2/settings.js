@@ -11,3 +11,88 @@
  *  Updated:    2/14/19 12:06 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
+
+const path = require('path')
+const sanitizeHtml = require('sanitize-html')
+const settingsUtil = require('../../../settings/settingsUtil')
+const apiUtils = require('../apiUtils')
+const { SettingModel } = require('../../../models')
+
+const apiSettings = {}
+
+apiSettings.get = async (req, res) => {
+  try {
+    const querySettings = req.query.settings
+    if (querySettings) {
+      const dbSettings = await SettingModel.getSettingsByName(querySettings, null, 'name value')
+      return apiUtils.sendApiSuccess(res, { settings: dbSettings })
+    } else {
+      const dbSettings = await settingsUtil.getSettings()
+      if (!dbSettings) return apiUtils.sendApiError(res, 400, { message: 'Invalid Settings' })
+
+      if (!req.user?.role?.isAdmin) {
+        delete dbSettings.settings.mailerHost
+        delete dbSettings.settings.mailerSSL
+        delete dbSettings.settings.mailerPort
+        delete dbSettings.settings.mailerUsername
+        delete dbSettings.settings.mailerPassword
+        delete dbSettings.settings.mailerFrom
+        delete dbSettings.settings.mailerCheckEnabled
+        delete dbSettings.settings.mailerCheckPolling
+        delete dbSettings.settings.mailerCheckHost
+        delete dbSettings.settings.mailerCheckPort
+        delete dbSettings.settings.mailerCheckPassword
+        delete dbSettings.settings.mailerCheckTicketType
+        delete dbSettings.settings.mailerCheckTicketPriority
+        delete dbSettings.settings.mailerCheckCreateAccount
+        delete dbSettings.settings.mailerCheckDeleteMessage
+
+        delete dbSettings.mailTemplates
+      }
+
+      return apiUtils.sendApiSuccess(res, { settings: dbSettings })
+    }
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+apiSettings.theme = async (req, res) => {
+  try {
+    // const settings = await SettingModel.getSettingsByName([
+    //   'gen:customlogo',
+    //   'gen:customlogourl',
+    //   'gen:customfavicon',
+    //   'gen:customfaviconurl',
+    //   'color:headerbg',
+    //   'color:headerprimary',
+    //   'color:primary',
+    //   'color:secondary',
+    //   'color:tertiary',
+    //   'color:quaternary'
+    // ])
+
+    const content = await settingsUtil.getSettings()
+    const parsed = content.settings
+
+    const theme = {
+      customLogo: parsed.hasCustomLogo.value,
+      customLogoUrl: parsed.customLogoFilename.value,
+      customFavicon: parsed.hasCustomFavicon.value,
+      customFaviconUrl: parsed.customFaviconFilename.value,
+      headerBG: parsed.colorHeaderBG.value,
+      headerPrimary: parsed.colorHeaderPrimary.value,
+      primary: parsed.colorPrimary.value,
+      secondary: parsed.colorSecondary.value,
+      tertiary: parsed.colorTertiary.value,
+      quaternary: parsed.colorQuaternary.value
+    }
+
+    return apiUtils.sendApiSuccess(res, { theme })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e.message)
+  }
+}
+
+module.exports = apiSettings
+export default apiSettings

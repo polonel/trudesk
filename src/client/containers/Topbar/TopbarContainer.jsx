@@ -30,10 +30,13 @@ import NotificationsDropdownPartial from './notificationsDropdown'
 import ProfileDropdownPartial from 'containers/Topbar/profileDropdown'
 import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown'
 import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
-
+import DefaultLogoImageLight from '../../../../public/img/defaultLogoLight.png'
+import DefaultLogoImageDark from '../../../../public/img/defaultLogoDark.png'
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
 import { NOTIFICATIONS_UPDATE, USERS_UPDATE, NOTICE_UI_SHOW, NOTICE_UI_CLEAR } from 'serverSocket/socketEventConsts'
+
+import $ from 'jquery'
 
 @observer
 class TopbarContainer extends React.Component {
@@ -57,10 +60,16 @@ class TopbarContainer extends React.Component {
     this.onSocketClearNotice = this.onSocketClearNotice.bind(this)
   }
 
+  static onConversationsClicked (e) {
+    e.preventDefault()
+  }
+
   componentDidMount () {
     this.props.fetchViewData().then(() => {
       if (this.props.viewdata.get('notice'))
         this.showNotice(this.props.viewdata.get('notice').toJS(), this.props.viewdata.get('noticeCookieName'))
+
+      $.event.trigger('trudesk:ready', window)
     })
 
     this.props.socket.on(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
@@ -134,13 +143,9 @@ class TopbarContainer extends React.Component {
     if (count !== this.activeUserCount) this.activeUserCount = count
   }
 
-  static onConversationsClicked (e) {
-    e.preventDefault()
-  }
-
   render () {
     const { loadingViewData, viewdata, sessionUser } = this.props
-    if (loadingViewData || !sessionUser) return <div />
+    if (loadingViewData || !sessionUser) return <div className='top-nav' />
     return (
       <div>
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
