@@ -13,6 +13,7 @@
  */
 
 import React from 'react'
+import mongoose from 'mongoose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
@@ -24,6 +25,7 @@ import { updateGroup } from 'actions/groups'
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
+import SingleSelect from 'components/SingleSelect'
 
 import helpers from 'lib/helpers'
 import $ from 'jquery'
@@ -35,9 +37,14 @@ class EditGroupModal extends React.Component {
 
   constructor (props) {
     super(props)
+      this.domains = [] //Список доменов
     makeObservable(this)
   }
-
+  fetchDomains(){
+    mongoose.model('domains').map(domian =>{
+      this.domains.push(domain.name);
+    })
+  }
   componentDidMount () {
     this.props.fetchAccounts({ type: 'customers', limit: -1 })
     this.name = this.props.group.name
@@ -124,9 +131,21 @@ class EditGroupModal extends React.Component {
               ref={r => (this.sendMailToSelect = r)}
             />
           </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label style={{ marginBottom: 5 }}>Select Domain</label>
+            <SingleSelect
+                showTextbox={false}
+                width={'100%'}
+                items={this.state.typePriorities}
+                defaultValue={this.state.mailerCheckTicketPriority}
+                disabled={!this.getSetting('mailerCheckEnabled')}
+                onSelectChange={e => this.onSingleSelectChanged(e, 'mailerCheckTicketPriority')}
+              />
+          </div>
           <div className='uk-modal-footer uk-text-right'>
             <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
             <Button text={'Save Group'} flat={true} waves={true} style={'primary'} type={'submit'} />
+            <Button text={'Link a Domain'} flat={true} waves={true} style={'primary'} type={'submit'} />
           </div>
         </form>
       </BaseModal>
