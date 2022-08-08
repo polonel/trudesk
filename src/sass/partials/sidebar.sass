@@ -1,13 +1,14 @@
 @import "../_settings.sass"
 
+
 //Hack to not show popout menu on reposition
 body > .side-nav-sub.tether-element
   display: none !important
   visibility: hidden !important
   opacity: 0 !important
   z-index: -9999 !important
-  height: 0 !important
-  width: 0 !important
+  height: 0px !important
+  width: 0px !important
   -webkit-transition: none !important
   -moz-transition: none !important
   -o-transition: none !important
@@ -32,8 +33,8 @@ body > .side-nav-sub.tether-element
     z-index: 9999
     overflow: hidden
 
-  background: $sidebar_bg
-  color: $sidebar_text
+  background: var(--quaternary)
+  color: var(--sidebartext)
   width: 57px
   position: fixed
   top: 65px
@@ -42,7 +43,7 @@ body > .side-nav-sub.tether-element
   //+boxShadow($sidebar_box_shadow)
   //+boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
   transition: width 0.2s ease
-  z-index: 15
+  z-index: 20
   //border-right: $sidebar_border_right
   &:after
     content: ""
@@ -51,7 +52,7 @@ body > .side-nav-sub.tether-element
     top: 0
     width: 1px
     height: 100%
-    background: darken($sidebar_bg, 10%)
+    background: var(--sidebarborder)
 
   #expand-menu
     overflow: hidden
@@ -81,7 +82,7 @@ ul.side-nav
 
   hr
     margin: 5px 0
-    background: darken($sidebar_bg, 10%)
+    background: var(--sidebarborder)
 
   li
     font-size: 14px
@@ -127,10 +128,10 @@ ul.side-nav
     &.active > a
       padding-left: 55px !important
       font-family: "Roboto", sans-serif !important
-      background: $sidebar_item_active !important
-      color: $sidebar_item_active_text !important
+      background: var(--sidebaritemhover) !important
+      color: var(--sidebartext) !important
 
-      border-left: 5px solid $accent_color
+      border-left: 5px solid var(--tertiary)
 
       &:hover
         &:after
@@ -138,13 +139,13 @@ ul.side-nav
           transform: translateX(0)
 
       i, svg
-        color: $sidebar_item_active_text !important
-        fill: $sidebar_item_active_text !important
+        color: var(--sidebartext) !important
+        fill: var(--sidebartext) !important
         margin-left: -3px
 
   a
     padding: 0 0.875rem !important
-    color: $sidebar_text !important
+    color: var(--sidebartext) !important
     //border-left: 2px solid $sidebar_bg
     position: relative
     padding-left: 60px !important
@@ -152,7 +153,7 @@ ul.side-nav
     height: 48px
 
     &:after
-      background: $accent_color
+      background: var(--tertiary)
       bottom: 0
       content: ''
       position: absolute
@@ -177,11 +178,11 @@ ul.side-nav
 
     &:hover
       //border-left: 2px solid $accent_color
-      background: $sidebar_item_hover !important
+      background: var(--sidebaritemhover) !important
 
       i, svg
-        color: $sidebar_text_hover
-        fill: $sidebar_text_hover
+        color: var(--sidebartext)
+        fill: var(--sidebartext)
 
         &.icon-accounts
           background-position: 0 -24px
@@ -195,12 +196,12 @@ ul.side-nav
     i, svg
       line-height: 26px
       margin-right: 15px
-      color: $sidebar_text
+      color: var(--sidebartext)
       margin-top: 5px
       position: absolute
       top: 5px
       left: 15px
-      fill: $sidebar_text
+      fill: var(--sidebartext)
 
     i
       font-size: 24px !important
@@ -208,8 +209,8 @@ ul.side-nav
 ul.side-nav-sub
   @extend .side-nav
   list-style: none
-  background: $sidebar_subnav_bg
-  box-shadow: $sidebar_subnav_box_shadow
+  background: var(--sidebarsubnavbg)
+  box-shadow: none
   +boxShadow(inset -1px 0 0 0 rgba(0, 0, 0, 0.1))
   margin: 0
   overflow: hidden
@@ -218,6 +219,9 @@ ul.side-nav-sub
   transition: all .3s cubic-bezier(.215, .61, .355, 1)
   -webkit-transition: all .3s cubic-bezier(.215, .61, .355, 1)
   -moz-transition: all .3s cubic-bezier(.215, .61, .355, 1)
+
+  .uk-nav-header
+    color: var(--sidebartext)
 
   &.subMenuOpen
     max-height: 500px
@@ -262,7 +266,7 @@ ul.side-nav-sub
     margin: 15px 20px
     border: none
     height: 1px
-    background: $sidebar_subnav_hr
+    background: var(--sidebarborder)
 
   li
     margin: 5px 0
@@ -271,22 +275,22 @@ ul.side-nav-sub
     &.active
       > a
         padding-left: 60px !important
-        background: $sidebar_subnav_bg !important
-        color: $sidebar_subnav_active !important
+        background: var(--sidebarsubnavbg) !important
+        color: var(--sidebartext) !important
         font-weight: bold
         border: none
         border-right: 1px solid rgba(0, 0, 0, 0.1)
 
         &:hover
-          background: $sidebar_subnav_item_hover !important
+          background: var(--sidebarsubnavhover) !important
 
           &:after
             width: 5px
             transform: translateX(5px)
 
         i, svg
-          color: $sidebar_subnav_active !important
-          fill: $sidebar_subnav_active !important
+          color: var(--sidebartext) !important
+          fill: var(--sidebartext) !important
           margin-left: 0
 
         .fa-sub-icon
@@ -316,7 +320,7 @@ ul.side-nav-sub
     padding-left: 60px !important
     line-height: 30px
     height: 30px !important
-    color: $sidebar_subnav_text
+    color: var(--sidebartext)
 
     span
       display: inline-block
@@ -325,18 +329,18 @@ ul.side-nav-sub
       left: 62px
 
     i, svg
-      color: $sidebar_subnav_text !important
-      fill: $sidebar_subnav_text !important
+      color: var(--sidebartext) !important
+      fill: var(--sidebartext) !important
 
     &:hover
       border: none
-      color: $sidebar_subnav_hover !important
+      color: var(--sidebartext) !important
       //background: inherit !important
-      background: $sidebar_subnav_item_hover !important
+      background: var(--sidebarsubnavhover) !important
 
       i, svg
-        color: $sidebar_subnav_hover !important
-        fill: $sidebar_subnav_hover !important
+        color: var(--sidebartext) !important
+        fill: var(--sidebartext) !important
 
       .icon-inbox
         background-position: 0 -18px
@@ -358,33 +362,3 @@ ul.side-nav-sub
 
       &.material-icons
         font-size: 24px
-
-.icon-inbox,
-.icon-sent,
-.icon-trash,
-.icon-check
-  width: 16px
-  height: 16px
-  position: absolute
-  top: 3px !important
-  left: 20px !important
-
-.icon-sent
-  background-position: -16px 0
-
-.icon-trash
-  background-position: -32px 0
-  left: 22px !important
-
-.icon-accounts
-  width: 18px
-  height: 24px
-
-.icon-groups
-  width: 22px
-  height: 22px
-
-.icon-invoices
-  width: 24px
-  height: 20px
-  top: 10px !important

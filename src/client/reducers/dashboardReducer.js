@@ -24,7 +24,6 @@ import {
 
 const initialState = {
   loading: false,
-  lastUpdated: null,
   ticketBreakdownData: List([]),
   mostActiveTicket: null,
   mostAssignee: null,
@@ -57,14 +56,13 @@ const reducer = handleActions(
       return {
         ...state,
         loading: false,
-        lastUpdated: action.response.lastUpdated,
-        ticketBreakdownData: fromJS(action.response.data),
+        ticketBreakdownData: fromJS(action.response.graphData),
         mostActiveTicket: fromJS(action.response.mostActiveTicket),
         mostCommenter: fromJS(action.response.mostCommenter),
         mostRequester: fromJS(action.response.mostRequester),
         mostAssignee: fromJS(action.response.mostAssignee),
-        ticketAvg: fromJS(action.response.ticketAvg),
-        ticketCount: action.response.ticketCount,
+        ticketAvg: fromJS(action.response.avgResponse),
+        ticketCount: action.response.count,
         closedCount: action.response.closedCount
       }
     },
@@ -77,7 +75,7 @@ const reducer = handleActions(
     },
 
     [FETCH_DASHBOARD_TOP_GROUPS.SUCCESS]: (state, action) => {
-      const items = action.response.items
+      const items = action.response.groups
       let top5 = sortBy(items, i => i.count)
         .reverse()
         .slice(0, 5)
@@ -116,7 +114,6 @@ const reducer = handleActions(
     },
 
     [FETCH_DASHBOARD_OVERDUE_TICKETS.SUCCESS]: (state, action) => {
-      console.log(action.response)
       return {
         ...state,
         loadingOverdueTickets: false,

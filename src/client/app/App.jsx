@@ -7,6 +7,7 @@ import SessionContext, { getSession, saveSession } from './SessionContext'
 import RolesContext, { getRoles } from 'app/RolesContext'
 import Routes from './Routes'
 import Layout from 'containers/Layout'
+import ThemeWrapper from 'containers/Layout/ThemeWrapper'
 
 import 'lib/vendor/normalize/normalize.min.css'
 import 'lib/vendor/chosen/chosen.css'
@@ -63,9 +64,17 @@ const App = ({ store }) => {
     theSession()
   }, [])
 
-  if (pending) {
-    return <SpinLoader active={true} fullScreen={true} />
-  }
+  // Bypass loading for now
+  if (pending) return null
+  // if (pending) {
+  //   return (
+  //     <Provider store={store}>
+  //       <ThemeWrapper>
+  //         <DotLoader active={true} fullScreen={true} />
+  //       </ThemeWrapper>
+  //     </Provider>
+  //   )
+  // }
 
   if (error) {
     return <div>{error.message}</div>
@@ -73,7 +82,7 @@ const App = ({ store }) => {
 
   return (
     <Provider store={store}>
-      <DotLoader active={!ready} animate={true} />
+      {/*<DotLoader active={!ready} animate={true} />*/}
       <SessionContext.Provider value={{ session, setSession }}>
         {/*<RolesContext.Provider value={{ roles, setRoles }}>*/}
         <HistoryRouter history={history}>

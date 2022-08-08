@@ -1,11 +1,13 @@
 .profile-drop
   .pdrop-content
     position: relative
+
   .user-section
     display: flex
     align-items: center
     justify-content: center
     max-height: 100px
+
     .user-info
       display: flex
       width: 100%
@@ -21,10 +23,12 @@
   .user-action-items
     padding: 0 15px 15px 15px
     min-height: 55px
+
     .md-switch-wrapper
       display: flex
       justify-content: space-between
       float: none
+
       label
         display: inline-block
         font-size: 14px
@@ -32,35 +36,44 @@
         cursor: default
         pointer-events: none
         flex-grow: 1
+
         a
           font-weight: 500
           pointer-events: auto
+
       .sub-label
         font-size: 12px
         display: block
+
       .lever
         margin-top: 2px
         float: right
+
   .profile-drop-dark-section
     min-height: 100px
     background: darken(lighten($page_content_right_bg, 5%), 4.5%)
+
   .profile-drop-actions
     padding: 10px 0
+
     .action-logout
       display: flex
       align-items: center
+
       i.material-icons
         width: 18px
         height: 18px
         font-size: 18px
         margin-left: 24px
         text-align: center
+
       a
         display: block
         padding: 10px 13px
         font-size: 14px
         line-height: 20px
-        color: automatic-link-custom-color(darken(lighten($page_content_right_bg, 5%), 4%), #444)
+        color: automatic-link-custom-color(lighten($page_content_right_bg, 10%), $accent_blue)
+
         &:hover
           color: $accent_blue
 
@@ -70,7 +83,8 @@
     left: 0
     height: 35px
     width: 100%
-    background-color: darken(lighten($page_content_right_bg, 5%), 4%)
+    background-color: var(--pagecontentbg)
+
     .links
       display: flex
       justify-content: center
@@ -81,4 +95,4 @@
       a, span
         margin: 0 5px
         font-size: 13px
-        color: automatic-link-custom-color(darken(lighten($page_content_right_bg, 5%), 4%), #555)
+        color: var(--primary)

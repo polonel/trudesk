@@ -1,3 +1,4 @@
+
 .search-container
   max-height: 300px
   height: auto
@@ -33,7 +34,8 @@
     color: white
 
   .chosen-container-multi .chosen-drop .result-selected
-    color: darken($page_content_right_bg, 15%)
+    color: var(--primary)
+    opacity: 0.5
 
   button
     padding: 5px 10px
@@ -50,7 +52,7 @@
     position: relative
 
     i
-      color: $text_color
+      color: var(--primary)
 
 .chosen-container
   .chosen-drop

@@ -267,6 +267,74 @@ ticketsV2.getDeleted = async (req, res) => {
   }
 }
 
+ticketsV2.stats = async (req, res) => {
+  const ticketStats = require('../../../lib/ticketStats')
+
+  const timespan = req.params.timespan
+  const acceptValues = ['30', '60', '90', '180', '365']
+  if (acceptValues.indexOf(timespan) === -1) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    const tickets = await TicketModel.getTicketsPastDays(parseInt(timespan))
+
+    let mostActiveTicket = null
+    for (const t of tickets) {
+      if (!mostActiveTicket) {
+        mostActiveTicket = t
+      } else if (mostActiveTicket.history.length < t.history.length) mostActiveTicket = t
+    }
+
+    const result = {
+      tickets,
+      closedCount: tickets.filter((ticket) => ticket.status === 3).length,
+      count: tickets.length,
+      avgResponse: ticketStats.buildAvgResponse(tickets),
+      graphData: ticketStats.buildGraphData(tickets, timespan),
+      mostActiveTicket,
+      mostCommenter: ticketStats.buildMostComments(tickets),
+      mostRequester: ticketStats.buildMostRequester(tickets),
+      mostAssignee: ticketStats.buildMostAssignee(tickets),
+    }
+
+    return apiUtils.sendApiSuccess(res, result)
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+ticketsV2.topGroups = async (req, res) => {
+  try {
+    const top = req.params.top
+    const timespan = req.params.timespan
+
+    if (!top || !timespan) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const groups = await TicketModel.getTopTicketGroups(timespan, top)
+
+    return apiUtils.sendApiSuccess(res, { groups })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+ticketsV2.topTags = async (req, res) => {
+  try {
+    let timespan = req.params.timespan
+    if (!timespan) timespan = 30
+
+    const tickets = await TicketModel.getTicketsPastDays(parseInt(timespan))
+
+    const tagStats = require('../../../cache/tagStats')
+    tagStats(tickets, timespan, (err, tags) => {
+      if (err) throw err
+
+      return apiUtils.sendApiSuccess(res, { tags })
+    })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
 ticketsV2.info = {}
 ticketsV2.info.types = async (req, res) => {
   try {

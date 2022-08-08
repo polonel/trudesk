@@ -1,3 +1,4 @@
+
 .message-list
   padding: 0 !important
   @media only screen and (min-width: 40.063em) and (max-width: 64em)
@@ -5,7 +6,7 @@
 
 .message-items
   list-style: none
-  background: $page_content_left_bg
+  background: var(--pagecontentbg)
   padding: 0
   margin: 0
   border-top: 1px solid $page_content_title_border_color
@@ -23,18 +24,18 @@
     text-overflow: '...'
 
     &:hover
-      background: lighten($page_content_left_bg, 5%)
+      background: var(--pagecontentitemhover)
       cursor: pointer
 
     &.message-folder:hover
-      background: lighten($page_content_left_bg, 5%)
+      background: var(--pagecontentitemhover)
       cursor: default
 
     //&:last-child
     //  border-bottom: none
 
     &.active
-      background: $page_content_right_bg
+      background: var(--pagecontentlight10)
 
     &.active:before,
     &.message-tag:before
@@ -45,7 +46,7 @@
       bottom: 0
       top: 0
       left: 0
-      border-left: 4px solid $accent_color
+      border-left: 4px solid var(--tertiary)
 
     &.message-tag-blue:before
       border-left: 4px solid #2980b9 !important
@@ -92,7 +93,7 @@
   font-size: 24px
   font-family: $fontFamily
   font-weight: 600
-  color: $accent_color
+  color: var(--tertiary)
 
   &:hover
     background: inherit !important
@@ -126,7 +127,7 @@
 .invoice-name
   display: inline-block
   font-family: "Source Sans Pro", sans-serif
-  color: $text_color
+  color: var(--primary)
   font-size: 14px
   padding-left: 8px
   padding-top: 3px !important
@@ -143,7 +144,7 @@
   padding-left: 25px
   font-family: "Source Sans Pro", sans-serif
   font-size: 14px
-  color: $text_color
+  color: var(--primary)
 
 .invoice-payee
   padding-left: 0
@@ -212,7 +213,7 @@
     font-size: 30px
     font-family: $fontFamily
     font-weight: 300
-    color: $text_color
+    color: var(--primary)
     margin-bottom: 5px
 
   h5
@@ -297,7 +298,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   .message-body
     margin-left: 10px
     padding: 5px 8px
-    background: darken($page_content_right_bg, 10%)
+    background: var(--secondary)
     +borderRadius(5px)
 
     p
@@ -310,11 +311,10 @@ input[type="checkbox"]:checked.poloCheckbox + label
     float: right
 
     .message-body
-      background: $accent_blue
+      background: var(--tertiary)
       margin-left: 0
       margin-right: 10px
       float: right
-      color: #fff
 
       p
         color: #fff
@@ -324,7 +324,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
 .button-group
   li.active > a,
   li.active > button
-    background: $accent_color
+    background: var(--tertiary)
     color: white
 
   a.btn,
@@ -347,7 +347,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
       outline: none
 
     &:hover
-      background: $accent_color
+      background: var(--tertiary)
       color: white
 
     i
@@ -363,7 +363,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   margin: 20px 0 0 0
 
   &:hover
-    color: $accent_color
+    color: var(--tertiary)
 
   i
     font-size: 24px
@@ -371,15 +371,15 @@ input[type="checkbox"]:checked.poloCheckbox + label
 .search-box
   position: relative
   padding: 10px
-  border-top: 1px solid $page_content_border_color
-  border-right: 1px solid $page_content_border_color
+  border-top: 1px solid var(--pagecontentborder)
+  border-right: 1px solid var(--pagecontentborder)
 
   input
     width: 100%
-    border: 1px solid $page_content_border_color
-    background: lighten($page_bg_color, 20%)
+    border: 1px solid var(--pagecontentborder)
+    background: var(--pagecontentlight20)
     padding: 5px 15px
-    color: automatic-text-color(lighten($page_bg_color, 20%))
+    color: var(--pagecontentbuttontext)
     font-size: 13px
     font-weight: 300
     +borderRadius(15px)

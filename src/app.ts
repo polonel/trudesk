@@ -15,7 +15,6 @@
 
 import async from 'async'
 import pkg from '../package.json'
-import { init as cacheInit } from './cache/cache'
 import { checkForOldConfig, hasConfigFile, loadConfig } from './config'
 import { init as databaseInit, TrudeskDatabase, trudeskDatabase } from './database'
 import elasticsearch from './elasticsearch'
@@ -141,22 +140,23 @@ function launchServer(db: TrudeskDatabase) {
         //   return next()
         // },
         function (next) {
-          let cacheEnvVars = {}
-          if (isDocker) {
-            cacheEnvVars = {
-              TRUDESK_DOCKER: process.env['TRUDESK_DOCKER'],
-              TD_MONGODB_SERVER: process.env['TD_MONGODB_SERVER'],
-              TD_MONGODB_PORT: process.env['TD_MONGODB_PORT'],
-              TD_MONGODB_USERNAME: process.env['TD_MONGODB_USERNAME'],
-              TD_MONGODB_PASSWORD: process.env['TD_MONGODB_PASSWORD'],
-              TD_MONGODB_DATABASE: process.env['TD_MONGODB_DATABASE'],
-              TD_MONGODB_URI: process.env['TD_MONGODB_URI'],
-            }
-          }
-
-          cacheInit(cacheEnvVars)
-
           return next()
+          // let cacheEnvVars = {}
+          // if (isDocker) {
+          //   cacheEnvVars = {
+          //     TRUDESK_DOCKER: process.env['TRUDESK_DOCKER'],
+          //     TD_MONGODB_SERVER: process.env['TD_MONGODB_SERVER'],
+          //     TD_MONGODB_PORT: process.env['TD_MONGODB_PORT'],
+          //     TD_MONGODB_USERNAME: process.env['TD_MONGODB_USERNAME'],
+          //     TD_MONGODB_PASSWORD: process.env['TD_MONGODB_PASSWORD'],
+          //     TD_MONGODB_DATABASE: process.env['TD_MONGODB_DATABASE'],
+          //     TD_MONGODB_URI: process.env['TD_MONGODB_URI'],
+          //   }
+          // }
+          //
+          // cacheInit(cacheEnvVars)
+          //
+          // return next()
         },
         function (next) {
           return taskRunner.init(next)

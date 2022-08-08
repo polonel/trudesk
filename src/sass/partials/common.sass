@@ -5,10 +5,25 @@
   width: 400px !important
 
 .accent-text
-  color: $accent_color !important
+  color: var(--tertiary) !important
 
 .success-text
   color: $accent_success !important
+
+.d-flex
+  display: flex
+
+.flex-1
+  flex: 1
+
+.flex-direction-column
+  flex-direction: column
+
+.flex-align-center
+  align-items: center
+
+.flex-justify-center
+  justify-content: center
 
 .right
   max-width: 100%
@@ -37,8 +52,17 @@
 .hide
   display: none
 
+.h100
+  height: 100% !important
+
+.hv100
+  height: 100vh
+
 .ba
   border: 1px solid rgba(0, 0, 0, 0.15) !important
+
+.ba-3px-white
+  border: 4px solid white !important
 
 .bt
   border-top: 1px solid rgba(0, 0, 0, 0.15) !important
@@ -67,8 +91,12 @@
 .nbl
   border-left: none !important
 
+.nbr
+  border-right: none !important
+
 .nomargin,
-.nm
+.nm,
+.m-0
   margin: 0 !important
 
 .nomargin-left-right,
@@ -79,6 +107,12 @@
 .nomargin-top,
 .nm-t
   margin-top: 0 !important
+
+.m-5
+  margin: 5px !important
+
+.m-10
+  margin: 10px !important
 
 .marginright20,
 .mr-20
@@ -95,11 +129,12 @@
 .ml-5
   margin-left: 5px !important
 
+.marginleft10,
 .ml-10
   margin-left: 10px !important
 
-.ml-15
-  margin-left: 15px !important
+.ml-25
+  margin-left: 25px !important
 
 .marginright5,
 .mr-5
@@ -122,6 +157,15 @@
 
 .mt-20
   margin-top: 20px !important
+
+.mt-25
+  margin-top: 25px !important
+
+.mt-50
+  margin-top: 50px !important
+
+.mb-0
+  margin-bottom: 0 !important
 
 .mb-5
   margin-bottom: 5px !important
@@ -168,6 +212,9 @@
 .pr-10
   padding-right: 10px !important
 
+.pr-15
+  padding-right: 15px !important
+
 .pr-20
   padding-right: 20px !important
 
@@ -177,11 +224,26 @@
 .pl-0
   padding-left: 0 !important
 
+.pl-5
+  padding-left: 5px !important
+
+.pl-10
+  padding-left: 10px !important
+
+.pl-15
+  padding-left: 15px !important
+
+.pl-20
+  padding-left: 20px !important
+
 .pl-25
   padding-left: 25px !important
 
 .pb-0
   padding-bottom: 0 !important
+
+.pb-5
+  padding-bottom: 5px !important
 
 .pb-10
   padding-bottom: 10px !important
@@ -194,6 +256,10 @@
 
 .pb-100
   padding-bottom: 100px !important
+
+.ps-10
+  padding-left: 10px !important
+  padding-right: 10px !important
 
 .padding-left-right-15
   padding-left: 15px !important
@@ -278,10 +344,10 @@
   background: #fff !important
 
 .bg-accent
-  background: $accent_color !important
+  background: var(--tertiary) !important
 
 .bg-accent-noimportant
-  background: $accent_color
+  background: var(--tertiary)
 
 .bg-success
   background: $accent_success !important
@@ -297,6 +363,9 @@
 .text-light
   font-weight: 300 !important
 
+.font-size-11
+  font-size: 11px !important
+
 .font-size-12,
 .small-font
   font-size: 12px !important
@@ -304,8 +373,21 @@
 .font-size-40
   font-size: 40px !important
 
+.line-height-1
+  line-height: 1px !important
+
 .vam
   vertical-align: middle !important
+
+\:not(pre) > code, kbd, samp
+  color: var(--primary)
+
+em,
+code
+  color: var(--tertiary)
+
+.uppercase
+  text-transform: uppercase
 
 .heading-wiz
   margin: 0
@@ -318,7 +400,7 @@
     display: block
     color: automatic-text-color($page_content_right_bg, 'muted')
 
-.bg-danger, .bg-warning, .bg-success
+.bg-danger, .bg-warning, .bg-success, .bg-purple
   background: $accent_danger !important
   color: white !important
 
@@ -330,6 +412,12 @@
 
 .bg-success
   background: $accent_success !important
+
+.bg-purple
+  background: $accent_agent !important
+
+.bg-hover:hover
+  background: rgba(0, 0, 0, 0.05)
 
 .cursor-pointer
   cursor: default !important
@@ -376,8 +464,8 @@ a.hoverUnderline
 .page-title,
 .page-title-right
   min-height: 69px
-  background: $page_content_title_bg
-  border-bottom: 1px solid $page_content_border_color
+  background: var(--secondary)
+  border-bottom: 1px solid var(--pagecontentborder)
   //+boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
   box-shadow: $page_content_title_shadow
   padding: 0 15px 0 35px
@@ -388,7 +476,7 @@ a.hoverUnderline
     font-size: 30px
     margin: 0
     line-height: 68px
-    color: $page_content_title_text
+    color: var(--pagecontentbuttontext)
     font-weight: 300
 
     &.left
@@ -413,13 +501,13 @@ a.hoverUnderline
 //overflow: auto
 
 .page-content-right
-  background: $page_content_right_bg
+  background: var(--pagecontentlight10)
 //overflow: auto
 
 .page-content-left
-  background: $page_content_left_bg
-  border-top: 1px solid $page_content_border_color
-  border-right: 1px solid $page_content_border_color
+  background: var(--pagecontentbg)
+  border-top: 1px solid var(--pagecontentborder)
+  border-right: 1px solid var(--pagecontentborder)
 
 .fa-large
   font-size: 24px
@@ -433,9 +521,9 @@ span
     height: 17px
     width: 17px
     position: absolute
-    right: 0
+    right: 2px
     bottom: -4px
-    background: $accent_success
+    background: #9e9e9e
     line-height: 1
     +borderRadius(50%)
     border: 2px solid #fff
@@ -444,7 +532,10 @@ span
     background: #9e9e9e
 
   &.user-idle
-    background: #f1c40f
+    background: #f1c40f !important
+
+  &.user-online
+    background: $accent_success !important
 
   &.user-status-large
     height: 25px
@@ -467,7 +558,7 @@ a.button
   //margin: 18px 5px 0 0
   padding: 4px 16px
   +borderRadius(3px)
-  background: $accent_color
+  background: var(--tertiary)
   outline: none
 
   &.dropdown
@@ -492,34 +583,14 @@ a.button
     margin-right: 10px
     font-size: 14px
 
-//.f-dropdown.open:before
-//  left: 10px !important
-//.f-dropdown.open:after
-//  left: 9px !important
-
-.f-dropdown
-  background: lighten(#eef1f7, 5%)
-  border: darken(#eef1f7, 15%)
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)
-
-  &.noarrow
-    &:before
-      border: none
-
-    &:after
-      border: none
-
-.f-dropdown.xtiny
-  max-width: 150px
-
 .panel
   hr
     margin: 0
 
   &.trupanel
-    background: $trupanel_bg
-    border: darken($trupanel_bg, 15%)
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)
+    background: var(--pagecontentlight20)
+    border: var(--pagecontentdark5)
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14)
     transition: all 280ms ease-in-out
     -webkit-transition: all 280ms ease-in-out
 
@@ -529,13 +600,17 @@ a.button
   .panel-body
     padding: 15px
 
+  .panel-body2
+    .settings-categories
+      background: var(--pagecontentlight20)
+
   .panel-footer
     display: block
-    border-top: 1px solid darken($trupanel_bg, 15%)
+    border-top: 1px solid var(--pagecontentdark5)
     padding: 15px
 
 .panel-bg
-  background: $trupanel_bg !important
+  background: var(--pagecontentlight10) !important
 
 .tru-card-content
   padding: 16px
@@ -544,7 +619,7 @@ a.button
     font-size: 24px
     font-weight: 500
     line-height: 30px
-    color: automatic-text-color(lighten($page_content_right_bg, 10%))
+    color: var(--primary)
 
 .action-link
   background: transparent
@@ -584,27 +659,27 @@ a.button
   li
     float: none !important
     width: 100% !important
-    background: $page_content_button_color !important
-    color: $page_content_button_text_color !important
+    background: var(--pagecontentlight10) !important
+    color: var(--pagecontentbuttontext) !important
     line-height: 1.4em !important
     height: auto !important
 
   a
     display: block
     width: 100%
-    background: $page_content_button_color !important
+    background: var(--pagecontentlight10) !important
     line-height: 1.4em !important
     padding: 5px 15px !important
-    color: $page_content_button_text_color !important
+    color: var(--pagecontentbuttontext) !important
 
     &:hover
       background: rgba(0, 0, 0, 0.085) !important
-      color: $page_content_button_text_color !important
+      color: var(--pagecontentbuttontext) !important
 
 .disconnected
   z-index: 10000
   border: none
-  background: rgba(0, 0, 0, 0.76)
+  background: rgba(0, 0, 0, 0.75) !important
   position: absolute
   top: 0
   left: 0
@@ -832,11 +907,11 @@ div.hoverAction
   .chosen-container-multi
     .chosen-choices
       border: 1px solid darken($page_content_right_bg, 15%) !important
-      background: darken($page_content_right_bg, 10%)
+      background: var(--secondary)
       +borderRadius(3px)
 
     .chosen-drop
-      background: darken($page_content_right_bg, 10%)
+      background: var(--secondary)
       border-color: darken($page_content_right_bg, 15%)
 
   span
@@ -853,10 +928,10 @@ div.hoverAction
   textarea
     font-family: $fontFamily
     font-size: 14px
-    color: $text_color
+    color: var(--primary)
     resize: none
     background: #f3f5f9
-    border: 1px solid darken($page_content_right_bg, 10%)
+    border: 1px solid var(--secondary)
     +borderRadius(3px)
     box-sizing: border-box
     +boxShadow(none)
@@ -902,11 +977,11 @@ div.hoverAction
   border-top: $page_content_border_top
 
 .search-box input.ticket-top-search
-  background: $page_content_button_color
+  background: var(--pagecontentlight10)
   height: 30px
-  border: 1px solid $page_content_button_color
+  border: 1px solid var(--pagecontentlight10)
   border-radius: 5px
-  color: $page_content_button_text_color
+  color: var(--pagecontentbuttontext)
 
   &::placeholder
     color: automatic-text-color($page_content_button_color, 'muted')
@@ -935,10 +1010,10 @@ div.hoverAction
         height: 30px
         margin-right: 0
         padding: 0 16px
-        background: $page_content_button_color
+        background: var(--pagecontentlight10)
         overflow: hidden
         +borderRadius(3px 0 0 3px)
-        color: $page_content_button_text_color
+        color: var(--pagecontentbuttontext)
         line-height: 30px
 
         i
@@ -959,12 +1034,12 @@ div.hoverAction
 
       &.active
         .btn
-          background: $accent_color
+          background: var(--tertiary)
 
 .datepicker td span.active,
 .datepicker td.active.day,
 .datepicker td.active.year
-  background: lighten($accent_color, 5%)
+  background: var(--tertiarylight5)
 
 .mde-error
   font-weight: 600

@@ -2,54 +2,65 @@ form#createTicketForm
   .CodeMirror
     .CodeMirror-cursors
       z-index: 99
+
 .CodeMirror
   //height: 250px
   height: auto
   border-radius: 0 !important
-  border-color: $page_content_border_color
-  background: $page_content_right_bg
-  color: automatic-text-color($page_content_right_bg)
+  border-color: var(--pagecontentborder)
+  background: var(--pagecontentlight10)
+  color: var(--primary)
+
   &.hasFileDesc
-    border-bottom: 1px dashed $page_content_border_color
+    border-bottom: 1px dashed var(--pagecontentborder)
+
 .CodeMirror-fullscreen
   z-index: 20 !important
 
 .editor-preview
-  background: $page_content_right_bg
-  color: automatic-text-color($page_content_right_bg)
+  background: var(--pagecontentlight10)
+  color: var(--primary)
 
 .editor-preview-side
   z-index: 10 !important
 
 .editor-toolbar
   border-radius: 0
-  border-color: $page_content_border_color !important
+  border-color: var(--pagecontentborder) !important
+
   &:hover
     button
       transition: opacity linear 0.4ms
       opacity: 1
+
   button
     width: 26px
     height: 26px
     margin-right: 2px
     opacity: 0.8
+
     &:focus, &:hover
-      background-color: darken($page_content_right_bg, 10%)
-      border-color: darken($page_content_right_bg, 10%)
+      background-color: var(--secondary)
+      border-color: var(--secondary)
+
   i.separator
     margin: 3px 6px
     vertical-align: top
+    border-color: var(--pagecontentborder)
+
   &:after
     margin-top: 0
 
 .editor-statusbar
   &.hasFileDesc
-    border: 1px solid $page_content_border_color
+    border: 1px solid var(--pagecontentborder)
     border-top-width: 0
-    background: darken($page_content_right_bg, 1%)
+    background: var(--secondary)
+
   .attachFileDesc
     display: inline-block
     float: left
+
     p
       -webkit-user-select: none
       -moz-user-select: none
@@ -57,7 +68,7 @@ form#createTicketForm
       user-select: none
       margin: 0
       font-size: 12px
-      color: automatic-text-color($page_content_right_bg, 'muted')
+      color: var(--mutedtext)
 
 .mi-bold:after,
 .mi-italic:after,
@@ -77,7 +88,7 @@ form#createTicketForm
   height: 24px
   width: 24px
   margin-left: 0 !important
-  color: automatic-text-color($page_content_bg, 'muted')
+  color: var(--mutedtext)
 
 .mi-italic:after
   content: "format_italic"

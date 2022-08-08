@@ -1,3 +1,4 @@
+
 .dt-borderTop
   border-top: $datatables_head_border_top
 
@@ -21,14 +22,14 @@
 
   &.stripe
     tr:nth-of-type(even)
-      background: darken($page_content_bg, 1%)
+      background: var(--pagecontentdark5)
 
       td
-        background: darken($page_content_bg, 1%)
+        background: var(--pagecontentdark5)
 
       &:hover
         cursor: pointer
-        background: $page_content_bg
+        background: var(--secondary)
 
   tr
     height: 52px
@@ -36,14 +37,15 @@
 
   tbody
     tr
-      background: lighten($page_content_bg, 3%)
+      background: var(--pagecontentlight5)
 
       td
-        background: lighten($page_content_bg, 3%)
+        background: var(--pagecontentlight5)
+        color: var(--primary)
 
       &:hover
         cursor: pointer
-        background: $page_content_bg
+        background: var(--secondary)
 
       &.ticket-new
         td
@@ -97,19 +99,19 @@ table.dataTable
     tr
       th
         font-size: 12px
-        color: $text_color
+        color: var(--primary)
         font-weight: 400
 
   tbody
     tr
       td
         font-family: $fontFamily
-        color: $text_color
+        color: var(--primary)
         font-weight: normal
         font-size: 14px
 
 div.dataTables_wrapper
-  background: $page_content_bg
+  background: var(--secondary)
   margin-bottom: 0
 
   .dataTables_filter

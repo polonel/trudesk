@@ -32,13 +32,13 @@ api.dashboard.getData = payload => {
 }
 api.dashboard.getTopGroups = payload => {
   const timespan = payload.timespan || 30
-  return axios.get(`/api/v2/tickets/count/topgroups/${timespan}/5`).then(res => {
+  return axios.get(`/api/v2/tickets/stats/groups/${timespan}/5`).then(res => {
     return res.data
   })
 }
 api.dashboard.getTopTags = payload => {
   const timespan = payload.timespan || 30
-  return axios.get(`/api/v2/tickets/count/tags/${timespan}`).then(res => {
+  return axios.get(`/api/v2/tickets/stats/tags/${timespan}`).then(res => {
     return res.data
   })
 }

@@ -55,6 +55,10 @@ module.exports = function (middleware, router, controllers) {
   router.put('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:update'), apiv2.tickets.update)
   router.delete('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:delete'), apiv2.tickets.delete)
   router.delete('/api/v2/tickets/deleted/:id', apiv2Auth, isAdmin, apiv2.tickets.permDelete)
+  router.get('/api/v2/tickets/stats/tags', apiv2Auth, isAgentOrAdmin, apiv2.tickets.topTags)
+  router.get('/api/v2/tickets/stats/tags/:timespan', apiv2Auth, isAgentOrAdmin, apiv2.tickets.topTags)
+  router.get('/api/v2/tickets/stats/groups/:timespan/:top', apiv2Auth, isAgentOrAdmin, apiv2.tickets.topGroups)
+  router.get('/api/v2/tickets/stats/:timespan', apiv2Auth, isAgentOrAdmin, apiv2.tickets.stats)
 
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)
@@ -102,4 +106,8 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/es/status', apiv2Auth, isAdmin, apiv2.elasticsearch.status)
 
   router.get('/api/v2/mailer/check', apiv2Auth, isAdmin, apiv2.mailer.check)
+
+  router.get('/api/v2/*', (req, res) => {
+    res.status(404).send('Not Found')
+  })
 }

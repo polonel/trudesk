@@ -1,7 +1,7 @@
 
 #loader-wrapper,
 #dot-loader
-  background: $page_content_bg
+  background: var(--pagecontentbg)
   position: absolute
   top: 0
   bottom: 0
@@ -70,8 +70,8 @@
 .dot-loader-wrapper
   width: 100%
   height: 100%
-  background: $secondary
-  
+  background: var(--secondary)
+
   svg.t,
   svg.bigdot
     position: absolute
@@ -97,7 +97,7 @@
       fill: #323232
 
 svg.bigdot circle
-  fill: $accent_color !important
+  fill: var(--tertiary) !important
 
 .shadow
   animation: expand .35s infinite alternate ease-in-out

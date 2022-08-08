@@ -19,7 +19,7 @@ $size: 16px
 
   [class*="tru-tab"]
     float: left
-    color: #222
+    color: var(--primary)
 
   .tru-tab-selectors
     position: relative
@@ -48,11 +48,11 @@ $size: 16px
       color: lighten(#222, 50%)
 
       &.active
-        color: $accent_color
-        background: $page_content_right_bg
+        color: var(--tertiary)
+        background: var(--pagecontentlight10)
 
         .uk-badge
-          background: $accent_color !important
+          background: var(--tertiary) !important
           color: #fff
 
   .tru-tab-highlighter
@@ -60,7 +60,7 @@ $size: 16px
     z-index: 10
     bottom: 0
     height: 2px
-    background: $accent_color
+    background: var(--tertiary)
     //max-width: 100px
     max-width: 150px
     width: 100%

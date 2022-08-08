@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 
@@ -26,6 +27,8 @@ import D3Pie from 'components/D3/d3pie'
 
 import moment from 'moment-timezone'
 import helpers from 'lib/helpers'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 @observer
 class DashboardContainer extends React.Component {
@@ -53,13 +56,13 @@ class DashboardContainer extends React.Component {
   }
 
   render () {
-    const formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
-    const tz = helpers.getTimezone()
-    const lastUpdatedFormatted = this.props.dashboardState.lastUpdated
-      ? moment(this.props.dashboardState.lastUpdated, 'MM/DD/YYYY hh:mm:ssa')
-          .tz(tz)
-          .format(formatString)
-      : 'Cache Still Loading...'
+    // const formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
+    // const tz = helpers.getTimezone()
+    // const lastUpdatedFormatted = this.props.dashboardState.lastUpdated
+    //   ? moment(this.props.dashboardState.lastUpdated, 'MM/DD/YYYY hh:mm:ssa')
+    //       .tz(tz)
+    //       .format(formatString)
+    //   : 'Cache Still Loading...'
 
     const closedPercent = this.props.dashboardState.closedCount
       ? Math.round((this.props.dashboardState.closedCount / this.props.dashboardState.ticketCount) * 100).toString()
@@ -67,6 +70,13 @@ class DashboardContainer extends React.Component {
 
     return (
       <div>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Dashboard</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <PageTitle
           title={'Dashboard'}
           rightComponent={
@@ -86,10 +96,10 @@ class DashboardContainer extends React.Component {
                   />
                 </div>
               </div>
-              <div className={'uk-float-right uk-text-muted uk-text-small'} style={{ margin: '23px 25px 0 0' }}>
-                <strong>Last Updated: </strong>
-                <span>{lastUpdatedFormatted}</span>
-              </div>
+              {/*<div className={'uk-float-right uk-text-muted uk-text-small'} style={{ margin: '23px 25px 0 0' }}>*/}
+              {/*  <strong>Last Updated: </strong>*/}
+              {/*  <span>{lastUpdatedFormatted}</span>*/}
+              {/*</div>*/}
             </div>
           }
         />
@@ -155,6 +165,7 @@ class DashboardContainer extends React.Component {
                 fullSize={true}
                 hover={false}
                 extraContentClass={'nopadding'}
+                loaderActive={this.props.dashboardState.loading}
                 content={
                   <div className='mGraph mGraph-panel' style={{ minHeight: 200, position: 'relative' }}>
                     <MGraph
@@ -197,7 +208,11 @@ class DashboardContainer extends React.Component {
                 }
                 content={
                   <div>
-                    <D3Pie type={'donut'} data={this.props.dashboardState.topTags.toJS()} />
+                    <D3Pie
+                      type={'donut'}
+                      data={this.props.dashboardState.topTags.toJS()}
+                      emptyLabel={'No Data Available'}
+                    />
                   </div>
                 }
               />
@@ -308,11 +323,14 @@ class DashboardContainer extends React.Component {
                             Most active ticket...
                           </td>
                           <td className='uk-width-4-10 uk-text-right  uk-text-small'>
-                            <a id='mostActiveTicket' href='#'>
+                            <Link
+                              id='mostActiveTicket'
+                              to={`/tickets/${this.props.dashboardState.mostActiveTicket?.get('uid')}`}
+                            >
                               {this.props.dashboardState.mostActiveTicket
                                 ? `T#${this.props.dashboardState.mostActiveTicket.get('uid')}`
                                 : '--'}
-                            </a>
+                            </Link>
                           </td>
                         </tr>
                       </tbody>

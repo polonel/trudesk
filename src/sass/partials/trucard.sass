@@ -1,6 +1,6 @@
 
 .tru-card
-  background: $trupanel_bg
+  background: var(--pagecontentlight10)
   position: relative
   border: none
   box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24)
@@ -50,7 +50,7 @@
   .tru-card-head-text
     padding: 8px 16px 16px
     font: 500 16px/22px $fontFamily
-    color: $text_color
+    color: var(--primary)
     margin: 0
     -ms-word-break: break-all
     word-break: break-all
@@ -115,7 +115,7 @@
   height: 32px !important
   width: 32px !important
   -webkit-tap-highlight-color: transparent
-  color: $text_color
+  color: var(--primary)
   +borderRadius(50%)
   cursor: pointer
   //position: absolute
@@ -126,7 +126,7 @@
 
   &:hover, &:focus
     background: rgba(0, 0, 0, .08)
-    color: darken($text_color, 3%)
+    color: var(--primary)
 
 .tru-card.tru-card-overlay-active
   .tru-card-overlay-content
@@ -166,10 +166,10 @@
         padding-bottom: 1px
 
   a, a:active, a:focus
-    color: $accent_color
+    color: var(--tertiary)
 
     &:hover
-      color: lighten($accent_color, 10%)
+      color: var(--tertiarylight5)
 
 .trupanel.card-disabled
   background: #9E9E9E !important

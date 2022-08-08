@@ -20,9 +20,6 @@ div#accountsTable_wrapper
   font-size: 12px
   font-weight: 600
   font-family: "Roboto", sans-serif
-  //color: white
-  //background: $ticket_status_closed
-  //border: 2px solid $ticket_status_closed
   +borderRadius(3px)
 
 .ticket-status.ticket-open span,
@@ -102,7 +99,7 @@ div#accountsTable_wrapper
   top: 28px
   left: -5px
   padding: 0
-  background: $page_content_right_bg
+  background: var(--pagecontentlight10)
   border: 1px solid $page_content_border_color
   +borderRadius(3px)
   z-index: 999
@@ -136,14 +133,14 @@ div#accountsTable_wrapper
 .page-top-comments
   .active > a,
   .active > button
-    background: darken($page_content_title_bg, 5%)
+    background: var(--pagecontentlight10)
 
   a.btn,
   button.btn,
   button
-    background: darken($page_content_title_bg, 8%)
+    background: var(--pagecontentdark10)
     display: block
-    color: automatic-text-color(darken($page_content_title_bg, 8%))
+    color: var(--mutedtext)
     font-family: $fontFamily
     font-weight: 400
     font-size: 12px
@@ -154,7 +151,7 @@ div#accountsTable_wrapper
     line-height: 14px
 
     &:hover
-      background: darken($page_content_title_bg, 12%)
+      background: var(--pagecontentdark5)
 
     i
       font-weight: normal
@@ -176,7 +173,7 @@ div#accountsTable_wrapper
   h4
     font-family: $fontFamily
     font-size: 14px
-    color: darken($text_color, 10%)
+    color: var(--primary)
     margin-bottom: 10px
 
 .ticket-assignee
@@ -196,14 +193,14 @@ div#accountsTable_wrapper
     h3
       font-family: $fontFamily
       font-size: 14px
-      color: $text_color
+      color: var(--primary)
       margin: 0 0 7px
       line-height: normal
 
     a, a:active, a:focus
       display: block
       font: 400 12px/15px $fontFamily
-      color: automatic-text-color($page_content_left_bg, 'muted')
+      color: var(--mutedtext)
       margin: 0 0 2px
 
       &:hover,
@@ -213,13 +210,13 @@ div#accountsTable_wrapper
     span
       font-family: $fontFamily
       font-size: 12px
-      color: automatic-text-color($page_content_left_bg, 'muted')
+      color: var(--mutedtext)
       margin: 0 0 3px
 
 .ticket-details
   display: block
   min-height: 150px
-  border: 1px solid $page_content_border_color
+  border: 1px solid var(--pagecontentborder)
   margin: 0 15px !important
   margin-bottom: 30px !important
   padding: 15px
@@ -242,16 +239,16 @@ div#accountsTable_wrapper
     width: 97%
     padding: 5px 10px
     margin-bottom: 12px
-    color: $text_color
+    color: var(--primary)
     background: #f3f5f9
-    border: 1px solid $text_color
+    border: 1px solid var(--primary)
     +borderRadius(3px)
     +boxShadow(none)
 
     &:focus
       outline: none
-      border-color: $text_color
-      background: lighten($text_color, 5%)
+      border-color: var(--primary)
+      background: var(--primary)
       +boxShadow(none)
 
   select, select:focus
@@ -296,7 +293,7 @@ div#accountsTable_wrapper
         margin-bottom: 2px
 
   select > option
-    background: $page_content_right_bg
+    background: var(--pagecontentlight10)
     color: automatic-text-color($page_content_right_bg)
     border: 1px solid $page_content_border_color
 
@@ -318,7 +315,7 @@ div#accountsTable_wrapper
       line-height: 13px
 
     em
-      color: $text_color
+      color: var(--primary)
       display: block
       margin-bottom: 7px
       font-size: 11px
@@ -334,7 +331,7 @@ div#accountsTable_wrapper
       font-weight: normal
       margin-top: 3px
       margin-bottom: 7px
-      color: automatic-text-color($trupanel_bg, 'muted')
+      color: var(--mutedtext)
       display: inline-block
 
 
@@ -363,13 +360,14 @@ div#accountsTable_wrapper
       font-family: $fontFamily
       font-size: 18px
       font-weight: 600
-      color: $text_color
+      color: var(--primary)
 
     a, a.comment-email-link
       display: inline-block
       font-size: 12px
       font-family: $fontFamily
-      color: automatic-link-color($page_content_bg)
+      //color: automatic-link-color($page_content_bg)
+      color: var(--tertiaryfade)
       margin-left: 2px
       //margin-bottom: 7px
 
@@ -418,7 +416,7 @@ div#accountsTable_wrapper
     p
       font-family: $fontFamily
       font-size: 14px
-      color: $text_color
+      color: var(--primary)
       line-height: 20px
 
   .ticket-comment,
@@ -473,7 +471,7 @@ div#accountsTable_wrapper
         width: 100%
         font-family: $fontFamily
         font-size: 14px
-        color: $text_color
+        color: var(--primary)
         resize: none
         //background: #f3f5f9
         //border: 1px solid #dfe4ef
@@ -501,7 +499,7 @@ div#accountsTable_wrapper
       font-size: 14px
       color: #ffffff
       padding: 3px 15px
-      background: $accent_color
+      background: var(--tertiary)
       +borderRadius(3px)
       font-weight: 400
 
@@ -512,7 +510,7 @@ div#accountsTable_wrapper
           background: darken($accent_success, 5%)
 
       &:hover
-        background: darken($accent_color, 5%)
+        background: var(--tertiarylight5)
 
       &:active, &:focus
         outline: none

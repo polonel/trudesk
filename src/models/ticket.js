@@ -1560,92 +1560,80 @@ ticketSchema.statics.getAssigned = function (userId, callback) {
  *    results[x].count
  * });
  */
-ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
-  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = -1
-  if (_.isUndefined(top) || _.isNaN(top)) top = 5
-
+ticketSchema.statics.getTopTicketGroups = async function (timespan, top, callback) {
   const self = this
 
-  const today = moment
-    .utc()
-    .hour(23)
-    .minute(59)
-    .second(59)
-  const tsDate = today.clone().subtract(timespan, 'd')
-  let query = {
-    date: { $gte: tsDate.toDate(), $lte: today.toDate() },
-    deleted: false
-  }
-  if (timespan === -1) {
-    query = { deleted: false }
-  }
+  return new Promise(function (resolve, reject) {
+    ;(async () => {
+      if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = -1
+      if (_.isUndefined(top) || _.isNaN(top)) top = 5
 
-  const q = self
-    .model(COLLECTION)
-    .find(query)
-    .select('group')
-    .populate('group', 'name')
-    .lean()
+      const today = moment
+        .utc()
+        .hour(23)
+        .minute(59)
+        .second(59)
+      const tsDate = today.clone().subtract(timespan, 'd')
+      let query = {
+        date: { $gte: tsDate.toDate(), $lte: today.toDate() },
+        deleted: false
+      }
+      if (timespan === -1) query = { deleted: false }
 
-  let topCount = []
-  const ticketsDb = []
+      const q = self
+        .find(query)
+        .select('group')
+        .populate('group', 'name')
+        .lean()
 
-  async.waterfall(
-    [
-      function (next) {
-        q.exec(function (err, t) {
-          if (err) return next(err)
+      let topCount = []
+      const ticketsDb = []
 
-          const arr = []
-
-          for (let i = 0; i < t.length; i++) {
-            const ticket = t[i]
-            if (ticket.group) {
-              ticketsDb.push({
-                ticketId: ticket._id,
-                groupId: ticket.group._id
-              })
-              const o = {}
-              o._id = ticket.group._id
-              o.name = ticket.group.name
-
-              if (!_.filter(arr, { name: o.name }).length) {
-                arr.push(o)
-              }
+      try {
+        const tickets = await q.exec()
+        let arr = []
+        for (const ticket of tickets) {
+          if (ticket.group) {
+            ticketsDb.push({
+              ticketId: ticket._id,
+              groupId: ticket.group._id
+            })
+            const o = {
+              _id: ticket.group._id,
+              name: ticket.group.name
             }
-          }
 
-          return next(null, _.uniq(arr))
-        })
-      },
-      function (grps, next) {
-        for (let g = 0; g < grps.length; g++) {
-          const tickets = []
-          const grp = grps[g]
-          for (let i = 0; i < ticketsDb.length; i++) {
-            if (ticketsDb[i].groupId === grp._id) {
-              tickets.push(ticketsDb)
+            if (!_.filter(arr, { name: o.name }).length) {
+              arr.push(o)
             }
-          }
 
-          topCount.push({ name: grp.name, count: tickets.length })
+            arr = _.uniq(arr)
+          }
         }
 
-        topCount = _.sortBy(topCount, function (o) {
+        for (const group of arr) {
+          const ticketsArray = []
+          for (const ticket of ticketsDb) {
+            if (ticket.groupId === group._id) ticketsArray.push(ticket)
+          }
+
+          topCount.push({ name: group.name, count: ticketsArray.length })
+        }
+
+        topCount = _.sortBy(topCount, o => {
           return -o.count
         })
-
         topCount = topCount.slice(0, top)
 
-        return next(null, topCount)
-      }
-    ],
-    function (err, result) {
-      if (err) return callback(err, null)
+        if (typeof callback === 'function') callback(topCount)
 
-      return callback(null, result)
-    }
-  )
+        return resolve(topCount)
+      } catch (e) {
+        if (typeof callback === 'function') callback(e)
+        return reject(e)
+      }
+    })()
+  })
 }
 
 ticketSchema.statics.getTagCount = function (tagId, callback) {
@@ -1715,6 +1703,25 @@ ticketSchema.statics.getDeleted = function (callback) {
     .sort({ uid: -1 })
     .limit(1000)
     .exec(callback)
+}
+
+ticketSchema.statics.getTicketsPastDays = async function (days) {
+  if (!days) days = 30
+
+  const today = moment()
+    .hour(23)
+    .minute(59)
+    .second(59)
+  const lastX = today.clone().subtract(days, 'd')
+
+  return this.find({
+    date: { $gte: lastX.toISOString() },
+    deleted: false
+  })
+    .populate('type tags group owner assignee')
+    .populate('comments.owner')
+    .lean()
+    .sort({ status: 1 })
 }
 
 function statusToString (status) {

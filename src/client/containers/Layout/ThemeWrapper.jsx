@@ -18,11 +18,6 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import TitleContext from 'app/TitleContext'
 import { fetchTheme } from 'actions/common'
 import setTheme from '../../lib/theme'
-import Log from '../../logger'
-import SpinLoader from 'components/SpinLoader'
-import queryString from 'query-string'
-import axios from 'api/axios'
-import DotLoader from 'components/DotLoader'
 
 class ThemeWrapper extends React.Component {
   constructor (props) {

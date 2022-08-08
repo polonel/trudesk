@@ -87,7 +87,7 @@ function * updateColorScheme ({ payload }) {
   try {
     const response = yield call(api.settings.update, payload)
     yield put({ type: UPDATE_COLORSCHEME.SUCCESS, response })
-    yield call(api.settings.buildSass)
+    // yield call(api.settings.buildSass)
     helpers.UI.showSnackbar('Setting saved successfully. Reloading...', false)
     setTimeout(function () {
       window.location.reload()

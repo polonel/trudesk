@@ -143,7 +143,7 @@ textarea.md-input
       bottom: 0
       width: 0
       height: 2px
-      background: $accent_color
+      background: var(--tertiary)
       -webkit-transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
       transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
 
@@ -304,11 +304,19 @@ label.md-label
       border-top-left-radius: 0
       border-bottom-left-radius: 0
 
+.md-btn-accent
+  background-color: var(--tertiary)
+  color: white
+
+  &:hover, &:active, &:focus
+    color: white
+    background: var(--tertiary)
+
 .md-btn
   &.hover-accent
     &:hover
       color: #fff
-      background: $accent_color
+      background: var(--tertiary)
 
   &.hover-primary
     &:hover
@@ -360,7 +368,7 @@ label.md-label
     font-size: 128px
 
 .uk-modal-dialog
-  background: $page_content_right_bg
+  background: var(--pagecontentlight10)
 
 .uk-file-upload
   background: lighten($page_content_right_bg, 2%)
@@ -389,13 +397,19 @@ label.md-label
     color: automatic-text-color(lighten($page_content_bg, 10%))
 
   > .uk-active > *
-    background: $accent_color
+    background: var(--tertiary)
 
 .uk-text-muted
   color: automatic-text-color($page_content_bg, 'muted') !important
 
+.a-text-muted
+  opacity: 0.4
+
+  &:hover
+    opacity: 1
+
 .uk-badge
-  background: $accent_color
+  background: var(--tertiary)
   padding: 2px 6px
   border: none
   +borderRadius(2px)
@@ -438,7 +452,7 @@ label.md-label
     background-color: #7cb342
 
   &.uk-progress-accent .uk-progress-bar
-    background-color: $accent_color
+    background-color: var(--tertiary)
 
   .uk-progress-bar
     background-color: $accent_blue
@@ -467,10 +481,10 @@ label.md-label
   color: automatic-text-color($page_content_right_bg, 'muted')
 
 .uk-datepicker-table a
-  color: $text_color
+  color: var(--primary)
 
   &:hover, &:active, &:focus
-    color: $text_color
+    color: var(--primary)
 
 a.uk-datepicker-table-muted
   color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
@@ -488,10 +502,20 @@ a.uk-datepicker-table-muted
   border-top-color: mix(black, $page_content_bg, 65%) !important
 
 .uk-dropdown
-  background: $page_content_button_color
+  background: var(--pagecontentlight10)
 
   & > ul > li > a
-    color: $page_content_button_text_color
+    color: var(--pagecontentbuttontext)
+
+.uk-dropdown-xsmall
+  width: 120px !important
+  max-width: 120px !important
+  min-width: 120px !important
+  padding: 3px 0 !important
+
+  & > ul > li
+    & > a
+      font-size: 12px !important
 
 .uk-dropdown.uk-datepicker
   opacity: 1
@@ -499,8 +523,34 @@ a.uk-datepicker-table-muted
   transform: scale(1, 1)
   -webkit-transform: scale(1, 1)
 
+.uk-button-group
+  button
+    margin-right: 5px
+
+    &:last-child
+      margin-right: 0
+
 .uk-button
   text-shadow: none
+
+  &.outline
+    border: 1px solid rgba(0, 0, 0, 0.15)
+
+  &.small
+    font-size: 11px
+    line-height: 25px
+    min-height: 25px
+    height: 25px
+    max-height: 25px
+    padding: 0 10px
+    white-space: nowrap
+
+    i
+      float: right
+      font-size: 13px
+      margin: 0 0 0 10px
+      line-height: 24px
+
 
 .uk-button-success
   background-color: $success-color
@@ -510,7 +560,7 @@ a.uk-datepicker-table-muted
 
 .uk-button.uk-button-accent,
 .uk-button.uk-button-cancel
-  background: $accent_color
+  background: var(--tertiary)
   color: white
   transition: all .4s ease
   border: none
@@ -519,10 +569,10 @@ a.uk-datepicker-table-muted
 
   &:hover, &:active, &:focus
     color: white
-    background: lighten($accent_color, 5%)
+    background: var(--tertiarylight5)
 
 .uk-button.uk-button-cancel
-  background: darken($page_content_right_bg, 10%)
+  background: var(--secondary)
   color: automatic-text-color(darken($page_content_right_bg, 10%))
 
   &:hover, &:active, &:focus
@@ -578,7 +628,7 @@ a.uk-datepicker-table-muted
 
 .uk-pagination > li.uk-active > a,
 .uk-pagination > li.uk-active > span
-  background: $accent_color
+  background: var(--tertiary)
 
 .uk-pagination > li > a,
 .uk-pagination > li > span
@@ -736,20 +786,20 @@ textarea.review-list
   transform: translate(-50%, -50%)
 
 .c3-legend-item text, .c3-text.c3-empty
-  fill: $text_color !important
+  fill: var(--primary) !important
 
 .uk-table thead th
-  color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+  color: var(--mutedtext)
   border-bottom-width: 1px !important
 
 .uk-table td
-  border-bottom: 1px solid $page_content_border_color
+  border-bottom: 1px solid var(--pagecontentborder)
 
 .uk-table-striped tbody tr:nth-of-type(odd)
-  background: lighten($page_content_bg, 2%)
+  background: var(--pagecontentlight5)
 
 .uk-table-striped tbody tr:nth-of-type(even)
-  background: darken($page_content_bg, 2%)
+  background: var(--pagecontentdark5)
 
 .sticky-header
   thead, thead th
@@ -757,7 +807,7 @@ textarea.review-list
     position: -webkit-sticky
     top: 0
     z-index: 15
-    background: $page_content_bg
+    background: var(--secondary)
     border-bottom: none !important
 
   thead th:after
@@ -766,7 +816,7 @@ textarea.review-list
     left: 0
     bottom: 0
     width: 100%
-    border-bottom: 1px solid $page_content_border_color
+    border-bottom: 1px solid var(--pagecontentborder)
 
 .fixed-width
   table-layout: fixed
@@ -783,7 +833,7 @@ textarea.review-list
     font-weight: 600
     font-size: 14px
     line-height: 1.5
-    color: darken($text_color, 2%)
+    color: var(--primary)
     margin: 0
 
   .z-box,
@@ -799,7 +849,7 @@ textarea.review-list
     p, .p
       font-size: 13px
       line-height: 1.5
-      color: $text_color
+      color: var(--primary)
       margin-top: 0
       margin-bottom: 10px
 
@@ -890,7 +940,7 @@ textarea.review-list
   max-width: 750px
   width: 100%
   z-index: 999
-  background: $page_content_right_bg
+  background: var(--pagecontentlight10)
   transition: height 250ms ease, background 250ms ease, max-width 250ms ease
   +boxShadow(0 -1px 40px rgba(0, 0, 0, 0.12))
 
@@ -903,7 +953,7 @@ textarea.review-list
   .grippie
     cursor: row-resize
     padding: 4px 0
-    background: $accent_color
+    background: var(--tertiary)
 
     &:before
       content: ''

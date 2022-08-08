@@ -1,6 +1,6 @@
 .top-nav,
 .top-bar
-  background: $topbar_bg
+  background: var(--headerbackground)
   height: 65px
 
   .title-area
@@ -19,7 +19,7 @@
 
 .top-bar
   padding: 0 15px
-  border-bottom: $topbar_border
+  border-bottom: var(--topbarborder)
 
 .top-menu
   height: 65px
@@ -27,20 +27,20 @@
 .top-bar-section
   ul
     li
-      background: $topbar_bg
+      background: var(--headerbackground)
       height: 64px
       line-height: 64px
       color: $topbar_text_color
       position: relative
 
       a
-        background: $topbar_bg !important
-        color: $topbar_icons !important
+        background: var(--headerbackground) !important
+        color: var(--headerprimary) !important
         padding-top: 15px !important
         padding-bottom: 8px !important
 
         &:hover
-          color: $topbar_icons_hover !important
+          color: var(--topbariconhover) !important
 
       &.top-bar-icon
         overflow: hidden
@@ -54,19 +54,19 @@
         max-height: 64px
 
         &:hover:not(.nohover)
-          color: $topbar_icons_hover !important
+          color: var(--topbariconhover) !important
 
           i
-            color: $topbar_icons_hover !important
+            color: var(--topbariconhover) !important
 
           svg
-            fill: $topbar_icons_hover !important
+            fill: var(--topbariconhover) !important
 
         button
           border: none
           outline: none
           background: none
-          color: $topbar_icons
+          color: var(--headerprimary)
           padding: 0 5px
           margin: 0
           height: auto
@@ -74,16 +74,16 @@
           cursor: pointer
 
           &:hover
-            color: $topbar_icons_hover !important
+            color: var(--topbariconhover) !important
 
           i
             margin-right: 0
 
         i, svg
-          color: $topbar_icons
+          color: var(--headerprimary)
           font-style: normal
           font-size: 26px
-          fill: $topbar_icons
+          fill: var(--headerprimary)
 
           &.material-icons
             margin-top: 2px
@@ -125,12 +125,12 @@
 .top-bar-section ul li.profile-area
   font-family: $fontFamily
   font-size: 18px
-  color: $topbar_text_color !important
+  color: var(--headerprimary) !important
 
   span:not(.user-online-status)
     display: inline-block
     margin: 0 20px 0 0
-    color: $topbar_text_color !important
+    color: var(--headerprimary) !important
 
     &:hover
       color: inherit
@@ -147,6 +147,15 @@
     height: 35px
     +borderRadius(50%)
 
+.profile-drop
+  .user-section
+    .user-info
+      span, i
+        color: var(--primary)
+
+.profile-drop-actions
+  a, i
+    color: var(--primary)
 
 .p-dropdown
   visibility: hidden
@@ -154,7 +163,7 @@
   z-index: 99999
   width: 300px !important
   height: auto !important
-  background: lighten($page_content_right_bg, 5%)
+  background: var(--pagecontentlight20)
   border: 1px solid rgba(0, 0, 0, 0.2)
   //padding: 10px
   position: relative
@@ -174,7 +183,7 @@
 
   &:after
     border-color: rgba(255, 255, 255, 0)
-    border-bottom-color: lighten($page_content_right_bg, 10%)
+    border-bottom-color: var(--pagecontentlight20)
     border-width: 8px
     margin-left: -8px
 
@@ -213,10 +222,10 @@
   .actions
     width: 100%
     height: auto
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2)
+    border-bottom: 1px solid var(--pagecontentborder)
     line-height: 24px
     font-size: 12px
-    color: $text_color
+    color: var(--primary)
     font-family: "Roboto", sans-serif
 
     a
@@ -248,14 +257,14 @@
 
   li
     width: 100%
-    background: lighten($page_content_right_bg, 10%) !important
+    background: var(--pagecontentlight20) !important
     border-bottom: 1px solid rgba(0, 0, 0, 0.2)
     height: 70px !important
     max-height: 80px
     line-height: normal
 
     &:hover
-      background: darken(lighten($page_content_right_bg, 10%), 4%) !important
+      background: var(--pagecontentdark5) !important
 
     &:last-child
       border-bottom: none
@@ -266,14 +275,14 @@
       width: 100%
       height: 69px
       padding: 10px !important
-      background: lighten($page_content_right_bg, 10%) !important
+      background: var(--pagecontentlight20) !important
       line-height: normal !important
       font-size: 12px
-      color: $text_color !important
+      color: var(--primary) !important
       position: relative
 
       &:hover
-        color: $text_color !important
+        color: var(--primary) !important
         background: transparent !important
 
       .messageUnread

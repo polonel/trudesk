@@ -1,3 +1,17 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    1/20/19 5:31 AM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
 @charset "UTF-8"
 /* selectize
 /**
@@ -41,7 +55,7 @@
   position: absolute
   right: 8px
   top: 50%
-  color: $selectize_text
+  color: var(--primary)
   opacity: 0.4
   margin-top: -12px
   line-height: 20px
@@ -109,21 +123,21 @@
     padding-right: 0 !important
 
 .selectize-dropdown
-  color: $selectize_text
+  color: var(--primary)
   font-family: Roboto, sans-serif
   font-size: 13px
   line-height: 18px
   -webkit-font-smoothing: inherit
 
 .selectize-input
-  color: $selectize_text
+  color: var(--primary)
   font-family: Roboto, sans-serif
   font-size: 13px
   line-height: 18px
   -webkit-font-smoothing: inherit
 
   input
-    color: $selectize_text
+    color: var(--primary)
     font-family: Roboto, sans-serif
     font-size: 13px
     line-height: 18px
@@ -133,12 +147,12 @@
   display: inline-block
 
 .selectize-control.single .selectize-input.input-active
-  background: $selectize_bg
+  background: var(--pagecontentlight10)
   cursor: text
   display: inline-block
 
 .selectize-input
-  border: 0 solid darken($selectize_bg, 10%)
+  border: 0 solid var(--secondary)
   border-bottom-width: 1px
   padding: 8px 8px
   display: inline-block
@@ -183,12 +197,12 @@
     margin: 0 3px 3px 0
     padding: 2px 6px
     background: #e0e0e0
-    color: $selectize_text
+    color: var(--primary)
     border: 0 solid #d0d0d0
 
     &.active
       background: #e8e8e8
-      color: $selectize_text
+      color: var(--primary)
       border: 0 solid #cacaca
 
   &.disabled > div
@@ -240,8 +254,8 @@
 .selectize-dropdown
   position: absolute
   z-index: 10
-  border: 1px solid darken($selectize_bg, 10%)
-  background: $selectize_bg
+  border: 1px solid var(--secondary)
+  background: var(--pagecontentlight10)
   margin: -1px 0 0 0
   border-top: 0 none
   box-sizing: border-box
@@ -264,8 +278,8 @@
     border-top: 0 none
 
   .optgroup-header
-    color: $selectize_text
-    background: $selectize_bg
+    color: var(--primary)
+    background: var(--pagecontentlight10)
     cursor: default
 
   .active
@@ -286,7 +300,7 @@
     border-bottom-width: 1px
 
   .selectize-input.input-active
-    border-color: $accent_color
+    border-color: var(--tertiary)
 
 .selectize-dropdown
   &.selectize-white
@@ -338,7 +352,7 @@
 
   .selectize-input.disabled
     opacity: 0.5
-    background-color: darken($page_content_right_bg, 5%)
+    background-color: var(--pagecontentlight5)
 
 .selectize-input
   border-color: rgba(0, 0, 0, 0.12)
@@ -363,7 +377,7 @@
 .selectize-dropdown
   margin-top: -40px
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
-  color: $selectize_text
+  color: var(--primary)
   z-index: 1210
 
   [data-selectable]

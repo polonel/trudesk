@@ -11,7 +11,7 @@ export default function D3Pie (props) {
   let mappedColors = []
 
   useEffect(() => {
-    if (pieChart.current && props.data.length > 0) {
+    if (pieChart.current) {
       mappedColors = shuffle(props.colors)
       mappedColors = zipObject(
         map(props.data, v => v[0]),

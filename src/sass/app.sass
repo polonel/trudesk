@@ -36,7 +36,7 @@
   --quaternary: #{$quaternary}
 
   --tertiaryTextColor: #{$tertiary_text_color}
-  
+
   --accentsuccess: #{$accent_success}
   --accentwarning: #{$accent_warn}
   --accentdanger: #{$accent_danger}
@@ -65,6 +65,7 @@
   --pagecontentlight5: #{$page_content_light_5}
   --pagecontentlight10: #{$page_content_light_10}
   --pagecontentlight20: #{$page_content_light_20}
+  --pagecontentlight30: #{$page_content_light_30}
   --pagecontentitemhover: #{$page_content_left_item_hover}
   --pagecontentbuttontext: #{$page_content_button_text_color}
 
@@ -89,8 +90,8 @@
 
 html,
 body
-  background: $secondary
-  color: $text_color
+  background: var(--secondary)
+  color: var(--primary)
   font-family: $fontFamily
   height: 100%
   -webkit-font-smoothing: antialiased
@@ -107,7 +108,7 @@ div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, t
   margin: 0
 
 li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, th, td
-  color: $text_color
+  color: var(--primary)
 
 h1, h2, h3, h4, h5, h6
   font-family: $fontFamily
@@ -157,11 +158,11 @@ h6
   line-height: 1.6
 
 a
-  color: $accent_color
+  color: var(--tertiary)
   text-decoration: none !important
 
   &:hover, &:focus, &:active
-    color: darken($accent_color, 10%)
+    color: var(--tertiarydark10)
 
 p
   font-family: $fontFamily
@@ -170,7 +171,7 @@ p
   line-height: 1.6
   margin-bottom: 1.25rem
   text-rendering: optimizeLegibility
-  color: $text_color
+  color: var(--primary)
 
 hr
   border: none
@@ -227,9 +228,6 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
 @import "partials/topnav"
 @import "partials/sidebar"
 @import "partials/sidebarBottomPanel"
-//@import "../client/components/Nav/Sidebar/style"
-//@import "../client/components/Nav/SidebarItem/style"
-//@import "../client/components/Nav/Submenu/style"
 @import "partials/offcanvas"
 @import "partials/messages"
 @import "partials/settings"
@@ -288,7 +286,7 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
     text-align: center
     padding-left: 50px
     font-size: 14px
-    color: white
+    color: var(--tertiarytextcolor)
 
   .close
     position: absolute
@@ -304,6 +302,6 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
       content: 'close'
       font-family: 'Material Icons'
       font-size: 12px
-      color: white
+      color: var(--tertiarytextcolor)
       line-height: 20px
       padding: 4px
