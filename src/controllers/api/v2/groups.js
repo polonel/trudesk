@@ -84,10 +84,10 @@ apiGroups.update = function (req, res) {
     Domain.findOne({name:group.domainName}, function (err, domain) { // Поиск домена в базе данных
       if (err) return callback(err);
       if (domain !== null)  {
-        let domainArray = group.domainID;
-        if (!domainArray.includes || group.domainID.length == 0) {
-          domainArray.push(domain._id);
-          group.domainID = domainArray; 
+        let domainID = group.domainID;
+        if (domainID !==  group.domainID || domainID == undefined ) {
+          //domainArray.push(domain._id);
+          group.domainID = domain._id; 
           domain.groupID = group._id;
           domain.save(function(err,domain){
             if (err) return callback(err);
