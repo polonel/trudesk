@@ -31,7 +31,7 @@ import $ from 'jquery'
 @observer
 class CreateGroupModal extends React.Component {
   @observable name = ''
-
+  @observable domainName = ''
   constructor (props) {
     super(props)
     makeObservable(this)
@@ -57,6 +57,10 @@ class CreateGroupModal extends React.Component {
     this.name = e.target.value
   }
 
+  onInputChangeDomain (e) {
+    this.domainName = e.target.value
+  }
+
   onFormSubmit (e) {
     e.preventDefault()
 
@@ -65,6 +69,7 @@ class CreateGroupModal extends React.Component {
 
     const postData = {
       name: this.name,
+      domainName: this.domainName,
       members: this.membersSelect.getSelected() || []
     }
 
@@ -93,6 +98,18 @@ class CreateGroupModal extends React.Component {
               data-validation='length'
               data-validation-length={'min2'}
               data-validation-error-msg={'Please enter a valid Group name. (Must contain 2 characters)'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Domain Name</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.domainName}
+              onChange={e => this.onInputChangeDomain(e)}
+              data-validation='length'
+              data-validation-length={'min2'}
+              data-validation-error-msg={'Please enter a valid Domain name. (Must contain 2 characters)'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>

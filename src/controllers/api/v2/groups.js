@@ -27,13 +27,16 @@ apiGroups.create = function (req, res) {
   if (!postGroup) return apiUtils.sendApiError_InvalidPostData(res)
 
   Group.create(postGroup, function (err, group) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-    group.populate('members sendMailTo', function (err, group) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
+    addDomain(group,res);
 
-      return apiUtils.sendApiSuccess(res, { group: group })
-    })
+    // if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    // group.populate('members sendMailTo', function (err, group) {
+    //   if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    //   return apiUtils.sendApiSuccess(res, { group: group })
+    // })
   })
 }
 
@@ -77,37 +80,56 @@ apiGroups.update = function (req, res) {
     if (putData.name) group.name = putData.name
     if (putData.members) group.members = putData.members
     if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
-    winston.info(JSON.stringify(group.sendMailTo));
+    if (putData.domainName) group.domainName = putData.domainNam
     //++ ShaturaPro LIN 03.08.2022
-    group.domainName = 'shatura.pro';//Запись имени домена
-    winston.info(JSON.stringify(group));
-    Domain.findOne({name:group.domainName}, function (err, domain) { // Поиск домена в базе данных
-      if (err) return callback(err);
-      if (domain !== null)  {
-        let domainID = group.domainID;
-        if (domainID !==  group.domainID || domainID == undefined ) {
-          //domainArray.push(domain._id);
-          group.domainID = domain._id; 
-          domain.groupID = group._id;
-          domain.save(function(err,domain){
-            if (err) return callback(err);
-            winston.info('Save group for domain ' + domain);
-          })
-        }
-        group.save(function (err, group) {
-          if (err) return apiUtils.sendApiError(res, 500, err.message)
-    
-          group.populate('members sendMailTo', function (err, group) {
-            if (err) return apiUtils.sendApiError(res, 500, err.message)
-    
-            return apiUtils.sendApiSuccess(res, { group: group })
-          })
-        })
-      } //Запись id домена
-    })
-  
+    addDomain(group,res);
   })
 }
+//++ ShaturaPro LIN 03.08.2022
+addDomain = function (group,res) {
+  Domain.findOne({ name: group.domainName }, function (err, domain) { // Поиск домена в базе данных
+    if (err) return callback(err);
+    if (domain !== null) {// Если домен найден
+      if (domain._id !== group.domainID || group.domainID == undefined) {
+
+        group.domainID = domain._id; //Привязать группе ID домена
+        domain.groupID = group._id; //Привязать домену ID группы
+        domain.save(function (err, domain) {//Сохранить домен
+          if (err) return callback(err);
+        })
+      }
+      group.save(function (err, group) { //Сохранить группу
+        if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+        group.populate('members sendMailTo', function (err, group) {
+          if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+          return apiUtils.sendApiSuccess(res, { group: group })
+        })
+      })
+    } else {
+      Domain.insertMany({ name: group.domainName, groupID: group._id }, function (err, domains) { //Если домена нет то добавить его в базу
+        let domain = domains[0];
+        if (domain !== null) {//Если домен добавлен в базу
+          if (domain._id !== group.domainID || group.domainID == undefined) { //Если ID домена группы неопределён или не равен новому
+            group.domainID = domain._id; //Привязать группе ID домена
+            group.save(function (err, group) { //Сохранить группу
+              if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+              group.populate('members sendMailTo', function (err, group) {
+                if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+                return apiUtils.sendApiSuccess(res, { group: group })
+              })
+            })
+          }
+        }
+      }); //Добавление домена в базу данных
+    } //Запись id домена
+  })
+  return true;
+}
+//-- ShaturaPro LIN 03.08.2022
 
 apiGroups.delete = function (req, res) {
   var id = req.params.id
