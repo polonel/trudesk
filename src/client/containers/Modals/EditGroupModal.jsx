@@ -34,21 +34,16 @@ import SpinLoader from 'components/SpinLoader'
 @observer
 class EditGroupModal extends React.Component {
   @observable name = ''
-
+  @observable domainName = ''
   constructor (props) {
     super(props)
-      this.domains = [] //Список доменов
     makeObservable(this)
   }
-  fetchDomains(){
-    mongoose.model('domains').map(domian =>{
-      this.domains.push(domain.name);
-    })
-  }
+
   componentDidMount () {
     this.props.fetchAccounts({ type: 'customers', limit: -1 })
     this.name = this.props.group.name
-
+    this.domainName = this.props.group.domainName
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
     helpers.formvalidator()
@@ -70,6 +65,7 @@ class EditGroupModal extends React.Component {
     const payload = {
       _id: this.props.group._id,
       name: this.name,
+      domainName: this.domainName,
       members: this.membersSelect.getSelected() || [],
       sendMailTo: this.sendMailToSelect.getSelected() || []
     }
@@ -79,6 +75,10 @@ class EditGroupModal extends React.Component {
 
   onInputChange (e) {
     this.name = e.target.value
+  }
+
+  onInputChangeDomain (e) {
+    this.domainName = e.target.value
   }
 
   render () {
@@ -114,6 +114,18 @@ class EditGroupModal extends React.Component {
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
+            <label>Domain Name</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.domainName}
+              onChange={e => this.onInputChangeDomain(e)}
+              data-validation='length'
+              data-validation-length={'min2'}
+              data-validation-error-msg={'Please enter a valid Domain name. (Must contain 2 characters)'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
             <label style={{ marginBottom: 5 }}>Group Members</label>
             <MultiSelect
               items={mappedAccounts}
@@ -131,21 +143,9 @@ class EditGroupModal extends React.Component {
               ref={r => (this.sendMailToSelect = r)}
             />
           </div>
-          <div className={'uk-margin-medium-bottom'}>
-            <label style={{ marginBottom: 5 }}>Select Domain</label>
-            <SingleSelect
-                showTextbox={false}
-                width={'100%'}
-                items={this.state.typePriorities}
-                defaultValue={this.state.mailerCheckTicketPriority}
-                disabled={!this.getSetting('mailerCheckEnabled')}
-                onSelectChange={e => this.onSingleSelectChanged(e, 'mailerCheckTicketPriority')}
-              />
-          </div>
           <div className='uk-modal-footer uk-text-right'>
             <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
             <Button text={'Save Group'} flat={true} waves={true} style={'primary'} type={'submit'} />
-            <Button text={'Link a Domain'} flat={true} waves={true} style={'primary'} type={'submit'} />
           </div>
         </form>
       </BaseModal>
