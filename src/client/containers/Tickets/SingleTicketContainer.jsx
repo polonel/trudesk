@@ -16,6 +16,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observable, computed, makeObservable } from 'mobx'
 import { observer } from 'mobx-react'
+import { getSession } from 'app/SessionContext'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
 import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
@@ -214,7 +215,6 @@ class SingleTicketContainer extends React.Component {
       .post(`/api/v2/tickets/add${isNote ? 'note' : 'comment'}`, {
         _id: !isNote && this.ticket._id,
         comment: !isNote && this.commentMDE.getEditorText(),
-
         ticketid: isNote && this.ticket._id,
         note: isNote && this.noteMDE.getEditorText()
       })
@@ -234,8 +234,10 @@ class SingleTicketContainer extends React.Component {
       })
       .catch(error => {
         Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
+        if (error.response) {
+          Log.error(error.response)
+          helpers.UI.showSnackbar(error.response, true)
+        }
       })
   }
 
@@ -816,8 +818,11 @@ class SingleTicketContainer extends React.Component {
                               <form onSubmit={e => this.onCommentNoteSubmit(e, 'comment')}>
                                 <EasyMDE
                                   allowImageUpload={true}
-                                  inlineImageUploadUrl={'/tickets/uploadmdeimage'}
-                                  inlineImageUploadHeaders={{ ticketid: this.ticket._id }}
+                                  inlineImageUploadUrl={`/api/v2/tickets/${this.ticket.uid}/upload/inline`}
+                                  inlineImageUploadHeaders={{
+                                    ticketid: this.ticket._id,
+                                    Authorization: `Bearer ${getSession()?.token}`
+                                  }}
                                   ref={r => (this.commentMDE = r)}
                                 />
                                 <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>

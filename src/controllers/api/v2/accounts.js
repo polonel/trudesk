@@ -474,7 +474,7 @@ accountsApi.updatePassword = async (req, res) => {
 accountsApi.getRoles = async (req, res) => {
   try {
     const roles = await RoleModel.find({})
-    const roleOrder = await RoleOrderModel.find({})
+    const roleOrder = await RoleOrderModel.findOne({})
     return apiUtil.sendApiSuccess(res, { roles, roleOrder })
   } catch (e) {
     return apiUtil.sendApiError(res, 500, e.message)

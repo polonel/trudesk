@@ -35,9 +35,23 @@ const schema = new Schema<IRoleOrder, IRoleOrderModel>({
   order: [Types.ObjectId]
 })
 
-schema.static('getOrder', function (callback) {
-  return this.findOne({})
-    .exec(callback)
+schema.static('getOrder', function (callback?: (err?: CallbackError, result?: HydratedDocument<IRoleOrder> | null) => void) {
+  return new Promise<IRoleOrder | null>((resolve, reject) => {
+    (async () => {
+      try {
+        const result = await this.findOne({})
+
+        if (typeof callback === 'function') callback(null, result)
+
+        return resolve(result)
+      } catch (err) {
+        if (typeof callback === 'function') callback(err as CallbackError)
+
+        return reject(err)
+      }
+
+    })()
+  })
 })
 
 schema.static('getOrderLean', function (callback) {
@@ -46,9 +60,25 @@ schema.static('getOrderLean', function (callback) {
     .exec(callback)
 })
 
-schema.method('updateOrder', function (order: Array<string>, callback: (err: CallbackError, result: HydratedDocument<IRoleOrder>) => void) {
-  this.order = order
-  this.save(callback)
+schema.method('updateOrder', function (order: Array<string>, callback?: (err?: CallbackError, result?: HydratedDocument<IRoleOrder>) => void) {
+  return new Promise<IRoleOrder>((resolve, reject) => {
+    (async () => {
+      this.order = order
+      try {
+        this.order = order
+
+        const roleOrder = await this.save()
+
+        if (typeof callback === 'function') callback(null, roleOrder)
+
+        return resolve(roleOrder)
+      } catch (err) {
+        if (typeof callback === 'function') callback(err as CallbackError)
+        return reject(err)
+      }
+    })()
+
+  })
 })
 
 schema.method('getHierarchy', function (roleId: string | Types.ObjectId) {

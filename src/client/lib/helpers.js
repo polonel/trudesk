@@ -2188,11 +2188,20 @@ helpers.setupImageLink = function (el) {
   var $this = $(el)
   var src = $this.attr('src')
   $this.addClass('hasLinked')
-  var a = $('<a>')
-    .addClass('no-ajaxy')
-    .attr('href', src)
-    .attr('target', '_blank')
-  $this.wrap(a)
+  $this.css({ cursor: 'pointer' })
+  $this.on('click', e => {
+    e.preventDefault()
+    window.open(src)
+  })
+  // var a = $('<div>').css({ display: 'inline-block', cursor: 'pointer' })
+  // // .attr('target', '_blank')
+  // // .attr('rel', 'noopener noreferrer')
+  // a.on('click', e => {
+  //   e.preventDefault()
+  //   window.open(src)
+  // })
+
+  // $this.wrap(a)
 }
 
 helpers.isExternalLink = function (url) {
@@ -2204,7 +2213,10 @@ helpers.isExternalLink = function (url) {
 helpers.setupLinkWarning = function (el) {
   const $this = $(el)
 
-  $this.attr('target', '_blank').addClass('link-warning')
+  $this
+    .attr('target', '_blank')
+    .attr('rel', 'noopener noreferrer')
+    .addClass('link-warning')
   helpers.UI.showLinkWarning(el)
 }
 

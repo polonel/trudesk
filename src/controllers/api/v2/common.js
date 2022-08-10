@@ -55,7 +55,13 @@ commonV2.login = async (req, res) => {
 
     res.cookie('_rft_', tokens.refreshToken, cookie)
 
+    // This is temporary to handle middleware.hasAuth() until we can handle passing the token to download links,
+    // such as backups and to load /uploads static files.
+    // req.logIn(user, err => {
+    //   if (err) throw err
+
     return apiUtils.sendApiSuccess(res, tokens)
+    // })
   } catch (e) {
     logger.warn(e)
     return apiUtils.sendApiError(res, 500, e.message)
@@ -98,7 +104,6 @@ commonV2.token = async (req, res) => {
     const expDate = new Date(session.exp)
     if (expDate < Date.now()) {
       await SessionModel.deleteOne({ _id: sessionId })
-      console.log('Expired Session')
       res.cookie('_rft_', null, { maxAge: 0 })
       return apiUtils.sendApiError(res, 401)
     }

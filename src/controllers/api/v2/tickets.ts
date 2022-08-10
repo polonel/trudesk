@@ -14,13 +14,18 @@
 
 import async from 'async'
 import _ from 'lodash'
+import path from "path"
+import sanitizeHtml from "sanitize-html"
+import xss from 'xss'
+import config from "../../../config"
+import emitter from '../../../emitter'
 import logger from '../../../logger'
 import {
   DepartmentModel,
   GroupModel,
   PriorityModel,
   TicketModel,
-  TicketTagsModel,
+  TicketTagModel,
   TicketTypeModel,
 } from '../../../models'
 import permissions from '../../../permissions'
@@ -226,6 +231,169 @@ ticketsV2.permDelete = function (req, res) {
   })
 }
 
+ticketsV2.postComment = async (req, res) => {
+  const commentJson = req.body
+  if (!commentJson) return apiUtils.sendApiError_InvalidPostData(res)
+
+  let comment = commentJson.comment
+  const owner = commentJson.ownerId || req.user._id
+  const ticketId = commentJson._id
+
+  if (!ticketId || !comment || !owner) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    let ticket = await TicketModel.getTicketById(ticketId)
+    if (!ticket) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const marked = require('marked')
+    marked.setOptions({
+      breaks: true
+    })
+
+    comment = sanitizeHtml(comment).trim()
+
+    const Comment = {
+      owner,
+      date: new Date(),
+      comment: xss(marked.parse(comment))
+    }
+
+    ticket.updated = Date.now()
+    ticket.comments.push(Comment)
+    const HistoryItem = {
+      action: 'ticket:comment:added',
+      description: 'Comment was added',
+      owner
+    }
+
+    ticket.history.push(HistoryItem)
+
+    ticket = await ticket.save()
+
+    if (!permissions.canThis(req.user.role, 'tickets:notes'))
+      ticket.notes = []
+
+    emitter.emit('ticket:comment:added', ticket, Comment, req.headers.host)
+
+    return apiUtils.sendApiSuccess(res, { ticket})
+
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+ticketsV2.uploadInline = function (req, res) {
+  const Chance = require('Chance')
+  const chance = new Chance()
+  const fs = require('fs-extra')
+  const Busboy = require('busboy')
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 5 * 1024 * 1024 // 5mb
+    }
+  })
+
+  const object = {}
+  let error
+
+  object.ticketId = req.headers.ticketid
+  if (!object.ticketId) return res.status(400).json({ success: false })
+
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+    if (mimetype.indexOf('image/') === -1) {
+      error = {
+        status: 500,
+        message: 'Invalid File Type',
+      }
+
+      return file.resume()
+    }
+
+    const ext = path.extname(filename)
+    const allowedExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.jpe',
+      '.jif',
+      '.jfif',
+      '.jfi',
+      '.png',
+      '.gif',
+      '.webp',
+      '.tiff',
+      '.tif',
+      '.bmp',
+      '.dib',
+      '.heif',
+      '.heic',
+    ]
+
+    if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type',
+      }
+
+      return file.resume()
+    }
+
+    object.ticketId = object.ticketId.replace('..', '')
+    
+    const savePath = path.resolve(config.trudeskRoot(), 'public/uploads/tickets', object.ticketId)
+    // const sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+    const sanitizedFilename = chance.hash({ length: 20 }) + ext
+    if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
+
+    object.filePath = path.join(savePath, 'inline_' + sanitizedFilename)
+    object.filename = sanitizedFilename
+    object.mimetype = mimetype
+
+    if (fs.existsSync(object.filePath)) {
+      error = {
+        status: 500,
+        message: 'File already exists',
+      }
+
+      return file.resume()
+    }
+
+    file.on('limit', function () {
+      error = {
+        status: 500,
+        message: 'File too large',
+      }
+
+      // Delete the temp file
+      if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath)
+
+      return file.resume()
+    })
+
+    file.pipe(fs.createWriteStream(object.filePath))
+  })
+
+  busboy.on('finish', function () {
+    if (error) return res.status(error.status).send(error.message)
+
+    if (_.isUndefined(object.ticketId) || _.isUndefined(object.filename) || _.isUndefined(object.filePath)) {
+      return res.status(400).send('Invalid Form Data')
+    }
+
+    // Everything Checks out lets make sure the file exists and then add it to the attachments array
+    if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
+
+    const fileUrl = '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename
+
+    return res.json({ filename: fileUrl, ticketId: object.ticketId })
+  })
+
+  req.pipe(busboy)
+}
+
 ticketsV2.transferToThirdParty = async (req, res) => {
   const uid = req.params.uid
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
@@ -325,11 +493,8 @@ ticketsV2.topTags = async (req, res) => {
     const tickets = await TicketModel.getTicketsPastDays(parseInt(timespan))
 
     const tagStats = require('../../../cache/tagStats')
-    tagStats(tickets, timespan, (err, tags) => {
-      if (err) throw err
-
-      return apiUtils.sendApiSuccess(res, { tags })
-    })
+    const tags = await tagStats(tickets, timespan)
+    return apiUtils.sendApiSuccess(res, { tags })
   } catch (e) {
     return apiUtils.sendApiError(res, 500, e.message)
   }
@@ -350,7 +515,7 @@ ticketsV2.info.types = async (req, res) => {
 
 ticketsV2.info.tags = async (req, res) => {
   try {
-    const tags = await TicketTagsModel.find({}).sort('normalized')
+    const tags = await TicketTagModel.find({}).sort('normalized')
 
     return apiUtils.sendApiSuccess(res, { tags })
   } catch (err) {

@@ -1,13 +1,84 @@
-/*
- *       .                             .o8                     oooo
- *    .o8                             "888                     `888
- *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- *  ========================================================================
- *  Author:     Chris Brame
- *  Updated:    3/13/19 7:30 PM
- *  Copyright (c) 2014-2019. All rights reserved.
- */
+import _ from 'lodash'
+import permissions from '../../../permissions'
+import emitter from '../../../emitter'
+import apiUtils from '../apiUtils'
+import { RoleModel, RoleOrderModel } from '../../../models'
+
+const apiRoles = {}
+
+apiRoles.create = async (req, res) => {
+  let name = req.body.name
+  if (!name) return apiUtils.sendApiError_InvalidPostData(res)
+
+  name = name.trim()
+
+  try {
+    const role = await RoleModel.create({ name })
+    if (!role) throw new Error('Invalid Role')
+
+    let roleOrder = await RoleOrderModel.findOne({})
+    if (!roleOrder) throw new Error('Invalid Role Order')
+
+    roleOrder.order.push(role._id)
+
+    roleOrder = await roleOrder.save()
+
+    return apiUtils.sendApiSuccess(res, { role, roleOrder })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+apiRoles.update = async (req, res) => {
+  const _id = req.params.id
+  const data = req.body
+  if (!_id || !data) return apiUtils.sendApiError_InvalidPostData(res)
+
+  const hierarchy = data.hierarchy ? data.hierarchy : false
+  const cleaned = _.omit(data, ['_id', 'hierarchy'])
+  const grants = permissions.buildGrants(cleaned)
+
+  try {
+    const role = await RoleModel.findOne({ _id: data._id })
+    if (!role) throw new Error('Invalid Role')
+
+    await role.updateGrantsAndHierarchy(grants, hierarchy)
+
+    emitter.emit('$trudesk:roles:flush')
+
+    return apiUtils.sendApiSuccess(res)
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+apiRoles.updateOrder = async (req, res) => {
+  if (!req.body.roleOrder) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    let order = await RoleOrderModel.getOrder()
+    if (!order) {
+      order = new RoleOrderModel({
+        order: req.body.roleOrder
+      })
+
+      order = await order.save()
+      emitter.emit('$trudesk:roles:flush')
+
+      return apiUtils.sendApiSuccess(res, { roleOrder: order })
+    } else {
+      order = await order.updateOrder(req.body.roleOrder)
+
+      emitter.emit('$trudesk:roles:flush')
+
+      return apiUtils.sendApiSuccess(res, { roleOrder: order })
+    }
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+apiRoles.delete = async (req, res) => {}
+
+export default apiRoles
+module.exports = apiRoles

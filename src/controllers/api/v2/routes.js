@@ -41,6 +41,10 @@ module.exports = function (middleware, router, controllers) {
 
   // Account Roles
   router.get('/api/v2/roles', apiv2Auth, apiv2.accounts.getRoles)
+  router.post('/api/v2/roles', apiv2Auth, isAdmin, apiv2.roles.create)
+  router.put('/api/v2/roles/order', apiv2Auth, isAdmin, apiv2.roles.updateOrder)
+  router.put('/api/v2/roles/:id', apiv2Auth, isAdmin, apiv2.roles.update)
+  router.delete('/api/v2/roles/:id', apiv2Auth, isAdmin, apiv2.roles.delete)
 
   // Ticket Info
   router.get('/api/v2/tickets/info/types', apiv2Auth, apiv2.tickets.info.types)
@@ -50,7 +54,15 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/tickets', apiv2Auth, canUser('tickets:create'), apiv2.tickets.create)
   router.post('/api/v2/tickets/transfer/:uid', apiv2Auth, isAdmin, apiv2.tickets.transferToThirdParty)
   router.get('/api/v2/tickets/deleted', apiv2Auth, isAdmin, apiv2.tickets.getDeleted)
+  router.post('/api/v2/tickets/addcomment', apiv2Auth, canUser('comments:create'), apiv2.tickets.postComment)
   router.get('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:view'), apiv2.tickets.single)
+  router.post(
+    '/api/v2/tickets/:uid/upload/inline',
+    apiv2Auth,
+    canUser('comments:create'),
+    canUser('comments:update'),
+    apiv2.tickets.uploadInline
+  )
   router.put('/api/v2/tickets/batch', apiv2Auth, canUser('tickets:update'), apiv2.tickets.batchUpdate)
   router.put('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:update'), apiv2.tickets.update)
   router.delete('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:delete'), apiv2.tickets.delete)
@@ -99,6 +111,13 @@ module.exports = function (middleware, router, controllers) {
   // router.put('/api/v2/settings/:id', apiv2Auth, isAdmin, apiv2.settings.update)
   // router.get('/api/v2/backups', apiv2Auth, isAdmin, apiv2.settings.backups)
   // router.post('/api/v2/backups/restore', apiv2Auth, isAdmin, apiv2.settings.restore)
+
+  // Backups
+  router.get('/api/v2/backups', apiv2Auth, isAdmin, controllers.backuprestore.getBackups)
+  router.post('/api/v2/backup', apiv2Auth, isAdmin, controllers.backuprestore.runBackup)
+  router.delete('/api/v2/backup/:backup', apiv2Auth, isAdmin, controllers.backuprestore.deleteBackup)
+  router.post('/api/v2/backup/upload', apiv2Auth, isAdmin, controllers.backuprestore.uploadBackup)
+  router.get('/api/v2/backup/hastools', apiv2Auth, isAdmin, controllers.backuprestore.hasBackupTools)
 
   // ElasticSearch
   router.get('/api/v2/es/search', middleware.api, apiv2.elasticsearch.search)

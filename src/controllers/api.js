@@ -54,5 +54,6 @@ apiController.v2.elasticsearch = require('./api/v2/elasticsearch')
 apiController.v2.mailer = require('./api/v2/mailer')
 apiController.v2.messages = require('./api/v2/messages')
 apiController.v2.settings = require('./api/v2/settings')
+apiController.v2.roles = require('./api/v2/roles')
 
 module.exports = apiController

@@ -19,6 +19,7 @@ const async = require('async')
 const moment = require('moment')
 const logger = require('../logger')
 const config = require('../config')
+const database = require('../database')
 
 const backupRestore = {}
 
@@ -71,7 +72,7 @@ backupRestore.getBackups = function (req, res) {
 backupRestore.runBackup = function (req, res) {
   const database = require('../database')
   const child = require('child_process').fork(path.join(__dirname, '../backup/backup'), {
-    env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri, PATH: process.env.PATH }
+    env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.getConnectionUri(), PATH: process.env.PATH }
   })
   global.forks.push({ name: 'backup', fork: child })
 
@@ -111,10 +112,12 @@ backupRestore.runBackup = function (req, res) {
 }
 
 backupRestore.deleteBackup = function (req, res) {
-  const filename = req.params.backup
+  let filename = req.params.backup
   if (_.isUndefined(filename) || !fs.existsSync(path.resolve(config.trudeskRoot(), 'backups/', filename))) {
     return res.status(400).json({ success: false, error: 'Invalid Filename' })
   }
+
+  filename = filename.replace('..', '')
 
   fs.unlink(path.resolve(config.trudeskRoot(), 'backups/', filename), function (err) {
     if (err) return res.status(400).json({ success: false, error: err })

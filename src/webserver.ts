@@ -12,15 +12,15 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+import express from 'express'
+import http, { Server } from 'http'
 import _ from 'lodash'
 import _nconf from 'nconf'
-import express from 'express'
+import type { TrudeskDatabase } from "./database";
 import winston from './logger'
 import middleware from './middleware'
-import routes from './routes'
-import http, { Server } from 'http'
-import type { TrudeskDatabase } from "./database";
 import type { RouteMiddlewareType } from "./middleware/middleware";
+import routes from './routes'
 
 export interface WebServer {
   server: Server
@@ -44,7 +44,7 @@ export const init = async (db: TrudeskDatabase, callback: () => void, port?: num
     routes(ExpressApp, routeMiddleware)
 
     // Load Events
-    //emitterEvents()
+    require('./emitter/events')
 
     if (typeof callback === 'function') callback()
   })

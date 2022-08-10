@@ -167,6 +167,7 @@
     "@types/express": "^4.17.13",
     "@types/fs-extra": "^9.0.13",
     "@types/js-string-escape": "^1.0.1",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/lodash": "^4.14.182",
     "@types/mocha": "^9.1.1",
     "@types/nconf": "^0.10.3",

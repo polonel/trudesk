@@ -82,7 +82,7 @@ const App = ({ store }) => {
 
   return (
     <Provider store={store}>
-      {/*<DotLoader active={!ready} animate={true} />*/}
+      <DotLoader active={!ready} animate={true} />
       <SessionContext.Provider value={{ session, setSession }}>
         {/*<RolesContext.Provider value={{ roles, setRoles }}>*/}
         <HistoryRouter history={history}>

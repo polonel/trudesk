@@ -30,7 +30,7 @@ import { BACKUP_RESTORE_SHOW_OVERLAY, BACKUP_RESTORE_COMPLETE } from 'serverSock
 
 import $ from 'jquery'
 import UIKit from 'uikit'
-import axios from 'axios'
+import axios from 'api/axios'
 import helpers from 'lib/helpers'
 
 import ButtonGroup from 'components/ButtonGroup'
@@ -95,7 +95,7 @@ class BackupRestoreSettingsContainer extends React.Component {
     const self = this
 
     const settings = {
-      action: '/api/v1/backup/upload',
+      action: '/api/v2/backup/upload',
       allow: '*.zip',
       type: 'json',
 
@@ -162,7 +162,7 @@ class BackupRestoreSettingsContainer extends React.Component {
         this.props.socket.emit(BACKUP_RESTORE_SHOW_OVERLAY)
 
         axios
-          .post('/api/v1/backup/restore', { file: filename })
+          .post('/api/v2/backup/restore', { file: filename })
           .then(() => {
             helpers.UI.showSnackbar('Restore Complete. Logging all users out...')
             setTimeout(() => {
@@ -189,7 +189,7 @@ class BackupRestoreSettingsContainer extends React.Component {
         </p>`,
       () => {
         axios
-          .delete(`/api/v1/backup/${backup.get('filename')}`)
+          .delete(`/api/v2/backup/${backup.get('filename')}`)
           .then(res => {
             if (res.data && res.data.success) {
               this.props.fetchBackups()
@@ -346,13 +346,27 @@ class BackupRestoreSettingsContainer extends React.Component {
                           <td className='valign-middle'>{backup.get('sizeFormat')}</td>
                           <td className='uk-text-right valign-middle'>
                             <ButtonGroup>
-                              <a
-                                href={`/backups/${backup.get('filename')}`}
+                              <button
                                 className={'md-btn md-btn-small md-btn-wave no-ajaxy'}
-                                download={backup.get('filename')}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  axios({
+                                    url: `/backups/${backup.get('filename')}`,
+                                    method: 'GET',
+                                    responseType: 'blob'
+                                  }).then(res => {
+                                    const url = window.URL.createObjectURL(new Blob([res.data]))
+                                    const link = document.createElement('a')
+                                    link.href = url
+                                    link.setAttribute('download', backup.get('filename'))
+                                    document.body.appendChild(link)
+                                    link.click()
+                                    document.body.removeChild(link)
+                                  })
+                                }}
                               >
                                 download
-                              </a>
+                              </button>
                               <Button
                                 text={'Restore'}
                                 small={true}

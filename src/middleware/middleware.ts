@@ -13,14 +13,16 @@
  */
 
 import type { NextFunction, Request, Response } from 'express'
+import * as jwt from 'jsonwebtoken'
 import * as _ from 'lodash'
 import mongoose from 'mongoose'
 import passport from 'passport'
+import config from '../config'
 import { init as databaseInit, TrudeskDatabase } from '../database'
 import csrf from '../dependencies/csrf-td'
 import viewdata from '../helpers/viewdata'
 import winston from '../logger'
-import { UserModel } from '../models'
+import { SessionModel, UserModel } from '../models'
 import permissions from '../permissions'
 
 export type RouteMiddlewareType = {
@@ -233,10 +235,8 @@ middleware.api = async function (req, res, next) {
   }
 }
 
-middleware.hasAuth = middleware.api
-
 middleware.apiv2 = function (req, res, next) {
-  // ByPass auth for now if user is set through session
+  // ByPass auth if user is set through session
   if (req.user) return next()
 
   passport.authenticate('jwt', { session: true }, function (err, user) {
@@ -246,11 +246,51 @@ middleware.apiv2 = function (req, res, next) {
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
     if (user) {
       req.user = user
-      return next()
+      return next() 
     }
 
     return res.status(500).json({ success: false, error: 'Unknown Error Occurred' })
   })(req, res, next)
+}
+
+middleware.hasAuth = async (req, res, next) => {
+  const refreshToken = req.cookies['_rft_']
+  if (!refreshToken) return res.status(401).json({ success: false, error: 'Invalid Authentication Token'})
+
+  const decoded = jwt.verify(refreshToken, config.get('tokens:secret'))
+  if (!decoded || !decoded.s) return res.status(401).json({ success: false, error: 'Invalid Authentication Token'})
+  const sessionId = decoded.s
+
+  try {
+    const session = await SessionModel.findOne({_id: sessionId})
+    if (!session) {
+      res.cookie('_rft_', null, {maxAge: 0})
+      return res.status(401)
+    }
+
+    const expDate = new Date(session.exp)
+    if (expDate < new Date()) {
+      await SessionModel.deleteOne({_id: sessionId})
+      res.cookie('_rft_', null, { maxAge: 0 })
+      return res.status(401)
+    }
+
+    const user = await UserModel.findOne({_id: session.user})
+    if (!user) {
+      await SessionModel.deleteOne({_id: sessionId})
+      res.cookie('_rft_', null, { maxAge: 0 })
+      return res.status(401)
+    }
+
+    req.user = user
+
+    return next()
+  } catch (e) {
+    console.log(e)
+    res.cookie('_rft_', null, { maxAge: 0 })
+    return res.status(401).json({ success: false, error: 'Invalid Authentication Token'})
+  }
+
 }
 
 middleware.canUser = function (action) {

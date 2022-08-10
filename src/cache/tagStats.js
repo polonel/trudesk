@@ -12,96 +12,68 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const _ = require('lodash')
-const async = require('async')
-const moment = require('moment')
+import _ from 'lodash'
+import moment from 'moment'
+import { TicketModel } from '../models'
 
-const ticketSchema = require('../models/ticket')
+const init = (tickets, timespan, callback) => {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        let tags = []
+        let $tickets = []
+        if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 365
 
-const init = function (tickets, timespan, callback) {
-  let tags = []
-  let $tickets = []
-  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 365
+        let today = moment()
+          .hour(23)
+          .minute(59)
+          .second(59)
+        const tsDate = today
+          .clone()
+          .subtract(timespan, 'd')
+          .toDate()
+          .getTime()
+        today = today.toDate().getTime()
 
-  let today = moment()
-    .hour(23)
-    .minute(59)
-    .second(59)
-  const tsDate = today
-    .clone()
-    .subtract(timespan, 'd')
-    .toDate()
-    .getTime()
-  today = today.toDate().getTime()
-
-  async.series(
-    [
-      function (done) {
         if (tickets) {
-          ticketSchema.populate(tickets, { path: 'tags' }, function (err, _tickets) {
-            if (err) return done(err)
-
-            $tickets = _tickets
-            return done()
-          })
+          $tickets = await TicketModel.populate(tickets, { path: 'tags' })
         } else {
-          ticketSchema.getForCache(function (err, tickets) {
-            if (err) return done(err)
-            ticketSchema.populate(tickets, { path: 'tags' }, function (err, _tickets) {
-              if (err) return done(err)
-
-              $tickets = _tickets
-
-              return done()
-            })
-          })
+          let tickets = await TicketModel.getForCache()
+          $tickets = await TicketModel.populate(tickets, { path: 'tags' })
         }
-      },
-      function (done) {
+
         let t = []
+        $tickets = _.filter($tickets, v => v.date < today && v.date > tsDate)
 
-        $tickets = _.filter($tickets, function (v) {
-          return v.date < today && v.date > tsDate
-        })
-
-        for (let i = 0; i < $tickets.length; i++) {
-          _.each(tickets[i].tags, function (tag) {
+        for (const ticket of $tickets) {
+          _.each(ticket.tags, tag => {
             t.push(tag.name)
           })
         }
 
         tags = _.reduce(
           t,
-          function (counts, key) {
+          (counts, key) => {
             counts[key]++
             return counts
           },
-          _.fromPairs(
-            _.map(t, function (key) {
-              return [key, 0]
-            })
-          )
+          _.fromPairs(_.map(t, key => [key, 0]))
         )
 
-        tags = _.fromPairs(
-          _.sortBy(_.toPairs(tags), function (a) {
-            return a[1]
-          }).reverse()
-        )
+        tags = _.fromPairs(_.sortBy(_.toPairs(tags), a => a[1]).reverse())
 
         t = null
+        $tickets = null
 
-        return done()
+        if (typeof callback === 'function') callback(null, tags)
+
+        return resolve(tags)
+      } catch (e) {
+        if (typeof callback === 'function') callback(e)
+        return reject(e)
       }
-    ],
-    function (err) {
-      if (err) return callback(err)
-
-      $tickets = null // clear it
-
-      return callback(null, tags)
-    }
-  )
+    })()
+  })
 }
 
 module.exports = init

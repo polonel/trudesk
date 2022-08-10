@@ -401,7 +401,7 @@ api.settings.permDeleteTicket = ({ _id }) => {
 }
 api.settings.updateRoleOrder = ({ roleOrder }) => {
   return axios
-    .put('/api/v2/settings/updateroleorder', {
+    .put('/api/v2/roles/order', {
       roleOrder
     })
     .then(res => {

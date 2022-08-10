@@ -204,15 +204,15 @@ export const menu = [
       }
     ]
   },
-  {
-    label: 'Update',
-    icon: 'update',
-    url: '/update',
-    perm: 'admin:*'
-  }
   // {
-  //   label: 'About',
-  //   icon: 'help',
-  //   url: '/about'
-  // }
+  //   label: 'Update',
+  //   icon: 'update',
+  //   url: '/update',
+  //   perm: 'admin:*'
+  // },
+  {
+    label: 'About',
+    icon: 'help',
+    url: '/about'
+  }
 ]

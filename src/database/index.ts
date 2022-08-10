@@ -12,8 +12,8 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import nconf from 'nconf'
 import mongoose from 'mongoose'
+import config from '../config'
 import winston from '../logger'
 
 // Register the models with require
@@ -43,12 +43,12 @@ export function getConnectionUri(): string {
   let CONNECTION_URI
 
   const mongoConnectionUri: MongoConnectionUriObject = {
-    server: process.env["TD_MONGODB_SERVER"] || nconf.get('mongo:host'),
-    port: process.env["TD_MONGODB_PORT"] || nconf.get('mongo:port') || '27017',
-    username: process.env["TD_MONGODB_USERNAME"] || nconf.get('mongo:username'),
-    password: process.env["TD_MONGODB_PASSWORD"] || nconf.get('mongo:password'),
-    database: process.env["TD_MONGODB_DATABASE"] || nconf.get('mongo:database'),
-    shard: process.env["TD_MONGODB_SHARD"] || nconf.get('mongo:shard')
+    server: process.env["TD_MONGODB_SERVER"] || config.get('mongo:host'),
+    port: process.env["TD_MONGODB_PORT"] || config.get('mongo:port') || '27017',
+    username: process.env["TD_MONGODB_USERNAME"] || config.get('mongo:username'),
+    password: process.env["TD_MONGODB_PASSWORD"] || config.get('mongo:password'),
+    database: process.env["TD_MONGODB_DATABASE"] || config.get('mongo:database'),
+    shard: process.env["TD_MONGODB_SHARD"] || config.get('mongo:shard')
   }
 
   if (!mongoConnectionUri.username) {
@@ -92,7 +92,7 @@ export async function init(callback: DBCallback, connectionString?: string, opts
   }
 
   if (opts) options = opts
-  options.dbName = process.env["TD_MONGODB_DATABASE"] || nconf.get("mongo:database")
+  options.dbName = process.env["TD_MONGODB_DATABASE"] || config.get("mongo:database")
 
   let CONNECTION_URI
   if (connectionString) {
