@@ -21,14 +21,15 @@ var winston = require('../../../logger')
 var mongoose = require('mongoose')
 var apiGroups = {}
 
-apiGroups.create = function (req, res) {
+apiGroups.create = async function (req, res) {
   var postGroup = req.body
   winston.info(JSON.stringify(req.body))
   if (!postGroup) return apiUtils.sendApiError_InvalidPostData(res)
-
+  await findGroup(postGroup, res).then((result) => { return result }).catch(err => { console.log(err) });
   Group.create(postGroup, function (err, group) {
-
-    addDomain(group,res);
+    
+    //++ ShaturaPro LIN 10.08.2022
+    addDomain(group, res);
 
     // if (err) return apiUtils.sendApiError(res, 500, err.message)
 
@@ -74,19 +75,32 @@ apiGroups.update = function (req, res) {
   var putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Group.findOne({ _id: id }, function (err, group) {
+  Group.findOne({ _id: id }, async function (err, group) {
     if (err || !group) return apiUtils.sendApiError(res, 400, 'Invalid Group')
 
     if (putData.name) group.name = putData.name
     if (putData.members) group.members = putData.members
     if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
-    if (putData.domainName) group.domainName = putData.domainNam
+    if (putData.domainName) group.domainName = putData.domainName
     //++ ShaturaPro LIN 03.08.2022
-    addDomain(group,res);
+    await findGroup(group, res).then((result) => { return result }).catch(err => { console.log(err) });
+    addDomain(group, res);
   })
 }
+
 //++ ShaturaPro LIN 03.08.2022
-addDomain = function (group,res) {
+findGroup = async function (group, res) {
+  return await new Promise(function (resolve, reject) {
+    Group.findOne({ domainName: group.domainName }, function (err, group) {
+      if (err || group !== null) return apiUtils.sendApiError(res, 400, 'The domain is already used by the group ' + group.name);
+      resolve(true)
+    });
+  });
+}
+
+addDomain = function (group, res) {
+  if (group == undefined || group.domainName == undefined) return apiUtils.sendApiError(res, 400, 'Invalid Domain or Group Name')
+
   Domain.findOne({ name: group.domainName }, function (err, domain) { // Поиск домена в базе данных
     if (err) return callback(err);
     if (domain !== null) {// Если домен найден
@@ -99,27 +113,30 @@ addDomain = function (group,res) {
         })
       }
       group.save(function (err, group) { //Сохранить группу
+
         if (err) return apiUtils.sendApiError(res, 500, err.message)
-
         group.populate('members sendMailTo', function (err, group) {
-          if (err) return apiUtils.sendApiError(res, 500, err.message)
 
+          if (err) return apiUtils.sendApiError(res, 500, err.message)
           return apiUtils.sendApiSuccess(res, { group: group })
         })
       })
+
     } else {
+
       Domain.insertMany({ name: group.domainName, groupID: group._id }, function (err, domains) { //Если домена нет то добавить его в базу
         let domain = domains[0];
         if (domain !== null) {//Если домен добавлен в базу
           if (domain._id !== group.domainID || group.domainID == undefined) { //Если ID домена группы неопределён или не равен новому
             group.domainID = domain._id; //Привязать группе ID домена
-            group.save(function (err, group) { //Сохранить группу
+            group.save(function (err, group) {
+              //Сохранить группу
               if (err) return apiUtils.sendApiError(res, 500, err.message)
-
               group.populate('members sendMailTo', function (err, group) {
-                if (err) return apiUtils.sendApiError(res, 500, err.message)
 
+                if (err) return apiUtils.sendApiError(res, 500, err.message)
                 return apiUtils.sendApiSuccess(res, { group: group })
+
               })
             })
           }
