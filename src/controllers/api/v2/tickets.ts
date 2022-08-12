@@ -14,6 +14,7 @@
 
 import async from 'async'
 import _ from 'lodash'
+import * as marked from 'marked'
 import path from "path"
 import sanitizeHtml from "sanitize-html"
 import xss from 'xss'
@@ -278,6 +279,41 @@ ticketsV2.postComment = async (req, res) => {
     return apiUtils.sendApiSuccess(res, { ticket})
 
   } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+ticketsV2.postNote = async (req, res) => {
+  const payload = req.body
+  if (!payload.ticketid || !payload.note) return apiUtils.sendApiError_InvalidPostData(res)
+  try {
+    let ticket = await TicketModel.getTicketById(payload.ticketid)
+    if (!ticket) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const Note = {
+      owner: payload.owner || req.user._id,
+      date: new Date(),
+      note: xss(marked.parse(payload.note)),
+    }
+
+    ticket.updated = Date.now()
+    ticket.notes.push(Note)
+    const HistoryItem = {
+      action: 'ticket:note:added',
+      description: 'Internal note was added',
+      owner: payload.owner || req.user._id,
+    }
+
+    ticket.history.push(HistoryItem)
+
+    ticket = await ticket.save()
+    ticket = await TicketModel.populate(ticket, 'subscribers notes.owner history.owner')
+
+    emitter.emit('ticket:note:added', ticket, Note)
+
+    return apiUtils.sendApiSuccess(res, { ticket })
+  } catch (e) {
+    console.log(e)
     return apiUtils.sendApiError(res, 500, e.message)
   }
 }

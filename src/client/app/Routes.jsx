@@ -1,5 +1,5 @@
 import React, { lazy, Fragment } from 'react'
-import { Navigate, Route, Routes, Link, useParams } from 'react-router-dom'
+import { Navigate, Route, Routes, Link, useParams, useLocation } from 'react-router-dom'
 import SessionContext from './SessionContext'
 import Login from 'containers/Login'
 
@@ -10,11 +10,11 @@ const TC_Lazy = lazy(() => import(/* webpackChunkName: "tickets" */ 'containers/
 const SingleTicketContainer = lazy(() =>
   import(/*webpackChunkName: "tickets" */ 'containers/Tickets/SingleTicketContainer')
 )
+const MessagesContainer = lazy(() => import(/* webpackChunkName:  "conversations" */ 'containers/Messages'))
 const SettingsLazy = lazy(() => import(/* webpackChunkName: "settings" */ 'containers/Settings/SettingsContainer'))
 
 const TC_WithParams = props => {
   const params = useParams()
-
   return <TC_Lazy page={params.page} {...props} />
 }
 
@@ -24,20 +24,27 @@ const SingleTicket = props => {
   return <SingleTicketContainer ticketUid={params.uid} {...props} />
 }
 
+const MessagesWithParams = props => {
+  const params = useParams()
+
+  return <MessagesContainer initialConversation={params.convo} {...props} />
+}
+
 const BaseRouter = ({ user, setSession }) => {
   // console.log('User: ', user)
+  const location = useLocation()
   if (!user) {
     return (
       <Routes>
         <Route path='/' element={<Login />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
-        <Route path='*' element={<Navigate to={'/'} />} />
+        <Route path='*' element={<Navigate to={'/'} exact />} />
       </Routes>
     )
   } else {
     return (
       <Routes>
-        <Route path={'/'} element={<Navigate to={'/tickets'} />} />
+        <Route path={'/'} element={<Navigate to={'/dashboard'} exact />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
         <Route path={'profile'} element={<ProfileContainer setSession={setSession} />} exact />
         <Route path={'dashboard'} element={<DashboardContainer />} exact />
@@ -56,6 +63,10 @@ const BaseRouter = ({ user, setSession }) => {
           exact
         />
         <Route path={'tickets/:uid'} element={<SingleTicket sessionUser={user} />} exact />
+
+        {/* Conversations */}
+        <Route path={'messages'} element={<MessagesContainer key={0} sessionUser={user} />} exact />
+        <Route path={'messages/:convo'} element={<MessagesWithParams key={location.key} sessionUser={user} />} exact />
 
         {/*Settings*/}
         <Route path={'settings'} element={<SettingsLazy />} />

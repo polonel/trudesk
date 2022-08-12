@@ -16,6 +16,7 @@ const async = require('async')
 const winston = require('../logger')
 const utils = require('../helpers/utils')
 const userSchema = require('../models').UserModel
+const GroupModel = require('../models').GroupModel
 
 const sharedVars = require('./index').shared
 const sharedUtils = require('./index').utils
@@ -23,7 +24,7 @@ const socketEventConst = require('./socketEventConsts')
 
 const events = {}
 
-function register(socket) {
+function register (socket) {
   events.onSetUserOnlineStatus(socket)
   events.onUpdateUsers(socket)
   events.updateOnlineBubbles(socket)
@@ -41,7 +42,7 @@ function register(socket) {
   }
 }
 
-function eventLoop() {
+function eventLoop () {
   updateUsers()
   updateOnlineBubbles()
 }
@@ -51,7 +52,7 @@ events.onUpdateUsers = function (socket) {
 }
 
 events.onSetUserOnlineStatus = function (socket) {
-  socket.on(socketEventConst.UI_ONLINE_STATUS_SET, (data) => {
+  socket.on(socketEventConst.UI_ONLINE_STATUS_SET, data => {
     const state = data.state
     const user = socket.request.user
     let exists = false
@@ -63,7 +64,7 @@ events.onSetUserOnlineStatus = function (socket) {
         if (user.username.length !== 0) {
           sharedVars.idleUsers[user.username.toLowerCase()] = {
             sockets: [socket.id],
-            user,
+            user
           }
 
           updateOnlineBubbles()
@@ -86,7 +87,7 @@ events.onSetUserOnlineStatus = function (socket) {
   })
 }
 
-function updateUsers() {
+function updateUsers () {
   const sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
   _.forEach(sortedUserList, function (v) {
     const user = v.user
@@ -101,8 +102,7 @@ function updateUsers() {
           if (user.role.isAdmin || user.role.isAgent) {
             socket.emit('updateUsers', sortedUserList)
           } else {
-            const groupSchema = require('../models/group')
-            groupSchema.getAllGroupsOfUser(user._id, function (err, groups) {
+            GroupModel.getAllGroupsOfUser(user._id, function (err, groups) {
               if (!err) {
                 let usersOfGroups = _.map(groups, function (g) {
                   return _.map(g.members, function (m) {
@@ -162,7 +162,7 @@ function updateUsers() {
   // utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
 }
 
-function updateOnlineBubbles() {
+function updateOnlineBubbles () {
   const sortedUserList = _.fromPairs(
     _.sortBy(_.toPairs(sharedVars.usersOnline), function (o) {
       return o[0]
@@ -176,7 +176,7 @@ function updateOnlineBubbles() {
 
   utils.sendToAllConnectedClients(io, socketEventConst.UI_ONLINE_STATUS_UPDATE, {
     sortedUserList,
-    sortedIdleList,
+    sortedIdleList
   })
 }
 
@@ -186,7 +186,7 @@ events.updateOnlineBubbles = function (socket) {
   })
 }
 
-async function updateConversationsNotifications(socket) {
+async function updateConversationsNotifications (socket) {
   if (socket && socket.request && socket.request.user) {
     const user = socket.request.user
     const Message = require('../models/chat/message')
@@ -205,8 +205,7 @@ async function updateConversationsNotifications(socket) {
         (convo, done) => {
           const c = convo.toObject()
 
-          const userMeta =
-            convo.userMeta[_.findIndex(convo.userMeta, (i) => i.userId.toString() === user._id.toString())]
+          const userMeta = convo.userMeta[_.findIndex(convo.userMeta, i => i.userId.toString() === user._id.toString())]
           if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
             return done()
           }
@@ -214,7 +213,7 @@ async function updateConversationsNotifications(socket) {
           Message.getMostRecentMessage(c._id, (err, rm) => {
             if (err) return done(err)
 
-            _.each(c.participants, (p) => {
+            _.each(c.participants, p => {
               if (p._id.toString() !== user._id.toString()) {
                 c.partner = p
               }
@@ -239,11 +238,11 @@ async function updateConversationsNotifications(socket) {
             return done()
           })
         },
-        (err) => {
+        err => {
           if (err) return false
 
           return utils.sendToSelf(socket, socketEventConst.MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, {
-            conversations: convos.length >= 10 ? convos.slice(0, 9) : convos,
+            conversations: convos.length >= 10 ? convos.slice(0, 9) : convos
           })
         }
       )
@@ -257,7 +256,7 @@ events.updateConversationsNotifications = function (socket) {
   })
 }
 
-function spawnOpenChatWindows(socket) {
+function spawnOpenChatWindows (socket) {
   const loggedInAccountId = socket.request.user._id
   const conversationSchema = require('../models/chat/conversation')
   userSchema.getUser(loggedInAccountId, function (err, user) {
@@ -359,7 +358,7 @@ events.onChatMessage = function (socket) {
       image: data.message.owner.image,
       title: data.message.owner.title,
       lastOnline: data.message.owner.lastOnline,
-      id: data.message.owner._id,
+      id: data.message.owner._id
     }
 
     async.parallel(
@@ -378,7 +377,7 @@ events.onChatMessage = function (socket) {
               image: toUser.image,
               title: toUser.title,
               lastOnline: toUser.lastOnline,
-              id: toUser._id,
+              id: toUser._id
             }
 
             return next()
@@ -398,12 +397,12 @@ events.onChatMessage = function (socket) {
               image: fromUser.image,
               title: fromUser.title,
               lastOnline: fromUser.lastOnline,
-              id: fromUser._id,
+              id: fromUser._id
             }
 
             return next()
           })
-        },
+        }
       ],
       function (err) {
         if (err) return utils.sendToSelf(socket, socketEventConst.MESSAGES_UI_RECEIVE, { message: err })
@@ -490,7 +489,7 @@ events.onChatStopTyping = function (socket) {
   })
 }
 
-function joinChatServer(socket) {
+function joinChatServer (socket) {
   const user = socket.request.user
   let exists = false
   if (sharedVars.usersOnline.hasOwnProperty(user.username.toLowerCase())) {
@@ -501,7 +500,7 @@ function joinChatServer(socket) {
     if (user.username.length !== 0) {
       sharedVars.usersOnline[user.username] = {
         sockets: [socket.id],
-        user,
+        user
       }
       // sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
 
@@ -577,5 +576,5 @@ events.onDisconnect = function (socket) {
 module.exports = {
   events,
   eventLoop,
-  register,
+  register
 }

@@ -167,7 +167,7 @@ class DashboardContainer extends React.Component {
                 extraContentClass={'nopadding'}
                 loaderActive={this.props.dashboardState.loading}
                 content={
-                  <div className='mGraph mGraph-panel' style={{ minHeight: 200, position: 'relative' }}>
+                  <div className='mGraph mGraph-panel' style={{ minHeight: 250, position: 'relative' }}>
                     <MGraph
                       height={250}
                       x_accessor={'date'}

@@ -14,6 +14,9 @@ export default function MGraph (props) {
     if (props.data && graphRef.current && props.data.length > 0) {
       graphRef.current.innerHTML = ''
       graphParams = {
+        // chart_type: 'histogram',
+        // binCount: 150,
+        // brush: 'x',
         full_width: props.fullWidth,
         height: props.height,
         x_accessor: props.x_accessor,
@@ -32,7 +35,12 @@ export default function MGraph (props) {
     }
   }, [props.data])
 
-  return <div ref={graphRef}>{props.data && props.data.length < 1 && noDataDiv}</div>
+  return (
+    <div>
+      {props.data && props.data.length > 0 && <div ref={graphRef} />}
+      {props.data && props.data.length < 1 && noDataDiv}
+    </div>
+  )
 }
 
 MGraph.propTypes = {

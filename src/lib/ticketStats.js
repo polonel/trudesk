@@ -6,6 +6,7 @@ export const buildGraphData = (arr, days) => {
   if (arr.length < 1) {
     return graphData
   }
+
   const today = moment()
     .hour(23)
     .minute(59)

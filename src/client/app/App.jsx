@@ -36,7 +36,7 @@ const App = ({ store }) => {
   const [session, setSession] = useState(getSession())
   const [pending, setPending] = useState(true)
   const [error, setError] = useState(null)
-  // const [roles, setRoles] = useState(getRoles())
+  const [roles, setRoles] = useState(getRoles())
   const [ready, setReady] = useState(false)
 
   useTrudeskReady(() => {
@@ -84,13 +84,13 @@ const App = ({ store }) => {
     <Provider store={store}>
       <DotLoader active={!ready} animate={true} />
       <SessionContext.Provider value={{ session, setSession }}>
-        {/*<RolesContext.Provider value={{ roles, setRoles }}>*/}
-        <HistoryRouter history={history}>
-          <Layout>
-            <Routes />
-          </Layout>
-        </HistoryRouter>
-        {/*</RolesContext.Provider>*/}
+        <RolesContext.Provider value={{ roles, setRoles }}>
+          <HistoryRouter history={history}>
+            <Layout>
+              <Routes />
+            </Layout>
+          </HistoryRouter>
+        </RolesContext.Provider>
       </SessionContext.Provider>
     </Provider>
   )

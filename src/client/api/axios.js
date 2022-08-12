@@ -77,7 +77,7 @@ function isTokenExpiredError (errorResponse) {
     if (errorResponse.data && errorResponse.data.error && errorResponse.data.error.type === 'exp') return true
     else {
       clearSession()
-      return history.push('/')
+      // return history.push('/logout')
     }
   }
 
@@ -148,7 +148,7 @@ async function refreshTokenAndReattemptRequest (error) {
     isAlreadyFetchingAccessToken = false
     if (error.response && error.response.status === 401) {
       clearSession()
-      history.push('/')
+      // history.push('/')
     }
 
     return Promise.reject(error)

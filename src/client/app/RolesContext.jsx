@@ -1,4 +1,5 @@
 import { createContext } from 'react'
+import { getSession } from './SessionContext'
 import axios from 'api/axios'
 import { store } from 'app'
 
@@ -14,6 +15,8 @@ export const setRoles = (roles, roleOrder) => {
 export const getRoles = async () => {
   try {
     if (!memory.roles || !memory.roleOrder) {
+      const { user } = getSession()
+      if (!user) return
       const data = await axios.get('/api/v2/roles').then(res => res.data)
       if (data.roles && data.roleOrder) setRoles(data.roles, data.roleOrder)
     }

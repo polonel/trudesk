@@ -55,6 +55,7 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/tickets/transfer/:uid', apiv2Auth, isAdmin, apiv2.tickets.transferToThirdParty)
   router.get('/api/v2/tickets/deleted', apiv2Auth, isAdmin, apiv2.tickets.getDeleted)
   router.post('/api/v2/tickets/addcomment', apiv2Auth, canUser('comments:create'), apiv2.tickets.postComment)
+  router.post('/api/v2/tickets/addnote', apiv2Auth, canUser('tickets:notes'), apiv2.tickets.postNote)
   router.get('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:view'), apiv2.tickets.single)
   router.post(
     '/api/v2/tickets/:uid/upload/inline',

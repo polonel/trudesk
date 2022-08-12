@@ -61,9 +61,9 @@ export const menu = [
     ]
   },
   {
-    label: 'Chat Sessions',
+    label: 'Conversations',
     icon: 'chat',
-    url: '/chat'
+    url: '/messages'
   },
   {
     label: 'Knowledge Base',
