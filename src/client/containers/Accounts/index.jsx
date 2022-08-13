@@ -28,14 +28,13 @@ import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
 import PageContent from 'components/PageContent'
 import DropdownItem from 'components/Dropdown/DropdownItem'
-import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
-import DropdownHeader from 'components/Dropdown/DropdownHeader'
-import Dropdown from 'components/Dropdown'
 import ButtonGroup from 'components/ButtonGroup'
 import Button from 'components/Button'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import helpers from 'lib/helpers'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 @observer
 class AccountsContainer extends React.Component {
@@ -64,6 +63,7 @@ class AccountsContainer extends React.Component {
 
   onEditAccountClicked (e, user) {
     e.preventDefault(e)
+
     const canEditAccount = helpers.hasHierarchyOverRole(user.getIn(['role', '_id']))
     this.props.showModal('EDIT_ACCOUNT', {
       edit: canEditAccount,
@@ -116,9 +116,9 @@ class AccountsContainer extends React.Component {
       this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map(user => {
         const userImage = user.get('image') || 'defaultProfile.jpg'
-        let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditAccountClicked(e, user)}/>]
+        let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditAccountClicked(e, user)} />]
         if (user.get('deleted'))
-          actionMenu.push(<DropdownItem key={2} text={'Enable'} onClick={e => this.onEnableAccountClicked(e, user)}/>)
+          actionMenu.push(<DropdownItem key={2} text={'Enable'} onClick={e => this.onEnableAccountClicked(e, user)} />)
         else
           actionMenu.push(
             <DropdownItem
@@ -144,7 +144,7 @@ class AccountsContainer extends React.Component {
               }
               header={
                 <div>
-                  <div className="account-image relative uk-display-inline-block">
+                  <div className='account-image relative uk-display-inline-block'>
                     <Avatar
                       size={82}
                       userId={user.get('_id')}
@@ -155,33 +155,33 @@ class AccountsContainer extends React.Component {
                       showLargerBubble={true}
                     />
                   </div>
-                  <h3 className="tru-card-head-text uk-text-center">
+                  <h3 className='tru-card-head-text uk-text-center'>
                     {user.get('fullname')}
-                    <span className="uk-text-truncate">{user.get('title')}</span>
+                    <span className='uk-text-truncate'>{user.get('title')}</span>
                   </h3>
                 </div>
               }
               content={
-                <ul className="tru-list">
+                <ul className='tru-list'>
                   <li>
-                    <div className="tru-list-content">
-                      <span className="tru-list-heading">Role</span>
-                      <span className="uk-text-small uk-text-muted">{user.getIn(['role', 'name'])}</span>
+                    <div className='tru-list-content'>
+                      <span className='tru-list-heading'>Role</span>
+                      <span className='uk-text-small uk-text-muted'>{user.getIn(['role', 'name'])}</span>
                     </div>
                   </li>
                   <li>
-                    <div className="tru-list-content">
-                      <span className="tru-list-heading">Email</span>
-                      <span className="uk-text-small uk-text-muted">
+                    <div className='tru-list-content'>
+                      <span className='tru-list-heading'>Email</span>
+                      <span className='uk-text-small uk-text-muted'>
                         <a href={`mailto:${user.get('email')}`}>{user.get('email')}</a>
                       </span>
                     </div>
                   </li>
                   <li>
                     {customer && user.get('groups') && (
-                      <div className="tru-list-content">
-                        <span className="tru-list-heading">Groups</span>
-                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                      <div className='tru-list-content'>
+                        <span className='tru-list-heading'>Groups</span>
+                        <span className='uk-text-small uk-text-muted uk-text-truncate'>
                           {user.get('groups').map(group => {
                             return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '')
                           })}
@@ -189,9 +189,9 @@ class AccountsContainer extends React.Component {
                       </div>
                     )}
                     {!customer && user.get('teams') && (
-                      <div className="tru-list-content">
-                        <span className="tru-list-heading">Teams</span>
-                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                      <div className='tru-list-content'>
+                        <span className='tru-list-heading'>Teams</span>
+                        <span className='uk-text-small uk-text-muted uk-text-truncate'>
                           {user.get('teams').map(team => {
                             return team.get('name') + (user.get('teams').toArray().length > 1 ? ', ' : '')
                           })}
@@ -201,9 +201,9 @@ class AccountsContainer extends React.Component {
                   </li>
                   {!customer && user.get('departments') && (
                     <li>
-                      <div className="tru-list-content">
-                        <span className="tru-list-heading">Departments</span>
-                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                      <div className='tru-list-content'>
+                        <span className='tru-list-heading'>Departments</span>
+                        <span className='uk-text-small uk-text-muted uk-text-truncate'>
                           {user.get('departments').map(department => {
                             return department.get('name') + (user.get('departments').toArray().length > 1 ? ', ' : '')
                           })}
@@ -220,46 +220,31 @@ class AccountsContainer extends React.Component {
 
     return (
       <div>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Accounts</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <PageTitle
           title={this.props.title}
           rightComponent={
-            <div className={'uk-grid uk-grid-collapse'}>
-              {/*<div className={'uk-width-3-4 pr-10'}>*/}
-              {/*  <div className='md-input-wrapper' style={{ marginTop: '10px' }}>*/}
-              {/*    <label className={'uk-form-label'}>Find Account</label>*/}
-              {/*    <input type='text' className={'md-input uk-margin-remove'} onKeyUp={e => this.onSearchKeyUp(e)} />*/}
-              {/*    <div className='md-input-bar' />*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-              <div className={'uk-width-1-4 uk-push-3-4 mt-15 pr-20 uk-clearfix'}>
-                <ButtonGroup classNames={'uk-clearfix uk-float-right'}>
-                  <Button
-                    text={'Create'}
-                    hasDropdown={false}
-                    flat={false}
-                    small={true}
-                    waves={false}
-                    extraClass={'hover-accent'}
-                    onClick={() => this.props.showModal('CREATE_ACCOUNT')}
-                  />
-                  {/*{helpers.canUser('accounts:import', true) && (*/}
-                  {/*  <DropdownTrigger mode={'click'} pos={'bottom-right'} offset={5} extraClass={'uk-float-right'}>*/}
-                  {/*    <Button*/}
-                  {/*      text={''}*/}
-                  {/*      hasDropdown={true}*/}
-                  {/*      small={true}*/}
-                  {/*      waves={false}*/}
-                  {/*      styleOverride={{ padding: '0 5px 0 0' }}*/}
-                  {/*      extraClass={'pr-5 no-border-radius nbl bg-accent md-color-white hover-accent'}*/}
-                  {/*    />*/}
-                  {/*    <Dropdown small={true}>*/}
-                  {/*      <DropdownHeader text={'Account Actions'} />*/}
-                  {/*      <DropdownItem text={'Import'} href={'/accounts/import'} />*/}
-                  {/*    </Dropdown>*/}
-                  {/*  </DropdownTrigger>*/}
-                  {/*)}*/}
-                </ButtonGroup>
-              </div>
+            <div
+              className={'uk-grid1 uk-grid-collapse1'}
+              style={{ display: 'flex', alignItems: 'center', height: '100%' }}
+            >
+              <ButtonGroup classNames={'uk-clearfix uk-float-right mr-15'}>
+                <Button
+                  text={'Create'}
+                  hasDropdown={false}
+                  flat={false}
+                  small={true}
+                  waves={false}
+                  extraClass={'hover-accent'}
+                  onClick={() => this.props.showModal('CREATE_ACCOUNT')}
+                />
+              </ButtonGroup>
             </div>
           }
         />
@@ -272,7 +257,7 @@ class AccountsContainer extends React.Component {
             threshold={25}
             loader={
               <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                <i className={'uk-icon-refresh uk-icon-spin'}/>
+                <i className={'uk-icon-refresh uk-icon-spin'} />
               </div>
             }
             useWindow={false}

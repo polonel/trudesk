@@ -15237,7 +15237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose-autopopulate@npm:0.16.1":
+"mongoose-autopopulate@npm:^0.16.1":
   version: 0.16.1
   resolution: "mongoose-autopopulate@npm:0.16.1"
   peerDependencies:
@@ -21352,7 +21352,7 @@ __metadata:
     moment-duration-format: 2.3.2
     moment-timezone: 0.5.34
     mongoose: 6.4.2
-    mongoose-autopopulate: 0.16.1
+    mongoose-autopopulate: ^0.16.1
     mongoose-lean-virtuals: 0.9.1
     nconf: 0.12.0
     nconf-yaml: 1.0.2

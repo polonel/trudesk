@@ -12,14 +12,14 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const Department = require('../../../models/department')
-const apiUtils = require('../apiUtils')
+import { DepartmentModel } from '../../../models'
+import apiUtils from '../apiUtils'
 
 const apiDepartments = {}
 
 apiDepartments.get = async (req, res) => {
   try {
-    const departments = await Department.find({})
+    const departments = await DepartmentModel.find({})
 
     return apiUtils.sendApiSuccess(res, { departments })
   } catch (err) {
@@ -35,7 +35,7 @@ apiDepartments.create = async (req, res) => {
   if (!postData.groups) postData.groups = []
 
   try {
-    const createdDepartment = await Department.create(postData)
+    const createdDepartment = await DepartmentModel.create(postData)
     if (!createdDepartment) return apiUtils.sendApiError(res, 500, 'Unable to create department')
 
     const populatedDepartment = await createdDepartment.populate('teams groups')
@@ -56,8 +56,8 @@ apiDepartments.update = async (req, res) => {
   if (putData.allGroups) putData.groups = []
 
   try {
-    let department = await Department.findOneAndUpdate(({ _id: id }, putData, { new: true }))
-    department = await department.populate('teams groups')
+    let department = await DepartmentModel.findOneAndUpdate(({ _id: id }, putData, { new: true }))
+    department = await DepartmentModel.populate('teams groups')
 
     return apiUtils.sendApiSuccess(res, { department })
   } catch (e) {
@@ -70,7 +70,7 @@ apiDepartments.delete = async (req, res) => {
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
   try {
-    const success = await Department.deleteOne({ _id: id })
+    const success = await DepartmentModel.deleteOne({ _id: id })
     if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete department')
 
     return apiUtils.sendApiSuccess(res)

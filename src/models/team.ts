@@ -54,6 +54,7 @@ export class TeamModelClass {
       .skip(limit * page)
       .limit(limit)
       .sort('name')
+      .populate('members')
       .exec()
   }
 

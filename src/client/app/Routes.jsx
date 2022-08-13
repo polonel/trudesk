@@ -11,7 +11,12 @@ const SingleTicketContainer = lazy(() =>
   import(/*webpackChunkName: "tickets" */ 'containers/Tickets/SingleTicketContainer')
 )
 const MessagesContainer = lazy(() => import(/* webpackChunkName:  "conversations" */ 'containers/Messages'))
+const AccountsContainer = lazy(() => import(/* webpackChunkName: "accounts" */ 'containers/Accounts'))
+const TeamsContainer = lazy(() => import(/* webpackChunkName:  "teams" */ 'containers/Teams'))
+const DepartmentsContainer = lazy(() => import(/* webpackChunkName: "departments" */ 'containers/Departments'))
+const NoticesContainer = lazy(() => import(/* webpackChunkName: "notices" */ 'containers/Notice/NoticeContainer'))
 const SettingsLazy = lazy(() => import(/* webpackChunkName: "settings" */ 'containers/Settings/SettingsContainer'))
+const AboutContainer = lazy(() => import(/* webpackChunkName: "about" */ 'containers/About'))
 
 const TC_WithParams = props => {
   const params = useParams()
@@ -28,6 +33,12 @@ const MessagesWithParams = props => {
   const params = useParams()
 
   return <MessagesContainer initialConversation={params.convo} {...props} />
+}
+
+const AccountsWithParams = props => {
+  const params = useParams()
+
+  return <AccountsContainer view={params.view} {...props} />
 }
 
 const BaseRouter = ({ user, setSession }) => {
@@ -68,6 +79,19 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'messages'} element={<MessagesContainer key={0} sessionUser={user} />} exact />
         <Route path={'messages/:convo'} element={<MessagesWithParams key={location.key} sessionUser={user} />} exact />
 
+        {/* Accounts*/}
+        <Route path={'accounts'} element={<AccountsContainer key={0} sessionUser={user} />} exact />
+        <Route path={'accounts/:view'} element={<AccountsWithParams key={location.key} sessionUser={user} />} exact />
+
+        {/* Teams */}
+        <Route path={'teams'} element={<TeamsContainer key={location.key} sessionUser={user} />} exact />
+
+        {/* Departments */}
+        <Route path={'departments'} element={<DepartmentsContainer key={location.key} sessionUser={user} />} exact />
+
+        {/* Notices*/}
+        <Route path={'notices'} element={<NoticesContainer key={location.key} sessionUser={user} />} exact />
+
         {/*Settings*/}
         <Route path={'settings'} element={<SettingsLazy />} />
         <Route path={'settings/general'} element={<SettingsLazy key={0} />} />
@@ -80,6 +104,8 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'settings/backup'} element={<SettingsLazy key={7} />} />
         <Route path={'settings/server'} element={<SettingsLazy key={8} />} />
         <Route path={'settings/legal'} element={<SettingsLazy key={9} />} />
+
+        <Route path={'about'} element={<AboutContainer />} />
 
         <Route path={'*'} element={<NotFound />} />
       </Routes>

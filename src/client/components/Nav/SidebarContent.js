@@ -103,12 +103,6 @@ export const menu = [
     ]
   },
   {
-    label: 'Organizations',
-    icon: 'domain',
-    url: '/organizations',
-    perm: 'organizations:view'
-  },
-  {
     label: 'Teams',
     icon: 'wc',
     url: '/teams',
@@ -120,6 +114,12 @@ export const menu = [
     url: '/departments',
     perm: 'admin:*'
   },
+  {
+    label: 'Notices',
+    icon: 'campaign',
+    url: '/notices',
+    perm: 'notices:create'
+  },
   // {
   //   label: 'Reports',
   //   icon: 'assessment',
@@ -129,12 +129,12 @@ export const menu = [
   {
     divider: true
   },
-  {
-    label: 'Cloud Management',
-    icon: 'cloud',
-    url: '/cloud',
-    cloud: 'owner|billing'
-  },
+  // {
+  //   label: 'Cloud Management',
+  //   icon: 'cloud',
+  //   url: '/cloud',
+  //   cloud: 'owner|billing'
+  // },
   {
     label: 'Settings',
     showTitle: false,

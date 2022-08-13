@@ -45,7 +45,7 @@ class SpinLoader extends React.Component {
 
   render () {
     let style = this.props.style
-    if (this.props.fullScreen) {
+    if (this.props.fullScreen === true) {
       const fullScreen = {
         position: 'fixed',
         top: 0,
@@ -59,6 +59,7 @@ class SpinLoader extends React.Component {
 
       style = { ...style, ...fullScreen }
     }
+
     return (
       <div
         ref={this.spinnerRef}

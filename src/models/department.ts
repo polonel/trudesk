@@ -1,6 +1,7 @@
-import { DocumentType, modelOptions, pre, prop, Ref, ReturnModelType } from '@typegoose/typegoose'
+import { DocumentType, modelOptions, plugin, pre, prop, Ref, ReturnModelType } from '@typegoose/typegoose'
 import _ from 'lodash'
 import type { Types } from 'mongoose'
+import mongooseAutoPopulate from 'mongoose-autopopulate'
 import utils from '../helpers/utils'
 import { GroupModelClass } from './group'
 import { GroupModel, TeamModel } from './index'
@@ -8,6 +9,7 @@ import { TeamModelClass } from './team'
 
 const COLLECTION = 'departments'
 
+@plugin(mongooseAutoPopulate as any)
 @pre('save', function (this: DocumentType<DepartmentModelClass>, next) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
   this.normalized = utils.sanitizeFieldPlainText(this.name.trim().toLowerCase())
@@ -20,13 +22,13 @@ export class DepartmentModelClass {
   public name!: string
   @prop({ required: true, unique: true })
   public normalized!: string
-  @prop({ ref: () => TeamModelClass })
+  @prop({ ref: () => TeamModelClass, autopopulate: true })
   public teams?: Ref<TeamModelClass>[]
   @prop({ default: false })
   public allGroups?: boolean
   @prop({ default: false })
   public publicGroups?: boolean
-  @prop({ ref: () => GroupModelClass })
+  @prop({ ref: () => GroupModelClass, autopopulate: true })
   public groups!: Ref<GroupModelClass>[]
 
   public static async getDepartmentsByTeam(

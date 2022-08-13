@@ -43,8 +43,8 @@ const Layout = ({ children }) => {
                   </div>
                   <div className='sidebar-to-right' />
                 </Fragment>
-                <div id={'page-content'} style={{ marginLeft: 57 }}>
-                  <Suspense fallback={<SpinLoader active={true} fullScreen={true} />}>{children}</Suspense>
+                <div id={'page-content'} style={{ marginLeft: 57, position: 'relative' }}>
+                  <Suspense fallback={<div />}>{children}</Suspense>
                 </div>
               </ThemeWrapper>
             )

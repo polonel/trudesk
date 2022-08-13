@@ -1778,7 +1778,7 @@ helpers.getRolesByHierarchy = function () {
   return returnedRoles
 }
 
-helpers.hasHierarchyOverRole = function (roleToCheck) {
+helpers.hasHierarchyOverRole = function (roleIdToCheck) {
   const state = require('../app').store.getState()
 
   if (!state.shared || !state.shared.sessionUser) {

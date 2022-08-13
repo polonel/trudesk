@@ -19,7 +19,7 @@ var apiUtils = require('../apiUtils')
 
 var apiTeams = {}
 
-apiTeams.get = function (req, res) {
+apiTeams.get = async (req, res) => {
   var limit = 10
   if (!_.isUndefined(req.query.limit)) {
     try {
@@ -43,11 +43,13 @@ apiTeams.get = function (req, res) {
     page: page
   }
 
-  Team.getWithObject(obj, function (err, results) {
-    if (err) return apiUtils.sendApiError(res, 400, err.message)
+  try {
+    const teams = await Team.getWithObject(obj)
 
-    return apiUtils.sendApiSuccess(res, { count: results.length, teams: results })
-  })
+    return apiUtils.sendApiSuccess(res, { count: teams.length, teams })
+  } catch (err) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
 apiTeams.create = function (req, res) {
