@@ -131,7 +131,7 @@ accountsApi.create = async function (req, res) {
 
 accountsApi.get = async function (req, res) {
   const query = req.query
-  const type = query.type || 'customers'
+  const type = query.type || 'requesters'
   const limit = query.limit ? Number(query.limit) : 25
   const page = query.page ? Number(query.page) : 0
 
@@ -144,14 +144,15 @@ accountsApi.get = async function (req, res) {
   switch (type) {
     case 'all':
       try {
-        const accounts = await User.getUserWithObject(obj)
+        const accounts = await User.getWithObject(obj)
         return apiUtil.sendApiSuccess(res, { accounts, count: accounts.length })
       } catch (err) {
+        console.log(err)
         return apiUtil.sendApiError(res, 500, err)
       }
-    case 'customers':
+    case 'requesters':
       try {
-        const accounts = await User.getCustomers(obj)
+        const accounts = await User.getRequesters(obj)
         const resAccounts = []
 
         for (const account of accounts) {

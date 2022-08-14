@@ -286,7 +286,7 @@ AccountsContainer.propTypes = {
 
 AccountsContainer.defaultProps = {
   title: 'Accounts',
-  view: 'customers'
+  view: 'requesters'
 }
 
 const mapStateToProps = state => ({

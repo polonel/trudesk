@@ -84,9 +84,9 @@ export const menu = [
     perm: 'accounts:view',
     options: [
       {
-        label: 'Customers',
+        label: 'Requesters',
         icon: 'person_outline',
-        url: '/accounts/customers'
+        url: '/accounts/requesters'
       },
       {
         label: 'Agents',

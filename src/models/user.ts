@@ -25,7 +25,9 @@ import type { IRoleModel, RoleModel } from './role'
 
 type UserQueryObj = {
   limit?: number
+  type?: string
   page?: number
+  search?: string
   showDeleted?: boolean
 }
 
@@ -137,6 +139,29 @@ export class UserModelClass {
     return bcrypt.compareSync(password, dbPass)
   }
 
+  public static async getWithObject(this: ReturnModelType<typeof UserModelClass>, obj : UserQueryObj) {
+    if (!_.isObject(obj))
+      throw new Error('Invalid Object (Must be of type Object) - UserModel.GetUserWithObject()')
+
+    const limit = obj.limit || 10
+    const page = obj.page || 0
+    const search = obj.search || ''
+
+    const query = this.find({}, '-password -resetPassHash -resetPassExpire')
+      .sort({fullname: 1})
+      .skip(page * limit)
+
+    if (limit !== -1 )
+      query.limit(limit)
+
+    if (!obj.showDeleted) query.where({deleted: false})
+
+    if (!_.isEmpty(search))
+      q.where({fullname: new RegExp(`^${search.toLowerCase()}`, 'i')})
+
+    return query.exec()
+  }
+
   public static async getUser(this: ReturnModelType<typeof UserModelClass>, oId: string | Types.ObjectId) {
     if (!oId) throw new Error('Invalid Object Id (String | ObjectId)')
     return this.findOne({ _id: oId })
@@ -159,18 +184,18 @@ export class UserModelClass {
     return this.findOne({ resetPassHash: resethash, deleted: false }, '+resetPassHash +resetPassExpire')
   }
 
-  public static async getCustomers(this: ReturnModelType<typeof UserModelClass>, obj: UserQueryObj) {
+  public static async getRequesters(this: ReturnModelType<typeof UserModelClass>, obj: UserQueryObj) {
     const limit = obj.limit || 10
     const page = obj.page || 0
     const accounts = await this.find({}, '-password -resetPassHash -resetPassExpire')
 
-    const customerRoleIds = _.filter(accounts, (a) => {
+    const requestersRoleIds = _.filter(accounts, (a) => {
       return !(a.role as IRoleModel)?.isAdmin && !(a.role as IRoleModel)?.isAgent
     }).map((a) => {
       return (a.role as IRoleModel)?._id
     })
 
-    const query = this.find({ role: { $in: customerRoleIds } }, '-password -resetPassHash -resetPassExpire')
+    const query = this.find({ role: { $in: requestersRoleIds } }, '-password -resetPassHash -resetPassExpire')
       .sort({ fullname: 1 })
       .skip(page * limit)
       .limit(limit)
