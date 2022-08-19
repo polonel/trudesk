@@ -119,8 +119,8 @@ mainController.loginPost = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-    // passport.authenticate('local', async function (err, user) {
-    passport.authenticate('ldapauth', async function (err, user) {
+    passport.authenticate('local', async function (err, user) {
+    // passport.authenticate('ldapauth', async function (err, user) {
       if (err) {
         winston.error(err)
         return next(err)
