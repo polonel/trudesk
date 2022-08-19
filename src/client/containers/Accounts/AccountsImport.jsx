@@ -32,6 +32,7 @@ class AccountsImportContainer extends React.Component {
   }
 
   selectAccountImport = (event, type) => {
+
     if (!this.csvRef.current || !this.jsonRef.current || !this.ldapRef.current) return
     if (!this.csvWizardRef.current || !this.jsonWizardRef.current || !this.ldapWizardRef.current) return
     if (event.target.classList.contains('card-disabled')) return
