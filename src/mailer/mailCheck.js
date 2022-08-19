@@ -134,12 +134,6 @@ function bindImapError () {
 
 function bindImapReady () {
   try {
-    mailCheck.Imap.on('end', function () {
-      handleMessages(mailCheck.messages, function () {
-        mailCheck.Imap.destroy()
-      })
-    })
-
     mailCheck.Imap.on('ready', function () {
       openInbox(function (err) {
         if (err) {
@@ -164,14 +158,13 @@ function bindImapReady () {
                   flag = '\\Deleted'
                 }
 
-                var message = {}
-
                 var f = mailCheck.Imap.fetch(results, {
                   bodies: ''
                 })
 
                 f.on('message', function (msg) {
                   msg.on('body', function (stream) {
+                    var message = {}
                     var buffer = ''
                     stream.on('data', function (chunk) {
                       buffer += chunk.toString('utf8')
@@ -206,20 +199,14 @@ function bindImapReady () {
                 })
 
                 f.on('end', function () {
-                  async.series(
-                    [
-                      function (cb) {
-                        mailCheck.Imap.addFlags(results, flag, cb)
-                      },
-                      function (cb) {
-                        mailCheck.Imap.closeBox(true, cb)
-                      }
-                    ],
-                    function (err) {
-                      if (err) winston.warn(err)
-                      return next()
-                    }
-                  )
+                  mailCheck.Imap.addFlags(results, flag, function() {
+                    mailCheck.Imap.closeBox(true, function () {
+                      mailCheck.Imap.end();
+                      handleMessages(mailCheck.messages, function () {
+                        mailCheck.Imap.destroy()
+                      })
+                    })
+                  })
                 })
               }
             ],
