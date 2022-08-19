@@ -576,6 +576,8 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
 
             var dataObject = {
               user: savedUser,
+              username: savedUser.username,
+              fullname: savedUser.fullname,
               plainTextPassword: plainTextPass,
               baseUrl: setting.value
             }
