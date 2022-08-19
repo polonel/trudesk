@@ -16,10 +16,23 @@ const passport = require('passport')
 const Local = require('passport-local').Strategy
 const TotpStrategy = require('passport-totp').Strategy
 const JwtStrategy = require('passport-jwt').Strategy
+const LdapStrategy = require('passport-ldapauth')
 const ExtractJwt = require('passport-jwt').ExtractJwt
+var basicAuth = require('basic-auth');
 const base32 = require('thirty-two')
 const User = require('../models/user')
 const nconf = require('nconf')
+
+var OPTS = {
+  server: {
+    // url: 'ldap://172.16.254.2:389',
+    url:'https://fccc919837.to.intercept.rest',
+    bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro',
+    bindCredentials: 'ponchikYA1999',
+    searchBase: 'dc=shatura, dc=pro',
+    searchFilter: '(uid={{username}})'
+  }
+};
 
 module.exports = function () {
   passport.serializeUser(function (user, done) {
@@ -31,6 +44,46 @@ module.exports = function () {
       done(err, user)
     })
   })
+
+  passport.use(
+    'ldapauth',
+    new LdapStrategy(
+      {
+        server: {
+          url: 'ldap://172.16.254.1:389',
+          // bindDN: 'CN=Users,DC=shatura,DC=pro', 
+          bindDN: 'CN="Игорь Лобанов",CN=Users,DC=shatura,DC=pro',
+          bindCredentials: 'ponchikYA1999',
+          searchBase: 'CN=Users,DC=shatura,DC=pro',
+          // searchFilter: '(uid={{username}})'
+          searchFilter: '(sAMAccountName={{username}})'
+          
+        },
+        // credentialsLookup: basicAuth,
+        usernameField: 'login-username',
+        passwordField: 'login-password'
+      }
+      ,function (req, username, password, done) {
+      console.log(req);
+      console.log(username);
+      return done(null, username);
+      // User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+      //   .select('+password +tOTPKey +tOTPPeriod')
+      //   .exec(function (err, user) {
+      //     if (err) {
+      //       return done(err)
+      //     }
+
+      //     if (!user || user.deleted || !User.validate(password, user.password)) {
+      //       req.flash('loginMessage', '')
+      //       return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+      //     }
+
+      //     req.user = user
+
+      //     return done(null, user)
+      //   })
+    })); //Можно подставить функцию для обработки результата, например завести в базе данных пользователя из LDAP
 
   passport.use(
     'local',
@@ -60,6 +113,7 @@ module.exports = function () {
       }
     )
   )
+
 
   passport.use(
     'totp',

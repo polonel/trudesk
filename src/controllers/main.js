@@ -120,6 +120,7 @@ mainController.loginPost = async function (req, res, next) {
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
     passport.authenticate('local', async function (err, user) {
+    // passport.authenticate('ldapauth', async function (err, user) {
       if (err) {
         winston.error(err)
         return next(err)
@@ -160,7 +161,14 @@ mainController.loginPost = async function (req, res, next) {
         })
       }
     })(req, res, next)
+   
   }
+
+  // app.post('/login', passport.authenticate('ldapauth', {session: false}), function(req, res) {
+  //   res.send({status: 'ok'});
+  // });
+
+
 }
 
 mainController.l2AuthPost = function (req, res, next) {

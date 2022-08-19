@@ -13,6 +13,7 @@
  */
 
 import React from 'react'
+import mongoose from 'mongoose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
@@ -24,6 +25,7 @@ import { updateGroup } from 'actions/groups'
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
+import SingleSelect from 'components/SingleSelect'
 
 import helpers from 'lib/helpers'
 import $ from 'jquery'
@@ -32,7 +34,7 @@ import SpinLoader from 'components/SpinLoader'
 @observer
 class EditGroupModal extends React.Component {
   @observable name = ''
-
+  @observable domainName = ''
   constructor (props) {
     super(props)
     makeObservable(this)
@@ -41,7 +43,7 @@ class EditGroupModal extends React.Component {
   componentDidMount () {
     this.props.fetchAccounts({ type: 'customers', limit: -1 })
     this.name = this.props.group.name
-
+    this.domainName = this.props.group.domainName
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
     helpers.formvalidator()
@@ -63,6 +65,7 @@ class EditGroupModal extends React.Component {
     const payload = {
       _id: this.props.group._id,
       name: this.name,
+      domainName: this.domainName,
       members: this.membersSelect.getSelected() || [],
       sendMailTo: this.sendMailToSelect.getSelected() || []
     }
@@ -72,6 +75,10 @@ class EditGroupModal extends React.Component {
 
   onInputChange (e) {
     this.name = e.target.value
+  }
+
+  onInputChangeDomain (e) {
+    this.domainName = e.target.value
   }
 
   render () {
@@ -104,6 +111,18 @@ class EditGroupModal extends React.Component {
               data-validation='length'
               data-validation-length={'min2'}
               data-validation-error-msg={'Please enter a valid Group name. (Must contain 2 characters)'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Domain Name</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.domainName}
+              onChange={e => this.onInputChangeDomain(e)}
+              data-validation='length'
+              data-validation-length={'min2'}
+              data-validation-error-msg={'Please enter a valid Domain name. (Must contain 2 characters)'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>

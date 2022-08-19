@@ -64,7 +64,7 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
               className={'md-btn md-btn-small right disabled'}
               style={{ textTransform: 'none' }}
               onClick={handleOpenEditor}
-              disabled={true}
+              disabled={false}
             >
               Open Editor
             </button>

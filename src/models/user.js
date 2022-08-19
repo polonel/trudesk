@@ -504,7 +504,7 @@ userSchema.statics.createUser = function (data, callback) {
  * @param email
  * @param callback
  */
-userSchema.statics.createUserFromEmail = function (email, callback) {
+userSchema.statics.createUserFromEmail = async function (email, callback) {
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
   }
@@ -545,7 +545,7 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
         })
         mongoose.model('domains').find({ name: domain.name }, function (err, items) { // Поиск домена в базе данных
           if (err) return callback(err);
-          if (_.size(items) > 0) return callback('Domain already exist');
+          if (_.size(items) > 0) return true;//callback('Domain already exist');
           domain.save(function (err, domain) {
             if (err) return callback(err)
 
@@ -604,7 +604,19 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
             })
           });
         });
+        // Если уже существует группа с данным доменом, то добавить туда пользователя
+        mongoose.model('groups').findOne({ domainName: email.split('@')[1] }, function (err, group) {
+          if (err) return callback(err);
+          if (group == null) return callback('The group with this domain does not exist. Link the domain to the group');
+          group.addMember(user._id, function (err, user) {
+            if (err) return callback(err);
+            group.save();//Сохранение добавления члена группы
+            return callback(`The user has been added to the group ${group.name}`);
+          })
+        })
       })
+//-- ShaturaPRO LIN 
+
     })
   })
 }
