@@ -49,7 +49,7 @@ const COLLECTION = 'accounts'
  * @property {Boolean} preferences.autoRefreshTicketGrid Enable the auto refresh of the ticket grid.
  * @property {Boolean} deleted Account Deleted
  */
-var userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
@@ -79,7 +79,8 @@ var userSchema = mongoose.Schema({
     tourCompleted: { type: Boolean, default: false },
     autoRefreshTicketGrid: { type: Boolean, default: true },
     openChatWindows: [{ type: String, default: [] }],
-    keyboardShortcuts: { type: Boolean, default: true }
+    keyboardShortcuts: { type: Boolean, default: true },
+    timezone: { type: String }
   },
 
   deleted: { type: Boolean, default: false }
@@ -576,6 +577,8 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
 
             var dataObject = {
               user: savedUser,
+              username: savedUser.username,
+              fullname: savedUser.fullname,
               plainTextPassword: plainTextPass,
               baseUrl: setting.value
             }

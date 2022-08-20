@@ -12,12 +12,12 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-var path = require('path')
-var PDFDocument = require('pdfkit')
+const path = require('path')
+const PDFDocument = require('pdfkit')
 
-var moment = require('moment-timezone')
-var marked = require('marked')
-var convert = require('html-to-text').convert
+const moment = require('moment-timezone')
+const marked = require('marked')
+const convert = require('html-to-text').convert
 
 class TicketPDFGenerator {
   constructor (ticket) {
@@ -46,7 +46,7 @@ class TicketPDFGenerator {
   }
 
   generateIssue (doc) {
-    var ownerImage = this.ticket.owner.image ? this.ticket.owner.image : 'defaultProfile.jpg'
+    const ownerImage = this.ticket.owner.image ? this.ticket.owner.image : 'defaultProfile.jpg'
     doc
       .circle(65, 190, 15)
       .save()
@@ -64,14 +64,14 @@ class TicketPDFGenerator {
       .text(moment(this.ticket.date).format('MM-DD-YYYY HH:mm:ss'))
       .moveDown(2)
 
-    var markedIssue = marked.parse(this.ticket.issue)
-    var images = []
-    var converted = convert(markedIssue, {
+    const markedIssue = marked.parse(this.ticket.issue)
+    const images = []
+    const converted = convert(markedIssue, {
       wordwrap: 200,
       formatters: {
         image: function (elm, walk, builder, formatOptions) {
           images.push({
-            elm: elm
+            elm
           })
         }
       }
@@ -84,8 +84,8 @@ class TicketPDFGenerator {
         .fontSize(14)
         .text('\n')
         .text('Images')
-      for (var i = 0; i < images.length; i++) {
-        var elm = images[i].elm
+      for (let i = 0; i < images.length; i++) {
+        const elm = images[i].elm
         doc.image(elm.attribs.src, { width: elm.attribs.width })
       }
     }
@@ -99,7 +99,7 @@ class TicketPDFGenerator {
   }
 
   generateComments (doc) {
-    var comments = this.ticket.comments
+    const comments = this.ticket.comments
     doc
       .fontSize(14)
       .text('Comments')
@@ -107,10 +107,10 @@ class TicketPDFGenerator {
 
     if (comments.length < 1) doc.fontSize(11).text('No Comments')
     else {
-      for (var i = 0; i < comments.length; i++) {
-        var comment = comments[i]
+      for (let i = 0; i < comments.length; i++) {
+        const comment = comments[i]
 
-        var ownerImage = comment.owner.image ? comment.owner.image : 'defaultProfile.jpg'
+        const ownerImage = comment.owner.image ? comment.owner.image : 'defaultProfile.jpg'
         doc
           .circle(65, doc.y + 15, 15)
           .save()
@@ -129,14 +129,14 @@ class TicketPDFGenerator {
 
         doc.moveDown(2)
 
-        var markedComment = marked.parse(comment.comment)
-        var images = []
-        var converted = convert(markedComment, {
+        const markedComment = marked.parse(comment.comment)
+        const images = []
+        const converted = convert(markedComment, {
           wordwrap: 200,
           formatters: {
             image: function (elm, walk, builder, formatOptions) {
               images.push({
-                elm: elm
+                elm
               })
             }
           }
@@ -162,7 +162,7 @@ class TicketPDFGenerator {
   }
 
   generateTicketHistory (doc) {
-    var history = this.ticket.history
+    const history = this.ticket.history
     doc.addPage()
     this.generateHeaders(doc)
     doc
@@ -173,8 +173,8 @@ class TicketPDFGenerator {
 
     if (history.length < 1) doc.text('No History')
     else {
-      for (var i = 0; i < history.length; i++) {
-        var item = history[i]
+      for (let i = 0; i < history.length; i++) {
+        const item = history[i]
         doc
           .fontSize(10)
           .text('Action by: ..... ' + item.owner.fullname)
@@ -193,13 +193,13 @@ class TicketPDFGenerator {
   }
 
   generate (callback) {
-    var filename = 'Ticket#' + this.ticket.uid + '.pdf'
-    var theOutput = new PDFDocument({ bufferPages: true })
-    var buffers = []
-    var obj = {}
+    const filename = 'Ticket#' + this.ticket.uid + '.pdf'
+    const theOutput = new PDFDocument({ bufferPages: true })
+    const buffers = []
+    const obj = {}
     theOutput.on('data', buffers.push.bind(buffers))
     theOutput.on('end', function () {
-      var pdfData = Buffer.concat(buffers)
+      const pdfData = Buffer.concat(buffers)
       obj.headers = {
         'Content-Length': Buffer.byteLength(pdfData),
         'Content-Type': 'application/pdf',

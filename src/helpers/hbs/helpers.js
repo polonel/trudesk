@@ -20,12 +20,12 @@
 'use strict'
 
 // node_modules
-var _ = require('lodash')
-var moment = require('moment-timezone')
+const _ = require('lodash')
+const moment = require('moment-timezone')
 require('moment-duration-format')(moment)
 
 // The module to be exported
-var helpers = {
+const helpers = {
   concat: function (a, b, space, comma) {
     if (space && (comma === false || _.isObject(comma))) {
       return a.toString() + ' ' + b.toString()
@@ -517,11 +517,11 @@ var helpers = {
     return new moment.utc()
   },
 
-  formatDate: function (date, format) {
+  formatDate: function (date, format, timezone) {
     if (!date) return ''
     return moment
       .utc(date)
-      .tz(global.timezone)
+      .tz(typeof timezone === 'string' ? timezone : global.timezone)
       .format(format)
   },
 
