@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const crypto = require('crypto')
-const moment = require('moment')
-const logger = require('../../../logger')
-const apiUtils = require('../apiUtils')
-const { SessionModel, UserModel } = require('../../../models')
-const jwt = require('jsonwebtoken')
-const config = require('../../../config')
+import crypto from 'crypto'
+import moment from 'moment'
+import logger from '../../../logger'
+import apiUtils from '../apiUtils'
+import { SessionModel, UserModel } from '../../../models'
+import jwt from 'jsonwebtoken'
+import config from '../../../config'
 
 const commonV2 = {}
 
@@ -43,12 +43,14 @@ commonV2.login = async (req, res) => {
       exp: moment()
         .utc()
         .add(96, 'hours')
+        // .add(1, 'minutes')
         .toDate()
     })
 
     const cookie = {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year
+      // maxAge: 1000 * 60 // 1 min
     }
 
     const tokens = await apiUtils.generateJWTToken(user, session)
@@ -90,11 +92,11 @@ commonV2.logout = async (req, res) => {
 commonV2.token = async (req, res) => {
   const refreshToken = req.cookies['_rft_']
   if (!refreshToken) return apiUtils.sendApiSuccess(res)
-  const decoded = jwt.verify(refreshToken, config.get('tokens:secret'))
-  if (!decoded || !decoded.s) return apiUtils.sendApiError(res, 401)
-  const sessionId = decoded.s
-
   try {
+    const decoded = jwt.verify(refreshToken, config.get('tokens:secret'))
+    if (!decoded || !decoded.s) return apiUtils.sendApiError(res, 401)
+    const sessionId = decoded.s
+
     let session = await SessionModel.findOne({ _id: sessionId })
     if (!session) {
       res.cookie('_rft_', null, { maxAge: 0 })

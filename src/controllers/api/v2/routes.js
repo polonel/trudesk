@@ -73,6 +73,12 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/tickets/stats/groups/:timespan/:top', apiv2Auth, isAgentOrAdmin, apiv2.tickets.topGroups)
   router.get('/api/v2/tickets/stats/:timespan', apiv2Auth, isAgentOrAdmin, apiv2.tickets.stats)
 
+  // Tags
+  router.post('/api/v2/tags/create', apiv2Auth, apiv2.tags.create)
+  router.get('/api/v2/tags/limit', apiv2Auth, apiv2.tags.getTagsWithLimit)
+  router.put('/api/v2/tags/:id', apiv2Auth, isAgentOrAdmin, apiv2.tags.updateTag)
+  router.delete('/api/v2/tags/:id', apiv2Auth, isAgentOrAdmin, apiv2.tags.deleteTag)
+
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)
   router.post('/api/v2/groups', apiv2Auth, canUser('groups:create'), apiv2.groups.create)

@@ -18,7 +18,7 @@ import { connect } from 'react-redux'
 import Log from '../../../logger'
 
 import $ from 'jquery'
-import axios from 'axios'
+import axios from 'api/axios'
 import UIKit from 'uikit'
 import helpers from 'lib/helpers'
 
@@ -172,7 +172,7 @@ class TicketsSettings extends React.Component {
     if (name.length < 2) return helpers.UI.showSnackbar('Invalid Tag Name', true)
 
     axios
-      .put(`/api/v1/tags/${tagId}`, { name })
+      .put(`/api/v2/tags/${tagId}`, { name })
       .then(res => {
         TicketsSettings.toggleEditTag(e)
         helpers.UI.showSnackbar(`Tag: ${res.data.tag.name} updated successfully`)
@@ -193,7 +193,7 @@ class TicketsSettings extends React.Component {
         <i style="font-size: 13px; color: #e53935">This will remove the tag from all associated tickets.</i>`,
       () => {
         axios
-          .delete(`/api/v1/tags/${tag.get('_id')}`)
+          .delete(`/api/v2/tags/${tag.get('_id')}`)
           .then(res => {
             if (res.data.success) {
               helpers.UI.showSnackbar(`Successfully removed tag: ${tag.get('name')}`)

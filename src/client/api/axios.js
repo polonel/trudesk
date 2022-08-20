@@ -13,6 +13,7 @@
 
 import { saveSession, getSession, clearSession } from 'app/SessionContext'
 import jwt_decode from 'jwt-decode'
+// eslint-disable-next-line import/no-named-as-default
 import history from 'lib/lib-history'
 
 import axios from 'axios'
@@ -31,9 +32,15 @@ customAxios.interceptors.request.use(
     if (token) {
       const decoded = jwt_decode(token)
       if (decoded.exp * 1000 < Date.now()) {
-        console.log('Token is expired. We are going to grab a new one')
+        // console.log('Token is expired. We are going to grab a new one')
         try {
           const data = await axios.post('/api/v2/token').then(res => res.data)
+
+          if (!data.token) {
+            history.push('/logout')
+            return { ...config, cancelToken: new customAxios.CancelToken(cancel => cancel('Invalid Token!')) }
+          }
+
           token = data.token
           saveSession(data)
         } catch (e) {
@@ -109,7 +116,6 @@ customAxios.refreshToken = async function () {
 
     return Promise.resolve()
   } catch (err) {
-    console.log(err)
     isAlreadyFetchingAccessToken = false
     return Promise.reject(err)
   }
@@ -127,7 +133,6 @@ async function refreshTokenAndReattemptRequest (error) {
 
     if (!isAlreadyFetchingAccessToken) {
       isAlreadyFetchingAccessToken = true
-      console.log('GETTING NEW TOKEN....')
       const response = await axios({
         method: 'post',
         url: '/api/v2/token'
