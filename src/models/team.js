@@ -66,15 +66,25 @@ teamSchema.methods.addMember = async function (memberId, callback) {
 }
 
 teamSchema.methods.removeMember = function (memberId, callback) {
-  if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.RemoveMember()')
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(memberId)) {
+        if (typeof callback === 'function') return callback({ message: 'Invalid MemberId - TeamSchema.RemoveMember()' })
+        return reject(new Error('Invalid MemberId - TeamSchema.RemoveMember()'))
+      }
 
-  if (!isMember(this.members, memberId)) return callback(null, false)
+      if (!isMember(this.members, memberId)) {
+        if(typeof callback === 'function') return callback(null, false)
+        return reject(false)
+      }
+      this.members.splice(_.indexOf(this.members, _.find(this.members, { _id: memberId })), 1)
+      this.members = _.uniq(this.members)
 
-  this.members.splice(_.indexOf(this.members, _.find(this.members, { _id: memberId })), 1)
+      if (typeof callback === 'function') return callback(null, true)
 
-  this.members = _.uniq(this.members)
-
-  return callback(null, true)
+      return resolve(true)
+    })()
+  })
 }
 
 teamSchema.methods.isMember = function (memberId) {
