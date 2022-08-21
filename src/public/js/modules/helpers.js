@@ -41,15 +41,13 @@ define([
 
   helpers.loaded = false
   helpers.init = function (reload) {
-    var self = this
+    const self = this
     if (reload) self.loaded = false
     if (self.loaded) {
       console.warn('Helpers already loaded. Possible double load.')
     }
 
     self.prototypes()
-
-    self.setTimezone()
 
     self.resizeFullHeight()
     self.setupScrollers()
@@ -77,13 +75,24 @@ define([
     self.UI.onlineUserSearch()
     self.UI.showLinkWarning('.link-warning')
 
-    var layout = self.onWindowResize()
+    const layout = self.onWindowResize()
 
     // Initial Call to Load Layout
     layout()
     $(window).resize(layout)
 
     self.loaded = true
+  }
+
+  helpers.forceSessionUpdate = () => {
+    return new Promise((resolve, reject) => {
+      if (!window.trudeskSessionService) return reject(new Error('SessionService is not loaded'))
+
+      window.trudeskSessionService.forceUpdate(() => {
+        const refreshedSessionUser = window.trudeskSessionService.getUser()
+        return resolve(refreshedSessionUser)
+      })
+    })
   }
 
   helpers.countUpMe = function () {
@@ -1463,34 +1472,15 @@ define([
     })
   }
 
-  helpers.setTimezone = function () {
-    const $timezone = $('#__timezone')
-    let timezone
-    if ($timezone.length < 1) {
-      Cookies.set('$trudesk:timezone', 'America/New_York')
-    } else {
-      timezone = Cookies.get('$trudesk:timezone')
-      const __timezone = $timezone.text()
-      if (!timezone) {
-        Cookies.set('$trudesk:timezone', __timezone)
-      } else if (timezone !== __timezone) {
-        Cookies.set('$trudesk:timezone', __timezone)
-      }
-    }
-
-    timezone = Cookies.get('$trudesk:timezone')
-
-    moment.tz.setDefault(timezone)
-    $timezone.remove()
-  }
-
   helpers.getTimezone = function () {
-    let timezone = Cookies.get('$trudesk:timezone')
-    if (!timezone) {
-      timezone = 'America/New_York'
+    const sessionUser = window.trudeskSessionService.getUser()
+    if (sessionUser && sessionUser.preferences && sessionUser.preferences.timezone) {
+      return sessionUser.preferences.timezone
     }
 
-    return timezone
+    // Lets get the server Timezone as the default
+    const settings = window.trudeskSettingsService.getSettings()
+    return settings.timezone.value || 'America/New_York' // Return America/New_York as the fallback
   }
 
   helpers.getTimeFormat = function () {
@@ -1547,19 +1537,23 @@ define([
   helpers.getShortDateWithTimeFormat = function () {
     return `${helpers.getShortDateFormat()} ${helpers.getTimeFormat()}`
   }
+  
+  helpers.getLongDateWithTimeFormat = function () {
+    return `${helpers.getLongDateFormat()} ${helpers.getTimeFormat()}`
+  }
 
-  helpers.formatDate = function (date, format) {
-    let timezone = this.getTimezone()
-    if (!timezone) {
-      timezone = 'America/New_York'
-    }
+  helpers.formatDate = function (date, format, isUTC) {
+    const timezone = this.getTimezone()
 
-    return (
-      moment(date)
+    if (isUTC)
+      return moment(date)
         .utc(true)
-        // .tz(timezone)
+        .tz(timezone)
         .format(format)
-    )
+
+    return moment(date)
+      .tz(timezone)
+      .format(format)
   }
 
   helpers.setupChosen = function () {
@@ -1660,29 +1654,27 @@ define([
 
     if (adminOverride === true && role.isAdmin) return true
 
-    if (_.isUndefined(role)) return false
-    if (_.isUndefined(roles)) return false
-    if (__.hasIn(role, '_id')) role = role._id
-    var rolePerm = _.find(roles, { _id: role })
-    if (_.isUndefined(rolePerm)) return false
-    if (_.indexOf(rolePerm.grants, '*') !== -1) return true
-    if (_.isUndefined(a)) return false
+    if (!role || !roles) return false
 
-    var actionType = a.split(':')[0]
-    var action = a.split(':')[1]
+    if (__.hasIn(role, '_id')) role = role._id
+    const rolePerm = _.find(roles, { _id: role })
+    if (!rolePerm) return false
+    if (_.indexOf(rolePerm.grants, '*') !== -1) return true
+    if (!a) return false
+
+    const actionType = a.split(':')[0]
+    const action = a.split(':')[1]
 
     if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-    var result = _.filter(rolePerm.grants, function (value) {
+    const result = _.filter(rolePerm.grants, function (value) {
       if (__.startsWith(value, actionType + ':')) return value
     })
 
-    if (_.isUndefined(result) || _.size(result) < 1) return false
-    if (_.size(result) === 1) {
-      if (result[0] === '*') return true
-    }
+    if (!result || _.size(result) < 1) return false
+    if (_.size(result) === 1 && result[0] === '*') return true
 
-    var typePerm = result[0].split(':')[1].split(' ')
+    let typePerm = result[0].split(':')[1].split(' ')
     typePerm = _.uniq(typePerm)
 
     if (_.indexOf(typePerm, '*') !== -1) return true

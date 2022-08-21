@@ -22,8 +22,6 @@ const Group = require('../../../models/group')
 const Team = require('../../../models/team')
 const Department = require('../../../models/department')
 const passwordComplexity = require('../../../settings/passwordComplexity')
-const SettingsUtil = require('../../../settings/settingsUtil')
-const Session = require('../../../models/session')
 
 const accountsApi = {}
 
@@ -62,7 +60,7 @@ accountsApi.create = async function (req, res) {
   const chance = new Chance()
 
   try {
-    if (postData.password == undefined || postData.passwordConfirm == undefined) throw new Error('Password length is too short.')
+    if (!postData.password || !postData.passwordConfirm) throw new Error('Password length is too short.')
 
     // SETTINGS
     const SettingsUtil = require('../../../settings/settingsUtil')
@@ -71,7 +69,7 @@ accountsApi.create = async function (req, res) {
     const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
-    throw new Error('Password does not meet requirements')
+      throw new Error('Password does not meet requirements')
 
     let user = await User.create({
       username: postData.username,
@@ -275,6 +273,7 @@ accountsApi.update = async function (req, res) {
       !_.isUndefined(postData.passwordConfirm) &&
       !_.isEmpty(postData.passwordConfirm)
     ) {
+      if (postData.password.length < 4 || postData.passwordConfirm.length < 4) throw new Error('Password length is too short.')
       if (postData.password === postData.passwordConfirm) {
         if (passwordComplexityEnabled) {
           if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
@@ -283,7 +282,7 @@ accountsApi.update = async function (req, res) {
         user.password = postData.password
         passwordUpdated = true
       } else throw new Error('Password and Confirm Password do not match.')
-    } else throw new Error('Password length is too short.')
+    }
 
     if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
     if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
@@ -388,6 +387,11 @@ accountsApi.saveProfile = async (req, res) => {
     if (!_.isUndefined(payload.workNumber) && !_.isNull(payload.workNumber)) dbUser.workNumber = payload.workNumber
     if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber))
       dbUser.mobileNumber = payload.mobileNumber
+
+    // User Preferences
+    if (!_.isUndefined(payload.preferences) && !_.isNull(payload.preferences)) {
+      if (payload.preferences.timezone) dbUser.preferences.timezone = payload.preferences.timezone
+    }
 
     dbUser = await dbUser.save()
     return apiUtil.sendApiSuccess(res, { user: dbUser })

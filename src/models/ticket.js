@@ -12,29 +12,28 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
-var mongoose = require('mongoose')
-var winston = require('winston')
-var _ = require('lodash')
-var moment = require('moment')
-var sanitizeHtml = require('sanitize-html')
-// var redisCache          = require('../cache/rediscache');
-var xss = require('xss')
-var utils = require('../helpers/utils')
+const async = require('async')
+const mongoose = require('mongoose')
+const winston = require('../logger')
+const _ = require('lodash')
+const moment = require('moment')
+const sanitizeHtml = require('sanitize-html')
+// const redisCache          = require('../cache/rediscache');
+const xss = require('xss')
+const utils = require('../helpers/utils')
 
 // Needed - For Population
-var groupSchema = require('./group')
+const groupSchema = require('./group')
 require('./tickettype')
-var userSchema = require('./user')
-var commentSchema = require('./comment')
-var noteSchema = require('./note')
-var attachmentSchema = require('./attachment')
-var historySchema = require('./history')
+const userSchema = require('./user')
+const commentSchema = require('./comment')
+const noteSchema = require('./note')
+const attachmentSchema = require('./attachment')
+const historySchema = require('./history')
 require('./tag')
 require('./ticketpriority')
-const marked = require('marked')
 
-var COLLECTION = 'tickets'
+const COLLECTION = 'tickets'
 
 /**
  * Ticket Schema
@@ -68,7 +67,7 @@ var COLLECTION = 'tickets'
  * @property {Array} history An array of {@link History} items
  * @property {Array} subscribers An array of user _ids that receive notifications on ticket changes.
  */
-var ticketSchema = mongoose.Schema({
+const ticketSchema = mongoose.Schema({
   uid: { type: Number, unique: true, index: true },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -113,7 +112,7 @@ var ticketSchema = mongoose.Schema({
 
 ticketSchema.index({ deleted: -1, group: 1, status: 1 })
 
-var autoPopulate = function (next) {
+const autoPopulate = function (next) {
   this.populate('priority')
 
   return next()
@@ -129,15 +128,15 @@ ticketSchema.pre('save', function (next) {
     return next()
   }
 
-  var c = require('./counters')
-  var self = this
+  const c = require('./counters')
+  const self = this
   c.increment('tickets', function (err, res) {
     if (err) return next(err)
 
     self.uid = res.value.next
 
     if (_.isUndefined(self.uid)) {
-      var error = new Error('Invalid UID.')
+      const error = new Error('Invalid UID.')
       return next(error)
     }
 
@@ -147,9 +146,9 @@ ticketSchema.pre('save', function (next) {
 
 ticketSchema.post('save', async function (doc, next) {
   if (!this.wasNew) {
-    var emitter = require('../emitter')
+    const emitter = require('../emitter')
     try {
-      var savedTicket = await doc.populate([
+      const savedTicket = await doc.populate([
         {
           path: 'owner assignee comments.owner notes.owner subscribers history.owner',
           select: '_id username fullname email role image title'
@@ -185,8 +184,8 @@ ticketSchema.post('save', async function (doc, next) {
 })
 
 ticketSchema.virtual('statusFormatted').get(function () {
-  var s = this.status
-  var formatted
+  const s = this.status
+  let formatted
   switch (s) {
     case 0:
       formatted = 'New'
@@ -214,7 +213,7 @@ ticketSchema.virtual('commentsAndNotes').get(function () {
   _.each(this.notes, function (i) {
     i.isNote = true
   })
-  var combined = _.union(this.comments, this.notes)
+  let combined = _.union(this.comments, this.notes)
   combined = _.sortBy(combined, 'date')
 
   return combined
@@ -228,7 +227,7 @@ ticketSchema.virtual('commentsAndNotes').get(function () {
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Number} status Status to set
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  *
  * @example
  * Status:
@@ -270,12 +269,12 @@ ticketSchema.methods.setStatus = function (ownerId, status, callback) {
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} userId User ID to set as assignee
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
   if (_.isUndefined(userId)) return callback('Invalid User Id', null)
-  var permissions = require('../permissions')
-  var self = this
+  const permissions = require('../permissions')
+  const self = this
 
   self.assignee = userId
   userSchema.getUser(userId, function (err, user) {
@@ -285,7 +284,7 @@ ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
       return callback('User does not have permission to be set as an assignee.', null)
     }
 
-    var historyItem = {
+    const historyItem = {
       action: 'ticket:set:assignee',
       description: user.fullname + ' was set as assignee',
       owner: ownerId
@@ -304,11 +303,11 @@ ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
  * @memberof Ticket
  *
  * @param {Object} ownerId Account ID preforming this action
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.clearAssignee = function (ownerId, callback) {
   const self = this
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     self.assignee = undefined
     const historyItem = {
       action: 'ticket:set:assignee',
@@ -332,17 +331,17 @@ ticketSchema.methods.clearAssignee = function (ownerId, callback) {
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} typeId TicketType Id to set as ticket type
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
-  var typeSchema = require('./tickettype')
-  var self = this
+  const typeSchema = require('./tickettype')
+  const self = this
   self.type = typeId
   typeSchema.findOne({ _id: typeId }, function (err, type) {
     if (err) return callback(err)
     if (!type) return callback('Invalid Type Id: ' + typeId)
 
-    var historyItem = {
+    const historyItem = {
       action: 'ticket:set:type',
       description: 'Ticket type set to: ' + type.name,
       owner: ownerId
@@ -362,14 +361,14 @@ ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Number} priority Priority to set
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function (ownerId, priority, callback) {
   if (_.isUndefined(priority) || !_.isObject(priority)) return callback('Priority must be a PriorityObject.', null)
 
-  var self = this
+  const self = this
   self.priority = priority._id
-  var historyItem = {
+  const historyItem = {
     action: 'ticket:set:priority',
     description: 'Ticket Priority set to: ' + priority.name,
     owner: ownerId
@@ -394,16 +393,16 @@ ticketSchema.methods.setTicketPriority = function (ownerId, priority, callback) 
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} groupId MongoDB group Id to assign this ticket to
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketGroup = function (ownerId, groupId, callback) {
-  var self = this
+  const self = this
   self.group = groupId
 
   self.populate('group', function (err, ticket) {
     if (err) return callback(err)
 
-    var historyItem = {
+    const historyItem = {
       action: 'ticket:set:group',
       description: 'Ticket Group set to: ' + ticket.group.name,
       owner: ownerId
@@ -415,10 +414,10 @@ ticketSchema.methods.setTicketGroup = function (ownerId, groupId, callback) {
 }
 
 ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
-  var self = this
+  const self = this
   self.dueDate = dueDate
 
-  var historyItem = {
+  const historyItem = {
     action: 'ticket:set:duedate',
     description: 'Ticket Due Date set to: ' + self.dueDate,
     owner: ownerId
@@ -437,7 +436,7 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} issue Issue text to set on the ticket
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  * @example
  * ticket.setIssue({ownerId}, 'This is the new issue string.', function(err, t) {
  *    if (err) throw err;
@@ -496,7 +495,7 @@ ticketSchema.methods.setSubject = function (ownerId, subject, callback) {
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} commentId Comment ID to update
  * @param {String} commentText Text to update the comment to
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  * @example
  * ticket.updateComment({ownerId}, {commentId} 'This is the new comment string.', function(err, t) {
  *    if (err) throw err;
@@ -541,11 +540,11 @@ ticketSchema.methods.updateComment = function (ownerId, commentId, commentText, 
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} commentId Comment ID to remove
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.removeComment = function (ownerId, commentId, callback) {
   const self = this
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     self.comments = _.reject(self.comments, function (o) {
       return o._id.toString() === commentId.toString()
     })
@@ -573,7 +572,7 @@ ticketSchema.methods.removeComment = function (ownerId, commentId, callback) {
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} noteId Note ID to update
  * @param {String} noteText Text to update the note to
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  * @example
  * ticket.updateNote({ownerId}, {noteId} 'This is the new note string.', function(err, t) {
  *    if (err) throw err;
@@ -617,7 +616,7 @@ ticketSchema.methods.updateNote = function (ownerId, noteId, noteText, callback)
  *
  * @param {Object} ownerId Account ID preforming this action
  * @param {Object} noteId Comment ID to remove
- * @param {TicketCallback} callback Callback with the updated ticket.
+ * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.removeNote = function (ownerId, noteId, callback) {
   const self = this
@@ -640,8 +639,8 @@ ticketSchema.methods.removeNote = function (ownerId, noteId, callback) {
 }
 
 ticketSchema.methods.getAttachment = function (attachmentId, callback) {
-  var self = this
-  var attachment = _.find(self.attachments, function (o) {
+  const self = this
+  const attachment = _.find(self.attachments, function (o) {
     return o._id.toString() === attachmentId.toString()
   })
 
@@ -649,8 +648,8 @@ ticketSchema.methods.getAttachment = function (attachmentId, callback) {
 }
 
 ticketSchema.methods.removeAttachment = function (ownerId, attachmentId, callback) {
-  var self = this
-  var attachment = _.find(self.attachments, function (o) {
+  const self = this
+  const attachment = _.find(self.attachments, function (o) {
     return o._id.toString() === attachmentId.toString()
   })
   self.attachments = _.reject(self.attachments, function (o) {
@@ -661,7 +660,7 @@ ticketSchema.methods.removeAttachment = function (ownerId, attachmentId, callbac
     return callback(null, self)
   }
 
-  var historyItem = {
+  const historyItem = {
     action: 'ticket:delete:attachment',
     description: 'Attachment was deleted: ' + attachment.name,
     owner: ownerId
@@ -673,9 +672,9 @@ ticketSchema.methods.removeAttachment = function (ownerId, attachmentId, callbac
 }
 
 ticketSchema.methods.addSubscriber = function (userId, callback) {
-  var self = this
+  const self = this
 
-  var hasSub = _.some(self.subscribers, function (i) {
+  const hasSub = _.some(self.subscribers, function (i) {
     return i._id.toString() === userId.toString()
   })
 
@@ -687,9 +686,9 @@ ticketSchema.methods.addSubscriber = function (userId, callback) {
 }
 
 ticketSchema.methods.removeSubscriber = function (userId, callback) {
-  var self = this
+  const self = this
 
-  var user = _.find(self.subscribers, function (i) {
+  const user = _.find(self.subscribers, function (i) {
     return i._id.toString() === userId.toString()
   })
 
@@ -710,7 +709,7 @@ ticketSchema.methods.removeSubscriber = function (userId, callback) {
  * @memberof Ticket
  * @static
  * @method getAll
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  *
  * @example
  * ticketSchema.getAll(function(err, tickets) {
@@ -720,8 +719,8 @@ ticketSchema.methods.removeSubscriber = function (userId, callback) {
  * });
  */
 ticketSchema.statics.getAll = function (callback) {
-  var self = this
-  var q = self
+  const self = this
+  const q = self
     .model(COLLECTION)
     .find({ deleted: false })
     .populate('owner assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
@@ -766,8 +765,8 @@ ticketSchema.statics.getForCache = function (callback) {
 }
 
 ticketSchema.statics.getAllNoPopulate = function (callback) {
-  var self = this
-  var q = self
+  const self = this
+  const q = self
     .model(COLLECTION)
     .find({ deleted: false })
     .sort({ status: 1 })
@@ -777,13 +776,13 @@ ticketSchema.statics.getAllNoPopulate = function (callback) {
 }
 
 ticketSchema.statics.getAllByStatus = function (status, callback) {
-  var self = this
+  const self = this
 
   if (!_.isArray(status)) {
     status = [status]
   }
 
-  var q = self
+  const q = self
     .model(COLLECTION)
     .find({ status: { $in: status }, deleted: false })
     .populate(
@@ -804,7 +803,7 @@ ticketSchema.statics.getAllByStatus = function (status, callback) {
  * @static
  * @method getTickets
  * @param {Array} grpIds Group Id to retrieve tickets for.
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTickets = function (grpIds, callback) {
   if (_.isUndefined(grpIds)) {
@@ -815,9 +814,9 @@ ticketSchema.statics.getTickets = function (grpIds, callback) {
     return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()', null)
   }
 
-  var self = this
+  const self = this
 
-  var q = self
+  const q = self
     .model(COLLECTION)
     .find({ group: { $in: grpIds }, deleted: false })
     .populate(
@@ -831,15 +830,15 @@ ticketSchema.statics.getTickets = function (grpIds, callback) {
 }
 
 /**
- * Gets Tickets with a given group id and a JSON Object <br/><br/>
+ * Gets Tickets with a given departments and a JSON Object <br/><br/>
  * *Sorts on UID desc.*
  * @memberof Ticket
  * @static
- * @method getTicketsWithObject
+ * @method getTicketsByDepartments
  *
- * @param {Object} grpId Group Id to retrieve tickets for.
- * @param {Object} object JSON Object with various options
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {Object} departments Departments to retrieve tickets for.
+ * @param {Object} object JSON Object with query options
+ * @param {function} callback MongoDB Query Callback
  *
  * @example
  * //Object Options
@@ -854,7 +853,7 @@ ticketSchema.statics.getTicketsByDepartments = function (departments, object, ca
   if (!departments || !_.isObject(departments) || !object)
     return callback('Invalid Data - TicketSchema.GetTicketsByDepartments()')
 
-  var self = this
+  const self = this
 
   if (_.some(departments, { allGroups: true })) {
     groupSchema.find({}, function (err, groups) {
@@ -862,7 +861,7 @@ ticketSchema.statics.getTicketsByDepartments = function (departments, object, ca
       return self.getTicketsWithObject(groups, object, callback)
     })
   } else {
-    var groups = _.flattenDeep(
+    const groups = _.flattenDeep(
       departments.map(function (d) {
         return d.groups.map(function (g) {
           return g._id
@@ -874,164 +873,141 @@ ticketSchema.statics.getTicketsByDepartments = function (departments, object, ca
   }
 }
 
-ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
-  if (_.isUndefined(grpId)) {
-    return callback('Invalid GroupId - TicketSchema.GetTickets()', null)
+function buildQueryWithObject (SELF, grpId, object, count) {
+  const limit = object.limit || 10
+  const page = object.page || 0
+  let _status = object.status
+
+  // Check up on status formatting
+  if (_.isArray(_status)) {
+    // This is a hack - querystring adds status in the array as [ "1,2,3" ]
+    // This will convert the array to [ "1", "2", "3" ]
+    _status = _.join(_status, ',').split(',')
   }
 
-  if (!_.isArray(grpId)) {
-    return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()', null)
-  }
-
-  if (!_.isObject(object)) {
-    return callback('Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()', null)
-  }
-
-  var self = this
-
-  var limit = !object.limit ? 10 : object.limit
-  var page = !object.page ? 0 : object.page
-  var _status = object.status
-
-  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
-    var g = _.map(grpId, '_id').map(String)
-    grpId = _.intersection(object.filter.groups, g)
-  }
-
-  var q = self
-    .model(COLLECTION)
-    .find({ group: { $in: grpId }, deleted: false })
-    .populate(
-      'owner assignee subscribers comments.owner notes.owner history.owner',
-      'username fullname email role image title'
+  if (object.filter && object.filter.groups)
+    grpId = _.intersection(
+      object.filter.groups,
+      _.map(grpId, g => g._id.toString())
     )
-    .populate('assignee', 'username fullname email role image title')
-    .populate('type tags group')
-    .sort({ uid: -1 })
 
-  if (limit !== -1) {
-    q.skip(page * limit).limit(limit)
+  let query
+  if (count) query = SELF.model(COLLECTION).countDocuments({ groups: { $in: grpId }, deleted: false })
+  else {
+    query = SELF.model(COLLECTION)
+      .find({ group: { $in: grpId }, deleted: false })
+      .populate(
+        'owner assignee subscribers comments.owner notes.owner history.owner',
+        'username fullname email role image title'
+      )
+      .populate('assignee', 'username fullname email role image title')
+      .populate('type tags group')
+      .sort({ uid: -1 })
   }
 
-  if (_.isArray(_status) && _.size(_status) > 0) {
-    q.where({ status: { $in: _status } })
+  // Query with Limit?
+  if (limit !== -1) query.skip(page * limit).limit(limit)
+  // Status Query
+  if (_.isArray(_status) && _status.length > 0) {
+    query.where({ status: { $in: _status } })
   }
 
-  if (!_.isUndefined(object.filter)) {
-    if (!_.isUndefined(object.filter.uid)) {
+  // Filter Query
+  if (object.filter) {
+    // Filter on UID
+    if (object.filter.uid) {
       object.filter.uid = parseInt(object.filter.uid)
-      if (!_.isNaN(object.filter.uid)) {
-        q.or([{ uid: object.filter.uid }])
-      }
+      if (!_.isNaN(object.filter.uid)) query.or([{ uid: object.filter.uid }])
     }
 
-    if (!_.isUndefined(object.filter.priority)) {
-      q.where({ priority: { $in: object.filter.priority } })
-    }
+    // Priority Filter
+    if (object.filter.priority) query.where({ priority: { $in: object.filter.priority } })
 
-    if (!_.isUndefined(object.filter.types)) {
-      q.where({ type: { $in: object.filter.types } })
-    }
+    // Ticket Type Filter
+    if (object.filter.types) query.where({ type: { $in: object.filter.types } })
 
-    if (!_.isUndefined(object.filter.tags)) {
-      q.where({ tags: { $in: object.filter.tags } })
-    }
+    // Tags Filter
+    if (object.filter.tags) query.where({ tags: { $in: object.filter.tags } })
 
-    if (!_.isUndefined(object.filter.assignee)) {
-      q.where({ assignee: { $in: object.filter.assignee } })
-    }
+    // Assignee Filter
+    if (object.filter.assignee) query.where({ assignee: { $in: object.filter.assignee } })
 
-    if (!_.isUndefined(object.filter.unassigned)) {
-      q.where({ assignee: { $exists: false } })
-    }
+    // Unassigned Filter
+    if (object.filter.unassigned) query.where({ assignee: { $exists: false } })
 
-    if (!_.isUndefined(object.filter.owner)) {
-      q.where({ owner: { $in: object.filter.owner } })
-    }
+    // Owner Filter
+    if (object.filter.owner) query.where({ owner: { $in: object.filter.owner } })
 
-    if (!_.isUndefined(object.filter.subject)) {
-      q.or([{ subject: new RegExp(object.filter.subject, 'i') }])
-    }
+    // Subject Filter
+    if (object.filter.subject) query.or([{ subject: new RegExp(object.filter.subject, 'i') }])
 
-    if (!_.isUndefined(object.filter.issue)) {
-      q.or([{ issue: new RegExp(object.filter.issue, 'i') }])
-    }
+    // Issue Filter
+    if (object.filter.issue) query.or([{ issue: new RegExp(object.filter.issue, 'i') }])
 
-    if (!_.isUndefined(object.filter.date)) {
-      var startDate = new Date(2000, 0, 1, 0, 0, 1)
-      var endDate = new Date()
-      if (!_.isUndefined(object.filter.date.start)) {
-        startDate = new Date(object.filter.date.start)
-      }
-      if (!_.isUndefined(object.filter.date.end)) {
-        endDate = new Date(object.filter.date.end)
-      }
+    // Date Filter
+    if (object.filter.date) {
+      let startDate = new Date(2000, 0, 1, 0, 0, 1)
+      let endDate = new Date()
+      if (object.filter.date.start) startDate = new Date(object.filter.date.start)
+      if (object.filter.date.end) endDate = new Date(object.filter.date.end)
 
-      q.where({ date: { $gte: startDate, $lte: endDate } })
+      query.where({ date: { $gte: startDate, $lte: endDate } })
     }
   }
 
-  if (!_.isUndefined(object.owner) && !_.isNull(object.owner)) q.where('owner', object.owner)
+  if (object.owner) query.where('owner', object.owner)
+  if (object.assignedSelf) query.where('assignee', object.user)
+  if (object.unassigned) query.where({ assignee: { $exists: false } })
 
-  if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user)
-  if (!_.isUndefined(object.unassigned) && !_.isNull(object.unassigned)) q.where({ assignee: { $exists: false } })
-
-  return q.exec(callback)
+  return query
 }
 
-ticketSchema.statics.getCountWithObject = function (grpId, object, callback) {
-  if (_.isUndefined(grpId)) {
-    return callback('Invalid GroupId - TicketSchema.GetCountWithObject()', null)
-  }
+ticketSchema.statics.getTicketsWithObject = async function (grpId, object, callback) {
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        if (!grpId || !_.isArray(grpId) || !_.isObject(object))
+          throw new Error('Invalid parameter in - TicketSchema.GetTicketsWithObject()')
 
-  if (!_.isArray(grpId)) {
-    return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetCountWithObject()', null)
-  }
+        const query = buildQueryWithObject(self, grpId, object)
 
-  if (!_.isObject(object)) {
-    return callback('Invalid Object (Must be of type Object) - TicketSchema.GetCountWithObject()', null)
-  }
+        if (typeof callback === 'function') return query.exec(callback)
 
-  var self = this
+        const resTickets = await query.exec()
 
-  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
-    var g = _.map(grpId, '_id').map(String)
-    grpId = _.intersection(object.filter.groups, g)
-  }
+        return resolve(resTickets)
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
 
-  var q = self.model(COLLECTION).countDocuments({ group: { $in: grpId }, deleted: false })
-  if (!_.isUndefined(object.status) && _.isArray(object.status)) {
-    var status = object.status.map(Number)
-    q.where({ status: { $in: status } })
-  }
+        return reject(e)
+      }
+    })()
+  })
+}
 
-  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
-    q.where({ assignee: { $in: object.filter.assignee } })
-  }
+ticketSchema.statics.getCountWithObject = async function (grpId, object, callback) {
+  const self = this
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        if (!grpId || !_.isArray(grpId) || !_.isObject(object))
+          throw new Error('Invalid parameter in - TicketSchema.GetCountWithObject()')
 
-  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
-    q.where({ type: { $in: object.filter.types } })
-  }
+        const query = buildQueryWithObject(self, grpId, object, true)
 
-  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject))
-    q.where({ subject: new RegExp(object.filter.subject, 'i') })
+        if (typeof callback === 'function') return query.lean().exec(callback)
 
-  if (
-    !_.isUndefined(object.assignedSelf) &&
-    object.assignedSelf === true &&
-    !_.isUndefined(object.assignedUserId) &&
-    !_.isNull(object.assignedUserId)
-  ) {
-    q.where('assignee', object.assignedUserId)
-  }
+        const count = await query.lean().exec()
 
-  if (!_.isUndefined(object.unassigned) && object.unassigned === true) {
-    q.where({ assignee: { $exists: false } })
-  }
+        return resolve(count)
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
 
-  if (!_.isUndefined(object.owner) && !_.isNull(object.owner)) q.where('owner', object.owner)
-
-  return q.lean().exec(callback)
+        return reject(e)
+      }
+    })()
+  })
 }
 
 /**
@@ -1043,7 +1019,7 @@ ticketSchema.statics.getCountWithObject = function (grpId, object, callback) {
  *
  * @param {Object} grpId Group Id to retrieve tickets for.
  * @param {Number} status Status number to check
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByStatus = function (grpId, status, callback) {
   if (_.isUndefined(grpId)) {
@@ -1054,11 +1030,11 @@ ticketSchema.statics.getTicketsByStatus = function (grpId, status, callback) {
     return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()', null)
   }
 
-  var self = this
+  const self = this
 
-  var q = self
+  const q = self
     .model(COLLECTION)
-    .find({ group: { $in: grpId }, status: status, deleted: false })
+    .find({ group: { $in: grpId }, status, deleted: false })
     .populate(
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'
@@ -1076,16 +1052,16 @@ ticketSchema.statics.getTicketsByStatus = function (grpId, status, callback) {
  * @method getTicketByUid
  *
  * @param {Number} uid Unique Id for ticket.
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketByUid = function (uid, callback) {
   if (_.isUndefined(uid)) return callback('Invalid Uid - TicketSchema.GetTicketByUid()', null)
 
-  var self = this
+  const self = this
 
-  var q = self
+  const q = self
     .model(COLLECTION)
-    .findOne({ uid: uid, deleted: false })
+    .findOne({ uid, deleted: false })
     .populate(
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'
@@ -1102,7 +1078,7 @@ ticketSchema.statics.getTicketByUid = function (uid, callback) {
  * @method getTicketById
  *
  * @param {Object} id MongoDb _id.
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketById = async function (id, callback) {
   const self = this
@@ -1162,14 +1138,14 @@ ticketSchema.statics.getTicketById = async function (id, callback) {
  * @method getTicketsByRequester
  *
  * @param {Object} userId MongoDb _id of user.
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByRequester = function (userId, callback) {
   if (_.isUndefined(userId)) return callback('Invalid Requester Id - TicketSchema.GetTicketsByRequester()', null)
 
-  var self = this
+  const self = this
 
-  var q = self
+  const q = self
     .model(COLLECTION)
     .find({ owner: userId, deleted: false })
     .limit(10000)
@@ -1202,14 +1178,14 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
   if (_.isUndefined(grps) || _.isUndefined(search))
     return callback('Invalid Post Data - TicketSchema.GetTicketsWithSearchString()', null)
 
-  var self = this
+  const self = this
 
-  var tickets = []
+  const tickets = []
 
   async.parallel(
     [
       function (callback) {
-        var q = self
+        const q = self
           .model(COLLECTION)
           .find({
             group: { $in: grps },
@@ -1231,7 +1207,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
         })
       },
       function (callback) {
-        var q = self
+        const q = self
           .model(COLLECTION)
           .find({
             group: { $in: grps },
@@ -1253,7 +1229,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
         })
       },
       function (callback) {
-        var q = self
+        const q = self
           .model(COLLECTION)
           .find({
             group: { $in: grps },
@@ -1278,7 +1254,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
     function (err) {
       if (err) return callback(err, null)
 
-      var t = _.uniqBy(_.flatten(tickets), function (i) {
+      const t = _.uniqBy(_.flatten(tickets), function (i) {
         return i.uid
       })
 
@@ -1294,18 +1270,18 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
  * @method getOverdue
  *
  * @param {Array} grpId Group Array of User
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getOverdue = function (grpId, callback) {
   if (_.isUndefined(grpId)) return callback('Invalid Group Ids - TicketSchema.GetOverdue()', null)
 
-  var self = this
+  const self = this
 
   // Disable cache (TEMP 01/04/2019)
-  // var grpHash = hash(grpId);
-  // var cache = global.cache;
+  // const grpHash = hash(grpId);
+  // const cache = global.cache;
   // if (cache) {
-  //     var overdue = cache.get('tickets:overdue:' + grpHash);
+  //     const overdue = cache.get('tickets:overdue:' + grpHash);
   //     if (overdue)
   //         return callback(null, overdue);
   // }
@@ -1325,7 +1301,7 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
           .exec(next)
       },
       function (tickets, next) {
-        var t = _.map(tickets, function (i) {
+        const t = _.map(tickets, function (i) {
           return _.transform(
             i,
             function (result, value, key) {
@@ -1341,19 +1317,19 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
         return next(null, t)
       },
       function (tickets, next) {
-        var now = new Date()
-        var ids = _.filter(tickets, function (t) {
+        const now = new Date()
+        let ids = _.filter(tickets, function (t) {
           if (!t.date && !t.updated) {
             return false
           }
 
-          var timeout = null
+          let timeout
           if (t.updated) {
-            var updated = new Date(t.updated)
+            const updated = new Date(t.updated)
             timeout = new Date(updated)
             timeout.setMinutes(updated.getMinutes() + t.overdueIn)
           } else {
-            var date = new Date(t.date)
+            const date = new Date(t.date)
             timeout = new Date(date)
             timeout.setMinutes(date.getMinutes() + t.overdueIn)
           }
@@ -1384,11 +1360,11 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
     }
   )
 
-  // var q = self.model(COLLECTION).find({group: {$in: grpId}, status: {$in: [0,1]}, deleted: false})
+  // const q = self.model(COLLECTION).find({group: {$in: grpId}, status: {$in: [0,1]}, deleted: false})
   //     .$where(function() {
   //         return this.priority.overdueIn === undefined;
-  //         var now = new Date();
-  //         var timeout = null;
+  //         const now = new Date();
+  //         const timeout = null;
   //         if (this.updated) {
   //             timeout = new Date(this.updated);
   //             timeout.setMinutes(timeout.getMinutes() + this.priority.overdueIn);
@@ -1414,11 +1390,11 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
   //         console.log('served from redis');
   //         return callback(null, JSON.parse(value.data));
   //     } else {
-  //         var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
+  //         const q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
   //             .$where(function() {
-  //                 var now = new Date();
-  //                 var updated = new Date(this.updated);
-  //                 var timeout = new Date(updated);
+  //                 const now = new Date();
+  //                 const updated = new Date(this.updated);
+  //                 const timeout = new Date(updated);
   //                 timeout.setDate(timeout.getDate() + 2);
   //                 return now > timeout;
   //             }).select('_id uid subject updated');
@@ -1444,15 +1420,15 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
  *
  * @param {Array} grpId Group Array of User
  * @param {string} tagId Tag Id
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByTag = function (grpId, tagId, callback) {
   if (_.isUndefined(grpId)) return callback('Invalid Group Ids - TicketSchema.GetTicketsByTag()', null)
   if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetTicketsByTag()', null)
 
-  var self = this
+  const self = this
 
-  var q = self.model(COLLECTION).find({ group: { $in: grpId }, tags: tagId, deleted: false })
+  const q = self.model(COLLECTION).find({ group: { $in: grpId }, tags: tagId, deleted: false })
 
   return q.exec(callback)
 }
@@ -1464,14 +1440,14 @@ ticketSchema.statics.getTicketsByTag = function (grpId, tagId, callback) {
  * @method getAllTicketsByTag
  *
  * @param {string} tagId Tag Id
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getAllTicketsByTag = function (tagId, callback) {
   if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetAllTicketsByTag()', null)
 
-  var self = this
+  const self = this
 
-  var q = self.model(COLLECTION).find({ tags: tagId, deleted: false })
+  const q = self.model(COLLECTION).find({ tags: tagId, deleted: false })
 
   return q.exec(callback)
 }
@@ -1484,16 +1460,16 @@ ticketSchema.statics.getAllTicketsByTag = function (tagId, callback) {
  *
  * @param {Array} grpId Group Array of User
  * @param {string} typeId Type Id
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  * @param {Boolean} limit Should Limit results?
  */
 ticketSchema.statics.getTicketsByType = function (grpId, typeId, callback, limit) {
   if (_.isUndefined(grpId)) return callback('Invalid Group Ids = TicketSchema.GetTicketsByType()', null)
   if (_.isUndefined(typeId)) return callback('Invalid Ticket Type Id - TicketSchema.GetTicketsByType()', null)
 
-  var self = this
+  const self = this
 
-  var q = self.model(COLLECTION).find({ group: { $in: grpId }, type: typeId, deleted: false })
+  const q = self.model(COLLECTION).find({ group: { $in: grpId }, type: typeId, deleted: false })
   if (limit) {
     q.limit(1000)
   }
@@ -1508,13 +1484,13 @@ ticketSchema.statics.getTicketsByType = function (grpId, typeId, callback, limit
  * @method getAllTicketsByType
  *
  * @param {string} typeId Type Id
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.getAllTicketsByType = function (typeId, callback) {
   if (_.isUndefined(typeId)) return callback('Invalid Ticket Type Id - TicketSchema.GetAllTicketsByType()', null)
 
-  var self = this
-  var q = self.model(COLLECTION).find({ type: typeId })
+  const self = this
+  const q = self.model(COLLECTION).find({ type: typeId })
 
   return q.lean().exec(callback)
 }
@@ -1524,16 +1500,16 @@ ticketSchema.statics.updateType = function (oldTypeId, newTypeId, callback) {
     return callback('Invalid IDs - TicketSchema.UpdateType()', null)
   }
 
-  var self = this
+  const self = this
   return self.model(COLLECTION).updateMany({ type: oldTypeId }, { $set: { type: newTypeId } }, callback)
 }
 
 ticketSchema.statics.getAssigned = function (userId, callback) {
   if (_.isUndefined(userId)) return callback('Invalid Id - TicketSchema.GetAssigned()', null)
 
-  var self = this
+  const self = this
 
-  var q = self
+  const q = self
     .model(COLLECTION)
     .find({ assignee: userId, deleted: false, status: { $ne: 3 } })
     .populate(
@@ -1554,7 +1530,7 @@ ticketSchema.statics.getAssigned = function (userId, callback) {
  *
  * @param {Number} timespan Timespan to get the top groups (default: 9999)
  * @param {Number} top Top number of Groups to return (default: 5)
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  * @example
  * ticketSchema.getTopTicketGroups(5, function(err, results) {
  *    if (err) throw err;
@@ -1568,15 +1544,15 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
   if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = -1
   if (_.isUndefined(top) || _.isNaN(top)) top = 5
 
-  var self = this
+  const self = this
 
-  var today = moment
+  const today = moment
     .utc()
     .hour(23)
     .minute(59)
     .second(59)
-  var tsDate = today.clone().subtract(timespan, 'd')
-  var query = {
+  const tsDate = today.clone().subtract(timespan, 'd')
+  let query = {
     date: { $gte: tsDate.toDate(), $lte: today.toDate() },
     deleted: false
   }
@@ -1584,15 +1560,15 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
     query = { deleted: false }
   }
 
-  var q = self
+  const q = self
     .model(COLLECTION)
     .find(query)
     .select('group')
     .populate('group', 'name')
     .lean()
 
-  var topCount = []
-  var ticketsDb = []
+  let topCount = []
+  const ticketsDb = []
 
   async.waterfall(
     [
@@ -1600,16 +1576,16 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
         q.exec(function (err, t) {
           if (err) return next(err)
 
-          var arr = []
+          const arr = []
 
-          for (var i = 0; i < t.length; i++) {
-            var ticket = t[i]
+          for (let i = 0; i < t.length; i++) {
+            const ticket = t[i]
             if (ticket.group) {
               ticketsDb.push({
                 ticketId: ticket._id,
                 groupId: ticket.group._id
               })
-              var o = {}
+              const o = {}
               o._id = ticket.group._id
               o.name = ticket.group.name
 
@@ -1623,10 +1599,10 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
         })
       },
       function (grps, next) {
-        for (var g = 0; g < grps.length; g++) {
-          var tickets = []
-          var grp = grps[g]
-          for (var i = 0; i < ticketsDb.length; i++) {
+        for (let g = 0; g < grps.length; g++) {
+          const tickets = []
+          const grp = grps[g]
+          for (let i = 0; i < ticketsDb.length; i++) {
             if (ticketsDb[i].groupId === grp._id) {
               tickets.push(ticketsDb)
             }
@@ -1655,9 +1631,9 @@ ticketSchema.statics.getTopTicketGroups = function (timespan, top, callback) {
 ticketSchema.statics.getTagCount = function (tagId, callback) {
   if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetTagCount()', null)
 
-  var self = this
+  const self = this
 
-  var q = self.model(COLLECTION).countDocuments({ tags: tagId, deleted: false })
+  const q = self.model(COLLECTION).countDocuments({ tags: tagId, deleted: false })
 
   return q.exec(callback)
 }
@@ -1665,15 +1641,15 @@ ticketSchema.statics.getTagCount = function (tagId, callback) {
 ticketSchema.statics.getTypeCount = function (typeId, callback) {
   if (_.isUndefined(typeId)) return callback('Invalid Type Id - TicketSchema.GetTypeCount()', null)
 
-  var self = this
+  const self = this
 
-  var q = self.model(COLLECTION).countDocuments({ type: typeId, deleted: false })
+  const q = self.model(COLLECTION).countDocuments({ type: typeId, deleted: false })
 
   return q.exec(callback)
 }
 
 ticketSchema.statics.getCount = function (callback) {
-  var q = this.model(COLLECTION)
+  const q = this.model(COLLECTION)
     .countDocuments({ deleted: false })
     .lean()
   return q.exec(callback)
@@ -1688,12 +1664,12 @@ ticketSchema.statics.getCount = function (callback) {
  * @method softDelete
  *
  * @param {Object} oId Ticket Object _id
- * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {function} callback MongoDB Query Callback
  */
 ticketSchema.statics.softDelete = function (oId, callback) {
   if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.SoftDelete()', null)
 
-  var self = this
+  const self = this
 
   return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: true }, { new: true }, callback)
 }
@@ -1701,13 +1677,13 @@ ticketSchema.statics.softDelete = function (oId, callback) {
 ticketSchema.statics.softDeleteUid = function (uid, callback) {
   if (_.isUndefined(uid)) return callback({ message: 'Invalid UID - TicketSchema.SoftDeleteUid()' })
 
-  return this.model(COLLECTION).findOneAndUpdate({ uid: uid }, { deleted: true }, { new: true }, callback)
+  return this.model(COLLECTION).findOneAndUpdate({ uid }, { deleted: true }, { new: true }, callback)
 }
 
 ticketSchema.statics.restoreDeleted = function (oId, callback) {
   if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.RestoreDeleted()', null)
 
-  var self = this
+  const self = this
 
   return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: false }, { new: true }, callback)
 }
@@ -1722,7 +1698,7 @@ ticketSchema.statics.getDeleted = function (callback) {
 }
 
 function statusToString (status) {
-  var str
+  let str
   switch (status) {
     case 0:
       str = 'New'

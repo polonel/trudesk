@@ -13,6 +13,7 @@ services:
       TRUDESK_DOCKER: "true"
       TD_MONGODB_SERVER: mongo
       TD_MONGODB_DATABASE: trudesk
+      USE_XFORWARDIP: "true"
     volumes:
       - trudesk_uploads:/usr/src/trudesk/public/uploads
       - trudesk_backups:/usr/src/trudesk/backups
@@ -30,9 +31,7 @@ services:
     environment:
       - xpack.security.enabled=false
       - xpack.security.http.ssl.enabled=false
-      - node.name=estrudesk01
-      - cluster.initial_master_nodes=estrudesk01
-      - discovery.seed_hosts=estrudesk01
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
     mem_limit: 1073741824
     ulimits:

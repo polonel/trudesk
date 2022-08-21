@@ -106,7 +106,13 @@ mainController.dashboard = function (req, res) {
 }
 
 mainController.loginPost = async function (req, res, next) {
-  const ipAddress = req.ip
+  let ipAddress = req.ip
+  if (process.env.USE_XFORWARDIP == 'true') 
+    ipAddress= req.headers["x-forwarded-for"]
+  
+  if (process.env.USE_USERRATELIMIT == 'true')
+    ipAddress = ipAddress + req.body['username']
+
   const [resEmailAndIP] = await Promise.all([limiterSlowBruteByIP.get(ipAddress)])
 
   let retrySecs = 0

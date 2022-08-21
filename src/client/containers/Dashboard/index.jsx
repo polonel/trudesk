@@ -24,7 +24,7 @@ import PeityLine from 'components/Peity/peity-line'
 import MGraph from 'components/MGraph'
 import D3Pie from 'components/D3/d3pie'
 
-import moment from 'moment'
+import moment from 'moment-timezone'
 import helpers from 'lib/helpers'
 
 @observer
@@ -54,8 +54,11 @@ class DashboardContainer extends React.Component {
 
   render () {
     const formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
+    const tz = helpers.getTimezone()
     const lastUpdatedFormatted = this.props.dashboardState.lastUpdated
-      ? moment.utc(this.props.dashboardState.lastUpdated, 'MM/DD/YYYY hh:mm:ssa').format(formatString)
+      ? moment(this.props.dashboardState.lastUpdated, 'MM/DD/YYYY hh:mm:ssa')
+          .tz(tz)
+          .format(formatString)
       : 'Cache Still Loading...'
 
     const closedPercent = this.props.dashboardState.closedCount

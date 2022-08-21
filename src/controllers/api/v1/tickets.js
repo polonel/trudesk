@@ -1958,7 +1958,7 @@ apiTickets.getOverdue = function (req, res) {
       ],
       function (err, overdueTickets) {
         if (err) return res.status(400).json({ success: false, error: err.message })
-
+        if (!overdueTickets) overdueTickets = []
         return res.json({ success: true, tickets: overdueTickets })
       }
     )
