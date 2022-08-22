@@ -1881,7 +1881,7 @@ apiTickets.subscribe = function (req, res) {
  * @apiDescription Gets all ticket tags
  * @apiVersion 0.1.6
  * @apiGroup Ticket
- * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiHeader {string} accesstoken The access token for the logged-in user
  *
  * @apiExample Example usage:
  * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags
