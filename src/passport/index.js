@@ -51,38 +51,44 @@ module.exports = function () {
       {
         server: {
           url: 'ldap://172.16.254.1:389',
-          // bindDN: 'CN=Users,DC=shatura,DC=pro', 
-          bindDN: 'CN="Игорь Лобанов",CN=Users,DC=shatura,DC=pro',
+          bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro', 
+          // bindDN: 'sAMAccountName=ilobanov,CN=Users,DC=shatura,DC=pro',
           bindCredentials: 'ponchikYA1999',
           searchBase: 'CN=Users,DC=shatura,DC=pro',
           // searchFilter: '(uid={{username}})'
-          searchFilter: '(sAMAccountName={{username}})'
-          
+          // searchFilter: '(&(sAMAccountName={{username}}))'
+          searchFilter: '(&(userPrincipalName=ilobanov@shatura.pro))'
         },
-        // credentialsLookup: basicAuth,
-        usernameField: 'login-username',
-        passwordField: 'login-password'
+        // usernameField: 'login-username',
+        // passwordField: 'login-password'
       }
       ,function (req, username, password, done) {
+      for (group of req.memberOf){
+        console.log(group);
+        if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro'){
+            role = 'admin';
+        }
+      }
       console.log(req);
       console.log(username);
-      return done(null, username);
-      // User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
-      //   .select('+password +tOTPKey +tOTPPeriod')
-      //   .exec(function (err, user) {
-      //     if (err) {
-      //       return done(err)
-      //     }
+      // return done(null, username);
+      User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+        .select('+password +tOTPKey +tOTPPeriod')
+        .exec(function (err, user) {
+          if (err) {
+            return done(err)
+          }
 
-      //     if (!user || user.deleted || !User.validate(password, user.password)) {
-      //       req.flash('loginMessage', '')
-      //       return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
-      //     }
+          if (!user || user.deleted || !User.validate(password, user.password)) {
+            req.flash('loginMessage', '')
+            //Функция создания пользователя в db с ролями
+            return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+          }
+          //Функция проверки ролей пользователя, удаление или добавление ролей
+          req.user = user
 
-      //     req.user = user
-
-      //     return done(null, user)
-      //   })
+          return done(null, user)
+        })
     })); //Можно подставить функцию для обработки результата, например завести в базе данных пользователя из LDAP
 
   passport.use(

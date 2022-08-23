@@ -19,6 +19,8 @@ const passport = require('passport')
 const winston = require('winston')
 const pkg = require('../../package')
 const xss = require('xss')
+const ldap = require('ldapjs');
+
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
 
 const limiterSlowBruteByIP = new RateLimiterMemory({
@@ -163,11 +165,6 @@ mainController.loginPost = async function (req, res, next) {
     })(req, res, next)
    
   }
-
-  // app.post('/login', passport.authenticate('ldapauth', {session: false}), function(req, res) {
-  //   res.send({status: 'ok'});
-  // });
-
 
 }
 
