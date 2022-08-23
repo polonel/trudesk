@@ -87,5 +87,10 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/es/rebuild', apiv2Auth, isAdmin, apiv2.elasticsearch.rebuild)
   router.get('/api/v2/es/status', apiv2Auth, isAdmin, apiv2.elasticsearch.status)
 
+  //MailerCheck
   router.get('/api/v2/mailer/check', apiv2Auth, isAdmin, apiv2.mailer.check)
+
+  //LDAP Settings
+  // router.post('/api/v2/LDAPMapping/check', apiv2Auth, isAdmin, apiv2.accounts.LDAPMapping)
+  
 }

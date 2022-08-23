@@ -19,6 +19,7 @@ const Chance = require('chance')
 const apiUtil = require('../apiUtils')
 const User = require('../../../models/user')
 const Group = require('../../../models/group')
+// const Role = require('../../../models/role')
 const Team = require('../../../models/team')
 const Department = require('../../../models/department')
 const passwordComplexity = require('../../../settings/passwordComplexity')
@@ -508,5 +509,15 @@ accountsApi.updatePassword = async (req, res) => {
     return apiUtil.sendApiError(res, 500, err.message)
   }
 }
+
+// accountsApi.LDAPMapping = async (req, res) => {
+//   try {
+//     console.log(req);
+//     return apiUtil.sendApiSuccess(res, {})
+//   } catch (err) {
+//     return apiUtil.sendApiError(res, 500, err.message)
+//   }
+// }
+
 
 module.exports = accountsApi

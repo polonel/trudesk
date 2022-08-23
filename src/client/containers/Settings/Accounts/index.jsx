@@ -16,9 +16,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings } from 'actions/settings'
+// import Role from '../../../models/role'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
+// import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
+// import SettingSubItem from 'components/Settings/SettingSubItem'
+// import SingleSelect from 'components/SingleSelect'
+// import ColorSelector from 'components/ColorSelector'
+// import Zone from 'components/ZoneBox/zone'
+// import ZoneBox from 'components/ZoneBox'
 
 import helpers from 'lib/helpers'
 import axios from 'axios'
@@ -32,34 +39,50 @@ import UIKit from 'uikit'
 class AccountsSettingsContainer extends React.Component {
   @observable passwordComplexityEnabled = false
   @observable allowUserRegistrationEnabled = false
+  @observable ldapEnabled = false
+  // @observable LDAPSettings = false
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     makeObservable(this)
 
     this.state = {
-      restarting: false
+      restarting: false,
+      ldapHost: '',
+      ldapBindDN: '',
+      ldapPassword: ''
+      // rolesArray: [],
+      // groupLDAPArray:[]
     }
 
     this.restartServer = this.restartServer.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     // helpers.UI.inputs()
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
     if (prevProps.settings !== this.props.settings) {
       if (this.passwordComplexityEnabled !== this.getSetting('accountsPasswordComplexity'))
         this.passwordComplexityEnabled = this.getSetting('accountsPasswordComplexity')
       if (this.allowUserRegistrationEnabled !== this.getSetting('allowUserRegistration'))
         this.allowUserRegistrationEnabled = this.getSetting('allowUserRegistration')
+      if (this.ldapEnabled !== this.getSetting('ldapSettings'))
+        this.ldapEnabled = this.getSetting('ldapSettings')
+      if (this.state.ldapHost !== this.getSetting('ldapHost'))
+        this.state.ldapHost = this.getSetting('ldapHost')
+      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN'))
+        this.state.ldapBindDN = this.getSetting('ldapBindDN')
+      if (this.state.ldapPassword !== this.getSetting('ldapPassword'))
+        this.state.ldapPassword = this.getSetting('ldapPassword')
     }
   }
 
-  restartServer () {
+
+  restartServer() {
     this.setState({ restarting: true })
 
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -84,20 +107,74 @@ class AccountsSettingsContainer extends React.Component {
       })
   }
 
-  getSetting (stateName) {
+  getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
       : ''
   }
 
-  updateSetting (stateName, name, value) {
+  updateSetting(stateName, name, value) {
     this.props.updateSetting({ stateName, name, value })
   }
 
-  render () {
+  onInputValueChanged(e, stateName) {
+    this.setState({
+      [stateName]: e.target.value
+    })
+  }
+
+  // onCheckNowClicked(e) {
+    // axios
+    //   .post(`/api/v2/LDAPMapping/check`, {
+    //     currentPassword: this.currentPassword,
+    //     newPassword: this.newPassword,
+    //     confirmPassword: this.confirmPassword
+    //   })
+    //   .then(function (res) {
+    //     if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+    //   })
+    //   .catch(function (err) {
+    //     Log.error(err)
+    //     helpers.UI.showSnackbar(err, true)
+    //   })
+  // }
+
+
+  onFormSubmit(e) {
+    e.preventDefault()
+
+    const ldapSettings = [
+      // { name: 'ldapSettings:enable', value: this.state.ldapEnabled * 60000 },
+      { name: 'ldapSettings:host', value: this.state.ldapHost },
+      // { name: 'ldapSettings:port', value: this.state.ldapPort },
+      { name: 'ldapSettings:bindDN', value: this.state.ldapBindDN },
+      { name: 'ldapSettings:password', value: this.state.ldapPassword },
+      // { name: 'ldapSettings:username', value: this.state.ldapUsername },
+      // { name: 'ldapSettings:password', value: this.state.ldapPassword },
+    ]
+    this.props.updateMultipleSettings(ldapSettings)
+  }
+
+  // fillInTheListOfRoles() {
+ 
+  //   Role.find().map(role => {
+  //     this.state.rolesArray.push(role);
+  //     console.log(role.name)
+  //   });
+  // }
+
+  render() {
+    // const ElementArray = ({item})=>{
+    //   return <div>{item.name}</div>
+    // }
+    // fillInTheListOfRoles();
     const { active } = this.props
     return (
+
       <div className={active ? 'active' : 'hide'}>
+        {/* <div>
+      {this.state.rolesArray.map(el=><ElementArray item={el}/>)}
+    </div> */}
         <SettingItem
           title='Allow User Registration'
           subtitle='Allow users to create accounts on the login screen.'
@@ -127,6 +204,119 @@ class AccountsSettingsContainer extends React.Component {
             />
           }
         />
+
+        <SettingItem
+          title={'LDAP Settings'}
+          // subtitle={'Require users passwords to meet minimum password complexity'}
+          // tooltip={'Minimum 8 characters with uppercase and numeric.'}
+          component={
+            <EnableSwitch
+              stateName={'ldapSettings'}
+              label={'Enable'}
+              checked={this.ldapEnabled}
+              onChange={e => {
+                this.updateSetting('ldapSettings', 'ldapSettings:enable', e.target.checked)
+              }}
+            />
+          }
+        >
+          <div>
+            <form onSubmit={e => this.onFormSubmit(e)}>
+              <div className='uk-margin-medium-bottom'>
+                <label>LDAP Server</label>
+                <input
+                  type='text'
+                  className={'md-input md-input-width-medium'}
+                  name={'ldapHost'}
+                  value={this.state.ldapHost}
+                  onChange={e => this.onInputValueChanged(e, 'ldapHost')}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+              </div>
+              <div className='uk-margin-medium-bottom'>
+                <label>LDAP Login</label>
+                <input
+                  type='text'
+                  className={'md-input md-input-width-medium'}
+                  name={'ldapBindDN'}
+                  value={this.state.ldapBindDN}
+                  onChange={e => this.onInputValueChanged(e, 'ldapBindDN')}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+              </div>
+              <div className='uk-margin-medium-bottom'>
+                <label>LDAP Password</label>
+                <input
+                  type='password'
+                  className={'md-input md-input-width-medium'}
+                  name={'ldapPassword'}
+                  value={this.state.ldapPassword}
+                  onChange={e => this.onInputValueChanged(e, 'ldapPassword')}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+              </div>
+              {/* <Zone>
+
+                <ZoneBox>
+                  <SettingSubItem
+                    title='Admin'
+                    subtitle='Select a predefined color scheme'
+                    component={
+                      <SingleSelect
+                        width='60%'
+                        showTextbox={false}
+                        items={[]}
+                      // defaultValue={this.state.selectedColorScheme}
+                      // onSelectChange={e => {
+                      //   this.onBuiltInColorSelectChange(e)
+                      // }}
+                      />
+                    }
+                  />
+                </ZoneBox>
+                <ZoneBox>
+                  <SettingSubItem
+                    title='Admin'
+                    //subtitle='Select a predefined color scheme'
+                    component={
+                      <SingleSelect
+                        width='60%'
+                        showTextbox={false}
+                        items={[]}
+                      // defaultValue={this.state.selectedColorScheme}
+                      // onSelectChange={e => {
+                      //   this.onBuiltInColorSelectChange(e)
+                      // }}
+                      />
+                    }
+                  />
+                </ZoneBox>
+              </Zone> */}
+              <div className='uk-clearfix'>
+                <Button
+                  text={'Check Now'}
+                  type={'button'}
+                  extraClass={'uk-float-left'}
+                  flat={true}
+                  waves={true}
+                  style={'primary'}
+                  onClick={e => this.onCheckNowClicked(e)}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+                <Button
+                  text={'Apply'}
+                  type={'submit'}
+                  extraClass={'uk-float-right'}
+                  flat={true}
+                  waves={true}
+                  style={'success'}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+
+              </div>
+            </form>
+          </div>
+        </SettingItem>
       </div>
     )
   }
