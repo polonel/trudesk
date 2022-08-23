@@ -20,12 +20,12 @@ import { updateSetting, updateMultipleSettings } from 'actions/settings'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
-// import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
-// import SettingSubItem from 'components/Settings/SettingSubItem'
-// import SingleSelect from 'components/SingleSelect'
-// import ColorSelector from 'components/ColorSelector'
-// import Zone from 'components/ZoneBox/zone'
-// import ZoneBox from 'components/ZoneBox'
+import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
+import SettingSubItem from 'components/Settings/SettingSubItem'
+import SingleSelect from 'components/SingleSelect'
+import ColorSelector from 'components/ColorSelector'
+import Zone from 'components/ZoneBox/zone'
+import ZoneBox from 'components/ZoneBox'
 
 import helpers from 'lib/helpers'
 import axios from 'axios'
@@ -51,9 +51,9 @@ class AccountsSettingsContainer extends React.Component {
       restarting: false,
       ldapHost: '',
       ldapBindDN: '',
-      ldapPassword: ''
-      // rolesArray: [],
-      // groupLDAPArray:[]
+      ldapPassword: '',
+      rolesArray: [],
+      groupLDAPArray:[]
     }
 
     this.restartServer = this.restartServer.bind(this)
@@ -123,21 +123,18 @@ class AccountsSettingsContainer extends React.Component {
     })
   }
 
-  // onCheckNowClicked(e) {
-    // axios
-    //   .post(`/api/v2/LDAPMapping/check`, {
-    //     currentPassword: this.currentPassword,
-    //     newPassword: this.newPassword,
-    //     confirmPassword: this.confirmPassword
-    //   })
-    //   .then(function (res) {
-    //     if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-    //   })
-    //   .catch(function (err) {
-    //     Log.error(err)
-    //     helpers.UI.showSnackbar(err, true)
-    //   })
-  // }
+  onCheckNowClicked(e) {
+    axios
+      .post(`/api/v2/LDAPMapping/check`, {
+      })
+      .then(function (res) {
+        if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+      })
+      .catch(function (err) {
+        Log.error(err)
+        helpers.UI.showSnackbar(err, true)
+      })
+  }
 
 
   onFormSubmit(e) {
@@ -255,7 +252,7 @@ class AccountsSettingsContainer extends React.Component {
                 // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
               </div>
-              {/* <Zone>
+              <Zone>
 
                 <ZoneBox>
                   <SettingSubItem
@@ -291,7 +288,7 @@ class AccountsSettingsContainer extends React.Component {
                     }
                   />
                 </ZoneBox>
-              </Zone> */}
+              </Zone>
               <div className='uk-clearfix'>
                 <Button
                   text={'Check Now'}
