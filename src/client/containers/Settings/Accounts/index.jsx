@@ -15,8 +15,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { updateSetting, updateMultipleSettings } from 'actions/settings'
-// import Role from '../../../models/role'
+import { updateSetting, updateMultipleSettings, fetchRoles } from 'actions/settings'
+// import { fetchRoles } from 'actions/common'
+// import settingUtil from '../../../../settings/settingsUtil'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
@@ -117,6 +118,20 @@ class AccountsSettingsContainer extends React.Component {
     this.props.updateSetting({ stateName, name, value })
   }
 
+  getRoles() {
+    let rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
+    rolesArray = JSON.stringify(rolesArray);
+    rolesArray = JSON.parse(rolesArray);
+    let rolesName = [];
+    // const rolesArray = this.props.fetchRoles({ type: 'all' });
+    for(let i = 0;i< rolesArray.length; i++){
+      rolesName.push(rolesArray[i]['name']);
+    }
+    // console.log(JSON.stringify(rolesArray[0]));
+    console.log(rolesName);
+    return rolesName;
+  }
+
   onInputValueChanged(e, stateName) {
     this.setState({
       [stateName]: e.target.value
@@ -125,7 +140,7 @@ class AccountsSettingsContainer extends React.Component {
 
   onCheckNowClicked(e) {
     axios
-      .post(`/api/v2/LDAPMapping/check`, {
+      .post(`/api/v2/login`, {'username':'admin','password':'admin'
       })
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
@@ -152,25 +167,35 @@ class AccountsSettingsContainer extends React.Component {
     this.props.updateMultipleSettings(ldapSettings)
   }
 
-  // fillInTheListOfRoles() {
- 
-  //   Role.find().map(role => {
-  //     this.state.rolesArray.push(role);
-  //     console.log(role.name)
-  //   });
-  // }
+
 
   render() {
-    // const ElementArray = ({item})=>{
-    //   return <div>{item.name}</div>
-    // }
+    const ElementArray = ({role})=>{
+      return <ZoneBox>
+                  <SettingSubItem
+                    title={role}
+                    component={
+                      <SingleSelect
+                        width='60%'
+                        showTextbox={false}
+                        items={role}
+                      // defaultValue={this.state.selectedColorScheme}
+                      // onSelectChange={e => {
+                      //   this.onBuiltInColorSelectChange(e)
+                      // }}
+                      />
+                    }
+                  />
+                </ZoneBox>
+    }
     // fillInTheListOfRoles();
+    const rolesName = this.getRoles();
     const { active } = this.props
     return (
 
       <div className={active ? 'active' : 'hide'}>
         {/* <div>
-      {this.state.rolesArray.map(el=><ElementArray item={el}/>)}
+      {rolesName.map(el=><ElementArray item={el}/>)}
     </div> */}
         <SettingItem
           title='Allow User Registration'
@@ -253,41 +278,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div>
               <Zone>
-
-                <ZoneBox>
-                  <SettingSubItem
-                    title='Admin'
-                    subtitle='Select a predefined color scheme'
-                    component={
-                      <SingleSelect
-                        width='60%'
-                        showTextbox={false}
-                        items={[]}
-                      // defaultValue={this.state.selectedColorScheme}
-                      // onSelectChange={e => {
-                      //   this.onBuiltInColorSelectChange(e)
-                      // }}
-                      />
-                    }
-                  />
-                </ZoneBox>
-                <ZoneBox>
-                  <SettingSubItem
-                    title='Admin'
-                    //subtitle='Select a predefined color scheme'
-                    component={
-                      <SingleSelect
-                        width='60%'
-                        showTextbox={false}
-                        items={[]}
-                      // defaultValue={this.state.selectedColorScheme}
-                      // onSelectChange={e => {
-                      //   this.onBuiltInColorSelectChange(e)
-                      // }}
-                      />
-                    }
-                  />
-                </ZoneBox>
+                      {rolesName.map(el=><ElementArray role={el}/>)}
               </Zone>
               <div className='uk-clearfix'>
                 <Button
@@ -327,7 +318,8 @@ AccountsSettingsContainer.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  settings: state.settings.settings
+  settings: state.settings.settings,
+  roles: state.shared.roles
 })
 
-export default connect(mapStateToProps, { updateSetting, updateMultipleSettings })(AccountsSettingsContainer)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles })(AccountsSettingsContainer)
