@@ -55,12 +55,14 @@ module.exports = function () {
           // bindDN: 'sAMAccountName=ilobanov,CN=Users,DC=shatura,DC=pro',
           bindCredentials: 'ponchikYA1999',
           searchBase: 'CN=Users,DC=shatura,DC=pro',
+          groupSearchBase: 'CN=Users,DC=shatura,DC=pro',
+          groupSearchFilter: `(&(objectclass=group)(member:1.2.840.113556.1.4.1941:={{dn}}))`,
           // searchFilter: '(uid={{username}})'
           // searchFilter: '(&(sAMAccountName={{username}}))'
           searchFilter: '(&(userPrincipalName=ilobanov@shatura.pro))'
         },
-        // usernameField: 'login-username',
-        // passwordField: 'login-password'
+        usernameField: 'login-username',
+        passwordField: 'login-password'
       }
       ,function (req, username, password, done) {
       for (group of req.memberOf){

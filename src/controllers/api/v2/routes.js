@@ -27,7 +27,7 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/login', controllers.api.v2.common.login)
   router.post('/api/v2/token', controllers.api.v2.common.token)
   router.get('/api/v2/viewdata', middleware.loadCommonData, controllers.api.v2.common.viewData)
-
+  router.post('/api/v2/loginLDAP', controllers.api.v2.common.loginLDAP) //++ ShaturaPro LIN 24.08.2022
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)

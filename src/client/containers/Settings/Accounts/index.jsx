@@ -53,6 +53,7 @@ class AccountsSettingsContainer extends React.Component {
       ldapHost: '',
       ldapBindDN: '',
       ldapPassword: '',
+      ldapUsername: '',
       rolesArray: [],
       groupLDAPArray:[]
     }
@@ -79,6 +80,8 @@ class AccountsSettingsContainer extends React.Component {
         this.state.ldapBindDN = this.getSetting('ldapBindDN')
       if (this.state.ldapPassword !== this.getSetting('ldapPassword'))
         this.state.ldapPassword = this.getSetting('ldapPassword')
+      if (this.state.ldapUsername !== this.getSetting('ldapUsername'))
+        this.state.ldapUsername = this.getSetting('ldapUsername')
     }
   }
 
@@ -139,8 +142,9 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   onCheckNowClicked(e) {
+
     axios
-      .post(`/api/v2/login`, {'username':'admin','password':'admin'
+      .post(`/api/v2/loginLDAP`, {'login-username':this.state.ldapUsername,'login-password': this.state.ldapPassword
       })
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
@@ -161,7 +165,7 @@ class AccountsSettingsContainer extends React.Component {
       // { name: 'ldapSettings:port', value: this.state.ldapPort },
       { name: 'ldapSettings:bindDN', value: this.state.ldapBindDN },
       { name: 'ldapSettings:password', value: this.state.ldapPassword },
-      // { name: 'ldapSettings:username', value: this.state.ldapUsername },
+      { name: 'ldapSettings:username', value: this.state.ldapUsername },
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
     this.props.updateMultipleSettings(ldapSettings)
@@ -274,6 +278,17 @@ class AccountsSettingsContainer extends React.Component {
                   name={'ldapPassword'}
                   value={this.state.ldapPassword}
                   onChange={e => this.onInputValueChanged(e, 'ldapPassword')}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+              </div>
+              <div className='uk-margin-medium-bottom'>
+                <label>LDAP Username</label>
+                <input
+                  type='text'
+                  className={'md-input md-input-width-medium'}
+                  name={'ldapUsername'}
+                  value={this.state.ldapUsername}
+                  onChange={e => this.onInputValueChanged(e, 'ldapUsername')}
                 // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
               </div>
