@@ -14,6 +14,9 @@
 
 const User = require('../../../models/user')
 const apiUtils = require('../apiUtils')
+const passport = require('passport')
+const winston = require('winston')
+const ldapClient = require('../../../ldap')
 
 const commonV2 = {}
 
@@ -35,6 +38,42 @@ commonV2.login = async (req, res) => {
   } catch (e) {
     return apiUtils.sendApiError(res, 500, e.message)
   }
+}
+
+commonV2.loginLDAP = async (req, res) => {
+
+  ldapCallBack = function (req, username, password, done) {
+    // for (group of req.memberOf){
+    //   console.log(group);
+    //   if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro'){
+    //       role = 'admin';
+    //   }
+    // }
+    console.log(req);
+    console.log(username);
+    // return done(null, username);
+    User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+      .select('+password +tOTPKey +tOTPPeriod')
+      .exec(function (err, user) {
+        if (err) {
+          return done(err)
+        }
+
+        if (!user || user.deleted || !User.validate(password, user.password)) {
+          req.flash('loginMessage', '')
+          //Функция создания пользователя в db с ролями
+          return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+        }
+        //Функция проверки ролей пользователя, удаление или добавление ролей
+        req.user = user
+
+        return done(null, user)
+      })
+  }
+
+  ldapClient.bind('ldap://172.16.254.1:389', 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro', 'ponchikYA1999', ldapCallBack)
+
+
 }
 
 commonV2.token = async (req, res) => {

@@ -129,7 +129,7 @@ util.getSettings = async callback => {
         s.ldapHost = parseSetting(settings, 'ldapSettings:host', true)
         s.ldapBindDN = parseSetting(settings, 'ldapSettings:bindDN', true)
         // s.ldapPort= parseSetting(settings, 'ldapSettings:port', true)
-        // s.ldapUsername= parseSetting(settings, 'ldapSettings:username', true)
+        s.ldapUsername= parseSetting(settings, 'ldapSettings:username', true)
         s.ldapPassword= parseSetting(settings, 'ldapSettings:password', true)
         //-- ShaturaPro LIN 22.08.2022
         const types = await ticketTypeSchema.getTypes()

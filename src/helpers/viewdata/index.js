@@ -427,6 +427,15 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.ldapUsername= res.data.settings.ldapUsername.value
+
+          return callback()
+        })
+      },
       //-- ShaturaPro LIN 22.08.2022
       function (callback) {
         viewController.getPluginsInfo(request, function (err, data) {

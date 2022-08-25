@@ -23,7 +23,43 @@ ldapClient.bind = function (url, userDN, password, callback) {
     url: url
   })
 
-  ldapClient.client.bind(userDN, password, callback)
+  const opts = {
+    filter: '(objectclass=*)',
+    scope: 'sub',
+    // attributes: ['dn', 'sn', 'cn']
+    attributes: ['dn', 'sn', 'cn','dc','ou']
+  };
+
+  ldapClient.client.bind(userDN, password, function(err){
+    if (err){
+      console.log('Error in new connection ' + err);
+    } else {
+      console.log('Success');
+
+      ldapClient.client.search('OU=Groups,DC=shatura,DC=pro', opts, (err, res) => {
+        if (err){
+          console.log('Error in new connection ' + err);
+        } else {
+          res.on('searchRequest', (searchRequest) => {
+            console.log('searchRequest: ', searchRequest.messageID);
+          });
+          res.on('searchEntry', (entry) => {
+            console.log('entry: ' + JSON.stringify(entry.object));
+          });
+          res.on('searchReference', (referral) => {
+            console.log('referral: ' + referral.uris.join());
+          });
+          res.on('error', (err) => {
+            console.error('error: ' + err.message);
+          });
+          res.on('end', (result) => {
+            console.log('status: ' + result.status);
+          });
+        }
+       
+      });
+    }
+  })
 
   ldapClient.client.on('error', function (err) {
     if (_.isFunction(callback)) {
