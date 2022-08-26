@@ -80,21 +80,41 @@ commonV2.pushLDAPGroup = async (req, res) => {
   const ldapGroups = req.body.dnGroupsArray;
   for (let group of ldapGroups) {
 
-    LDAPGroup.findOne({ name: group.dn }, function (err, ldapGroup) {
+    LDAPGroup.findOne({ name: group }, function (err, ldapGroup) {
 
-      if (err) return apiUtils.sendApiError(res, 400)
-      if (ldapGroup !== null) {
+      if (err) return console.log(err);
+      if (ldapGroup !== null && ldapGroup !== undefined) {
+        console.log('Group found: ' + ldapGroup.name);
+      } else if(ldapGroup !== undefined) {
 
-        console.log('Найдена группа: ' + ldapGroup.name);
-      } else {
-
-        LDAPGroup.insertMany({ name: group.dn }, function (err, ldapGroup) {
-          if (err) return apiUtils.sendApiError(res, 400);
-          console.log('Добавлена группа: ' + ldapGroup.name)
+        LDAPGroup.insertMany({ name: group }, function (err, ldapGroup) {
+          if (err) return console.log(err);
+          console.log('Group added: ' + ldapGroup[0].name)
         })
       }
     })
   }
+
+  LDAPGroup.find()
+  .then(ldapGroupsMDB => {
+    for(let group of ldapGroupsMDB){
+      if(group.name !== undefined){
+      if (ldapGroups.includes(group.name)){
+        console.log('The group "' + group.name + '" exists in LDAP');
+      } else {
+        console.log('The group "' + group.name + '" does not exist in LDAP');
+        LDAPGroup.remove({ _id: group._id }, function (err, ldapGroup) {
+          if (err) return console.log(err);
+          console.log('Group deleted: ' + group.name)
+        })
+      }
+    }
+    }
+    
+  })
+  .catch(error => {
+    console.log(error);
+  })
 
   console.log(req);
 }
