@@ -13,6 +13,7 @@
  */
 
 const User = require('../../../models/user')
+const LDAPGroup = require('../../../models/ldapGroup')
 const apiUtils = require('../apiUtils')
 const passport = require('passport')
 const winston = require('winston')
@@ -71,10 +72,33 @@ commonV2.loginLDAP = async (req, res) => {
       })
   }
 
-  ldapClient.bind('ldap://172.16.254.1:389', 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro', 'ponchikYA1999', ldapCallBack)
-
+  ldapClient.bind(req.body.ldapHost, req.body.ldapBindDN, req.body['login-password'], ldapCallBack)
 
 }
+
+commonV2.pushLDAPGroup = async (req, res) => {
+  const ldapGroups = req.body.dnGroupsArray;
+  for (let group of ldapGroups) {
+
+    LDAPGroup.findOne({ name: group.dn }, function (err, ldapGroup) {
+
+      if (err) return apiUtils.sendApiError(res, 400)
+      if (ldapGroup !== null) {
+
+        console.log('Найдена группа: ' + ldapGroup.name);
+      } else {
+
+        LDAPGroup.insertMany({ name: group.dn }, function (err, ldapGroup) {
+          if (err) return apiUtils.sendApiError(res, 400);
+          console.log('Добавлена группа: ' + ldapGroup.name)
+        })
+      }
+    })
+  }
+
+  console.log(req);
+}
+
 
 commonV2.token = async (req, res) => {
   const refreshToken = req.body.refreshToken
