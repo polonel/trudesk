@@ -442,4 +442,10 @@ api.common.fetchViewData = () => {
   })
 }
 
+api.common.pushLDAPGroup = (dnGroupsArray) => {
+  return axios.post('/api/v2/pushLDAPGroup',{ dnGroupsArray }).then(res => {
+    return res.data
+  })
+}
+
 export default api

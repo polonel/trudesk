@@ -55,7 +55,7 @@ class AccountsSettingsContainer extends React.Component {
       ldapPassword: '',
       ldapUsername: '',
       rolesArray: [],
-      groupLDAPArray:[]
+      groupLDAPArray: []
     }
 
     this.restartServer = this.restartServer.bind(this)
@@ -127,7 +127,7 @@ class AccountsSettingsContainer extends React.Component {
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
     // const rolesArray = this.props.fetchRoles({ type: 'all' });
-    for(let i = 0;i< rolesArray.length; i++){
+    for (let i = 0; i < rolesArray.length; i++) {
       rolesName.push(rolesArray[i]['name']);
     }
     // console.log(JSON.stringify(rolesArray[0]));
@@ -144,7 +144,11 @@ class AccountsSettingsContainer extends React.Component {
   onCheckNowClicked(e) {
 
     axios
-      .post(`/api/v2/loginLDAP`, {'login-username':this.state.ldapUsername,'login-password': this.state.ldapPassword
+      .post(`/api/v2/loginLDAP`, {
+        'login-username': this.state.ldapUsername,
+        'login-password': this.state.ldapPassword,
+        ldapHost: this.state.ldapHost,
+        ldapBindDN: this.state.ldapBindDN,
       })
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
@@ -174,23 +178,23 @@ class AccountsSettingsContainer extends React.Component {
 
 
   render() {
-    const ElementArray = ({role})=>{
+    const ElementArray = ({ role }) => {
       return <ZoneBox>
-                  <SettingSubItem
-                    title={role}
-                    component={
-                      <SingleSelect
-                        width='60%'
-                        showTextbox={false}
-                        items={role}
-                      // defaultValue={this.state.selectedColorScheme}
-                      // onSelectChange={e => {
-                      //   this.onBuiltInColorSelectChange(e)
-                      // }}
-                      />
-                    }
-                  />
-                </ZoneBox>
+        <SettingSubItem
+          title={role}
+          component={
+            <SingleSelect
+              width='60%'
+              showTextbox={false}
+              items={role}
+            // defaultValue={this.state.selectedColorScheme}
+            // onSelectChange={e => {
+            //   this.onBuiltInColorSelectChange(e)
+            // }}
+            />
+          }
+        />
+      </ZoneBox>
     }
     // fillInTheListOfRoles();
     const rolesName = this.getRoles();
@@ -293,7 +297,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div>
               <Zone>
-                      {rolesName.map(el=><ElementArray role={el}/>)}
+                {rolesName.map(el => <ElementArray role={el} />)}
               </Zone>
               <div className='uk-clearfix'>
                 <Button
