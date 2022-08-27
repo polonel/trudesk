@@ -42,7 +42,7 @@ class AccountsSettingsContainer extends React.Component {
   @observable passwordComplexityEnabled = false
   @observable allowUserRegistrationEnabled = false
   @observable ldapEnabled = false
-  @observable ldapGroupsArray = []
+  ldapGroupsArray = []
   // @observable LDAPSettings = false
 
   constructor(props) {
@@ -56,6 +56,7 @@ class AccountsSettingsContainer extends React.Component {
       ldapBindDN: '',
       ldapPassword: '',
       ldapUsername: '',
+      mapping:[],
       rolesArray: [],
     }
 
@@ -64,7 +65,7 @@ class AccountsSettingsContainer extends React.Component {
 
   componentDidMount() {
     // helpers.UI.inputs()fetchLDAPGroup
-    this.props.fetchLDAPGroups({ type: 'all' })
+    // this.props.fetchLDAPGroups({ type: 'all' })
   }
 
   componentDidUpdate(prevProps) {
@@ -131,41 +132,75 @@ class AccountsSettingsContainer extends React.Component {
     rolesArray = JSON.stringify(rolesArray);
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
-    // const rolesArray = this.props.fetchRoles({ type: 'all' });
     for (let i = 0; i < rolesArray.length; i++) {
-      rolesName.push(rolesArray[i]['name']);
+      rolesName.push({name:rolesArray[i]['name'], _id:rolesArray[i]['_id'], ldapGroupID:rolesArray[i]['ldapGroupID']});
     }
-    // console.log(JSON.stringify(rolesArray[0]));
     console.log(rolesName);
     return rolesName;
   }
   getLDAPGroups() {
-    // let ldapGroupsArray = this.props.ldapGroups.sortBy(ldapGroup => ldapGroup.get('name')).toArray();
-    // let ldapGroupsArray = this.props.ldapGroups;
-    // console.log('ldapGroupsArray: '+ldapGroupsArray);
-    // ldapGroupsArray = JSON.stringify(ldapGroupsArray);
-    // ldapGroupsArray = JSON.parse(ldapGroupsArray);
-    // let ldapGroupsName = [];
-    // // const rolesArray = this.props.fetchRoles({ type: 'all' });
-    // for (let i = 0; i < ldapGroupsArray.length; i++) {
-    //   ldapGroupsName.push(ldapGroupsArray[i]['name']);
-    // }
-    // // console.log(JSON.stringify(rolesArray[0]));
-    // console.log(ldapGroupsName);
-    
+  
+    let ldapGArray = [];
     axios.get('http://trudesk-dev.shatura.pro:8118/api/v2/ldapGroups').then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
       console.log ('this.ldapGroupsArray: ')
       console.log ( this.ldapGroupsArray)
     }).catch(err=>{console.log(err)})
-    
-    return this.ldapGroupsArray;
+
+     for (let i = 0; i <  this.ldapGroupsArray.length; i++) {
+      ldapGArray.push( {text: this.ldapGroupsArray[i]['name'],value: this.ldapGroupsArray[i]['_id']});
+    }
+
+    console.log(ldapGArray);
+    return ldapGArray;
   }
 
   onInputValueChanged(e, stateName) {
     this.setState({
       [stateName]: e.target.value
     })
+  }
+
+  updateMapping(mapping){
+    console.log(mapping);
+       axios
+      .put(`/api/v2/ldapGroups/updateMapping`, mapping)
+      .then(function (res) {
+        if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+      })
+      .catch(function (err) {
+        Log.error(err)
+        helpers.UI.showSnackbar(err, true)
+      })
+  }
+  addToMap(e,role,ldapGroupID){
+    console.log(role);
+    const roles = this.getRoles();
+    let roleExist = false;
+      for(let map of this.state.mapping){
+        if(map.roleID == role._id){
+          map.ldapGroupID = ldapGroupID
+          roleExist = true
+        }
+      }
+
+      if (roleExist == false){
+        this.state.mapping.push({roleID: role._id, ldapGroupID: ldapGroupID})
+      }
+  
+    console.log(this.state.mapping)
+    // axios
+    //   .put(`/api/v2/ldapGroups/updateMapping`, {
+    //     role: role._id, ldapGroupID: ldapGroupID
+    //   })
+    //   .then(function (res) {
+    //     if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+    //   })
+    //   .catch(function (err) {
+    //     Log.error(err)
+    //     helpers.UI.showSnackbar(err, true)
+    //   })
+    
   }
 
   onCheckNowClicked(e) {
@@ -200,39 +235,42 @@ class AccountsSettingsContainer extends React.Component {
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
     this.props.updateMultipleSettings(ldapSettings)
+    this.updateMapping(this.state.mapping);
   }
 
 
 
   render() {
+    const ldapGArray = this.getLDAPGroups();
+    const rolesName = this.getRoles();
     const ElementArray = ({ role }) => {
+      const roleGroup = role;
       return <ZoneBox>
         <SettingSubItem
-          title={role}
+          title={role.name}
+          value = {role._id}
           component={
             <SingleSelect
               width='60%'
               showTextbox={false}
-              items={this.ldapGroupsArray}
-            // defaultValue={this.state.selectedColorScheme}
-            // onSelectChange={e => {
-            //   this.onBuiltInColorSelectChange(e)
-            // }}
+              items={ldapGArray}
+              defaultValue={roleGroup.ldapGroupID}
+              onSelectChange={(e) => {
+                this.addToMap(e,roleGroup,e.target.value)
+            }}
             />
           }
         />
       </ZoneBox>
     }
     // fillInTheListOfRoles();
-    const rolesName = this.getRoles();
+    
     // const ldapGroupsName = this. getLDAPGroups();
     const { active } = this.props
     return (
 
       <div className={active ? 'active' : 'hide'}>
-        {/* <div>
-      {rolesName.map(el=><ElementArray item={el}/>)}
-    </div> */}
+    
         <SettingItem
           title='Allow User Registration'
           subtitle='Allow users to create accounts on the login screen.'
@@ -325,7 +363,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div>
               <Zone>
-                {rolesName.map(el => <ElementArray role={el} />)}
+                {rolesName.map(el => <ElementArray role={el}/>)}
               </Zone>
               <div className='uk-clearfix'>
                 <Button

@@ -18,33 +18,54 @@ var async = require('async')
 var ldapGroup = {}
 
 ldapGroup.get = function (req, res) {
-    var ldapGroupSchema = require('../../../models/ldapGroup')
-  
-    var ldapGroups = []
+  var ldapGroupSchema = require('../../../models/ldapGroup')
 
-  
+  var ldapGroups = []
+
+
+  async.parallel(
+    [
+      function (done) {
+        ldapGroupSchema.find({}, function (err, l) {
+          if (err) return done(err)
+          // for(let ldapGroup of l){
+          //     ldapGroups.push(ldapGroup.name);
+          // }
+          ldapGroups = l
+          return done()
+        })
+      }
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      return res.json({ success: true, ldapGroups: ldapGroups })
+    }
+  )
+}
+
+ldapGroup.updateMapping = function (req, res) {
+  var roleSchema = require('../../../models/role')
+  for (let map of req.body) {
     async.parallel(
       [
         function (done) {
-            ldapGroupSchema.find({}, function (err, l) {
+          roleSchema.findOneAndUpdate({ _id: map.roleID }, { ldapGroupID: map.ldapGroupID }, function (err, role) {
             if (err) return done(err)
-            for(let ldapGroup of l){
-                ldapGroups.push(ldapGroup.name);
-            }
-            // ldapGroups = l
-            console.log('Запрос из базы: ')
-            console.log(ldapGroups)
             return done()
           })
         }
       ],
       function (err) {
         if (err) return res.status(400).json({ success: false, error: err })
-  
-        return res.json({ success: true, ldapGroups: ldapGroups })
+
+        return res.json({ success: true })
       }
     )
+
   }
+
+}
 
 
 
