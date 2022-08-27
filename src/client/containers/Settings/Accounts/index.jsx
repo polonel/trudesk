@@ -36,7 +36,6 @@ import EnableSwitch from 'components/Settings/EnableSwitch'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import UIKit from 'uikit'
-import { ConstraintViolationError } from 'ldapjs'
 
 @observer
 class AccountsSettingsContainer extends React.Component {
@@ -157,9 +156,10 @@ class AccountsSettingsContainer extends React.Component {
     
     axios.get('http://trudesk-dev.shatura.pro:8118/api/v2/ldapGroups').then(res => {
       this.state.ldapGroupsArray = res.data;
-    }).catch(err=>{console.log(err)});
-    console.log('this.state.ldapGroupsArray');
-    console.log(this.state.ldapGroupsArray);
+      console.log ('res data: '+res.data)
+      console.log (res.data.ldapGroups)
+    }).catch(err=>{console.log(err)})
+    
     return this.state.ldapGroupsArray;
   }
 
@@ -206,9 +206,6 @@ class AccountsSettingsContainer extends React.Component {
 
 
   render() {
-    this.getLDAPGroups()
-    const rolesName = this.getRoles();
-
     const ElementArray = ({ role }) => {
       return <ZoneBox>
         <SettingSubItem
@@ -217,7 +214,7 @@ class AccountsSettingsContainer extends React.Component {
             <SingleSelect
               width='60%'
               showTextbox={false}
-              items={this.state.ldapGroupsArray}
+              items={this.getLDAPGroups()}
             // defaultValue={this.state.selectedColorScheme}
             // onSelectChange={e => {
             //   this.onBuiltInColorSelectChange(e)
@@ -228,8 +225,7 @@ class AccountsSettingsContainer extends React.Component {
       </ZoneBox>
     }
     // fillInTheListOfRoles();
-    
-    
+    const rolesName = this.getRoles();
     // const ldapGroupsName = this. getLDAPGroups();
     const { active } = this.props
     return (
