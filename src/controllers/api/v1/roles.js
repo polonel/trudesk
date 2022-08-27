@@ -22,6 +22,7 @@ var rolesV1 = {}
 
 rolesV1.get = function (req, res) {
   var roleSchmea = require('../../../models/role')
+  // var roleSchmea = require('../../../models/ldapGroup')
   var roleOrderSchema = require('../../../models/roleorder')
 
   var roles = []

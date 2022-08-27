@@ -16,6 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings, fetchRoles } from 'actions/settings'
+import { fetchLDAPGroups } from 'actions/ldapGroups'
 // import { fetchRoles } from 'actions/common'
 // import settingUtil from '../../../../settings/settingsUtil'
 
@@ -35,6 +36,7 @@ import EnableSwitch from 'components/Settings/EnableSwitch'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import UIKit from 'uikit'
+import { ConstraintViolationError } from 'ldapjs'
 
 @observer
 class AccountsSettingsContainer extends React.Component {
@@ -55,14 +57,16 @@ class AccountsSettingsContainer extends React.Component {
       ldapPassword: '',
       ldapUsername: '',
       rolesArray: [],
-      groupLDAPArray: []
+      groupLDAPArray: [],
+      ldapGroupsArray: [],
     }
 
     this.restartServer = this.restartServer.bind(this)
   }
 
   componentDidMount() {
-    // helpers.UI.inputs()
+    // helpers.UI.inputs()fetchLDAPGroup
+    this.props.fetchLDAPGroups({ type: 'all' })
   }
 
   componentDidUpdate(prevProps) {
@@ -122,7 +126,10 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   getRoles() {
-    let rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
+    let rolesArray =this.props.roles;
+    console.log(rolesArray);
+    rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
+    console.log(rolesArray);
     rolesArray = JSON.stringify(rolesArray);
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
@@ -133,6 +140,27 @@ class AccountsSettingsContainer extends React.Component {
     // console.log(JSON.stringify(rolesArray[0]));
     console.log(rolesName);
     return rolesName;
+  }
+  getLDAPGroups() {
+    // let ldapGroupsArray = this.props.ldapGroups.sortBy(ldapGroup => ldapGroup.get('name')).toArray();
+    // let ldapGroupsArray = this.props.ldapGroups;
+    // console.log('ldapGroupsArray: '+ldapGroupsArray);
+    // ldapGroupsArray = JSON.stringify(ldapGroupsArray);
+    // ldapGroupsArray = JSON.parse(ldapGroupsArray);
+    // let ldapGroupsName = [];
+    // // const rolesArray = this.props.fetchRoles({ type: 'all' });
+    // for (let i = 0; i < ldapGroupsArray.length; i++) {
+    //   ldapGroupsName.push(ldapGroupsArray[i]['name']);
+    // }
+    // // console.log(JSON.stringify(rolesArray[0]));
+    // console.log(ldapGroupsName);
+    
+    axios.get('http://trudesk-dev.shatura.pro:8118/api/v2/ldapGroups').then(res => {
+      this.state.ldapGroupsArray = res.data;
+    }).catch(err=>{console.log(err)});
+    console.log('this.state.ldapGroupsArray');
+    console.log(this.state.ldapGroupsArray);
+    return this.state.ldapGroupsArray;
   }
 
   onInputValueChanged(e, stateName) {
@@ -178,6 +206,9 @@ class AccountsSettingsContainer extends React.Component {
 
 
   render() {
+    this.getLDAPGroups()
+    const rolesName = this.getRoles();
+
     const ElementArray = ({ role }) => {
       return <ZoneBox>
         <SettingSubItem
@@ -186,7 +217,7 @@ class AccountsSettingsContainer extends React.Component {
             <SingleSelect
               width='60%'
               showTextbox={false}
-              items={role}
+              items={this.state.ldapGroupsArray}
             // defaultValue={this.state.selectedColorScheme}
             // onSelectChange={e => {
             //   this.onBuiltInColorSelectChange(e)
@@ -197,7 +228,9 @@ class AccountsSettingsContainer extends React.Component {
       </ZoneBox>
     }
     // fillInTheListOfRoles();
-    const rolesName = this.getRoles();
+    
+    
+    // const ldapGroupsName = this. getLDAPGroups();
     const { active } = this.props
     return (
 
@@ -333,12 +366,15 @@ AccountsSettingsContainer.propTypes = {
   active: PropTypes.bool.isRequired,
   updateSetting: PropTypes.func.isRequired,
   updateMultipleSettings: PropTypes.func.isRequired,
-  settings: PropTypes.object.isRequired
+  settings: PropTypes.object.isRequired,
+  ldapGroups: PropTypes.object.isRequired,
+  fetchLDAPGroups: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   settings: state.settings.settings,
-  roles: state.shared.roles
+  roles: state.shared.roles,
+  ldapGroups: state.shared.ldapGroups
 })
 
-export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles })(AccountsSettingsContainer)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles, fetchLDAPGroups })(AccountsSettingsContainer)

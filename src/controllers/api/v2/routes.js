@@ -58,6 +58,12 @@ module.exports = function (middleware, router, controllers) {
   router.put('/api/v2/groups/:id', apiv2Auth, canUser('groups:update'), apiv2.groups.update)
   router.delete('/api/v2/groups/:id', apiv2Auth, canUser('groups:delete'), apiv2.groups.delete)
 
+  // Groups LDAP
+  router.get('/api/v2/ldapGroups', apiv2Auth, apiv2.ldapGroups.get)
+  // router.post('/api/v2/ldapGroups', apiv2Auth, canUser('ldapGroups:create'), apiv2.ldapGroups.create)
+  // router.put('/api/v2/ldapGroups/:id', apiv2Auth, canUser('ldapGroups:update'), apiv2.ldapGroups.update)
+  // router.delete('/api/v2/ldapGroups/:id', apiv2Auth, canUser('ldapGroups:delete'), apiv2.ldapGroups.delete)
+
   // Teams
   router.get('/api/v2/teams', apiv2Auth, canUser('teams:view'), apiv2.teams.get)
   router.post('/api/v2/teams', apiv2Auth, canUser('teams:create'), apiv2.teams.create)

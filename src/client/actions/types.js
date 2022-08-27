@@ -82,6 +82,13 @@ export const UPDATE_GROUP = defineAction('UPDATE_GROUP', [SUCCESS, PENDING, ERRO
 export const DELETE_GROUP = defineAction('DELETE_GROUP', [SUCCESS, PENDING, ERROR])
 export const UNLOAD_GROUPS = defineAction('UNLOAD_GROUPS', [SUCCESS])
 
+// Groups LDAP
+export const FETCH_LDAPGROUPS = defineAction('FETCH_LDAPGROUPS', [SUCCESS, ERROR])
+export const CREATE_LDAPGROUP = defineAction('CREATE_LDAPGROUP', [SUCCESS, PENDING, ERROR])
+export const UPDATE_LDAPGROUP = defineAction('UPDATE_LDAPGROUP', [SUCCESS, PENDING, ERROR])
+export const DELETE_LDAPGROUP = defineAction('DELETE_LDAPGROUP', [SUCCESS, PENDING, ERROR])
+export const UNLOAD_LDAPGROUPS = defineAction('UNLOAD_LDAPGROUPS', [SUCCESS])
+
 // Teams
 export const FETCH_TEAMS = defineAction('FETCH_TEAMS', [PENDING, SUCCESS, ERROR])
 export const CREATE_TEAM = defineAction('CREATE_TEAM', [PENDING, SUCCESS, ERROR])

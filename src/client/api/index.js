@@ -248,6 +248,31 @@ api.groups.delete = ({ _id }) => {
   })
 }
 
+api.ldapGroups = {}
+api.ldapGroups.create = payload => {
+  return axios.post('/api/v2/ldapGroups', payload).then(res => {
+    return res.data
+  })
+}
+
+api.ldapGroups.fetchLDAPGroups = () => {
+
+  return axios.get(`/api/v2/ldapGroups`).then(res => {
+    return res.data
+  })
+}
+
+api.ldapGroups.update = payload => {
+  return axios.put(`/api/v2/ldapGroups/${payload._id}`, payload).then(res => {
+    return res.data
+  })
+}
+api.ldapGroups.delete = ({ _id }) => {
+  return axios.delete(`/api/v2/ldapGroups/${_id}`).then(res => {
+    return res.data
+  })
+}
+
 api.teams = {}
 api.teams.getWithPage = payload => {
   const limit = payload && payload.limit ? payload.limit : 100
@@ -436,6 +461,7 @@ api.common.fetchRoles = () => {
     return res.data
   })
 }
+
 api.common.fetchViewData = () => {
   return axios.get('/api/v2/viewdata').then(res => {
     return res.data
