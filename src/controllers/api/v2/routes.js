@@ -60,6 +60,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Groups LDAP
   router.get('/api/v2/ldapGroups', apiv2Auth, apiv2.ldapGroups.get)
+  router.put('/api/v2/ldapGroups/updateMapping', apiv2Auth, apiv2.ldapGroups.updateMapping)
   // router.post('/api/v2/ldapGroups', apiv2Auth, canUser('ldapGroups:create'), apiv2.ldapGroups.create)
   // router.put('/api/v2/ldapGroups/:id', apiv2Auth, canUser('ldapGroups:update'), apiv2.ldapGroups.update)
   // router.delete('/api/v2/ldapGroups/:id', apiv2Auth, canUser('ldapGroups:delete'), apiv2.ldapGroups.delete)

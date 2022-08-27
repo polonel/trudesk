@@ -25,7 +25,8 @@ var roleSchema = mongoose.Schema(
     normalized: String,
     description: String,
     grants: [{ type: String, required: true }],
-    hierarchy: { type: Boolean, required: true, default: true }
+    hierarchy: { type: Boolean, required: true, default: true },
+    ldapGroupID: { type: mongoose.Schema.Types.ObjectId, ref: 'ldapGroups'}
   },
   {
     toObject: { getters: true, virtuals: true },
