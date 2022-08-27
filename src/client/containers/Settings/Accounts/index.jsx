@@ -42,6 +42,7 @@ class AccountsSettingsContainer extends React.Component {
   @observable passwordComplexityEnabled = false
   @observable allowUserRegistrationEnabled = false
   @observable ldapEnabled = false
+  @observable ldapGroupsArray = []
   // @observable LDAPSettings = false
 
   constructor(props) {
@@ -56,8 +57,6 @@ class AccountsSettingsContainer extends React.Component {
       ldapPassword: '',
       ldapUsername: '',
       rolesArray: [],
-      groupLDAPArray: [],
-      ldapGroupsArray: [],
     }
 
     this.restartServer = this.restartServer.bind(this)
@@ -155,12 +154,12 @@ class AccountsSettingsContainer extends React.Component {
     // console.log(ldapGroupsName);
     
     axios.get('http://trudesk-dev.shatura.pro:8118/api/v2/ldapGroups').then(res => {
-      this.state.ldapGroupsArray = res.data;
-      console.log ('res data: '+res.data)
-      console.log (res.data.ldapGroups)
+      this.ldapGroupsArray = res.data.ldapGroups;
+      console.log ('this.ldapGroupsArray: ')
+      console.log ( this.ldapGroupsArray)
     }).catch(err=>{console.log(err)})
     
-    return this.state.ldapGroupsArray;
+    return this.ldapGroupsArray;
   }
 
   onInputValueChanged(e, stateName) {
@@ -214,7 +213,7 @@ class AccountsSettingsContainer extends React.Component {
             <SingleSelect
               width='60%'
               showTextbox={false}
-              items={this.getLDAPGroups()}
+              items={this.ldapGroupsArray}
             // defaultValue={this.state.selectedColorScheme}
             // onSelectChange={e => {
             //   this.onBuiltInColorSelectChange(e)
