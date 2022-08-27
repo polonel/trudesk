@@ -29,7 +29,6 @@ const Controllers = {
   editor: require('./editor'),
   backuprestore: require('./backuprestore'),
   api: require('./api'),
-
   debug: require('./debug')
 }
 
