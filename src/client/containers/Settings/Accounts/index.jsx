@@ -162,7 +162,6 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   updateMapping(mapping){
-    console.log(mapping);
        axios
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
       .then(function (res) {
@@ -172,6 +171,7 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
+    
   }
   addToMap(e,role,ldapGroupID){
     console.log(role);
@@ -234,8 +234,9 @@ class AccountsSettingsContainer extends React.Component {
       { name: 'ldapSettings:username', value: this.state.ldapUsername },
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
-    this.props.updateMultipleSettings(ldapSettings)
+    this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
+    window.location.reload(true)
   }
 
 
