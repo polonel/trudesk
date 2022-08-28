@@ -18,15 +18,17 @@ const TotpStrategy = require('passport-totp').Strategy
 const JwtStrategy = require('passport-jwt').Strategy
 const LdapStrategy = require('passport-ldapauth')
 const ExtractJwt = require('passport-jwt').ExtractJwt
-var basicAuth = require('basic-auth');
+var basicAuth = require('basic-auth')
 const base32 = require('thirty-two')
 const User = require('../models/user')
+const Role = require('../models/role')
+const LDAPGroup = require('../models/ldapGroup')
 const nconf = require('nconf')
 
 var OPTS = {
   server: {
     // url: 'ldap://172.16.254.2:389',
-    url:'https://fccc919837.to.intercept.rest',
+    url: 'https://fccc919837.to.intercept.rest',
     bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro',
     bindCredentials: 'ponchikYA1999',
     searchBase: 'dc=shatura, dc=pro',
@@ -51,47 +53,82 @@ module.exports = function () {
       {
         server: {
           url: 'ldap://172.16.254.1:389',
-          bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro', 
+          bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro',
           // bindDN: 'sAMAccountName=ilobanov,CN=Users,DC=shatura,DC=pro',
           bindCredentials: 'ponchikYA1999',
           searchBase: 'CN=Users,DC=shatura,DC=pro',
-          groupSearchBase: 'CN=Users,DC=shatura,DC=pro',
-          groupSearchFilter: `(&(objectclass=group)(member:1.2.840.113556.1.4.1941:={{dn}}))`,
           // searchFilter: '(uid={{username}})'
-          // searchFilter: '(&(sAMAccountName={{username}}))'
-          searchFilter: '(&(userPrincipalName=ilobanov@shatura.pro))'
+          searchFilter: '(&(sAMAccountName={{username}}))'
+          // searchFilter: '(&(userPrincipalName=ilobanov@shatura.pro))'
         },
         usernameField: 'login-username',
         passwordField: 'login-password'
       }
-      ,function (req, username, password, done) {
-      for (group of req.memberOf){
-        console.log(group);
-        if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro'){
+      , function (req, username, password, done) {
+        for (group of req.memberOf) {
+          console.log(group);
+          if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro') {
             role = 'admin';
+          }
         }
-      }
-      console.log(req);
-      console.log(username);
-      // return done(null, username);
-      User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
-        .select('+password +tOTPKey +tOTPPeriod')
-        .exec(function (err, user) {
-          if (err) {
-            return done(err)
-          }
+        console.log(req);
+        console.log(username);
+        // return done(null, username);
+        User.findOne({ username: req.userPrincipalName })
+          .select('+password +tOTPKey +tOTPPeriod')
+          .exec(function (err, user) {
+            if (err) {
+              return done(err)
+            }
 
-          if (!user || user.deleted || !User.validate(password, user.password)) {
-            req.flash('loginMessage', '')
-            //Функция создания пользователя в db с ролями
-            return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
-          }
-          //Функция проверки ролей пользователя, удаление или добавление ролей
-          req.user = user
+            if (user) {
+              //Если пользователь найден, то проверить его роль
+              //Если у пользователь входит в группу LDAP, которая привязана к роли, то присвоить ему эту роль
+              Role.find({}, (err, role) => {
+                if (err) return done(err)
 
-          return done(null, user)
-        })
-    })); //Можно подставить функцию для обработки результата, например завести в базе данных пользователя из LDAP
+                let ldapGroupExistInRoles = false
+                LDAPGroup.findOne({ _id: role.ldapGroupID }, (err, ldapGroup) => {
+                  for (let group of req.memberOf) {
+                    if (group == ldapGroup.name) {
+                      ldapGroupExistInRoles = true;
+                      if (user.role !== role.ldapGroupID) { user.role = role.ldapGroupID; user.save()}
+                    }}})})
+              //Если LDAP группа привязана к ролям, то авторизировать, если нет, то выдать ошибку      
+              if(ldapGroupExistInRoles){
+                return done(null, user)
+              } else {
+                return done(null, false, req.flash('loginMessage', 'The LDAP group is not tied to roles'))
+              }
+              
+              //Функция создания пользователя в db с ролями
+              // return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+            } else {
+              // const newUser ={
+              //   username:req.userPrincipalName
+              //   password:req
+              //   fullname:
+              //   email:
+              //   role:
+
+              // }
+              User.create(postGroup, function (err, group) {
+              Role.find({}, (err, role) => {
+                if (err) return done(err)
+
+                LDAPGroup.findOne({ _id: role.ldapGroupID }, (err, ldapGroup) => {
+
+                  for (let group of req.memberOf) {
+                    if (ldapGroup.name == group) {
+                      if (user.role !== role.ldapGroupID) { user.role = role.ldapGroupID }
+                    }}})})
+            })
+            //Функция проверки ролей пользователя, удаление или добавление ролей
+            req.user = user
+
+            return done(null, user)
+          }})
+      })); //Можно подставить функцию для обработки результата, например завести в базе данных пользователя из LDAP
 
   passport.use(
     'local',
