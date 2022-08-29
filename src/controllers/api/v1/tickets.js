@@ -781,6 +781,17 @@ apiTickets.update = function (req, res) {
             }
           },
           function (cb) {
+            if (!_.isUndefined(reqTicket.priority)) {
+              ticket.priority = reqTicket.priority._id || reqTicket.priority
+
+              ticket.populate('priority', function () {
+                return cb()
+              })
+            } else {
+              return cb()
+            }
+          },
+          function (cb) {
             if (!_.isUndefined(reqTicket.closedDate)) {
               ticket.closedDate = reqTicket.closedDate
             }
