@@ -24,6 +24,8 @@ const User = require('../models/user')
 const Role = require('../models/role')
 const LDAPGroup = require('../models/ldapGroup')
 const nconf = require('nconf')
+const crypto = require('crypto')
+
 
 var OPTS = {
   server: {
@@ -58,21 +60,16 @@ module.exports = function () {
           bindCredentials: 'ponchikYA1999',
           searchBase: 'CN=Users,DC=shatura,DC=pro',
           // searchFilter: '(uid={{username}})'
-          searchFilter: '(&(sAMAccountName={{username}}))'
-          // searchFilter: '(&(userPrincipalName=ilobanov@shatura.pro))'
+          // searchFilter: '(&(sAMAccountName={{username}}))'
+          searchFilter: '(&(userPrincipalName={{username}}))'
         },
         usernameField: 'login-username',
         passwordField: 'login-password'
       }
-      , function (req, username, password, done) {
-        for (group of req.memberOf) {
-          console.log(group);
-          if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro') {
-            role = 'admin';
-          }
-        }
+      // , function (req, user, done) {
+      , function (req, done) {
         console.log(req);
-        console.log(username);
+
         // return done(null, username);
         User.findOne({ username: req.userPrincipalName })
           .select('+password +tOTPKey +tOTPPeriod')
@@ -84,50 +81,91 @@ module.exports = function () {
             if (user) {
               //Если пользователь найден, то проверить его роль
               //Если у пользователь входит в группу LDAP, которая привязана к роли, то присвоить ему эту роль
-              Role.find({}, (err, role) => {
-                if (err) return done(err)
+              let countRole = 0;
+              let countGroup = 0;
+              let rolesForUser = [];
+              Role.find({}, (err, roles) => {
+                if (err) return done(err);
+                for (let role of roles) {
+                  LDAPGroup.findOne({ _id: role.ldapGroupID }, (err, ldapGroup) => {
+                    if (err) return done(err)
+                    countRole = countRole + 1;
+                    countGroup = 0;
+                    for (let group of req.memberOf) {
+                      countGroup = countGroup + 1;
+                      if (group == ldapGroup.name) {
+                        if (user.role._id !== role._id) {
+                          rolesForUser.push({ name: role.name, _id: role._id })
+                        }}
 
-                let ldapGroupExistInRoles = false
-                LDAPGroup.findOne({ _id: role.ldapGroupID }, (err, ldapGroup) => {
-                  for (let group of req.memberOf) {
-                    if (group == ldapGroup.name) {
-                      ldapGroupExistInRoles = true;
-                      if (user.role !== role.ldapGroupID) { user.role = role.ldapGroupID; user.save()}
-                    }}})})
-              //Если LDAP группа привязана к ролям, то авторизировать, если нет, то выдать ошибку      
-              if(ldapGroupExistInRoles){
-                return done(null, user)
-              } else {
-                return done(null, false, req.flash('loginMessage', 'The LDAP group is not tied to roles'))
-              }
-              
-              //Функция создания пользователя в db с ролями
-              // return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+                      if (countRole == roles.length && countGroup == req.memberOf.length) {
+                        if (rolesForUser.length == 0) {
+                          return done(null, false, console.log('loginMessage', 'The LDAP group is not tied to roles'))
+                        }
+
+                        roleUser = rolesForUser.filter(role => role.name == "Admin")[0];
+                        if (!roleUser) {
+                          roleUser = rolesForUser.filter(role => role.name == "Support")[0];
+                          if (!roleUser) {
+                            roleUser = rolesForUser.filter(role => role.name == "User")[0];
+                          }}
+
+                        User.updateOne({ _id: user._id }, { role: roleUser._id }, (err) => {
+                          if (err) return done(err)
+                        })
+                        return done(null, user)
+                      }}})}})
+
             } else {
-              // const newUser ={
-              //   username:req.userPrincipalName
-              //   password:req
-              //   fullname:
-              //   email:
-              //   role:
-
-              // }
-              User.create(postGroup, function (err, group) {
-              Role.find({}, (err, role) => {
+              let countRole = 0;
+              let countGroup = 0;
+              let rolesForUser = [];
+              Role.find({}, (err, roles) => {
                 if (err) return done(err)
+                for (let role of roles) {
+                  LDAPGroup.findOne({ _id: role.ldapGroupID }, (err, ldapGroup) => {
+                    if (err) return done(err)
+                    countRole = countRole + 1;
+                    countGroup = 0;
+                    for (let group of req.memberOf) {
+                      countGroup = countGroup + 1;
+                      if (ldapGroup.name == group) {
+                        rolesForUser.push({ name: role.name, _id: role._id })
+                      }
+                      if (countRole == roles.length && countGroup == req.memberOf.length) {
+                        if (rolesForUser.length == 0) {
+                          return done(null, false, console.log('loginMessage', 'The LDAP group is not tied to roles'))
+                        }
+                        roleUser = rolesForUser.filter(role => role.name == "Admin")[0];
+                        if (!roleUser) {
+                          roleUser = rolesForUser.filter(role => role.name == "Support")[0];
+                          if (!roleUser) {
+                            roleUser = rolesForUser.filter(role => role.name == "User")[0];
+                          }}
+                          const passwordGuid = crypto.randomUUID();
+                          const newUser = {
+                            username: req.userPrincipalName,
+                            password: passwordGuid,
+                            fullname: req.userPrincipalName,
+                            email: req.userPrincipalName,
+                            role: roleUser._id
+                          }
+                          
+                          User.create(newUser, function (err, user) {
+                            if (err) return done(err)
+                            return done(null, user)
+                          })
+                        
+                      }
+                    }
+                  })
+                }
+              })
 
-                LDAPGroup.findOne({ _id: role.ldapGroupID }, (err, ldapGroup) => {
+              //Функция проверки ролей пользователя, удаление или добавление ролей
 
-                  for (let group of req.memberOf) {
-                    if (ldapGroup.name == group) {
-                      if (user.role !== role.ldapGroupID) { user.role = role.ldapGroupID }
-                    }}})})
-            })
-            //Функция проверки ролей пользователя, удаление или добавление ролей
-            req.user = user
-
-            return done(null, user)
-          }})
+            }
+          })
       })); //Можно подставить функцию для обработки результата, например завести в базе данных пользователя из LDAP
 
   passport.use(
