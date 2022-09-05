@@ -27,7 +27,8 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/login', controllers.api.v2.common.login)
   router.post('/api/v2/token', controllers.api.v2.common.token)
   router.get('/api/v2/viewdata', middleware.loadCommonData, controllers.api.v2.common.viewData)
-
+  router.post('/api/v2/loginLDAP', controllers.api.v2.common.loginLDAP) //++ ShaturaPro LIN 24.08.2022
+  router.post('/api/v2/pushLDAPGroup', controllers.api.v2.common.pushLDAPGroup) //++ ShaturaPro LIN 24.08.2022
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
@@ -56,6 +57,13 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/groups', apiv2Auth, canUser('groups:create'), apiv2.groups.create)
   router.put('/api/v2/groups/:id', apiv2Auth, canUser('groups:update'), apiv2.groups.update)
   router.delete('/api/v2/groups/:id', apiv2Auth, canUser('groups:delete'), apiv2.groups.delete)
+
+  // Groups LDAP
+  router.get('/api/v2/ldapGroups', apiv2Auth, apiv2.ldapGroups.get)
+  router.put('/api/v2/ldapGroups/updateMapping', apiv2Auth, apiv2.ldapGroups.updateMapping)
+  // router.post('/api/v2/ldapGroups', apiv2Auth, canUser('ldapGroups:create'), apiv2.ldapGroups.create)
+  // router.put('/api/v2/ldapGroups/:id', apiv2Auth, canUser('ldapGroups:update'), apiv2.ldapGroups.update)
+  // router.delete('/api/v2/ldapGroups/:id', apiv2Auth, canUser('ldapGroups:delete'), apiv2.ldapGroups.delete)
 
   // Teams
   router.get('/api/v2/teams', apiv2Auth, canUser('teams:view'), apiv2.teams.get)
@@ -87,5 +95,10 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/es/rebuild', apiv2Auth, isAdmin, apiv2.elasticsearch.rebuild)
   router.get('/api/v2/es/status', apiv2Auth, isAdmin, apiv2.elasticsearch.status)
 
+  //MailerCheck
   router.get('/api/v2/mailer/check', apiv2Auth, isAdmin, apiv2.mailer.check)
+
+  //LDAP Settings
+  router.post('/api/v2/LDAPMapping/check', apiv2Auth, isAdmin, apiv2.accounts.LDAPMapping)
+  
 }

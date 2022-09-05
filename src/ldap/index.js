@@ -14,8 +14,10 @@
 
 var _ = require('lodash')
 var ldap = require('ldapjs')
-
+var LDAPGroup = require('../models/ldapGroup')
 var ldapClient = {}
+var axios = require('axios')
+// var api = require('../client/api')
 ldapClient.client = null
 
 ldapClient.bind = function (url, userDN, password, callback) {
@@ -23,7 +25,55 @@ ldapClient.bind = function (url, userDN, password, callback) {
     url: url
   })
 
-  ldapClient.client.bind(userDN, password, callback)
+  const opts = {
+    filter: '(objectclass=*)',
+    scope: 'sub',
+    // attributes: ['dn', 'sn', 'cn']
+    attributes: ['dn', 'sn', 'cn', 'dc', 'ou']
+  };
+
+  ldapClient.client.bind(userDN, password, function (err) {
+    if (err) {
+      console.log('Error in new connection ' + err);
+    } else {
+      console.log('Success');
+
+      ldapClient.client.search('OU=Groups,DC=shatura,DC=pro', opts,  (err, res) => {
+        var dnGroupsArray = [];
+
+        if (err) {
+          console.log('Error in new connection ' + err);
+        } else {
+
+            res.on('searchRequest', (searchRequest) => {
+            console.log('searchRequest: ', searchRequest.messageID);
+          })
+          res.on('searchEntry',  (entry) => {
+              console.log('entry: ' + JSON.stringify(entry.object));
+              let dnGroup = JSON.parse(JSON.stringify(entry.object));
+              dnGroupsArray.push(dnGroup.dn);
+          });
+          res.on('searchReference', (referral) => {
+            console.log('referral: ' + referral.uris.join());
+          });
+          res.on('error', (err) => {
+            console.error('error: ' + err.message);
+          });
+         res.on('end', (result) => {
+            console.log('status: ' + result.status);
+            // api.common.pushLDAPGroup(dnGroupsArray);
+            axios.post('http://trudesk-dev.shatura.pro:8118/api/v2/pushLDAPGroup', { dnGroupsArray }).then(res => {
+              console.log (res.data)
+            }).catch(err=>{console.log(err)})
+            // axios.post('/api/v2/pushLDAPGroup', { dnGroupsArray });
+      });
+        }      
+      });
+       console.log('Конец кода');
+    }
+
+
+  })
 
   ldapClient.client.on('error', function (err) {
     if (_.isFunction(callback)) {

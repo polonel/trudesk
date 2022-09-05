@@ -74,8 +74,9 @@ module.exports.init = async function (callback, connectionString, opts) {
     return callback(null, db)
   }
 
+  // global.CONNECTION_URI = CONNECTION_URI
+  CONNECTION_URI = 'mongodb://172.16.254.15:27017/';
   global.CONNECTION_URI = CONNECTION_URI
-
   mongoose.Promise = global.Promise
   mongoose
     .connect(CONNECTION_URI, options)

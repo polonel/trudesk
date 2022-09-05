@@ -13,7 +13,11 @@
  */
 
 const User = require('../../../models/user')
+const LDAPGroup = require('../../../models/ldapGroup')
 const apiUtils = require('../apiUtils')
+const passport = require('passport')
+const winston = require('winston')
+const ldapClient = require('../../../ldap')
 
 const commonV2 = {}
 
@@ -36,6 +40,85 @@ commonV2.login = async (req, res) => {
     return apiUtils.sendApiError(res, 500, e.message)
   }
 }
+
+commonV2.loginLDAP = async (req, res) => {
+
+  ldapCallBack = function (req, username, password, done) {
+    // for (group of req.memberOf){
+    //   console.log(group);
+    //   if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro'){
+    //       role = 'admin';
+    //   }
+    // }
+    console.log(req);
+    console.log(username);
+    // return done(null, username);
+    User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+      .select('+password +tOTPKey +tOTPPeriod')
+      .exec(function (err, user) {
+        if (err) {
+          return done(err)
+        }
+
+        if (!user || user.deleted || !User.validate(password, user.password)) {
+          req.flash('loginMessage', '')
+          //Функция создания пользователя в db с ролями
+          return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+        }
+        //Функция проверки ролей пользователя, удаление или добавление ролей
+        req.user = user
+
+        return done(null, user)
+      })
+  }
+
+  ldapClient.bind(req.body.ldapHost, req.body.ldapBindDN, req.body['login-password'], ldapCallBack)
+
+}
+
+commonV2.pushLDAPGroup = async (req, res) => {
+  const ldapGroups = req.body.dnGroupsArray;
+  for (let group of ldapGroups) {
+
+    LDAPGroup.findOne({ name: group }, function (err, ldapGroup) {
+
+      if (err) return console.log(err);
+      if (ldapGroup !== null && ldapGroup !== undefined) {
+        console.log('Group found: ' + ldapGroup.name);
+      } else if(ldapGroup !== undefined) {
+
+        LDAPGroup.insertMany({ name: group }, function (err, ldapGroup) {
+          if (err) return console.log(err);
+          console.log('Group added: ' + ldapGroup[0].name)
+        })
+      }
+    })
+  }
+
+  LDAPGroup.find()
+  .then(ldapGroupsMDB => {
+    for(let group of ldapGroupsMDB){
+      if(group.name !== undefined){
+      if (ldapGroups.includes(group.name)){
+        console.log('The group "' + group.name + '" exists in LDAP');
+      } else {
+        console.log('The group "' + group.name + '" does not exist in LDAP');
+        LDAPGroup.remove({ _id: group._id }, function (err, ldapGroup) {
+          if (err) return console.log(err);
+          console.log('Group deleted: ' + group.name)
+        })
+      }
+    }
+    }
+    
+  })
+  .catch(error => {
+    console.log(error);
+  })
+
+  console.log(req);
+}
+
 
 commonV2.token = async (req, res) => {
   const refreshToken = req.body.refreshToken

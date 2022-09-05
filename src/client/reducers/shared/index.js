@@ -22,7 +22,8 @@ import {
   SHOW_NOTICE,
   CLEAR_NOTICE,
   INIT_SOCKET,
-  GEN_MFA
+  GEN_MFA,
+  FETCH_LDAPGROUPS
 } from 'actions/types'
 
 const initialState = {
@@ -33,7 +34,7 @@ const initialState = {
   notice: null,
   loadingViewData: true,
   viewdata: Map({}),
-
+  ldapGroups: List([]),
   socket: {},
   socketInitialized: false
 }
@@ -86,6 +87,12 @@ const sharedReducer = handleActions(
         ...state,
         roles: fromJS(action.response.roles),
         roleOrder: fromJS(action.response.roleOrder)
+      }
+    },
+    [FETCH_LDAPGROUPS.SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        ldapGroups: fromJS(action.response.ldapGroups),
       }
     },
 

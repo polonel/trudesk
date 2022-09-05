@@ -27,7 +27,8 @@ import {
   PERM_DELETE_TICKET,
   UPDATE_PERMISSIONS,
   CREATE_ROLE,
-  DELETE_ROLE
+  DELETE_ROLE,
+  FETCH_ROLES
 } from './types'
 
 export const fetchSettings = createAction(FETCH_SETTINGS.ACTION)
@@ -56,3 +57,4 @@ export const changeDeletedTicketsPage = createAction(CHANGE_DELETED_TICKETS_PAGE
 export const createRole = createAction(CREATE_ROLE.ACTION)
 export const updatePermissions = createAction(UPDATE_PERMISSIONS.ACTION)
 export const deleteRole = createAction(DELETE_ROLE.ACTION)
+export const fetchRoles = createAction(FETCH_ROLES.ACTION, payload => payload, () => ({ thunk: true })) //++ ShaturaPro LIN 24.08.2022

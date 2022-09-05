@@ -24,6 +24,7 @@ import ticketsState from './ticketsReducer'
 import tagsSettings from './tagsReducer'
 import accountsState from './accountsReducer'
 import groupsState from './groupsReducer'
+import ldapGroupsState from './ldapGroupsReducer'
 import teamsState from './teamsReducer'
 import departmentsState from './departmentsReducer'
 import noticesState from './noticesReducer'
@@ -56,6 +57,7 @@ const IndexReducer = combineReducers({
   ticketsState,
   accountsState,
   groupsState,
+  ldapGroupsState,
   teamsState,
   departmentsState,
   noticesState,

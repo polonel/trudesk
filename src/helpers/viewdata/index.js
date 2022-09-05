@@ -390,6 +390,53 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
+      //++ ShaturaPro LIN 22.08.2022
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.ldapSettings = res.data.settings.ldapSettings.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.ldapHost = res.data.settings.ldapHost.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.ldapBindDN= res.data.settings.ldapBindDN.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.ldapPassword= res.data.settings.ldapPassword.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.ldapUsername= res.data.settings.ldapUsername.value
+
+          return callback()
+        })
+      },
+      //-- ShaturaPro LIN 22.08.2022
       function (callback) {
         viewController.getPluginsInfo(request, function (err, data) {
           if (err) return callback(err)
