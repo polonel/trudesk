@@ -38,6 +38,7 @@ class CreateAccountModal extends React.Component {
   @observable passwordConfirm = ''
   @observable fullname = ''
   @observable email = ''
+  @observable phone = ''
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
@@ -83,6 +84,18 @@ class CreateAccountModal extends React.Component {
     else this.groupSelectErrorMessage.classList.add('hide')
   }
 
+  //Валидация номера телефона
+  _validatePhone (phone) {
+    if (!phone) return false
+    return phone
+      .toString()
+      .toLowerCase()
+      .match(
+        /^\+(\d{11})$/
+      )
+  }
+
+
   onFormSubmit (e) {
     e.preventDefault()
     const $form = $(e.target)
@@ -90,6 +103,11 @@ class CreateAccountModal extends React.Component {
     let isValid = true
 
     if (!$form.isValid(null, null, false)) isValid = false
+
+    if (!this._validatePhone(this.phone)) {
+      helpers.UI.showSnackbar('Invalid Phone', true)
+      return
+    }
 
     if (!this.selectedRole || this.selectedRole.length < 1) {
       this.roleSelectErrorMessage.classList.remove('hide')
@@ -111,6 +129,7 @@ class CreateAccountModal extends React.Component {
       fullname: this.fullname,
       title: this.title,
       email: this.email,
+      phone: this.phone,
       groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
       role: this.selectedRole,
@@ -226,6 +245,16 @@ class CreateAccountModal extends React.Component {
                 value={this.email}
                 onChange={e => this.onInputChanged(e, 'email')}
                 data-validation='email'
+              />
+            </div>
+            <div className='uk-margin-medium-bottom'>
+              <label className='uk-form-label'>Phone</label>
+              <input
+                type='text'
+                className={'md-input'}
+                value={this.phone}
+                onChange={e => this.onInputChanged(e, 'phone')}
+                
               />
             </div>
             <div className='uk-margin-medium-bottom'>
