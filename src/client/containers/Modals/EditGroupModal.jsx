@@ -92,13 +92,12 @@ class EditGroupModal extends React.Component {
     if (!$form.isValid(null, null, false)) return false
 
     if (!this._validatePhone(this.phone)) {
-      helpers.UI.showSnackbar('Invalid Phone', true)
+      helpers.UI.showSnackbar('Invalid Phone Number', true)
       return
     }
 
     if (!this._validateSite(this.site)) {
-      console.log('Не валидно')
-      helpers.UI.showSnackbar('Invalid Site', true)
+      helpers.UI.showSnackbar('Invalid Website', true)
       return
     }
 
@@ -189,7 +188,7 @@ class EditGroupModal extends React.Component {
               onChange={e => this.onInputChangePhone(e)}
               data-validation='length'
               data-validation-length={'min12'}
-              data-validation-error-msg={'Please enter a valid Phone'}
+              data-validation-error-msg={'Please enter a valid Phone Number'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
@@ -199,7 +198,7 @@ class EditGroupModal extends React.Component {
               className={'md-input'}
               value={this.site}
               onChange={e => this.onInputChangeSite(e)}
-              data-validation-error-msg={'Please enter a valid Site'}
+              data-validation-error-msg={'Please enter a valid Website'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
