@@ -40,6 +40,7 @@ class EditAccountModal extends React.Component {
   @observable password = ''
   @observable confirmPassword = ''
   @observable email = ''
+  @observable phone = ''
 
   selectedRole = ''
   @observable isAgentRole = false
@@ -53,6 +54,7 @@ class EditAccountModal extends React.Component {
     this.name = this.props.user.fullname
     this.title = this.props.user.title
     this.email = this.props.user.email
+    this.phone = this.props.user.phone
     this.isAgentRole = this.props.user.role.isAdmin || this.props.user.role.isAgent
 
     helpers.UI.inputs()
@@ -120,6 +122,7 @@ class EditAccountModal extends React.Component {
       fullname: this.name,
       title: this.title,
       email: this.email,
+      phone: this.phone,
       groups: !this.isAgentRole && this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.isAgentRole && this.teamsSelect ? this.teamsSelect.getSelected() : undefined,
       role: this.selectedRole,
@@ -269,6 +272,16 @@ class EditAccountModal extends React.Component {
                 className={'md-input'}
                 value={this.email}
                 onChange={e => this.onInputChanged(e, 'email')}
+                disabled={!edit}
+              />
+            </div>
+            <div className='uk-margin-medium-bottom'>
+              <label className='uk-form-label'>Phone</label>
+              <input
+                type='text'
+                className={'md-input'}
+                value={this.phone}
+                onChange={e => this.onInputChanged(e, 'phone')}
                 disabled={!edit}
               />
             </div>

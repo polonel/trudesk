@@ -35,15 +35,44 @@ import SpinLoader from 'components/SpinLoader'
 class EditGroupModal extends React.Component {
   @observable name = ''
   @observable domainName = ''
+  @observable phone = ''
+  @observable site = ''
+  @observable address = ''
+  
   constructor (props) {
     super(props)
     makeObservable(this)
+  }
+
+//Валидация номера телефона
+  _validatePhone (phone) {
+    if (!phone) return false
+    return phone
+      .toString()
+      .toLowerCase()
+      .match(
+        /^\+(\d{11})$/
+      )
+  }
+
+//Валидация сайта
+  _validateSite (site) {
+    if (!site) return false
+    return site
+      .toString()
+      .toLowerCase()
+      .match(
+        /(^https?:\/\/)?[a-z0-9~_\-\.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?$/i
+      )
   }
 
   componentDidMount () {
     this.props.fetchAccounts({ type: 'customers', limit: -1 })
     this.name = this.props.group.name
     this.domainName = this.props.group.domainName
+    this.phone = this.props.group.phone
+    this.site = this.props.group.site
+    this.address = this.props.group.address
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
     helpers.formvalidator()
@@ -62,12 +91,26 @@ class EditGroupModal extends React.Component {
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
 
+    if (!this._validatePhone(this.phone)) {
+      helpers.UI.showSnackbar('Invalid Phone', true)
+      return
+    }
+
+    if (!this._validateSite(this.site)) {
+      console.log('Не валидно')
+      helpers.UI.showSnackbar('Invalid Site', true)
+      return
+    }
+
     const payload = {
       _id: this.props.group._id,
       name: this.name,
       domainName: this.domainName,
       members: this.membersSelect.getSelected() || [],
-      sendMailTo: this.sendMailToSelect.getSelected() || []
+      sendMailTo: this.sendMailToSelect.getSelected() || [],
+      phone: this.phone,
+      site: this.site,
+      address: this.address
     }
 
     this.props.updateGroup(payload)
@@ -79,6 +122,18 @@ class EditGroupModal extends React.Component {
 
   onInputChangeDomain (e) {
     this.domainName = e.target.value
+  }
+
+  onInputChangePhone (e) {
+    this.phone = e.target.value
+  }
+
+  onInputChangeSite (e) {
+    this.site = e.target.value
+  }
+
+  onInputChangeAddress (e) {
+    this.address = e.target.value
   }
 
   render () {
@@ -123,6 +178,37 @@ class EditGroupModal extends React.Component {
               data-validation='length'
               data-validation-length={'min2'}
               data-validation-error-msg={'Please enter a valid Domain name. (Must contain 2 characters)'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Phone</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.phone}
+              onChange={e => this.onInputChangePhone(e)}
+              data-validation='length'
+              data-validation-length={'min12'}
+              data-validation-error-msg={'Please enter a valid Phone'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Site</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.site}
+              onChange={e => this.onInputChangeSite(e)}
+              data-validation-error-msg={'Please enter a valid Site'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Address</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.address}
+              onChange={e => this.onInputChangeAddress(e)}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>

@@ -230,7 +230,10 @@ apiGroups.updateGroup = function (req, res) {
     group.name = data.name
     group.members = members
     group.sendMailTo = sendMailTo
-
+    group.phone = data.phone
+    group.site = data.site
+    group.address = data.address
+    
     group.save(function (err, savedGroup) {
       if (err) return res.status(400).json({ error: err.message })
 

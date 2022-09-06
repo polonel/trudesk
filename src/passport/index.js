@@ -25,18 +25,42 @@ const Role = require('../models/role')
 const LDAPGroup = require('../models/ldapGroup')
 const nconf = require('nconf')
 const crypto = require('crypto')
+const Setting = require('../models/setting')
+const { ConstraintViolationError } = require('ldapjs')
 
+serverSettings = function(server){
 
-var OPTS = {
-  server: {
-    // url: 'ldap://172.16.254.2:389',
-    url: 'https://fccc919837.to.intercept.rest',
-    bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro',
-    bindCredentials: 'ponchikYA1999',
-    searchBase: 'dc=shatura, dc=pro',
-    searchFilter: '(uid={{username}})'
+  Setting.findOne({name:'ldapSettings:host'},(err, host)=>{
+    if (err) console.log(err);
+    server.url = host.value;
+  })
+
+  Setting.findOne({name:'ldapSettings:bindDN'},(err, bindDN)=>{
+    if (err) console.log(err);
+    server.bindDN = bindDN.value;
+  })
+
+  Setting.findOne({name:'ldapSettings:password'},(err, password)=>{
+    if (err) console.log(err);
+    server.bindCredentials = password.value;
+  })
+  
+  Setting.findOne({name:'ldapSettings:username'},(err, username)=>{
+    if (err) console.log(err);
+    server.username = username.value;
+  })
+ 
+}
+
+var  server = {
+    url: '',
+    bindDN: '',
+    bindCredentials: '',
+    searchBase: 'CN=Users,DC=shatura,DC=pro',
+    searchFilter: '(&(userPrincipalName={{username}}))'
   }
-};
+
+  serverSettings(server);
 
 module.exports = function () {
   passport.serializeUser(function (user, done) {
@@ -53,16 +77,7 @@ module.exports = function () {
     'ldapauth',
     new LdapStrategy(
       {
-        server: {
-          url: 'ldap://172.16.254.1:389',
-          bindDN: 'CN=Игорь Лобанов,CN=Users,DC=shatura,DC=pro',
-          // bindDN: 'sAMAccountName=ilobanov,CN=Users,DC=shatura,DC=pro',
-          bindCredentials: 'ponchikYA1999',
-          searchBase: 'CN=Users,DC=shatura,DC=pro',
-          // searchFilter: '(uid={{username}})'
-          // searchFilter: '(&(sAMAccountName={{username}}))'
-          searchFilter: '(&(userPrincipalName={{username}}))'
-        },
+        server,
         usernameField: 'login-username',
         passwordField: 'login-password'
       }

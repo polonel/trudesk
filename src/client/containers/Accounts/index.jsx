@@ -178,6 +178,12 @@ class AccountsContainer extends React.Component {
                     </div>
                   </li>
                   <li>
+                    <div className='tru-list-content'>
+                      <span className='tru-list-heading'>Phone</span>
+                      <span className='uk-text-small uk-text-muted'> {user.get('phone')} </span>
+                    </div>
+                  </li>
+                  <li>
                     {customer && user.get('groups') && (
                       <div className='tru-list-content'>
                         <span className='tru-list-heading'>Groups</span>
