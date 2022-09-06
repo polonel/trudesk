@@ -64,6 +64,18 @@ class CreateGroupModal extends React.Component {
     this.domainName = e.target.value
   }
 
+  onInputChangePhone (e) {
+    this.phone = e.target.value
+  }
+
+  onInputChangeSite (e) {
+    this.site = e.target.value
+  }
+
+  onInputChangeAddress (e) {
+    this.address = e.target.value
+  }
+
   //Валидация номера телефона
   _validatePhone (phone) {
     if (!phone) return false
