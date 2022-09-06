@@ -27,9 +27,10 @@ apiGroups.create = async function (req, res) {
   if (!postGroup) return apiUtils.sendApiError_InvalidPostData(res)
   await findGroup(postGroup, res).then((result) => { return result }).catch(err => { console.log(err) });
   Group.create(postGroup, function (err, group) {
-    
+    if (err) apiUtils.sendApiError(res, 500, err.message)
+    else addDomain(group, res);
     //++ ShaturaPro LIN 10.08.2022
-    addDomain(group, res);
+    
 
     // if (err) return apiUtils.sendApiError(res, 500, err.message)
 
