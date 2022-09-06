@@ -181,7 +181,7 @@ class EditGroupModal extends React.Component {
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
-            <label>Phone</label>
+            <label>Phone Number</label>
             <input
               type='text'
               className={'md-input'}
@@ -193,7 +193,7 @@ class EditGroupModal extends React.Component {
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
-            <label>Site</label>
+            <label>Website</label>
             <input
               type='text'
               className={'md-input'}
