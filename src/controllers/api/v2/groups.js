@@ -27,9 +27,10 @@ apiGroups.create = async function (req, res) {
   if (!postGroup) return apiUtils.sendApiError_InvalidPostData(res)
   await findGroup(postGroup, res).then((result) => { return result }).catch(err => { console.log(err) });
   Group.create(postGroup, function (err, group) {
-    
+    if (err) apiUtils.sendApiError(res, 500, err.message)
+    else addDomain(group, res);
     //++ ShaturaPro LIN 10.08.2022
-    addDomain(group, res);
+    
 
     // if (err) return apiUtils.sendApiError(res, 500, err.message)
 
@@ -82,6 +83,9 @@ apiGroups.update = function (req, res) {
     if (putData.members) group.members = putData.members
     if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
     if (putData.domainName) group.domainName = putData.domainName
+    if (putData.phone) group.phone = putData.phone
+    if (putData.site) group.site = putData.site
+    if (putData.address) group.address = putData.address
     //++ ShaturaPro LIN 03.08.2022
     await findGroup(group, res).then((result) => { return result }).catch(err => { console.log(err) });
     addDomain(group, res);
@@ -91,8 +95,8 @@ apiGroups.update = function (req, res) {
 //++ ShaturaPro LIN 03.08.2022
 findGroup = async function (group, res) {
   return await new Promise(function (resolve, reject) {
-    Group.findOne({ domainName: group.domainName }, function (err, group) {
-      if (err || group !== null) return apiUtils.sendApiError(res, 400, 'The domain is already used by the group ' + group.name);
+    Group.findOne({ domainName: group.domainName }, function (err, groupDB) { 
+      if (err || (groupDB !== null && groupDB?.name !== group?.name)) return apiUtils.sendApiError(res, 400, 'The domain is already used by the group ' + group.name);
       resolve(true)
     });
   });

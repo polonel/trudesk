@@ -77,6 +77,7 @@ accountsApi.create = async function (req, res) {
     let user = await User.create({
       username: postData.username,
       email: postData.email,
+      phone: postData.phone,
       password: postData.password,
       fullname: postData.fullname,
       title: postData.title,
@@ -288,6 +289,7 @@ accountsApi.update = async function (req, res) {
 
     if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
     if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
+    if (!_.isUndefined(postData.phone) && postData.phone.length > 0) user.phone = postData.phone
     if (!_.isUndefined(postData.title) && postData.title.length > 0) user.title = postData.title
     if (!_.isUndefined(postData.role) && postData.role.length > 0) user.role = postData.role
 
