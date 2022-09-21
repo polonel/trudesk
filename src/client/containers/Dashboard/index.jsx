@@ -23,13 +23,16 @@ import PeityPie from 'components/Peity/peity-pie'
 import PeityLine from 'components/Peity/peity-line'
 import MGraph from 'components/MGraph'
 import D3Pie from 'components/D3/d3pie'
-
+import { showModal, hideModal } from 'actions/common'
 import moment from 'moment'
 import helpers from 'lib/helpers'
 
 @observer
 class DashboardContainer extends React.Component {
   @observable timespan = 30
+  @observable username = ''
+  @observable phone = ''
+  @observable email = ''
 
   constructor (props) {
     super(props)
@@ -61,8 +64,14 @@ class DashboardContainer extends React.Component {
     const closedPercent = this.props.dashboardState.closedCount
       ? Math.round((this.props.dashboardState.closedCount / this.props.dashboardState.ticketCount) * 100).toString()
       : '0'
-
+    
+    // function show (showProps){
+    //   showProps.showModal('CREATE_TICKET')
+    // }
+    // showProps = this.props;
+    // setTimeout(show(showProps),5000);
     return (
+      
       <div>
         <PageTitle
           title={'Dashboard'}
@@ -341,5 +350,6 @@ export default connect(mapStateToProps, {
   fetchDashboardData,
   fetchDashboardTopGroups,
   fetchDashboardTopTags,
-  fetchDashboardOverdueTickets
+  fetchDashboardOverdueTickets,
+  showModal
 })(DashboardContainer)

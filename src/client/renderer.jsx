@@ -23,6 +23,7 @@ import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
 import AccountsImportContainer from 'containers/Accounts/AccountsImport'
 import GroupsContainer from 'containers/Groups'
+import loginChatwootContainer from 'containers/LoginChatwoot'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
@@ -76,7 +77,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(ProfileContainerWithProvider, document.getElementById('profile-container'))
+    ReactDOM.render(ProfileContainerWithProvider, document.getElementById('profile-container')) 
   }
 
   if (document.getElementById('accounts-container')) {
@@ -109,6 +110,16 @@ export default function (store) {
     )
 
     ReactDOM.render(GroupsContainerWithProvider, document.getElementById('groups-container'))
+  }
+
+  if (document.getElementById('loginChatwoot-container')) {
+    const LoginChatwootContainerWithProvider = (
+      <Provider store={store}>
+        <loginChatwootContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(LoginChatwootContainerWithProvider, document.getElementById('loginChatwoot-container'))
   }
 
   if (document.getElementById('teams-container')) {

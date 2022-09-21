@@ -38,6 +38,9 @@ var allMods = {
   },
   uikit: function () {
     return require('uikit')
+  },
+  action: function () {
+    return require('../../client/actions/common.js')
   }
 }
 

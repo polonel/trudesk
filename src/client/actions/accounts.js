@@ -15,6 +15,7 @@
 import { createAction } from 'redux-actions'
 import {
   CREATE_ACCOUNT,
+  CREATE_ACCOUNTFROMCHATWOOT,
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
@@ -36,6 +37,7 @@ export const fetchAccountsCreateTicket = createAction(
   () => ({ thunk: true })
 )
 export const createAccount = createAction(CREATE_ACCOUNT.ACTION)
+export const createAccountFromChatwoot = createAction(CREATE_ACCOUNTFROMCHATWOOT.ACTION)
 export const saveEditAccount = createAction(
   SAVE_EDIT_ACCOUNT.ACTION,
   payload => payload,

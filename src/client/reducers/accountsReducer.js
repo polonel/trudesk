@@ -16,6 +16,7 @@ import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 import {
   CREATE_ACCOUNT,
+  CREATE_ACCOUNTFROMCHATWOOT,
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
@@ -75,6 +76,21 @@ const reducer = handleActions(
     },
 
     [CREATE_ACCOUNT.SUCCESS]: (state, action) => {
+      const resAccount = action.response.account
+
+      if (!resAccount.role.isAgent && !resAccount.role.isAdmin && state.type !== 'customers') return { ...state }
+      if (resAccount.role.isAgent || (resAccount.role.isAdmin && state.type === 'customers')) return { ...state }
+      if (resAccount.role.isAdmin && !resAccount.role.isAgent && state.type === 'agents') return { ...state }
+      if (resAccount.role.isAgent && !resAccount.role.isAdmin && state.type === 'admins') return { ...state }
+
+      const insertedAccount = state.accounts.push(fromJS(resAccount))
+      return {
+        ...state,
+        accounts: insertedAccount.sortBy(account => account.get('fullname'))
+      }
+    },
+
+    [CREATE_ACCOUNTFROMCHATWOOT.SUCCESS]: (state, action) => {
       const resAccount = action.response.account
 
       if (!resAccount.role.isAgent && !resAccount.role.isAdmin && state.type !== 'customers') return { ...state }

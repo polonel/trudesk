@@ -622,6 +622,75 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
   })
 }
 
+//++ ShaturaPRO LIN Chatwoot login
+userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
+  email = payload.email;
+  
+  if (_.isUndefined(email)) {
+    return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
+  }
+
+  var self = this
+  
+  var settingSchema = require('./setting')
+  settingSchema.getSetting('role:user:default', function (err, userRoleDefault) {
+    if (err || !userRoleDefault) return callback('Invalid Setting - UserRoleDefault')
+
+    var Chance = require('chance')
+
+    var chance = new Chance()
+
+    var plainTextPass = chance.string({
+      length: 6,
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    })
+
+    var user = new self({
+      username: email.split('@')[0],
+      email: email,
+      password: plainTextPass,
+      fullname: email.split('@')[0],
+      role: userRoleDefault.value,
+      phone: payload.phone
+    })
+
+    self.model(COLLECTION).find({ username: user.username }, function (err, items) {
+      if (err) return callback(err)
+      if (_.size(items) > 0) return callback('Username already exists')
+
+      user.save(function (err, savedUser) {
+        if (err) return callback(err)
+
+        var DomainSchema = require('./domain'); //Получение модели домена
+        var domain = new DomainSchema({
+          name: savedUser.email.split('@')[1],
+        })
+
+        mongoose.model('domains').find({ name: domain.name }, function (err, items) { // Поиск домена в базе данных
+          if (err) return callback(err);
+          if (_.size(items) > 0) return true;//callback('Domain already exist');
+          domain.save(function (err, domain) {
+            if (err) return callback(err)
+            return callback(null, { user: savedUser, domain: domain })
+          });
+        });
+
+        // Если уже существует группа с данным доменом, то добавить туда пользователя
+        mongoose.model('groups').findOne({ domainName: email.split('@')[1] }, function (err, group) {
+          if (err) return callback(err);
+          if (group == null) return callback('The group with this domain does not exist. Link the domain to the group');
+          group.addMember(user._id, function (err, user) {
+            if (err) return callback(err);
+            group.save();//Сохранение добавления члена группы
+            return callback(`The user has been added to the group ${group.name}`);
+          })
+        })
+      })
+    })
+  })
+}
+//-- ShaturaPRO LIN Chatwoot login
+
 userSchema.statics.getCustomers = function (obj, callback) {
   var limit = obj.limit || 10
   var page = obj.page || 0

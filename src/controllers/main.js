@@ -20,6 +20,7 @@ const winston = require('winston')
 const pkg = require('../../package')
 const xss = require('xss')
 const ldap = require('ldapjs');
+// const action = require('../client/actions/common')
 
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
 
@@ -59,9 +60,36 @@ mainController.index = function (req, res) {
     }
 
     content.bottom = 'Trudesk v' + pkg.version
-
-    res.render('login', content)
+    
+    if (JSON.stringify(req.body) !== '{}'){
+      res.redirect('/loginChatwoot', content)
+    }else{
+      res.render('login', content)
+    }
+    
+    
   })
+}
+
+mainController.loginChatwootPost = function (req, res) {
+
+  const content = {}
+  content.title = "LoginChatwoot"
+  content.data = {}
+  content.data.username = req.body.name
+  content.data.phone = req.body.phone_number
+  content.data.email = req.body.email
+
+  return res.render('loginChatwoot', content)
+}
+
+mainController.loginChatwoot = function (req, res) {
+  
+    // res.render('loginChatwoot');
+    // action.showModal('CREATE_TICKET');
+    // res.redirect('/loginChatwoot')
+    
+
 }
 
 mainController.about = function (req, res) {
@@ -82,7 +110,7 @@ mainController.about = function (req, res) {
 
     content.data = {}
     content.data.user = req.user
-    content.data.common = req.viewdata
+    content.data.common = req.viewdata 
 
     content.data.version = pkg.version
     if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {

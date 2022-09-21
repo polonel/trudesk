@@ -293,6 +293,19 @@ const eventTicketCreated = require('./events/event_ticket_created')
     io.sockets.emit('trudesk:profileImageUpdate', data)
   })
 
+  // emitter.on('message', function (data) {
+  //   console.log("Запрос от chatwoot");  
+  //   const eventData = JSON.parse(event.data);
+  //   window.location = "https://trudesk-dev.shatura.pro/loginChatwoot"
+  // })
+
+  emitter.on('message', function (event) {
+    console.log("Запрос от chatwoot");  
+    const eventData = JSON.parse(event.data);
+    window.location = "https://trudesk-dev.shatura.pro/loginChatwoot"
+    })
+  
+
   emitter.on(socketEvents.ROLES_FLUSH, function () {
     require('../permissions').register(function () {
       io.sockets.emit(socketEvents.ROLES_FLUSH)

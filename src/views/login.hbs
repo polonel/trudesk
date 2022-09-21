@@ -217,11 +217,7 @@
 </div>
 
 <script type="text/javascript">
-    window.truRequire(['jquery', 'helpers'], function(loadedModules) {
-        var $ = loadedModules[0];
-        var helpers = loadedModules[1];
-        helpers.UI.inputs();
-        helpers.UI.waves();
+
 
         $('#loginForm').submit(function(e) {
             var u = $('#login-username').val();

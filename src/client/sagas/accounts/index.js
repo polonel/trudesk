@@ -15,6 +15,7 @@
 import { call, put, takeLatest, takeEvery } from 'redux-saga/effects'
 import {
   CREATE_ACCOUNT,
+  CREATE_ACCOUNTFROMCHATWOOT,
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
@@ -70,6 +71,20 @@ function * createAccount ({ payload }) {
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response || error)
     yield put({ type: CREATE_ACCOUNT.ERROR, error })
+  }
+}
+
+function * createAccountFromChatwoot ({ payload }) {
+  try {
+    const response = yield call(api.accounts.createFromChatwoot, payload)
+    yield put({ type: CREATE_ACCOUNTFROMCHATWOOT.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+    helpers.UI.showSnackbar('Account created successfully')
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: CREATE_ACCOUNTFROMCHATWOOT.ERROR, error })
   }
 }
 
