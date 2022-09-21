@@ -143,10 +143,16 @@
 {{/block}}
 <script type="text/javascript">
 
-
-         
-
         
+        
+        window.truRequire(['redux', 'reducerChatwoot'], function(loadedModules) {
+            var redux = loadedModules[0];
+            var reducerChatwoot = loadedModules[1];
+
+            let store = redux.createStore(reducerChatwoot)
+
+        })
+     
 
 
           

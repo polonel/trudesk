@@ -23,7 +23,7 @@ import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
 import AccountsImportContainer from 'containers/Accounts/AccountsImport'
 import GroupsContainer from 'containers/Groups'
-import loginChatwootContainer from 'containers/LoginChatwoot'
+import LoginChatwootContainer from 'containers/LoginChatwoot'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
@@ -115,7 +115,7 @@ export default function (store) {
   if (document.getElementById('loginChatwoot-container')) {
     const LoginChatwootContainerWithProvider = (
       <Provider store={store}>
-        <loginChatwootContainer />
+        <LoginChatwootContainer />
       </Provider>
     )
 

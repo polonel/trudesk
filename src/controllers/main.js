@@ -85,10 +85,7 @@ mainController.loginChatwootPost = function (req, res) {
 
 mainController.loginChatwoot = function (req, res) {
   
-    // res.render('loginChatwoot');
-    // action.showModal('CREATE_TICKET');
-    // res.redirect('/loginChatwoot')
-    
+    return res.render('loginChatwoot');
 
 }
 
@@ -132,7 +129,10 @@ mainController.dashboard = function (req, res) {
   content.data.user = req.user
   content.data.common = req.viewdata
 
-  return res.render('dashboard', content)
+  // const rew = window;
+  // return res.redirect('/loginChatwoot')
+  return res.render('loginChatwoot', content)
+  // return res.render('dashboard', content)
 }
 
 mainController.loginPost = async function (req, res, next) {

@@ -26,6 +26,7 @@ import D3Pie from 'components/D3/d3pie'
 import { showModal, hideModal } from 'actions/common'
 import moment from 'moment'
 import helpers from 'lib/helpers'
+import { updateNavChange } from 'actions/nav'
 
 @observer
 class DashboardContainer extends React.Component {
@@ -45,6 +46,11 @@ class DashboardContainer extends React.Component {
     this.props.fetchDashboardTopGroups({ timespan: this.timespan })
     this.props.fetchDashboardTopTags({ timespan: this.timespan })
     this.props.fetchDashboardOverdueTickets()
+
+    // const sidebarRoute = document.getElementById('__sidebar_route').innerText
+    // const sidebarSubRoute = document.getElementById('__sidebar_sub_route').innerText
+
+    this.props.updateNavChange({ activeItem:'groups' })
   }
 
   onTimespanChange = e => {
@@ -65,11 +71,9 @@ class DashboardContainer extends React.Component {
       ? Math.round((this.props.dashboardState.closedCount / this.props.dashboardState.ticketCount) * 100).toString()
       : '0'
     
-    // function show (showProps){
-    //   showProps.showModal('CREATE_TICKET')
-    // }
-    // showProps = this.props;
-    // setTimeout(show(showProps),5000);
+
+    this.props.updateNavChange({ activeItem: 'groups'})
+      
     return (
       
       <div>
@@ -351,5 +355,6 @@ export default connect(mapStateToProps, {
   fetchDashboardTopGroups,
   fetchDashboardTopTags,
   fetchDashboardOverdueTickets,
-  showModal
+  showModal,
+  updateNavChange
 })(DashboardContainer)

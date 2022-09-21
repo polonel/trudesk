@@ -39,8 +39,11 @@ var allMods = {
   uikit: function () {
     return require('uikit')
   },
-  action: function () {
-    return require('../../client/actions/common.js')
+  redux: function () {
+    return require('redux')
+  },
+  reducerChatwoot: function () {
+    return require('../../client/reducers/chatwootDataReducer')
   }
 }
 

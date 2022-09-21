@@ -27,13 +27,12 @@ import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
 import SingleSelect from 'components/SingleSelect'
-
 import helpers from 'lib/helpers'
 import $ from 'jquery'
 import SpinLoader from 'components/SpinLoader'
 
 @observer
-class loginChatwootContainer extends React.Component {
+class LoginChatwootContainer extends React.Component {
   @observable username = ''
   @observable phone = ''
   @observable email = ''
@@ -114,7 +113,7 @@ class loginChatwootContainer extends React.Component {
 
 
   render() {
-
+    console.log('chatwoot login')
     // window.addEventListener("message", function (event) {
     //   console.log("Запрос от chatwoot");  
     //   const eventData = JSON.parse(event.data);
@@ -172,12 +171,12 @@ class loginChatwootContainer extends React.Component {
       //     </div>
       //   </form>
       // </BaseModal>
-      <div>Chatwoot</div>
+      <div>Chatwoot login</div>
     )
   }
 }
 
-loginChatwootContainer.propTypes = {
+LoginChatwootContainer.propTypes = {
   createAccountFromChatwoot: PropTypes.func.isRequired,
 }
 
@@ -185,4 +184,4 @@ const mapStateToProps = state => ({
 
 })
 
-export default connect(mapStateToProps, { createAccountFromChatwoot })(loginChatwootContainer)
+export default connect(mapStateToProps, { createAccountFromChatwoot })(LoginChatwootContainer)
