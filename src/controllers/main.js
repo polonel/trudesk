@@ -84,8 +84,11 @@ mainController.loginChatwootPost = function (req, res) {
 }
 
 mainController.loginChatwoot = function (req, res) {
-  
-    return res.render('loginChatwoot');
+  const content = {}
+  content.username = req.query.username;
+  content.phone = req.query.phone;
+  content.email= req.query.email;
+    return res.render('loginChatwoot',content);
 
 }
 
@@ -131,8 +134,8 @@ mainController.dashboard = function (req, res) {
 
   // const rew = window;
   // return res.redirect('/loginChatwoot')
-  return res.render('loginChatwoot', content)
-  // return res.render('dashboard', content)
+  // return res.render('loginChatwoot', content)
+  return res.render('dashboard', content)
 }
 
 mainController.loginPost = async function (req, res, next) {

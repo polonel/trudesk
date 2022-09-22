@@ -145,29 +145,19 @@
 
         
         
-        window.truRequire(['LoginChatwootContainer', 'reactRedux', 'actionChatwoot'], function(loadedModules) {
-           
-            var reactRedux = loadedModules[1];
-            var chatwootData = {
-                contact:{                                                          
-                    username: 'ilobanov',
-                    email: 'ilobanov@shatura.pro',
-                    phone: ''
-                }
+    window.addEventListener("message", function (event) {
+
+       
+            const eventData = JSON.parse(event.data);
+            console.log(eventData)
+            const username = eventData.data.contact.name;
+            const phone = eventData.data.contact.phone_number;
+            const email = eventData.data.contact.email;
+            if (window.location == 'https://trudesk-dev.shatura.pro/dashboard'){
+                window.location = `https://trudesk-dev.shatura.pro/loginChatwoot?username=${username}&phone=${phone}&email=${email}` 
             }
-            var actionChatwoot = loadedModules[2]
-            var chatwootDataResult = actionChatwoot.createChatwootData(chatwootData)
-            console.log(chatwootDataResult);
-            const mapStateToProps = chatwootData => ({
-               chatwootDataState: chatwootDataResult
-                })
-            console.log(reactRedux.connect(mapStateToProps)(loadedModules[0]))
 
-        })
-     
-
-
-          
+          });
 
 
 

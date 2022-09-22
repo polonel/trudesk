@@ -33,9 +33,9 @@ import SpinLoader from 'components/SpinLoader'
 
 @observer
 class LoginChatwootContainer extends React.Component {
-  @observable username = ''
-  @observable phone = ''
-  @observable email = ''
+  // @observable username = ''
+  // @observable phone = ''
+  // @observable email = ''
 
   constructor(props) {
     super(props)
@@ -114,7 +114,10 @@ class LoginChatwootContainer extends React.Component {
 
   render() {
     console.log('chatwoot login')
-    console.log(this.props.chatwootDataState)
+
+    console.log(this.props.username)
+    console.log(this.props.phone)
+    console.log(this.props.email)
     // window.addEventListener("message", function (event) {
     //   console.log("Запрос от chatwoot");  
     //   const eventData = JSON.parse(event.data);
@@ -127,52 +130,52 @@ class LoginChatwootContainer extends React.Component {
 
 
     return (
-      // <BaseModal>
-      //   <div className={'mb-25'}>
-      //     <h2>Edit Group</h2>
-      //   </div>
-      //   <form className={'uk-form-stacked'} onSubmit={e => this.onFormSubmit(e)}>
-      //     <div className={'uk-margin-medium-bottom'}>
-      //       <label>Username</label>
-      //       <input
-      //         type='text'
-      //         className={'md-input'}
-      //         value={this.username}
-      //         onChange={e => this.onInputChangeUsername(e)}
-      //         data-validation='length'
-      //         data-validation-length={'min2'}
-      //         data-validation-error-msg={'Please enter a valid Group name. (Must contain 2 characters)'}
-      //       />
-      //     </div>
-      //     <div className={'uk-margin-medium-bottom'}>
-      //       <label>Phone Number</label>
-      //       <input
-      //         type='text'
-      //         className={'md-input'}
-      //         value={this.phone}
-      //         onChange={e => this.onInputChangePhone(e)}
-      //         data-validation='length'
-      //         data-validation-length={'min12'}
-      //         data-validation-error-msg={'Please enter a valid Phone Number'}
-      //       />
-      //     </div>
-      //     <div className={'uk-margin-medium-bottom'}>
-      //       <label>Email</label>
-      //       <input
-      //         type='text'
-      //         className={'md-input'}
-      //         value={this.email}
-      //         onChange={e => this.onInputChangeEmail(e)}
+      <BaseModal>
+        <div className={'mb-25'}>
+          <h2> Chatwoot user </h2>
+        </div>
+        <form className={'uk-form-stacked'} onSubmit={e => this.onFormSubmit(e)}>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Username</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.username}
+              onChange={e => this.onInputChangeUsername(e)}
+              data-validation='length'
+              data-validation-length={'min2'}
+              data-validation-error-msg={'Please enter a valid Group name. (Must contain 2 characters)'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Phone Number</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.phone}
+              onChange={e => this.onInputChangePhone(e)}
+              data-validation='length'
+              data-validation-length={'min12'}
+              data-validation-error-msg={'Please enter a valid Phone Number'}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label>Email</label>
+            <input
+              type='text'
+              className={'md-input'}
+              value={this.email}
+              onChange={e => this.onInputChangeEmail(e)}
 
-      //       />
-      //     </div>
-      //     <div className='uk-modal-footer uk-text-right'>
-      //       <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
-      //       <Button text={'Submit'} flat={true} waves={true} style={'primary'} type={'submit'} />
-      //     </div>
-      //   </form>
-      // </BaseModal>
-      <div>Chatwoot login</div>
+            />
+          </div>
+          <div className='uk-modal-footer uk-text-right'>
+            <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
+            <Button text={'Submit'} flat={true} waves={true} style={'primary'} type={'submit'} />
+          </div>
+        </form>
+      </BaseModal>
+
     )
   }
 }
