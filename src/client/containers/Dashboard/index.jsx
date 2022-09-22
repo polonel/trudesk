@@ -50,7 +50,7 @@ class DashboardContainer extends React.Component {
     // const sidebarRoute = document.getElementById('__sidebar_route').innerText
     // const sidebarSubRoute = document.getElementById('__sidebar_sub_route').innerText
 
-    this.props.updateNavChange({ activeItem:'groups' })
+    // this.props.updateNavChange({ activeItem:'groups' })
   }
 
   onTimespanChange = e => {

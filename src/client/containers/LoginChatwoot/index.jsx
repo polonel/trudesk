@@ -79,7 +79,7 @@ class LoginChatwootContainer extends React.Component {
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
 
-    if (!this._validatePhone(this.phone)) {
+    if (!this._validatePhone(this.props.phone)) {
       helpers.UI.showSnackbar('Invalid Phone Number', true)
       return
     }
@@ -88,9 +88,9 @@ class LoginChatwootContainer extends React.Component {
       // username: this.props.username,
       // email: this.props.email,
       // phone: this.props.phone,
-      username: this.username,
-      email: this.email,
-      phone: this.phone,
+      username: this.props.username,
+      email: this.props.email,
+      phone: this.props.phone,
     }
 
     this.props.createAccountFromChatwoot(payload);
@@ -98,17 +98,17 @@ class LoginChatwootContainer extends React.Component {
 
   onInputChangeUsername(e) {
     // this.props.username = e.target.value
-    this.username = e.target.value
+    this.props.username = e.target.value
   }
 
   onInputChangeEmail(e) {
     // this.props.domainName = e.target.value
-    this.email = e.target.value
+    this.props.email = e.target.value
   }
 
   onInputChangePhone(e) {
     // this.props.phone = e.target.value
-    this.phone = e.target.value 
+    this.props.phone = e.target.value 
   }
 
 
@@ -140,7 +140,7 @@ class LoginChatwootContainer extends React.Component {
             <input
               type='text'
               className={'md-input'}
-              value={this.username}
+              value={this.props.username}
               onChange={e => this.onInputChangeUsername(e)}
               data-validation='length'
               data-validation-length={'min2'}
@@ -152,7 +152,7 @@ class LoginChatwootContainer extends React.Component {
             <input
               type='text'
               className={'md-input'}
-              value={this.phone}
+              value={this.props.phone}
               onChange={e => this.onInputChangePhone(e)}
               data-validation='length'
               data-validation-length={'min12'}
@@ -164,7 +164,7 @@ class LoginChatwootContainer extends React.Component {
             <input
               type='text'
               className={'md-input'}
-              value={this.email}
+              value={this.props.email}
               onChange={e => this.onInputChangeEmail(e)}
 
             />
