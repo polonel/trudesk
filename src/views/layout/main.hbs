@@ -145,11 +145,17 @@
 
         
         
-        window.truRequire(['redux', 'reducerChatwoot'], function(loadedModules) {
-            var redux = loadedModules[0];
+        window.truRequire(['actionChatwoot', 'reducerChatwoot'], function(loadedModules) {
+            var actionChatwoot = loadedModules[0];
             var reducerChatwoot = loadedModules[1];
-
-            let store = redux.createStore(reducerChatwoot)
+            var chatwootData = {
+                contact:{
+                    username: 'ilobanov',
+                    email: 'ilobanov@shatura.pro,
+                    phone: ''
+                }
+            }
+            let store = actionChatwoot.createChatwootData(chatwootData)
 
         })
      

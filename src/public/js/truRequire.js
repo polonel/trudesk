@@ -42,8 +42,8 @@ var allMods = {
   redux: function () {
     return require('redux')
   },
-  reducerChatwoot: function () {
-    return require('../../client/reducers/chatwootDataReducer')
+  actionChatwoot: function () {
+    return require('../../client/actions/chatwootData')
   }
 }
 

@@ -38,7 +38,7 @@ const reducer = handleActions(
 
     [CREATE_CHATWOOTDATA.SUCCESS]: (state, action) => {
       const resChatwootData = action.response.chatwootData
-      
+      state.chatwootData = resChatwootData
       return {
         ...state,
         chatwootData: resChatwootData

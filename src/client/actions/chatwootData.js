@@ -16,8 +16,8 @@ import { createAction } from 'redux-actions'
 import { CREATE_CHATWOOTDATA, DELETE_CHATWOOTDATA, FETCH_CHATWOOTDATA, UNLOAD_CHATWOOTDATA, UPDATE_CHATWOOTDATA } from 'actions/types'
 
 // export const fetchLDAPGroups = createAction(FETCH_LDAPGROUPS.ACTION, payload => payload, () => ({ thunk: true }))
-export const fetchLDAPGroups = createAction(FETCH_CHATWOOTDATA.ACTION)
-export const createLDAPGroup = createAction(CREATE_CHATWOOTDATA.ACTION)
-export const updateLDAPGroup = createAction(UPDATE_CHATWOOTDATA.ACTION)
-export const deleteLDAPGroup = createAction(DELETE_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
-export const unloadLDAPGroups = createAction(UNLOAD_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
+export const fetchChatwootData = createAction(FETCH_CHATWOOTDATA.ACTION)
+export const createfetchChatwootData = createAction(CREATE_CHATWOOTDATA.ACTION)
+export const updatefetchChatwootData = createAction(UPDATE_CHATWOOTDATA.ACTION)
+export const deletefetchChatwootData = createAction(DELETE_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
+export const unloadfetchChatwootData = createAction(UNLOAD_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
