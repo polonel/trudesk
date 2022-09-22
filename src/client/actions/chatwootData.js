@@ -17,7 +17,7 @@ import { CREATE_CHATWOOTDATA, DELETE_CHATWOOTDATA, FETCH_CHATWOOTDATA, UNLOAD_CH
 
 // export const fetchLDAPGroups = createAction(FETCH_LDAPGROUPS.ACTION, payload => payload, () => ({ thunk: true }))
 export const fetchChatwootData = createAction(FETCH_CHATWOOTDATA.ACTION)
-export const createfetchChatwootData = createAction(CREATE_CHATWOOTDATA.ACTION)
-export const updatefetchChatwootData = createAction(UPDATE_CHATWOOTDATA.ACTION)
-export const deletefetchChatwootData = createAction(DELETE_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
-export const unloadfetchChatwootData = createAction(UNLOAD_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
+export const createChatwootData = createAction(CREATE_CHATWOOTDATA.ACTION)
+export const updateChatwootData = createAction(UPDATE_CHATWOOTDATA.ACTION)
+export const deleteChatwootData = createAction(DELETE_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))
+export const unloadChatwootData = createAction(UNLOAD_CHATWOOTDATA.ACTION, payload => payload, () => ({ thunk: true }))

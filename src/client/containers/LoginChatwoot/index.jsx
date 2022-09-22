@@ -114,6 +114,7 @@ class LoginChatwootContainer extends React.Component {
 
   render() {
     console.log('chatwoot login')
+    console.log(this.props.chatwootDataState)
     // window.addEventListener("message", function (event) {
     //   console.log("Запрос от chatwoot");  
     //   const eventData = JSON.parse(event.data);
@@ -184,4 +185,5 @@ const mapStateToProps = state => ({
 
 })
 
-export default connect(mapStateToProps, { createAccountFromChatwoot })(LoginChatwootContainer)
+// export default connect(mapStateToProps, { createAccountFromChatwoot })(LoginChatwootContainer)
+export default LoginChatwootContainer

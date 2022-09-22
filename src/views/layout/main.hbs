@@ -145,17 +145,23 @@
 
         
         
-        window.truRequire(['actionChatwoot', 'reducerChatwoot'], function(loadedModules) {
-            var actionChatwoot = loadedModules[0];
-            var reducerChatwoot = loadedModules[1];
+        window.truRequire(['LoginChatwootContainer', 'reactRedux', 'actionChatwoot'], function(loadedModules) {
+           
+            var reactRedux = loadedModules[1];
             var chatwootData = {
-                contact:{
+                contact:{                                                          
                     username: 'ilobanov',
-                    email: 'ilobanov@shatura.pro,
+                    email: 'ilobanov@shatura.pro',
                     phone: ''
                 }
             }
-            let store = actionChatwoot.createChatwootData(chatwootData)
+            var actionChatwoot = loadedModules[2]
+            var chatwootDataResult = actionChatwoot.createChatwootData(chatwootData)
+            console.log(chatwootDataResult);
+            const mapStateToProps = chatwootData => ({
+               chatwootDataState: chatwootDataResult
+                })
+            console.log(reactRedux.connect(mapStateToProps)(loadedModules[0]))
 
         })
      

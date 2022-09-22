@@ -51,9 +51,9 @@ const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddle
 // Goal: remove this once angular is fully removed
 window.react.redux = { store }
 
-// window.addEventListener('message',(event) => {
-//   console.log('Прослушка сработала в app.jsx')
-// })
+window.addEventListener('message',(event) => {
+  console.log('Прослушка сработала в app.jsx')
+})
 console.log('Проверка консоли')
 sagaMiddleware.run(IndexSagas)
 
