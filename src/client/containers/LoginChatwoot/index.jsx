@@ -33,17 +33,59 @@ import SpinLoader from 'components/SpinLoader'
 
 @observer
 class LoginChatwootContainer extends React.Component {
-  // @observable username = ''
-  // @observable phone = ''
-  // @observable email = ''
+  @observable username = ''
+  @observable password = ''
+  @observable passwordConfirm = ''
+  @observable fullname = ''
+  @observable email = ''
+  @observable phone = ''
+  @observable title = ''
+  selectedRole = ''
+  @observable isAgentRole = false
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     makeObservable(this)
   }
 
+  componentDidMount () {
+    this.props.fetchGroups({ type: 'all' })
+    this.props.fetchTeams()
+    this.props.fetchRoles()
+
+    helpers.UI.inputs()
+    helpers.formvalidator()
+  }
+
+  componentDidUpdate () {
+    helpers.UI.reRenderInputs()
+  }
+
+  onInputChanged (e, name) {
+    this[name] = e.target.value
+  }
+
+  onRoleSelectChange (e) {
+    this.selectedRole = e.target.value
+
+    const roleObject = this.props.roles.find(role => {
+      return role.get('_id') === this.selectedRole
+    })
+
+    this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
+
+    if (!this.selectedRole || this.selectedRole.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
+    else this.roleSelectErrorMessage.classList.add('hide')
+  }
+
+  onGroupSelectChange () {
+    const selectedGroups = this.groupSelect.getSelected()
+    if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
+    else this.groupSelectErrorMessage.classList.add('hide')
+  }
+
   //Валидация номера телефона
-  _validatePhone(phone) {
+  _validatePhone (phone) {
     if (!phone) return false
     return phone
       .toString()
@@ -54,63 +96,49 @@ class LoginChatwootContainer extends React.Component {
   }
 
 
-
-  componentDidMount() {
-    // this.props.fetchAccounts({ type: 'customers', limit: -1 })
-    // this.name = this.props.group.name
-    // this.domainName = this.props.group.domainName
-    // this.phone = this.props.group.phone
-    // this.email = this.props.group.address
-    // helpers.UI.inputs()
-    // helpers.UI.reRenderInputs()
-    // helpers.formvalidator()
-  }
-
-  componentDidUpdate() {
-    helpers.UI.reRenderInputs()
-  }
-
-  componentWillUnmount() {
-    this.props.unloadAccounts()
-  }
-
-  onFormSubmit(e) {
+  onFormSubmit (e) {
     e.preventDefault()
     const $form = $(e.target)
-    if (!$form.isValid(null, null, false)) return false
 
-    if (!this._validatePhone(this.props.phone)) {
-      helpers.UI.showSnackbar('Invalid Phone Number', true)
+    let isValid = true
+
+    if (!$form.isValid(null, null, false)) isValid = false
+
+    if (!this._validatePhone(this.phone)) {
+      helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
 
-    const payload = { //Полезная нагрузка которая отправляется из формы на сервере для обработки 
-      // username: this.props.username,
-      // email: this.props.email,
-      // phone: this.props.phone,
-      username: this.props.username,
-      email: this.props.email,
-      phone: this.props.phone,
+    if (!this.selectedRole || this.selectedRole.length < 1) {
+      this.roleSelectErrorMessage.classList.remove('hide')
+      if (isValid) isValid = false
+    } else this.roleSelectErrorMessage.classList.add('hide')
+
+    const selectedGroups = this.groupSelect ? this.groupSelect.getSelected() : undefined
+    if (selectedGroups) {
+      if (selectedGroups.length < 1) {
+        this.groupSelectErrorMessage.classList.remove('hide')
+        if (isValid) isValid = false
+      } else this.groupSelectErrorMessage.classList.add('hide')
     }
 
-    this.props.createAccountFromChatwoot(payload);
-  }
+    if (!isValid) return
 
-  onInputChangeUsername(e) {
-    // this.props.username = e.target.value
-    this.props.username = e.target.value
-  }
+    const payload = {
+      username: this.username,
+      fullname: this.fullname,
+      title: this.title,
+      email: this.email,
+      phone: this.phone,
+      groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
+      teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
+      role: this.selectedRole,
+      password: this.password.length > 3 ? this.password : undefined,
+      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : undefined
+    }
 
-  onInputChangeEmail(e) {
-    // this.props.domainName = e.target.value
-    this.props.email = e.target.value
+    this.props.createAccount(payload)
   }
-
-  onInputChangePhone(e) {
-    // this.props.phone = e.target.value
-    this.props.phone = e.target.value 
-  }
-
 
   render() {
     console.log('chatwoot login')
@@ -181,12 +209,30 @@ class LoginChatwootContainer extends React.Component {
 }
 
 LoginChatwootContainer.propTypes = {
-  createAccountFromChatwoot: PropTypes.func.isRequired,
+  common: PropTypes.object.isRequired,
+  groups: PropTypes.object.isRequired,
+  teams: PropTypes.object.isRequired,
+  roles: PropTypes.object.isRequired,
+  createAccount: PropTypes.func.isRequired,
+  fetchGroups: PropTypes.func.isRequired,
+  unloadGroups: PropTypes.func.isRequired,
+  fetchTeams: PropTypes.func.isRequired,
+  unloadTeams: PropTypes.func.isRequired,
+  fetchRoles: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-
+  roles: state.shared.roles,
+  common: state.common,
+  groups: state.groupsState.groups,
+  teams: state.teamsState.teams
 })
 
-// export default connect(mapStateToProps, { createAccountFromChatwoot })(LoginChatwootContainer)
-export default LoginChatwootContainer
+export default connect(mapStateToProps, {
+  createAccount,
+  fetchGroups,
+  unloadGroups,
+  fetchTeams,
+  unloadTeams,
+  fetchRoles
+})(LoginChatwootContainer)
