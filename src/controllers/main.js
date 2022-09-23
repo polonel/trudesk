@@ -19,7 +19,8 @@ const passport = require('passport')
 const winston = require('winston')
 const pkg = require('../../package')
 const xss = require('xss')
-const ldap = require('ldapjs');
+const ldap = require('ldapjs')
+const User = require('../models/user')
 // const action = require('../client/actions/common')
 
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
@@ -74,6 +75,7 @@ mainController.loginChatwootPost = function (req, res) {
   content.data.username = req.body.name
   content.data.phone = req.body.phone_number
   content.data.email = req.body.email
+ 
 
   return res.render('loginChatwoot', content)
 }
@@ -83,6 +85,17 @@ mainController.loginChatwoot = function (req, res) {
   content.username = req.query.username;
   content.phone = req.query.phone;
   content.email = req.query.email;
+
+  User.findOne({ phone: req.body.phone_number }, function (err, user) {
+    if (err)
+    return res.render('error', {
+      layout: false,
+      error: err,
+      message: err.message
+    })
+    return res.redirect('/accounts')
+  })
+
   return res.render('loginChatwoot', content);
 
 }
