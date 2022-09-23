@@ -144,21 +144,24 @@ class LoginChatwootContainer extends React.Component {
   }
 
   render() {
-    console.log('chatwoot login')
+    
+    const roles = this.props.roles
+    .map(role => {
+      return { text: role.get('name'), value: role.get('_id') }
+    })
+    .toArray()
 
-    console.log(this.props.username)
-    console.log(this.props.phone)
-    console.log(this.props.email)
-    // window.addEventListener("message", function (event) {
-    //   console.log("Запрос от chatwoot");  
-    //   const eventData = JSON.parse(event.data);
-    //   data = eventData.data.contact;
-    //   this.username = data.name;
-    //   this.phone = data.phone;
-    //   this.email = data.email;
-    // })
+  const groups = this.props.groups
+    .map(group => {
+      return { text: group.get('name'), value: group.get('_id') }
+    })
+    .toArray()
 
-
+  const teams = this.props.teams
+    .map(team => {
+      return { text: team.get('name'), value: team.get('_id') }
+    })
+    .toArray()
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
