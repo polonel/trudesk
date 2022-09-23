@@ -506,6 +506,7 @@ userSchema.statics.createUser = function (data, callback) {
  * @param callback
  */
 userSchema.statics.createUserFromEmail = async function (email, callback) {
+
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
   }
@@ -524,15 +525,16 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
       length: 6,
       pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
     })
-
-    var user = new self({
-      username: email.split('@')[0],
-      email: email,
-      password: plainTextPass,
-      fullname: email.split('@')[0],
-      role: userRoleDefault.value
-    })
-
+    
+      var user = new self({
+        username: email.split('@')[0],
+        email: email,
+        password: plainTextPass,
+        fullname: email.split('@')[0],
+        role: userRoleDefault.value
+      })
+   
+    
     self.model(COLLECTION).find({ username: user.username }, function (err, items) {
       if (err) return callback(err)
       if (_.size(items) > 0) return callback('Username already exists')
@@ -616,7 +618,7 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
           })
         })
       })
-//-- ShaturaPRO LIN 
+      //-- ShaturaPRO LIN 
 
     })
   })
@@ -625,13 +627,13 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
 //++ ShaturaPRO LIN Chatwoot login
 userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
   email = payload.email;
-  
+
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
   }
 
   var self = this
-  
+
   var settingSchema = require('./setting')
   settingSchema.getSetting('role:user:default', function (err, userRoleDefault) {
     if (err || !userRoleDefault) return callback('Invalid Setting - UserRoleDefault')
@@ -646,7 +648,7 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
     })
 
     var user = new self({
-      username: email.split('@')[0],
+      username: payload.username,
       email: email,
       password: plainTextPass,
       fullname: email.split('@')[0],
@@ -671,7 +673,8 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
           if (_.size(items) > 0) return true;//callback('Domain already exist');
           domain.save(function (err, domain) {
             if (err) return callback(err)
-            return callback(null, { user: savedUser, domain: domain })
+            console.log('Domain found')
+            return true
           });
         });
 
@@ -682,7 +685,8 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
           group.addMember(user._id, function (err, user) {
             if (err) return callback(err);
             group.save();//Сохранение добавления члена группы
-            return callback(`The user has been added to the group ${group.name}`);
+            console.log('The user has been added to the group')
+            return true
           })
         })
       })

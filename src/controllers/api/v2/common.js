@@ -44,27 +44,19 @@ commonV2.login = async (req, res) => {
 
 // Обработка данных из формы Chatwoot
 commonV2.loginChatwoot = async (req, res) => {
-  
-  data =req.body.phone_number;
-  
 
-  // const username = req.body.username
-  // const password = req.body.password
+  const payload = {
+    username: req.body.username,
+    phone: req.body.phone,
+    email: req.body.email
+  }
 
-  // if (!username || !password) return apiUtils.sendApiError_InvalidPostData(res)
+  User.createUserFromChatwoot(payload,function (err, response) {
+    if (err) return apiUtils.sendApiSuccess(res)
 
-  // try {
-  //   const user = await User.getUserByUsername(username)
-  //   if (!user) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
-
-  //   if (!User.validate(password, user.password)) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
-
-  //   const tokens = await apiUtils.generateJWTToken(user)
-
-  //   return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
-  // } catch (e) {
-  //   return apiUtils.sendApiError(res, 500, e.message)
-  // }
+    return apiUtils.sendApiError(res, 500, e.message)
+  })
+ 
 }
 
 commonV2.loginLDAP = async (req, res) => {

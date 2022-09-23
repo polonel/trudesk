@@ -60,14 +60,9 @@ mainController.index = function (req, res) {
     }
 
     content.bottom = 'Trudesk v' + pkg.version
-    
-    if (JSON.stringify(req.body) !== '{}'){
-      res.redirect('/loginChatwoot', content)
-    }else{
-      res.render('login', content)
-    }
-    
-    
+
+    res.render('login', content)
+
   })
 }
 
@@ -87,8 +82,8 @@ mainController.loginChatwoot = function (req, res) {
   const content = {}
   content.username = req.query.username;
   content.phone = req.query.phone;
-  content.email= req.query.email;
-    return res.render('loginChatwoot',content);
+  content.email = req.query.email;
+  return res.render('loginChatwoot', content);
 
 }
 
@@ -110,7 +105,7 @@ mainController.about = function (req, res) {
 
     content.data = {}
     content.data.user = req.user
-    content.data.common = req.viewdata 
+    content.data.common = req.viewdata
 
     content.data.version = pkg.version
     if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {
@@ -132,9 +127,6 @@ mainController.dashboard = function (req, res) {
   content.data.user = req.user
   content.data.common = req.viewdata
 
-  // const rew = window;
-  // return res.redirect('/loginChatwoot')
-  // return res.render('loginChatwoot', content)
   return res.render('dashboard', content)
 }
 
@@ -152,42 +144,43 @@ mainController.loginPost = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-    if( req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1]=='shatura.pro'){
-    passport.authenticate('ldapauth', async function (request, user, err, status) {
-      if (err) {
-        if (err.message != 'Invalid username/password') {
-          winston.error(err)
-          return next(err)
-        }
-      }
-
-      if (!user) {
-        mainController.loginLocal(req, res, next)
-      }
-
-      if (user) {
-        let redirectUrl = '/dashboard'
-        if (req.session.redirectUrl) {
-          redirectUrl = req.session.redirectUrl
-          req.session.redirectUrl = null
-        }
-
-        req.logIn(user, function (err) {
-          if (err) {
-            winston.debug(err)
+    if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
+      passport.authenticate('ldapauth', async function (request, user, err, status) {
+        if (err) {
+          if (err.message != 'Invalid username/password') {
+            winston.error(err)
             return next(err)
           }
+        }
 
-          return res.redirect(redirectUrl)
-        })
+        if (!user) {
+          mainController.loginLocal(req, res, next)
+        }
 
-      }
-    })(req, res, next)
+        if (user) {
+          let redirectUrl = '/dashboard'
+          if (req.session.redirectUrl) {
+            redirectUrl = req.session.redirectUrl
+            req.session.redirectUrl = null
+          }
 
-  } else {
-    mainController.loginLocal(req, res, next);
+          req.logIn(user, function (err) {
+            if (err) {
+              winston.debug(err)
+              return next(err)
+            }
+
+            return res.redirect(redirectUrl)
+          })
+
+        }
+      })(req, res, next)
+
+    } else {
+      mainController.loginLocal(req, res, next);
+    }
   }
-}}
+}
 
 mainController.loginLocal = async function (req, res, next) {
 
@@ -204,42 +197,42 @@ mainController.loginLocal = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-  passport.authenticate('local', async function (err, user) {
-    if (err) {
-      winston.error(err)
-      return next(err)
-    }
-    if (!user) {
-      try {
-        await limiterSlowBruteByIP.consume(ipAddress)
-        return res.redirect('/')
-      } catch (rlRejected) {
-        if (rlRejected instanceof Error) throw rlRejected
-        else {
-          const timeout = String(Math.round(rlRejected.msBeforeNext / 1000)) || 1
-          res.set('Retry-After', timeout)
-          res.status(429).render('429', { timeout, layout: false })
+    passport.authenticate('local', async function (err, user) {
+      if (err) {
+        winston.error(err)
+        return next(err)
+      }
+      if (!user) {
+        try {
+          await limiterSlowBruteByIP.consume(ipAddress)
+          return res.redirect('/')
+        } catch (rlRejected) {
+          if (rlRejected instanceof Error) throw rlRejected
+          else {
+            const timeout = String(Math.round(rlRejected.msBeforeNext / 1000)) || 1
+            res.set('Retry-After', timeout)
+            res.status(429).render('429', { timeout, layout: false })
+          }
         }
       }
-    }
-    if (user) {
+      if (user) {
 
-      let redirectUrl = '/dashboard'
+        let redirectUrl = '/dashboard'
 
-      if (req.session.redirectUrl) {
-        redirectUrl = req.session.redirectUrl
-        req.session.redirectUrl = null
-      }
-      req.logIn(user, function (err) {
-        if (err) {
-          winston.debug(err)
-          return next(err)
+        if (req.session.redirectUrl) {
+          redirectUrl = req.session.redirectUrl
+          req.session.redirectUrl = null
         }
-        return res.redirect(redirectUrl)
-      })
-    }
-  })(req, res, next)
-}
+        req.logIn(user, function (err) {
+          if (err) {
+            winston.debug(err)
+            return next(err)
+          }
+          return res.redirect(redirectUrl)
+        })
+      }
+    })(req, res, next)
+  }
 }
 
 

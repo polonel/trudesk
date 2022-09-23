@@ -172,6 +172,7 @@ function * genMFA ({ payload, meta }) {
 
 export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
+  yield takeLatest(CREATE_ACCOUNTFROMCHATWOOT.ACTION, createAccountFromChatwoot)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
   yield takeLatest(FETCH_ACCOUNTS_CREATE_TICKET.ACTION, fetchAccountsCreateTicket)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
