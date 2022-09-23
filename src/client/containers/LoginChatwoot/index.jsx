@@ -162,7 +162,7 @@ class LoginChatwootContainer extends React.Component {
 
     const groups = this.props.groups
       .map(group => {
-        return { text: group.get('name'), value: group.get('_id') }
+        return { text: group.get('name'), value: group.get('_id'), domainName: group.get('domainName') }
       })
       .toArray()
 
@@ -174,19 +174,21 @@ class LoginChatwootContainer extends React.Component {
 
     let defaultRole;
     for (let role of roles) {
-      console.log(role.text);
       if (role.text == 'User') {
         defaultRole = role.value;
       }
     }
 
-    let defaultGroup;
+    let defaultGroup = [];
     for (let group of groups) {
+      console.log('email split: '+ this.email.split('@')[1])
+      console.log('domainName: '+ group.domainName)
+      console.log('group: '+ group)
       if (group.domainName == this.email.split('@')[1]) {
        defaultGroup[0] = group.value;
       }
     }
-
+    console.log(defaultGroup);
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
         <div className='user-heading' style={{ minHeight: '130px', background: '#1976d2', padding: '24px' }}>
