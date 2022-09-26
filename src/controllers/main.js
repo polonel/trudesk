@@ -81,10 +81,14 @@ mainController.loginChatwootPost = function (req, res) {
 }
 
 mainController.loginChatwoot = function (req, res) {
+  
   const content = {}
   content.username = req.query.username;
   content.phone = req.query.phone.replace(' ','+');
   content.email = req.query.email;
+  content.contactID = req.query.contactID;
+  content.accountID = req.query.accountID;
+  content.customAttributes = req.query.customAttributes;
 
   User.findOne({ phone: content.phone}, function (err, user) {
     if (err) return res.render('error', {
@@ -94,26 +98,26 @@ mainController.loginChatwoot = function (req, res) {
     })
 
     if (user){
-      return res.redirect('/accounts')
+      if(user.email !== content.email){
+        return res.render('mappingChatwootPhone', content);
+      }
+      else return res.redirect('/tickets')
     } 
     else 
     {
-      // return res.render('loginChatwoot', content);
       User.findOne({ email: content.email}, function (err, user) {
         if (err) return res.render('error', {
           layout: false,
           error: err,
           message: err.message
         })
-        if (!user.phone || user.phone == ''){
+        if (user){
           return res.render('mappingChatwootPhone', content);
         } 
-      })
-
-      // return res.render('loginChatwoot', content);
-    }
-
-  })
+        else
+        {
+          return res.render('loginChatwoot', content);
+        }})}})
 
   
 

@@ -153,8 +153,11 @@
             const username = eventData.data.contact.name;
             const phone = eventData.data.contact.phone_number;
             const email = eventData.data.contact.email;
+            const contactID = eventData.data.contact.id;
+            const accountID = eventData.data.conversation.account_id;
+            const customAttributes =  eventData.data.conversation.custom_attributes.trudesk;
             if (window.location == 'https://trudesk-dev.shatura.pro/dashboard'){
-                window.location = `https://trudesk-dev.shatura.pro/loginChatwoot?username=${username}&phone=${phone}&email=${email}` 
+                window.location = `https://trudesk-dev.shatura.pro/loginChatwoot?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}` 
             }
 
           });

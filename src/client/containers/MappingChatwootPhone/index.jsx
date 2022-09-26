@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
-import { createAccount, fetchAccounts } from 'actions/accounts'
+import { createAccount, fetchAccounts, saveEditAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
@@ -52,7 +52,9 @@ class MappingChatwootPhoneContainer extends React.Component {
   })
   @observable password = this.plainTextPass
   @observable passwordConfirm = this.password
-
+  @observable contactID = this.props.contactID
+  @observable accountID = this.props.accountID
+  @observable customAttributes = this.props.customAttributes
   @observable defaultRole
   @observable defaultGroup
 
@@ -118,26 +120,46 @@ class MappingChatwootPhoneContainer extends React.Component {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
-    const contact = {
-      "name": "Lin",
-      "email": "fraxiumhamfre@gmail.com",
-      "phone_number": "+79163957041",
-      "avatar": null,
-      "avatar_url": null,
-      "identifier": null,
-      "custom_attributes": {}
+
+    const users = this.props.accountsState.accounts
+      .map(user => {
+        return { text: user.get('email'), value: user.get('_id'), password: user.get('password') }
+      })
+      .toArray()
+
+    let userPassword;
+    for (let user of users) {
+      if (user.text == this.email) {
+        userPassword = user.password;
+      }
     }
 
+    const data = {
+      username: this.username,
+      email: this.email,
+      phone: this.phone,
+      password: userPassword,
+      passwordConfirm: userPassword
+    }
+    this.props.saveEditAccount(data)
+  
+
+    const contact = {
+      "email": this.email,
+      "phone_number": this.phone
+    }
     let config = {
       method: 'put',
-      url: 'https://cw.shatura.pro/api/v1/accounts/1/contacts/265',
+      url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
       headers: {
         'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
         'Content-Type': 'application/json',
+        // 'Access-Control-Request-Origin': '*',
+        // 'Access-Control-Request-Method': 'PUT',
+        // 'Access-Control-Request-Headers': ['Content-Type', 'api_access_token','Origin']
       },
       data: contact
     };
-
     axios(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
@@ -145,7 +167,7 @@ class MappingChatwootPhoneContainer extends React.Component {
       .catch((error) => {
         console.log(error);
       });
-
+    // axios.post('https://trudesk-dev.shatura.pro/reqChatwoot',config)
 
 
     // axios.put('https://cw.shatura.pro/api/v1/accounts/1/contacts/265', contact).then(res => {
@@ -246,7 +268,8 @@ MappingChatwootPhoneContainer.propTypes = {
   fetchTeams: PropTypes.func.isRequired,
   unloadTeams: PropTypes.func.isRequired,
   fetchRoles: PropTypes.func.isRequired,
-  accountsState: PropTypes.object.isRequired
+  accountsState: PropTypes.object.isRequired,
+  saveEditAccount: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -264,5 +287,6 @@ export default connect(mapStateToProps, {
   fetchTeams,
   unloadTeams,
   fetchRoles,
-  fetchAccounts
+  fetchAccounts,
+  saveEditAccount
 })(MappingChatwootPhoneContainer)
