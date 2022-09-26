@@ -19,11 +19,10 @@ import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
-import { createAccount } from 'actions/accounts'
+import { createAccount,fetchAccounts } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
-
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
@@ -33,6 +32,7 @@ import $ from 'jquery'
 import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
 import setting from '../../../models/setting'
+import axios from 'axios'
 
 @observer
 class MappingChatwootPhoneContainer extends React.Component {
@@ -43,7 +43,7 @@ class MappingChatwootPhoneContainer extends React.Component {
   // @observable phone = this.props.phone.replace(' ','+')
   @observable phone = this.props.phone.replace(' ','+')
   @observable title = this.props.username
-  selectedRole = ''
+  selectedUser = ''
   @observable isAgentRole = false
   @observable chance = new Chance()
   @observable plainTextPass = this.chance.string({
@@ -65,7 +65,7 @@ class MappingChatwootPhoneContainer extends React.Component {
     this.props.fetchGroups({ type: 'all' })
     this.props.fetchTeams()
     this.props.fetchRoles()
-
+    this.props.fetchAccounts()
     helpers.UI.inputs()
     helpers.formvalidator()
   }
@@ -78,12 +78,12 @@ class MappingChatwootPhoneContainer extends React.Component {
     this[name] = e.target.value
   }
 
-  onRoleSelectChange(e) {
-    this.selectedRole = e.target.value
+  onUserSelectChange(e) {
+    this.selectedUser = e.target.value
 
-    // const roleObject = this.props.roles.find(role => {
-    //   return role.get('_id') === this.selectedRole
-    // })
+    const userObject = this.props.accountsState.accounts.find(user => {
+      return user.get('_id') === this.selectedUser
+    })
 
     // this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
 
@@ -118,8 +118,18 @@ class MappingChatwootPhoneContainer extends React.Component {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
-
-
+    const contact = {
+      "name": "Lin",
+      "email": "fraxiumhamfre@gmail.com",
+      "phone_number": "+79163957041",
+      "avatar": null,
+      "avatar_url": null,
+      "identifier": null,
+      "custom_attributes": { }
+      }
+    axios.post('https://cw.shatura.pro/app/accounts/1/contacts/265', contact ).then(res => {
+              console.log (res.data)
+            }).catch(err=>{console.log(err)})
     // this.props.createAccount(payload)
   }
 
@@ -144,6 +154,8 @@ class MappingChatwootPhoneContainer extends React.Component {
       })
       .toArray()
 
+    console.log(users);
+    
       let defaultUser;
       for (let user of users) {
         if (user.text == this.email) {
@@ -180,7 +192,7 @@ class MappingChatwootPhoneContainer extends React.Component {
                 width={'100'}
                 showTextbox={false}
                 defaultValue={defaultUser}
-                onSelectChange={e => this.onRoleSelectChange(e)}
+                onSelectChange={e => this.onUserSelectChange(e)}
               />
               <span
                 className='hide help-block'
@@ -192,7 +204,7 @@ class MappingChatwootPhoneContainer extends React.Component {
             </div>
             <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
-              <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
+              <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
           </form>
         </div>
@@ -230,5 +242,6 @@ export default connect(mapStateToProps, {
   unloadGroups,
   fetchTeams,
   unloadTeams,
-  fetchRoles
+  fetchRoles,
+  fetchAccounts
 })(MappingChatwootPhoneContainer)
