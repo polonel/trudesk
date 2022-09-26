@@ -33,9 +33,10 @@ import $ from 'jquery'
 import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
 import setting from '../../../models/setting'
+import { ConstraintViolationError } from 'ldapjs'
 
 @observer
-class LoginChatwootContainer extends React.Component {
+class MappingChatwootPhoneContainer extends React.Component {
 
   @observable username = this.props.email
   @observable fullname = this.props.username
@@ -78,17 +79,17 @@ class LoginChatwootContainer extends React.Component {
     this[name] = e.target.value
   }
 
-  onRoleSelectChange(e) {
-    this.selectedRole = e.target.value
+  onAccountSelectChange(e) {
+    this.selectedAccount = e.target.value
 
-    const roleObject = this.props.roles.find(role => {
-      return role.get('_id') === this.selectedRole
+    const accountObject = this.props.accountsState.accounts.find(account => {
+      return account.get('email') === this.selectedAccount
     })
+    
+    console.log(accountObject)
 
-    this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
-
-    if (!this.selectedRole || this.selectedRole.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
-    else this.roleSelectErrorMessage.classList.add('hide')
+    if (!this.selectedAccount || this.selectedAccount.length < 1) this.accountSelectErrorMessage.classList.remove('hide')
+    else this.accountSelectErrorMessage.classList.add('hide')
   }
 
   onGroupSelectChange() {
@@ -124,14 +125,14 @@ class LoginChatwootContainer extends React.Component {
       return
     }
 
-    if ((!this.selectedRole || this.selectedRole.length < 1)) {
-      this.selectedRole = this.defaultRole
-      if ((!this.selectedRole || this.selectedRole.length < 1)) {
-      this.roleSelectErrorMessage.classList.remove('hide')
+    if ((!this.selectedAccount || this.selectedAccount.length < 1)) {
+      this.selectedAccount = this.defaultAccount
+      if ((!this.selectedAccount || this.selectedAccount.length < 1)) {
+      this.AccountSelectErrorMessage.classList.remove('hide')
       if (isValid) isValid = false
-      } else this.roleSelectErrorMessage.classList.add('hide')
+      } else this.AccountSelectErrorMessage.classList.add('hide')
       
-    } else this.roleSelectErrorMessage.classList.add('hide')
+    } else this.AccountSelectErrorMessage.classList.add('hide')
 
     let selectedGroups = this.groupSelect ? this.groupSelect.getSelected() : undefined
     if (selectedGroups) {
@@ -200,20 +201,13 @@ class LoginChatwootContainer extends React.Component {
     }
     this.defaultGroup = defaultGroup;
 
+    const users = this.props.accountsState.accounts.map(user => user.email);
+
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
-        <div className='user-heading' style={{ minHeight: '130px', background: '#1976d2', padding: '24px' }}>
+        <div className='user-heading' style={{ minHeight: '10px', background: '#1976d2', padding: '24px' }}>
           <div className='uk-width-1-1'>
-            <div style={{ width: '82px', height: '82px', float: 'left', marginRight: '24px', position: 'relative' }}>
-              <div className='mediumProfilePic' style={{ position: 'relative' }}>
-                <img src={`/uploads/users/defaultProfile.jpg`} alt='Profile Picture' />
-              </div>
-            </div>
             <div className='user-heading-content'>
-              <h2>
-                <span className={'uk-text-truncate'}>Create Account</span>
-                <span className='sub-heading'>Please provide account details below</span>
-              </h2>
             </div>
           </div>
         </div>
@@ -231,63 +225,6 @@ class LoginChatwootContainer extends React.Component {
                 data-validation-error-msg={'Username must contain at least 4 characters.'}
               />
             </div>
-            <div className='uk-margin-medium-bottom uk-clearfix'>
-              <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
-                <label className={'uk-form-label'}>Name</label>
-                <input
-                  type='text'
-                  className={'md-input'}
-                  value={this.fullname}
-                  onChange={e => this.onInputChanged(e, 'fullname')}
-                  data-validation={'length'}
-                  data-validation-length={'min1'}
-                  data-validation-error-msg={'Name must contain at least 1 character.'}
-                />
-              </div>
-              <div className='uk-float-left uk-width-1-2'>
-                <label className={'uk-form-label'}>Title</label>
-                <input
-                  type='text'
-                  className={'md-input'}
-                  value={this.title}
-                  onChange={e => this.onInputChanged(e, 'title')}
-                />
-              </div>
-            </div>
-            <div className='uk-margin-medium-bottom uk-clearfix'>
-              <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
-                <label className={'uk-form-label'}>Password</label>
-                <input
-                  type='password'
-                  className={'md-input'}
-                  name={'password_confirmation'}
-                  value={this.password}
-                  onChange={e => this.onInputChanged(e, 'password')}
-                />
-              </div>
-              <div className='uk-float-left uk-width-1-2'>
-                <label className={'uk-form-label'}>Confirm Password</label>
-                <input
-                  type='password'
-                  className={'md-input'}
-                  name={'password'}
-                  value={this.passwordConfirm}
-                  onChange={e => this.onInputChanged(e, 'passwordConfirm')}
-                  data-validation='confirmation'
-                  data-validation-error-msg={'Password does not match'}
-                />
-              </div>
-            </div>
-            <div className='uk-margin-medium-bottom'>
-              <label className='uk-form-label'>Email</label>
-              <input
-                type='email'
-                className={'md-input'}
-                value={this.email}
-                onChange={e => this.onInputChanged(e, 'email')}
-                data-validation='email'
-              />
-            </div>
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
               <input
@@ -295,17 +232,16 @@ class LoginChatwootContainer extends React.Component {
                 className={'md-input'}
                 value={this.phone}
                 onChange={e => this.onInputChanged(e, 'phone')}
-
               />
             </div>
             <div className='uk-margin-medium-bottom'>
-              <label className={'uk-form-label'}>Role</label>
+              <label className={'uk-form-label'}>User</label>
               <SingleSelect
-                items={roles}
+                items={users}
                 width={'100'}
                 showTextbox={false}
-                defaultValue={defaultRole}
-                onSelectChange={e => this.onRoleSelectChange(e)}
+                defaultValue={this.email}
+                onSelectChange={e => this.onAccountSelectChange(e)}
               />
               <span
                 className='hide help-block'
@@ -315,34 +251,6 @@ class LoginChatwootContainer extends React.Component {
                 Please select a role for this user
               </span>
             </div>
-            {!this.isAgentRole && (
-              <div>
-                <div className='uk-margin-medium-bottom'>
-                  <label className='uk-form-label'>Groups</label>
-                  <MultiSelect
-                    items={groups}
-                    onChange={() => {}}
-                    initialSelected={defaultGroup}
-                    ref={r => (this.groupSelect = r)}
-                  />
-                  <span
-                    className={'hide help-block'}
-                    style={{ display: 'inline-block', marginTop: '3px', fontWeight: 'bold', color: '#d85030' }}
-                    ref={r => (this.groupSelectErrorMessage = r)}
-                  >
-                    Please select a group for this user.
-                  </span>
-                </div>
-              </div>
-            )}
-            {this.isAgentRole && (
-              <div>
-                <div className='uk-margin-medium-bottom'>
-                  <label className='uk-form-label'>Teams</label>
-                  <MultiSelect items={teams} onChange={() => { }} ref={r => (this.teamSelect = r)} />
-                </div>
-              </div>
-            )}
             <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
@@ -355,7 +263,7 @@ class LoginChatwootContainer extends React.Component {
   }
 }
 
-LoginChatwootContainer.propTypes = {
+MappingChatwootPhoneContainer.propTypes = {
   common: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
   teams: PropTypes.object.isRequired,
@@ -365,14 +273,16 @@ LoginChatwootContainer.propTypes = {
   unloadGroups: PropTypes.func.isRequired,
   fetchTeams: PropTypes.func.isRequired,
   unloadTeams: PropTypes.func.isRequired,
-  fetchRoles: PropTypes.func.isRequired
+  fetchRoles: PropTypes.func.isRequired,
+  accountsState: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
   roles: state.shared.roles,
   common: state.common,
   groups: state.groupsState.groups,
-  teams: state.teamsState.teams
+  teams: state.teamsState.teams,
+  accountsState: state.accountsState,
 })
 
 export default connect(mapStateToProps, {
@@ -382,4 +292,4 @@ export default connect(mapStateToProps, {
   fetchTeams,
   unloadTeams,
   fetchRoles
-})(LoginChatwootContainer)
+})(MappingChatwootPhoneContainer)

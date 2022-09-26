@@ -83,20 +83,39 @@ mainController.loginChatwootPost = function (req, res) {
 mainController.loginChatwoot = function (req, res) {
   const content = {}
   content.username = req.query.username;
-  content.phone = req.query.phone;
+  content.phone = req.query.phone.replace(' ','+');
   content.email = req.query.email;
 
-  User.findOne({ phone: req.body.phone_number }, function (err, user) {
-    if (err)
-    return res.render('error', {
+  User.findOne({ phone: content.phone}, function (err, user) {
+    if (err) return res.render('error', {
       layout: false,
       error: err,
       message: err.message
     })
-    return res.redirect('/accounts')
+
+    if (user){
+      return res.redirect('/accounts')
+    } 
+    else 
+    {
+      // return res.render('loginChatwoot', content);
+      User.findOne({ email: content.email}, function (err, user) {
+        if (err) return res.render('error', {
+          layout: false,
+          error: err,
+          message: err.message
+        })
+        if (!user.phone || user.phone == ''){
+          return res.render('mappingChatwootPhone', content);
+        } 
+      })
+
+      // return res.render('loginChatwoot', content);
+    }
+
   })
 
-  return res.render('loginChatwoot', content);
+  
 
 }
 

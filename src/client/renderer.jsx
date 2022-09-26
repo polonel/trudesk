@@ -23,7 +23,8 @@ import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
 import AccountsImportContainer from 'containers/Accounts/AccountsImport'
 import GroupsContainer from 'containers/Groups'
-import LoginChatwootContainer from 'containers/LoginChatwoot'
+import LoginChatwootContainer from 'containers/LoginChatwoot' //ShaturaPro LIN
+import MappingChatwootPhoneContainer from 'containers/MappingChatwootPhone' //ShaturaPro LIN
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
@@ -123,6 +124,19 @@ export default function (store) {
     )
 
     ReactDOM.render(LoginChatwootContainerWithProvider, document.getElementById('loginChatwoot-container'))
+  }
+
+  if (document.getElementById('mappingChatwootPhone-container')) {
+    const username = document.getElementById('mappingChatwootPhone-container').getAttribute('data-username')
+    const phone = document.getElementById('mappingChatwootPhone-container').getAttribute('data-phone')
+    const email = document.getElementById('mappingChatwootPhone-container').getAttribute('data-email')
+    const MappingChatwootPhoneContainerWithProvider = (
+      <Provider store={store}>
+        <MappingChatwootPhoneContainer username={username} phone={phone} email={email} />
+      </Provider>
+    )
+
+    ReactDOM.render(MappingChatwootPhoneContainerWithProvider, document.getElementById('mappingChatwootPhone-container'))
   }
 
   if (document.getElementById('teams-container')) {
