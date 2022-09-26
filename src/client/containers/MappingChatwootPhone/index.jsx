@@ -43,7 +43,8 @@ class MappingChatwootPhoneContainer extends React.Component {
   // @observable phone = this.props.phone.replace(' ','+')
   @observable phone = this.props.phone.replace(' ', '+')
   @observable title = this.props.username
-  selectedUser = ''
+  @observable selectedUser = ''
+  @observable defaultUser = '' 
   @observable isAgentRole = false
   @observable chance = new Chance()
   @observable plainTextPass = this.chance.string({
@@ -115,7 +116,9 @@ class MappingChatwootPhoneContainer extends React.Component {
 
   onFormSubmit(e) {
     e.preventDefault()
-
+    if (this.selectedUser == undefined || this.selectedUser == ''){
+      this.selectedUser = this.defaultUser;
+    }
     if (!this._validatePhone(this.phone)) {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
@@ -141,18 +144,15 @@ class MappingChatwootPhoneContainer extends React.Component {
         }
       }
 
-    console.log(updateUser)
-
     const data = {
       username:  updateUser.username ,
       email:  updateUser.email,
-      phone: updateUser
+      phone: this.phone
     }
     this.props.saveEditAccount(data)
   
-
     const contact = {
-      "email": this.email,
+      "email": updateUser.email,
       "phone_number": this.phone
     }
     let config = {
@@ -161,9 +161,6 @@ class MappingChatwootPhoneContainer extends React.Component {
       headers: {
         'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
         'Content-Type': 'application/json',
-        // 'Access-Control-Request-Origin': '*',
-        // 'Access-Control-Request-Method': 'PUT',
-        // 'Access-Control-Request-Headers': ['Content-Type', 'api_access_token','Origin']
       },
       data: contact
     };
@@ -174,13 +171,6 @@ class MappingChatwootPhoneContainer extends React.Component {
       .catch((error) => {
         console.log(error);
       });
-    // axios.post('https://trudesk-dev.shatura.pro/reqChatwoot',config)
-
-
-    // axios.put('https://cw.shatura.pro/api/v1/accounts/1/contacts/265', contact).then(res => {
-    //   console.log(res.data)
-    // }).catch(err => { console.log(err) })
-    // this.props.createAccount(payload)
   }
 
   render() {
@@ -204,25 +194,19 @@ class MappingChatwootPhoneContainer extends React.Component {
       })
       .toArray()
 
-    console.log(users);
-
-    let defaultUser;
     for (let user of users) {
       if (user.text == this.email) {
-        defaultUser = user.value;
+        this.defaultUser = user.value;
       }
     }
 
-    if (defaultUser == undefined){
+    if (this.defaultUser == undefined || this.defaultUser == '' ){
     for (let user of users) {
       if (user.phone == this.phone) {
-        defaultUser = user.value;
+        this.defaultUser = user.value;
       }
     }
   }
-
-
-    // const users = this.props.accountsState.accounts.map(user => user.email);
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
@@ -249,7 +233,7 @@ class MappingChatwootPhoneContainer extends React.Component {
                 items={users}
                 width={'100'}
                 showTextbox={false}
-                defaultValue={defaultUser}
+                defaultValue={this.defaultUser}
                 onSelectChange={e => this.onUserSelectChange(e)}
               />
               <span
