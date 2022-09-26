@@ -33,7 +33,6 @@ import $ from 'jquery'
 import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
 import setting from '../../../models/setting'
-import { ConstraintViolationError } from 'ldapjs'
 
 @observer
 class MappingChatwootPhoneContainer extends React.Component {
@@ -83,13 +82,11 @@ class MappingChatwootPhoneContainer extends React.Component {
     this.selectedAccount = e.target.value
 
     const accountObject = this.props.accountsState.accounts.find(account => {
-      return account.get('email') === this.selectedAccount
+      return account.get('_id') === this.selectedAccount
     })
-    
-    console.log(accountObject)
 
-    if (!this.selectedAccount || this.selectedAccount.length < 1) this.accountSelectErrorMessage.classList.remove('hide')
-    else this.accountSelectErrorMessage.classList.add('hide')
+    if (!this.selectedAccount || this.selectedAccount.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
+    else this.roleSelectErrorMessage.classList.add('hide')
   }
 
   onGroupSelectChange() {
@@ -114,55 +111,14 @@ class MappingChatwootPhoneContainer extends React.Component {
 
   onFormSubmit(e) {
     e.preventDefault()
-    const $form = $(e.target)
-
-    let isValid = true
-
-    if (!$form.isValid(null, null, false)) isValid = false
 
     if (!this._validatePhone(this.phone)) {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
 
-    if ((!this.selectedAccount || this.selectedAccount.length < 1)) {
-      this.selectedAccount = this.defaultAccount
-      if ((!this.selectedAccount || this.selectedAccount.length < 1)) {
-      this.AccountSelectErrorMessage.classList.remove('hide')
-      if (isValid) isValid = false
-      } else this.AccountSelectErrorMessage.classList.add('hide')
-      
-    } else this.AccountSelectErrorMessage.classList.add('hide')
 
-    let selectedGroups = this.groupSelect ? this.groupSelect.getSelected() : undefined
-    if (selectedGroups) {
-      if (selectedGroups.length < 1) {
-        selectedGroups = this.defaultGroup
-      if (selectedGroups.length < 1) {
-        this.groupSelectErrorMessage.classList.remove('hide')
-        if (isValid) isValid = false
-      }else this.groupSelectErrorMessage.classList.add('hide')
-
-      } else this.groupSelectErrorMessage.classList.add('hide')
-    }
-
-
-    if (!isValid) return
-
-    const payload = {
-      username: this.username,
-      fullname: this.fullname,
-      title: this.title,
-      email: this.email,
-      phone: this.phone,
-      groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
-      teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
-      role: this.selectedRole,
-      password: this.password.length > 3 ? this.password : undefined,
-      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : undefined
-    }
-
-    this.props.createAccount(payload)
+    // this.props.createAccount(payload)
   }
 
   render() {
