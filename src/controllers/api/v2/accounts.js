@@ -271,21 +271,21 @@ accountsApi.update = async function (req, res) {
     if (!user) throw new Error('Invalid User')
 
     postData._id = user._id.toString()
-    if (
-      !_.isUndefined(postData.password) &&
-      !_.isEmpty(postData.password) &&
-      !_.isUndefined(postData.passwordConfirm) &&
-      !_.isEmpty(postData.passwordConfirm)
-    ) {
-      if (postData.password === postData.passwordConfirm) {
-        if (passwordComplexityEnabled) {
-          if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
-        }
+    // if (
+    //   !_.isUndefined(postData.password) &&
+    //   !_.isEmpty(postData.password) &&
+    //   !_.isUndefined(postData.passwordConfirm) &&
+    //   !_.isEmpty(postData.passwordConfirm)
+    // ) {
+    //   if (postData.password === postData.passwordConfirm) {
+    //     if (passwordComplexityEnabled) {
+    //       if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
+    //     }
 
-        user.password = postData.password
-        passwordUpdated = true
-      } else throw new Error('Password and Confirm Password do not match.')
-    } else throw new Error('Password length is too short.')
+    //     user.password = postData.password
+    //     passwordUpdated = true
+    //   } else throw new Error('Password and Confirm Password do not match.')
+    // } else throw new Error('Password length is too short.')
 
     if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
     if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email

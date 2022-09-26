@@ -123,23 +123,30 @@ class MappingChatwootPhoneContainer extends React.Component {
 
     const users = this.props.accountsState.accounts
       .map(user => {
-        return { text: user.get('email'), value: user.get('_id'), password: user.get('password') }
+        return { text: user.get('email'), value: user.get('_id'), username: user.get('username'), phone: user.get('phone') }
       })
       .toArray()
 
-    let userPassword;
-    for (let user of users) {
-      if (user.text == this.email) {
-        userPassword = user.password;
+      let updateUser ={
+        username: '',
+        email:'',
+        phone:''
       }
-    }
+
+      for (let user of users) {
+        if (user.value == this.selectedUser) {
+          updateUser.username = user.username;
+          updateUser.email = user.text;
+          updateUser.phone = user.phone;
+        }
+      }
+
+    console.log(updateUser)
 
     const data = {
-      username: this.username,
-      email: this.email,
-      phone: this.phone,
-      password: userPassword,
-      passwordConfirm: userPassword
+      username:  updateUser.username ,
+      email:  updateUser.email,
+      phone: updateUser
     }
     this.props.saveEditAccount(data)
   
@@ -193,7 +200,7 @@ class MappingChatwootPhoneContainer extends React.Component {
 
     const users = this.props.accountsState.accounts
       .map(user => {
-        return { text: user.get('email'), value: user.get('_id') }
+        return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
       })
       .toArray()
 
@@ -205,6 +212,14 @@ class MappingChatwootPhoneContainer extends React.Component {
         defaultUser = user.value;
       }
     }
+
+    if (defaultUser == undefined){
+    for (let user of users) {
+      if (user.phone == this.phone) {
+        defaultUser = user.value;
+      }
+    }
+  }
 
 
     // const users = this.props.accountsState.accounts.map(user => user.email);
