@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
-import { createAccount,fetchAccounts } from 'actions/accounts'
+import { createAccount, fetchAccounts } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
@@ -41,7 +41,7 @@ class MappingChatwootPhoneContainer extends React.Component {
   @observable fullname = this.props.username
   @observable email = this.props.email
   // @observable phone = this.props.phone.replace(' ','+')
-  @observable phone = this.props.phone.replace(' ','+')
+  @observable phone = this.props.phone.replace(' ', '+')
   @observable title = this.props.username
   selectedUser = ''
   @observable isAgentRole = false
@@ -125,11 +125,32 @@ class MappingChatwootPhoneContainer extends React.Component {
       "avatar": null,
       "avatar_url": null,
       "identifier": null,
-      "custom_attributes": { }
-      }
-    axios.post('https://cw.shatura.pro/app/accounts/1/contacts/265', contact ).then(res => {
-              console.log (res.data)
-            }).catch(err=>{console.log(err)})
+      "custom_attributes": {}
+    }
+
+    let config = {
+      method: 'put',
+      url: 'https://cw.shatura.pro/api/v1/accounts/1/contacts/265',
+      headers: {
+        'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+        'Content-Type': 'application/json',
+      },
+      data: contact
+    };
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+
+
+    // axios.put('https://cw.shatura.pro/api/v1/accounts/1/contacts/265', contact).then(res => {
+    //   console.log(res.data)
+    // }).catch(err => { console.log(err) })
     // this.props.createAccount(payload)
   }
 
@@ -155,13 +176,13 @@ class MappingChatwootPhoneContainer extends React.Component {
       .toArray()
 
     console.log(users);
-    
-      let defaultUser;
-      for (let user of users) {
-        if (user.text == this.email) {
-          defaultUser = user.value;
-        }
+
+    let defaultUser;
+    for (let user of users) {
+      if (user.text == this.email) {
+        defaultUser = user.value;
       }
+    }
 
 
     // const users = this.props.accountsState.accounts.map(user => user.email);
