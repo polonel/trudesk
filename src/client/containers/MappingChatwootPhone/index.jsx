@@ -78,15 +78,17 @@ class MappingChatwootPhoneContainer extends React.Component {
     this[name] = e.target.value
   }
 
-  onAccountSelectChange(e) {
-    this.selectedAccount = e.target.value
+  onRoleSelectChange(e) {
+    this.selectedRole = e.target.value
 
-    const accountObject = this.props.accountsState.accounts.find(account => {
-      return account.get('_id') === this.selectedAccount
-    })
+    // const roleObject = this.props.roles.find(role => {
+    //   return role.get('_id') === this.selectedRole
+    // })
 
-    if (!this.selectedAccount || this.selectedAccount.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
-    else this.roleSelectErrorMessage.classList.add('hide')
+    // this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
+
+    // if (!this.selectedRole || this.selectedRole.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
+    // else this.roleSelectErrorMessage.classList.add('hide')
   }
 
   onGroupSelectChange() {
@@ -129,35 +131,28 @@ class MappingChatwootPhoneContainer extends React.Component {
       })
       .toArray()
 
-    const groups = this.props.groups
-      .map(group => {
-        return { text: group.get('name'), value: group.get('_id'), domainName: group.get('domainName') }
-      })
-      .toArray()
-
-    const teams = this.props.teams
-      .map(team => {
-        return { text: team.get('name'), value: team.get('_id') }
-      })
-      .toArray()
-
     let defaultRole;
     for (let role of roles) {
       if (role.text == 'User') {
         defaultRole = role.value;
       }
     }
-    this.defaultRole = defaultRole;
 
-    let defaultGroup = [];
-    for (let group of groups) {
-      if (group.domainName == this.email.split('@')[1]) {
-       defaultGroup[0] = group.value;
+    const users = this.props.accountsState.accounts
+      .map(user => {
+        return { text: user.get('email'), value: user.get('_id') }
+      })
+      .toArray()
+
+      let defaultUser;
+      for (let user of users) {
+        if (user.text == this.email) {
+          defaultUser = user.value;
+        }
       }
-    }
-    this.defaultGroup = defaultGroup;
 
-    const users = this.props.accountsState.accounts.map(user => user.email);
+
+    // const users = this.props.accountsState.accounts.map(user => user.email);
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
@@ -169,18 +164,6 @@ class MappingChatwootPhoneContainer extends React.Component {
         </div>
         <div style={{ margin: '24px 24px 0 24px' }}>
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)}>
-            <div className='uk-margin-medium-bottom'>
-              <label className='uk-form-label'>Username</label>
-              <input
-                type='text'
-                className={'md-input'}
-                value={this.username}
-                onChange={e => this.onInputChanged(e, 'username')}
-                data-validation={'length'}
-                data-validation-length={'min4'}
-                data-validation-error-msg={'Username must contain at least 4 characters.'}
-              />
-            </div>
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
               <input
@@ -196,8 +179,8 @@ class MappingChatwootPhoneContainer extends React.Component {
                 items={users}
                 width={'100'}
                 showTextbox={false}
-                defaultValue={this.email}
-                onSelectChange={e => this.onAccountSelectChange(e)}
+                defaultValue={defaultUser}
+                onSelectChange={e => this.onRoleSelectChange(e)}
               />
               <span
                 className='hide help-block'
