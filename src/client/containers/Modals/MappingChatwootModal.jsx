@@ -36,7 +36,7 @@ import axios from 'axios'
 
 
 @observer
-class MappingChatwootPhoneContainer extends React.Component {
+class MappingChatwootContainer extends React.Component {
 
   @observable username = this.props.email
   @observable fullname = this.props.username
@@ -266,7 +266,7 @@ class MappingChatwootPhoneContainer extends React.Component {
   }
 }
 
-MappingChatwootPhoneContainer.propTypes = {
+MappingChatwootContainer.propTypes = {
   common: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
   teams: PropTypes.object.isRequired,
@@ -300,4 +300,4 @@ export default connect(mapStateToProps, {
   fetchAccounts,
   saveEditAccount,
   showModal
-})(MappingChatwootPhoneContainer)
+})(MappingChatwootContainer)

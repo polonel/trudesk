@@ -99,7 +99,7 @@ mainController.loginChatwoot = function (req, res) {
 
     if (user){
       if(user.email !== content.email){
-        return res.render('mappingChatwootPhone', content);
+        return res.render('mappingChatwoot', content);
       }
       else return res.redirect('/tickets')
     } 
@@ -112,7 +112,7 @@ mainController.loginChatwoot = function (req, res) {
           message: err.message
         })
         if (user){
-          return res.render('mappingChatwootPhone', content);
+          return res.render('mappingChatwoot', content);
         } 
         else
         {
