@@ -373,7 +373,11 @@ class LoginChatwootContainer extends React.Component {
               </a>
             </div> */}
             <div className='uk-modal-footer uk-text-right'>
-              <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
+              <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">
+                <a class="uk-float-left uk-width-1-1 uk-text-center" href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
+                  Close
+                </a>
+              </button>
               <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
           </form>
