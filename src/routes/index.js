@@ -20,6 +20,7 @@
    router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index)
    router.get('/loginChatwoot', controllers.main.loginChatwoot)
    router.get('/mappingChatwoot', controllers.main.mappingChatwoot)
+   router.get('/changeMappingOrCreate', controllers.main.changeMappingOrCreate)
    router.get('/healthz', function (req, res) {
      return res.status(200).send('OK')
    })

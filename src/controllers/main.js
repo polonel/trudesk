@@ -90,6 +90,18 @@ mainController.mappingChatwoot = function (req, res) {
   return res.render('mappingChatwoot', content)
 }
 
+mainController.changeMappingOrCreate = function (req, res) {
+
+  const content = {}
+  content.username = req.query.username;
+  content.phone = req.query.phone.replace(' ','+');
+  content.email = req.query.email;
+  content.contactID = req.query.contactID;
+  content.accountID = req.query.accountID;
+  content.customAttributes = req.query.customAttributes;
+  return res.render('changeMappingOrCreate', content)
+}
+
 mainController.loginChatwoot = function (req, res) {
   
   const content = {}

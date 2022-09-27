@@ -41,8 +41,8 @@ class LoginChatwootContainer extends React.Component {
   @observable fullname = this.props.username
   @observable email = this.props.email
   // @observable phone = this.props.phone.replace(' ','+')
-  @observable phone = this.props.phone.replace(' ','+')
-  @observable title = this.props.username
+  @observable phone = this.props.phone.replace(' ', '+')
+  @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
   @observable chance = new Chance()
@@ -129,20 +129,20 @@ class LoginChatwootContainer extends React.Component {
     if ((!this.selectedRole || this.selectedRole.length < 1)) {
       this.selectedRole = this.defaultRole
       if ((!this.selectedRole || this.selectedRole.length < 1)) {
-      this.roleSelectErrorMessage.classList.remove('hide')
-      if (isValid) isValid = false
+        this.roleSelectErrorMessage.classList.remove('hide')
+        if (isValid) isValid = false
       } else this.roleSelectErrorMessage.classList.add('hide')
-      
+
     } else this.roleSelectErrorMessage.classList.add('hide')
 
     let selectedGroups = this.groupSelect ? this.groupSelect.getSelected() : undefined
     if (selectedGroups) {
       if (selectedGroups.length < 1) {
         selectedGroups = this.defaultGroup
-      if (selectedGroups.length < 1) {
-        this.groupSelectErrorMessage.classList.remove('hide')
-        if (isValid) isValid = false
-      }else this.groupSelectErrorMessage.classList.add('hide')
+        if (selectedGroups.length < 1) {
+          this.groupSelectErrorMessage.classList.remove('hide')
+          if (isValid) isValid = false
+        } else this.groupSelectErrorMessage.classList.add('hide')
 
       } else this.groupSelectErrorMessage.classList.add('hide')
     }
@@ -219,7 +219,7 @@ class LoginChatwootContainer extends React.Component {
     let defaultGroup = [];
     for (let group of groups) {
       if (group.domainName == this.email.split('@')[1]) {
-       defaultGroup[0] = group.value;
+        defaultGroup[0] = group.value;
       }
     }
     this.defaultGroup = defaultGroup;
@@ -266,6 +266,15 @@ class LoginChatwootContainer extends React.Component {
                   data-validation={'length'}
                   data-validation-length={'min1'}
                   data-validation-error-msg={'Name must contain at least 1 character.'}
+                />
+              </div>
+              <div className='uk-float-left uk-width-1-2'>
+                <label className={'uk-form-label'}>Title</label>
+                <input
+                  type='text'
+                  className={'md-input'}
+                  value={this.title}
+                  onChange={e => this.onInputChanged(e, 'title')}
                 />
               </div>
             </div>
@@ -336,7 +345,7 @@ class LoginChatwootContainer extends React.Component {
                   <label className='uk-form-label'>Groups</label>
                   <MultiSelect
                     items={groups}
-                    onChange={() => {}}
+                    onChange={() => { }}
                     initialSelected={defaultGroup}
                     ref={r => (this.groupSelect = r)}
                   />
@@ -358,10 +367,12 @@ class LoginChatwootContainer extends React.Component {
                 </div>
               </div>
             )}
-            <div className='uk-modal-footer uk-text-right'>
-              <a href={`https://trudesk-dev.shatura.pro/mappingChatwoot?phone=${this.phone}&accountID=${this.accountID}&contactID=${this.contactID}`}>
+            {/* <div className='uk-modal-footer uk-text-left'>
+              <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/mappingChatwoot?phone=${this.phone}&accountID=${this.accountID}&contactID=${this.contactID}`}>
                 Mapping
               </a>
+            </div> */}
+            <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
