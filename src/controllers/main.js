@@ -80,6 +80,13 @@ mainController.loginChatwootPost = function (req, res) {
   return res.render('loginChatwoot', content)
 }
 
+mainController.mappingChatwoot = function (req, res) {
+
+  const content = {}
+  content.data.phone = req.query.phone.replace(' ','+');
+  return res.render('mappingChatwoot', content)
+}
+
 mainController.loginChatwoot = function (req, res) {
   
   const content = {}

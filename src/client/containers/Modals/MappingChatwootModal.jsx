@@ -246,15 +246,6 @@ class MappingChatwootContainer extends React.Component {
               </span>
             </div>
             <div className='uk-modal-footer uk-text-right'>
-            <li className='top-bar-icon nopadding'>
-                        <button
-                          title={'Mapping'}
-                          className={'anchor'}
-                          onClick={() => this.props.showModal('MAPPING_CHATWOOT')}
-                        >
-                          <i className='material-icons'>&#xE145;</i>
-                        </button>
-                      </li>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
