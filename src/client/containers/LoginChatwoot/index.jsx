@@ -359,7 +359,7 @@ class LoginChatwootContainer extends React.Component {
               </div>
             )}
             <div className='uk-modal-footer uk-text-right'>
-              <a href={`https://trudesk-dev.shatura.pro/mappingChatwoot?phone=${this.phone}`}>
+              <a href={`https://trudesk-dev.shatura.pro/mappingChatwoot?phone=${this.phone}&accountID=${this.accountID}&contactID=${this.contactID}`}>
                 Mapping
               </a>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
