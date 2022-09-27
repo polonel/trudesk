@@ -82,18 +82,25 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
+         <div className='user-heading' style={{ minHeight: '10px', background: '#1976d2', padding: '24px' }}>
+         <div class="user-heading-content"><h2><span class="uk-text-truncate">Select an action</span></h2></div>
+        </div>
+        <div style={{ margin: ' 0px 25px 0px' }}>
+          <div className='uk-modal-footer uk-text-center'>
+          <div class="uk-float-right"><a  class="uk-button uk-button-accent" style="padding: 10px 15px;" href={`https://trudesk-dev.shatura.pro/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>Test Mapping</a></div>
 
-        <div style={{ margin: '24px 24px 0 24px' }}>
-          <div className='uk-modal-footer uk-text-left'>
-            <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/mappingChatwoot?phone=${this.phone}&accountID=${this.accountID}&contactID=${this.contactID}`}>
+           <a style={{ fontSize: '20px', margin: '5px 5 0 20px', 'margin-right':'50px', color: '#1976d2'}} href={`https://trudesk-dev.shatura.pro/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
               Mapping
             </a>
-          </div>
-          <div className='uk-modal-footer uk-text-right'>
-            <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
+          <a style={{ fontSize: '20px', margin: '20px 5 0 5px','margin-left':'50px', color:'#7cb342' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
               Create User
             </a>
           </div>
+          {/* <div className='uk-modal-footer uk-text-center'>
+            <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
+              Create User
+            </a>
+          </div> */}
         </div>
       </BaseModal>
 

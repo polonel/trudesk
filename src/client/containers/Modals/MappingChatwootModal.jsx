@@ -214,6 +214,7 @@ class MappingChatwootContainer extends React.Component {
         <div className='user-heading' style={{ minHeight: '10px', background: '#1976d2', padding: '24px' }}>
           <div className='uk-width-1-1'>
             <div className='user-heading-content'>
+              Mapping User
             </div>
           </div>
         </div>
