@@ -26,7 +26,7 @@ import GroupsContainer from 'containers/Groups'
 import LoginChatwootContainer from 'containers/LoginChatwoot' //ShaturaPro LIN
 // import MappingChatwootPhoneContainer from 'containers/MappingChatwootPhone' //ShaturaPro LIN
 import MappingChatwootContainer from 'containers/Modals/MappingChatwootModal' //ShaturaPro LIN
-import ChangeMappingOrCreateContainer from 'containers/Modals/ChangeMappingOrCreateModal'
+import ChangeMappingOrCreateModalContainer from 'containers/Modals/ChangeMappingOrCreateModal'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
@@ -158,14 +158,14 @@ export default function (store) {
     const accountID = document.getElementById('changeMappingOrCreate-container').getAttribute('data-accountID')
     const customAttributes = document.getElementById('changeMappingOrCreate-container').getAttribute('data-customAttributes')
 
-    const ChangeMappingOrCreateContainerWithProvider = (
+    const ChangeMappingOrCreateModalContainerWithProvider = (
       <Provider store={store}>
-        <ChangeMappingOrCreateContainer username={username} phone={phone} email={email} 
+        <ChangeMappingOrCreateModalContainer username={username} phone={phone} email={email} 
         contactID={contactID} accountID={accountID} customAttributes={customAttributes}/>
       </Provider>
     )
 
-    ReactDOM.render(ChangeMappingOrCreateContainerWithProvider, document.getElementById('mappingChatwoot-container'))
+    ReactDOM.render(ChangeMappingOrCreateModalContainerWithProvider, document.getElementById('mappingChatwoot-container'))
   }
 
   if (document.getElementById('teams-container')) {
