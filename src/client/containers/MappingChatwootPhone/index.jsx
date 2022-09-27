@@ -22,7 +22,7 @@ import { observer } from 'mobx-react'
 import { createAccount, fetchAccounts, saveEditAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
-import { fetchRoles } from 'actions/common'
+import { fetchRoles,showModal } from 'actions/common'
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
@@ -33,6 +33,7 @@ import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
 import setting from '../../../models/setting'
 import axios from 'axios'
+
 
 @observer
 class MappingChatwootPhoneContainer extends React.Component {
@@ -245,6 +246,15 @@ class MappingChatwootPhoneContainer extends React.Component {
               </span>
             </div>
             <div className='uk-modal-footer uk-text-right'>
+            <li className='top-bar-icon nopadding'>
+                        <button
+                          title={'Mapping'}
+                          className={'anchor'}
+                          onClick={() => this.props.showModal('MAPPING_CHATWOOT')}
+                        >
+                          <i className='material-icons'>&#xE145;</i>
+                        </button>
+                      </li>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
@@ -267,6 +277,7 @@ MappingChatwootPhoneContainer.propTypes = {
   fetchTeams: PropTypes.func.isRequired,
   unloadTeams: PropTypes.func.isRequired,
   fetchRoles: PropTypes.func.isRequired,
+  showModal: PropTypes.func.isRequired,
   accountsState: PropTypes.object.isRequired,
   saveEditAccount: PropTypes.func.isRequired
 }
@@ -287,5 +298,6 @@ export default connect(mapStateToProps, {
   unloadTeams,
   fetchRoles,
   fetchAccounts,
-  saveEditAccount
+  saveEditAccount,
+  showModal
 })(MappingChatwootPhoneContainer)

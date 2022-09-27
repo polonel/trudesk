@@ -52,7 +52,9 @@ class LoginChatwootContainer extends React.Component {
   })
   @observable password = this.plainTextPass
   @observable passwordConfirm = this.password
-
+  @observable contactID = this.props.contactID
+  @observable accountID = this.props.accountID
+  @observable customAttributes = this.props.customAttributes
   @observable defaultRole
   @observable defaultGroup
 
@@ -162,6 +164,28 @@ class LoginChatwootContainer extends React.Component {
     }
 
     this.props.createAccount(payload)
+
+
+    const contact = {
+      "email": this.email,
+      "phone_number": this.phone
+    }
+    let config = {
+      method: 'put',
+      url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
+      headers: {
+        'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+        'Content-Type': 'application/json',
+      },
+      data: contact
+    };
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   render() {
@@ -242,15 +266,6 @@ class LoginChatwootContainer extends React.Component {
                   data-validation={'length'}
                   data-validation-length={'min1'}
                   data-validation-error-msg={'Name must contain at least 1 character.'}
-                />
-              </div>
-              <div className='uk-float-left uk-width-1-2'>
-                <label className={'uk-form-label'}>Title</label>
-                <input
-                  type='text'
-                  className={'md-input'}
-                  value={this.title}
-                  onChange={e => this.onInputChanged(e, 'title')}
                 />
               </div>
             </div>
@@ -345,6 +360,7 @@ class LoginChatwootContainer extends React.Component {
             )}
             <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
+              <Button text={'Mapping'} href={''} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
           </form>

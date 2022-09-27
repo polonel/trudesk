@@ -43,6 +43,7 @@ import EditNoticeModal from 'containers/Modals/EditNoticeModal'
 import LinkWarningModal from 'containers/Modals/LinkWarningModal'
 import PasswordPromptModal from 'containers/Modals/PasswordPromptModal'
 import PrivacyPolicyModal from 'containers/Modals/PrivacyPolicyModal'
+import MappingChatwootPhone from 'containers/MappingChatwootPhone'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -66,6 +67,7 @@ const MODAL_COMPONENTS = {
   EDIT_TEAM: EditTeamModal,
   CREATE_DEPARTMENT: CreateDepartmentModal,
   EDIT_DEPARTMENT: EditDepartmentModal,
+  MAPPING_CHATWOOT: MappingChatwootPhone,
   CREATE_NOTICE: CreateNoticeModal,
   EDIT_NOTICE: EditNoticeModal,
   LINK_WARNING: LinkWarningModal,

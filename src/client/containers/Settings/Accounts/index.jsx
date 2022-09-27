@@ -141,7 +141,7 @@ class AccountsSettingsContainer extends React.Component {
   getLDAPGroups() {
   
     let ldapGArray = [];
-    axios.get('http://trudesk-dev.shatura.pro:8118/api/v2/ldapGroups').then(res => {
+    axios.get('https://trudesk-dev.shatura.pro/api/v2/ldapGroups').then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
       console.log ('this.ldapGroupsArray: ')
       console.log ( this.ldapGroupsArray)
