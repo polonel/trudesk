@@ -90,7 +90,7 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
             </a>
           </div>
           <div className='uk-modal-footer uk-text-right'>
-            <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}`}>
+            <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
               Create User
             </a>
           </div>

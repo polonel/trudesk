@@ -246,6 +246,9 @@ class MappingChatwootContainer extends React.Component {
               </span>
             </div>
             <div className='uk-modal-footer uk-text-right'>
+              <a style={{ fontSize: '18px', margin: '5px 0 0 5px' }} href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}`}>
+                Close
+              </a>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>

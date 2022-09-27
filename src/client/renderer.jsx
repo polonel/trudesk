@@ -165,7 +165,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(ChangeMappingOrCreateModalContainerWithProvider, document.getElementById('mappingChatwoot-container'))
+    ReactDOM.render(ChangeMappingOrCreateModalContainerWithProvider, document.getElementById('changeMappingOrCreate-container'))
   }
 
   if (document.getElementById('teams-container')) {
