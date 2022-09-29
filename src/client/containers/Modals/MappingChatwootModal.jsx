@@ -283,27 +283,28 @@ class MappingChatwootContainer extends React.Component {
               <TableHeader key={4} width={'20%'} text={'Group'} />,
             ]}
           >
-            {!this.props.loading &&
-              this.props.accountsState.accounts.map(user => {
-                
-
+            {
+            
+            this.props.accountsState.accounts.map(user => {
+              groupUser =  this.props.groups.map(group => {
+                  let foundGroup = group.members.filter(userGroup => userGroup == user._id);
+                  if (foundGroup.length!==0){
+                    return foundGroup[0];
+                  }
+                })
                 return (
                   <TableRow
                     key={user.get('_id')}
                     clickable={true}
                   >
-
                     <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-                    <TableCell className={'vam nbb'}>Group</TableCell>
-
+                    <TableCell className={'vam nbb'}>{groupUser}</TableCell>
 
                   </TableRow>
                 )
               })}
-
-
 
           </Table>
             <div className='uk-modal-footer uk-text-right'>
