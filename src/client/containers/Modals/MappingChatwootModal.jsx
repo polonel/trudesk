@@ -211,13 +211,11 @@ class MappingChatwootContainer extends React.Component {
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
-        <div className='user-heading' style={{ minHeight: '10px', background: '#1976d2', padding: '24px' }}>
-          <div className='uk-width-1-1'>
-            <div className='user-heading-content'>
-              Mapping User
+        <div className='user-heading-content'>
+              <h2>
+                <span className={'uk-text-truncate'}>User Mapping</span>
+              </h2>
             </div>
-          </div>
-        </div>
         <div style={{ margin: '24px 24px 0 24px' }}>
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)}>
             <div className='uk-margin-medium-bottom'>
