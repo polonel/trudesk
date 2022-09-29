@@ -216,6 +216,24 @@ class MappingChatwootContainer extends React.Component {
     }
   }
 
+  const selectAllCheckbox = (
+    <div style={{ marginLeft: 17 }}>
+      <input
+        type='checkbox'
+        id={'select_all'}
+        style={{ display: 'none' }}
+        className='svgcheckinput'
+        onChange={e => this.onSelectAll(e)}
+        ref={r => (this.selectAllCheckbox = r)}
+      />
+      <label htmlFor={'select_all'} className='svgcheck'>
+        <svg width='16px' height='16px' viewBox='0 0 18 18'>
+          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+          <polyline points='1 9 7 14 15 4' />
+        </svg>
+      </label>
+    </div>
+  )
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
@@ -258,18 +276,36 @@ class MappingChatwootContainer extends React.Component {
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader key={0} width={45} height={50} component={selectAllCheckbox} />,
-              <TableHeader key={1} width={60} text={'Status'} />,
-              <TableHeader key={2} width={65} text={'#'} />,
-              <TableHeader key={3} width={'23%'} text={'Subject'} />,
-              <TableHeader key={4} width={110} text={'Created'} />,
-              <TableHeader key={5} width={125} text={'Requester'} />,
-              <TableHeader key={6} width={175} text={'Customer'} />,
-              <TableHeader key={7} text={'Assignee'} />,
-              <TableHeader key={8} width={110} text={'Due Date'} />,
-              <TableHeader key={9} text={'Updated'} />
+              <TableHeader key={0} width={'20%'} height={50} component={selectAllCheckbox} />,
+              <TableHeader key={1} width={'20%'} text={'Username'} />,
+              <TableHeader key={2} width={'20%'} text={'Name'} />,
+              <TableHeader key={3} width={'20%'} text={'Email'} />,
+              <TableHeader key={4} width={'20%'} text={'Group'} />,
             ]}
-          ></Table>
+          >
+            {!this.props.loading &&
+              this.props.accountsState.accounts.map(user => {
+                
+
+                return (
+                  <TableRow
+                    key={user.get('_id')}
+                    clickable={true}
+                  >
+
+                    <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
+                    <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
+                    <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
+                    <TableCell className={'vam nbb'}>Group</TableCell>
+
+
+                  </TableRow>
+                )
+              })}
+
+
+
+          </Table>
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">
                 <a class="uk-float-left uk-width-1-1 uk-text-center"  href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}> 
