@@ -19,6 +19,13 @@ import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
+
+import Table from 'components/Table'
+import TableHeader from 'components/Table/TableHeader'
+import TableRow from 'components/Table/TableRow'
+import TitlePagination from 'components/TitlePagination'
+import PageContent from 'components/PageContent'
+import TableCell from 'components/Table/TableCell'
 import { createAccount, fetchAccounts, saveEditAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
@@ -211,7 +218,7 @@ class MappingChatwootContainer extends React.Component {
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
-        <div className='user-heading-content'>
+        <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
               <h2>
                 <span className={'uk-text-truncate'}>User Mapping</span>
               </h2>
@@ -244,7 +251,25 @@ class MappingChatwootContainer extends React.Component {
                 Please select a role for this user
               </span>
             </div>
-            
+            <Table
+            tableRef={ref => (this.ticketsTable = ref)}
+            style={{ margin: 0 }}
+            extraClass={'pDataTable'}
+            stickyHeader={true}
+            striped={true}
+            headers={[
+              <TableHeader key={0} width={45} height={50} component={selectAllCheckbox} />,
+              <TableHeader key={1} width={60} text={'Status'} />,
+              <TableHeader key={2} width={65} text={'#'} />,
+              <TableHeader key={3} width={'23%'} text={'Subject'} />,
+              <TableHeader key={4} width={110} text={'Created'} />,
+              <TableHeader key={5} width={125} text={'Requester'} />,
+              <TableHeader key={6} width={175} text={'Customer'} />,
+              <TableHeader key={7} text={'Assignee'} />,
+              <TableHeader key={8} width={110} text={'Due Date'} />,
+              <TableHeader key={9} text={'Updated'} />
+            ]}
+          ></Table>
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">
                 <a class="uk-float-left uk-width-1-1 uk-text-center"  href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}> 
