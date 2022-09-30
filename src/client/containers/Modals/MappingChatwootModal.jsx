@@ -66,7 +66,7 @@ class MappingChatwootContainer extends React.Component {
   @observable customAttributes = this.props.customAttributes
   @observable defaultRole
   @observable defaultGroup
-
+  selectedUsers = []
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -121,6 +121,12 @@ class MappingChatwootContainer extends React.Component {
       )
   }
 
+  onUserCheckChanged (e, id) {
+    if (e.target.checked) this.selectedUsers.push(id)
+    else this.selectedUsers = without(this.selectedUsers, id)
+
+    this.selectedUsers = uniq(this.selectedUsers)
+  }
 
   onFormSubmit(e) {
     e.preventDefault()
@@ -309,6 +315,22 @@ class MappingChatwootContainer extends React.Component {
                     key={user.get('_id')}
                     clickable={true}
                   >
+                    <TableCell>
+                      <input
+                        type='checkbox'
+                        id={`c_${user.get('_id')}`}
+                        data-user={user.get('_id')}
+                        style={{ display: 'none' }}
+                        onChange={e => this.onUserCheckChanged(e, user.get('_id'))}
+                        className='svgcheckinput'
+                      />
+                      <label htmlFor={`c_${ticket.get('_id')}`} className='svgcheck'>
+                        <svg width='16px' height='16px' viewBox='0 0 18 18'>
+                          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+                          <polyline points='1 9 7 14 15 4' />
+                        </svg>
+                      </label>
+                    </TableCell>
                     <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
