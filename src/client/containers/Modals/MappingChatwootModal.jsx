@@ -286,12 +286,23 @@ class MappingChatwootContainer extends React.Component {
             {
             
             this.props.accountsState.accounts.map(user => {
-              groupUser =  this.props.groups.map(group => {
-                  let foundGroup = group.members.filter(userGroup => userGroup == user._id);
-                  if (foundGroup.length!==0){
-                    return foundGroup[0];
+             let groupUser; 
+             this.props.groups.map(group => {
+                  let members = group.get('members').toArray();
+                  let member;
+                  members.map(userGroup => {
+                    if(userGroup.get('_id') == user.get('_id')){
+                      if(userGroup.get('_id')!==undefined)
+                      {
+                        member = userGroup.get('_id')
+                      }  
+                    }
+                  });
+                  if(member !== undefined){
+                    groupUser = member;
                   }
-                })
+                });
+                console.log(groupUser);
                 return (
                   <TableRow
                     key={user.get('_id')}
@@ -300,7 +311,7 @@ class MappingChatwootContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-                    <TableCell className={'vam nbb'}>{groupUser}</TableCell>
+                    <TableCell className={'vam nbb'}>Group</TableCell>
 
                   </TableRow>
                 )
