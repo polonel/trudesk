@@ -299,10 +299,11 @@ class MappingChatwootContainer extends React.Component {
                     }
                   });
                   if(member !== undefined){
-                    groupUser = member;
+                    groupUser = group.get('name');
                   }
                 });
-                console.log(groupUser);
+                if(groupUser!==undefined) console.log(groupUser);
+                
                 return (
                   <TableRow
                     key={user.get('_id')}
@@ -311,7 +312,7 @@ class MappingChatwootContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-                    <TableCell className={'vam nbb'}>Group</TableCell>
+                    <TableCell className={'vam nbb'}>{groupUser}</TableCell>
 
                   </TableRow>
                 )
