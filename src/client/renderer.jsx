@@ -139,11 +139,12 @@ export default function (store) {
     const contactID = document.getElementById('mappingChatwoot-container').getAttribute('data-contactID')
     const accountID = document.getElementById('mappingChatwoot-container').getAttribute('data-accountID')
     const customAttributes = document.getElementById('mappingChatwoot-container').getAttribute('data-customAttributes')
-
+    const page = document.getElementById('mappingChatwoot-container').getAttribute('data-page')
     const MappingChatwootContainerWithProvider = (
       <Provider store={store}>
         <MappingChatwootContainer username={username} phone={phone} email={email} 
-        contactID={contactID} accountID={accountID} customAttributes={customAttributes}/>
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes}
+        page={page}/>
       </Provider>
     )
 

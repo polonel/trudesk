@@ -67,6 +67,11 @@ class MappingChatwootContainer extends React.Component {
   @observable customAttributes = this.props.customAttributes
   @observable defaultRole
   @observable defaultGroup
+
+  @observable pageStart = -1
+  @observable hasMore = true
+  @observable initialLoad = true
+  
   selectedUsers = []
   constructor(props) {
     super(props)
@@ -75,9 +80,10 @@ class MappingChatwootContainer extends React.Component {
 
   componentDidMount() {
     this.props.fetchGroups({ type: 'all' })
-    this.props.fetchTeams()
-    this.props.fetchRoles()
-    this.props.fetchAccounts()
+    // this.props.fetchTeams()
+    // this.props.fetchRoles()
+    // this.props.fetchAccounts()
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
     helpers.UI.inputs()
     helpers.formvalidator()
   }
@@ -92,15 +98,13 @@ class MappingChatwootContainer extends React.Component {
 
   onUserSelectChange(e) {
     this.selectedUser = e.target.value
-
     const userObject = this.props.accountsState.accounts.find(user => {
       return user.get('_id') === this.selectedUser
     })
+  }
 
-    // this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
-
-    // if (!this.selectedRole || this.selectedRole.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
-    // else this.roleSelectErrorMessage.classList.add('hide')
+  onUserRadioChange (e) {
+    this.selectedUser = e.target.value
   }
 
   onGroupSelectChange() {
@@ -123,10 +127,10 @@ class MappingChatwootContainer extends React.Component {
   }
 
   onUserCheckChanged (e, id) {
-    if (e.target.checked) this.selectedUsers.push(id)
-    else this.selectedUsers = without(this.selectedUsers, id)
+    if (e.target.checked) this.selectedUser = id
+    else this.selectedUser = without(this.selectedUser, id)
 
-    this.selectedUsers = uniq(this.selectedUsers)
+    this.selectedUser = uniq(this.selectedUser)
   }
 
   onFormSubmit(e) {
@@ -223,24 +227,77 @@ class MappingChatwootContainer extends React.Component {
     }
   }
 
-  const selectAllCheckbox = (
-    <div style={{ marginLeft: 17 }}>
-      <input
-        type='checkbox'
-        id={'select_all'}
-        style={{ display: 'none' }}
-        className='svgcheckinput'
-        onChange={e => this.onSelectAll(e)}
-        ref={r => (this.selectAllCheckbox = r)}
-      />
-      <label htmlFor={'select_all'} className='svgcheck'>
-        <svg width='16px' height='16px' viewBox='0 0 18 18'>
-          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-          <polyline points='1 9 7 14 15 4' />
-        </svg>
-      </label>
-    </div>
-  )
+  // const selectAllCheckbox = (
+  //   <div style={{ marginLeft: 17 }}>
+  //     <input
+  //       type='checkbox'
+  //       id={'select_all'}
+  //       style={{ display: 'none' }}
+  //       className='svgcheckinput'
+  //       onChange={e => this.onSelectAll(e)}
+  //       ref={r => (this.selectAllCheckbox = r)}
+  //     />
+  //     <label htmlFor={'select_all'} className='svgcheck'>
+  //       <svg width='16px' height='16px' viewBox='0 0 18 18'>
+  //         <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+  //         <polyline points='1 9 7 14 15 4' />
+  //       </svg>
+  //     </label>
+  //   </div>
+  // )
+
+  const rowsUsers =  this.props.accountsState.accounts.map(user => {
+    let groupUser; 
+    this.props.groups.map(group => {
+         let members = group.get('members').toArray();
+         let member;
+         members.map(userGroup => {
+           if(userGroup.get('_id') == user.get('_id')){
+             if(userGroup.get('_id')!==undefined)
+             {
+               member = userGroup.get('_id')
+             }  
+           }
+         });
+         if(member !== undefined){
+           groupUser = group.get('name');
+         }
+       });
+       
+       return (
+         <TableRow
+           key={user.get('_id')}
+           clickable={true}
+         >
+           <TableCell  className={'vam nbb'}>
+           <div key={user.get('_id')} className={'uk-float-left'}>
+           <span className={'icheck-inline'}>
+           <input
+               id={'u___' + user.get('_id')}
+               name={'user'}
+               type='radio'
+               className={'with-gap'}
+               value={user.get('_id')}
+               onChange={e => {
+                 this.onUserRadioChange(e)
+               }}
+               checked={this.selectedUser === user.get('_id')}
+               data-md-icheck
+             />
+              <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
+
+             </label>
+           </span>
+         </div>
+           </TableCell>
+           <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
+           <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
+           <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
+           <TableCell className={'vam nbb'}>{groupUser}</TableCell>
+         </TableRow>
+       )
+     })
+
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width:'80%'}}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
@@ -259,7 +316,7 @@ class MappingChatwootContainer extends React.Component {
                 onChange={e => this.onInputChanged(e, 'phone')}
               />
             </div>
-            <div className='uk-margin-medium-bottom'>
+            {/* <div className='uk-margin-medium-bottom'>
               <label className={'uk-form-label'}>User</label>
               <SingleSelect
                 items={users}
@@ -275,7 +332,7 @@ class MappingChatwootContainer extends React.Component {
               >
                 Please select a role for this user
               </span>
-            </div>
+            </div> */}
             <Table
             tableRef={ref => (this.usersTable = ref)}
             style={{ margin: 0 }}
@@ -283,16 +340,16 @@ class MappingChatwootContainer extends React.Component {
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader key={0} width={'5%'} height={50} component={selectAllCheckbox} />,
+              <TableHeader key={0} width={'5%'} height={50} />,
               <TableHeader key={1} width={'20%'} text={'Username'} />,
               <TableHeader key={2} width={'20%'} text={'Name'} />,
               <TableHeader key={3} width={'20%'} text={'Email'} />,
               <TableHeader key={4} width={'10%'} text={'Group'} />,
             ]}
           >
-            {
-            
-            this.props.accountsState.accounts.map(user => {
+            {/* {
+          
+          const users =  this.props.accountsState.accounts.map(user => {
              let groupUser; 
              this.props.groups.map(group => {
                   let members = group.get('members').toArray();
@@ -309,7 +366,6 @@ class MappingChatwootContainer extends React.Component {
                     groupUser = group.get('name');
                   }
                 });
-                if(groupUser!==undefined) console.log(groupUser);
                 
                 return (
                   <TableRow
@@ -317,30 +373,50 @@ class MappingChatwootContainer extends React.Component {
                     clickable={true}
                   >
                     <TableCell  className={'vam nbb'}>
-                      <input
-                        type='checkbox'
-                        id={`c_${user.get('_id')}`}
-                        data-user={user.get('_id')}
-                        style={{ display: 'none' }}
-                        onChange={e => this.onUserCheckChanged(e, user.get('_id'))}
-                        className='svgcheckinput'
+                    <div key={user.get('_id')} className={'uk-float-left'}>
+                    <span className={'icheck-inline'}>
+                    <input
+                        id={'u___' + user.get('_id')}
+                        name={'user'}
+                        type='radio'
+                        className={'with-gap'}
+                        value={user.get('_id')}
+                        onChange={e => {
+                          this.onUserRadioChange(e)
+                        }}
+                        checked={this.selectedUser === user.get('_id')}
+                        data-md-icheck
                       />
-                      <label htmlFor={`c_${user.get('_id')}`} className='svgcheck'>
-                        <svg width='16px' height='16px' viewBox='0 0 18 18'>
-                          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-                          <polyline points='1 9 7 14 15 4' />
-                        </svg>
+                       <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
+
                       </label>
+                    </span>
+                  </div>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
                     <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
                     <TableCell className={'vam nbb'}>{groupUser}</TableCell>
-
                   </TableRow>
                 )
-              })}
+              })} */}
 
+<InfiniteScroll
+            pageStart={this.pageStart}
+            loadMore={this.getUsersWithPage}
+            hasMore={this.hasMore}
+            initialLoad={this.initialLoad}
+            threshold={25}
+            loader={
+              <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                <i className={'uk-icon-refresh uk-icon-spin'} />
+              </div>
+            }
+            useWindow={false}
+            getScrollParent={() => document.getElementById('accounts-page-content')}
+          >
+            {rowsUsers}
+          </InfiniteScroll>
           </Table>
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">

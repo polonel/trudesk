@@ -66,10 +66,10 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchGroups({ type: 'all' })
-    this.props.fetchTeams()
-    this.props.fetchRoles()
-    this.props.fetchAccounts()
+    // this.props.fetchGroups({ type: 'all' })
+    // this.props.fetchTeams()
+    // this.props.fetchRoles()
+    // this.props.fetchAccounts()
     helpers.UI.inputs()
     helpers.formvalidator()
   }
