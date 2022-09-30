@@ -41,6 +41,7 @@ import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
 import setting from '../../../models/setting'
 import axios from 'axios'
+import InfiniteScroll from 'react-infinite-scroller'
 
 
 @observer
@@ -411,7 +412,7 @@ class MappingChatwootContainer extends React.Component {
                   </TableRow>
                 )
               })} */}
-
+<PageContent id={'accounts-page-content'}>
 <InfiniteScroll
             pageStart={this.pageStart}
             loadMore={this.getUsersWithPage}
@@ -428,6 +429,7 @@ class MappingChatwootContainer extends React.Component {
           >
             {rowsUsers}
           </InfiniteScroll>
+          </PageContent>
           </Table>
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">

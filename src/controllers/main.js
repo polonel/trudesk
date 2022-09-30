@@ -89,6 +89,7 @@ mainController.mappingChatwoot = function (req, res) {
   content.email = req.query.email;
   content.accountID = req.query.accountID;
   content.contactID = req.query.contactID;
+  content.view = 'customers'
   return res.render('mappingChatwoot', content)
 }
 
