@@ -71,11 +71,12 @@ class MappingChatwootContainer extends React.Component {
   @observable pageStart = -1
   @observable hasMore = true
   @observable initialLoad = true
-  
+
   selectedUsers = []
   constructor(props) {
     super(props)
     makeObservable(this)
+    this.getUsersWithPage = this.getUsersWithPage.bind(this)
   }
 
   componentDidMount() {
@@ -83,8 +84,11 @@ class MappingChatwootContainer extends React.Component {
     // this.props.fetchTeams()
     // this.props.fetchRoles()
     // this.props.fetchAccounts()
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+    // this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+    // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
+
     helpers.UI.inputs()
+    this.initialLoad = false
     helpers.formvalidator()
   }
 
@@ -105,6 +109,13 @@ class MappingChatwootContainer extends React.Component {
 
   onUserRadioChange (e) {
     this.selectedUser = e.target.value
+  }
+
+  getUsersWithPage (page) {
+    this.hasMore = false
+    this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
+      this.hasMore = response.count >= 25
+    })
   }
 
   onGroupSelectChange() {
