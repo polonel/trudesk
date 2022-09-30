@@ -60,6 +60,7 @@ class BaseModal extends React.Component {
         className={'uk-modal' + (this.props.parentExtraClass ? ' ' + this.props.parentExtraClass : '')}
         ref={i => (this.modal = i)}
         data-modal-tag={this.props.modalTag}
+       
       >
         <div
           className={
@@ -67,6 +68,7 @@ class BaseModal extends React.Component {
             (this.props.large ? ' uk-modal-dialog-large' : '') +
             (this.props.extraClass ? ' ' + this.props.extraClass : '')
           }
+          style={this.props.style}
         >
           {this.props.children}
         </div>

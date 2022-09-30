@@ -18,6 +18,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
+import { each, without, uniq } from 'lodash'
 
 
 import Table from 'components/Table'
@@ -241,14 +242,14 @@ class MappingChatwootContainer extends React.Component {
     </div>
   )
     return (
-      <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
+      <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width:'80%'}}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
               <h2>
                 <span className={'uk-text-truncate'}>User Mapping</span>
               </h2>
             </div>
-        <div style={{ margin: '24px 24px 0 24px' }}>
-          <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)}>
+        <div style={{ margin: '24px 24px 0 24px'}}>
+          <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{position:'center'}}>
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
               <input
@@ -276,17 +277,17 @@ class MappingChatwootContainer extends React.Component {
               </span>
             </div>
             <Table
-            tableRef={ref => (this.ticketsTable = ref)}
+            tableRef={ref => (this.usersTable = ref)}
             style={{ margin: 0 }}
             extraClass={'pDataTable'}
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader key={0} width={'20%'} height={50} component={selectAllCheckbox} />,
+              <TableHeader key={0} width={'5%'} height={50} component={selectAllCheckbox} />,
               <TableHeader key={1} width={'20%'} text={'Username'} />,
               <TableHeader key={2} width={'20%'} text={'Name'} />,
               <TableHeader key={3} width={'20%'} text={'Email'} />,
-              <TableHeader key={4} width={'20%'} text={'Group'} />,
+              <TableHeader key={4} width={'10%'} text={'Group'} />,
             ]}
           >
             {
@@ -315,7 +316,7 @@ class MappingChatwootContainer extends React.Component {
                     key={user.get('_id')}
                     clickable={true}
                   >
-                    <TableCell>
+                    <TableCell  className={'vam nbb'}>
                       <input
                         type='checkbox'
                         id={`c_${user.get('_id')}`}
@@ -324,7 +325,7 @@ class MappingChatwootContainer extends React.Component {
                         onChange={e => this.onUserCheckChanged(e, user.get('_id'))}
                         className='svgcheckinput'
                       />
-                      <label htmlFor={`c_${ticket.get('_id')}`} className='svgcheck'>
+                      <label htmlFor={`c_${user.get('_id')}`} className='svgcheck'>
                         <svg width='16px' height='16px' viewBox='0 0 18 18'>
                           <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
                           <polyline points='1 9 7 14 15 4' />
@@ -352,6 +353,7 @@ class MappingChatwootContainer extends React.Component {
           </form>
         </div>
       </BaseModal>
+   
 
     )
   }
