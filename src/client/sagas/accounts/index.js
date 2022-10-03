@@ -20,6 +20,7 @@ import {
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
   FIND_ACCOUNTS,
+  CLEARSTATE_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   HIDE_MODAL,
   SAVE_EDIT_ACCOUNT,
@@ -57,6 +58,20 @@ function * findAccounts ({ payload, meta }) {
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response || error)
     yield put({ type: FIND_ACCOUNTS.ERROR, error })
+  }
+}
+
+function * clearStateAccounts ({ payload, meta }) {
+  yield put({ type: CLEARSTATE_ACCOUNTS.PENDING })
+  try {
+    const response = yield call(api.accounts.getWithPage, payload)
+    yield put({ type: CLEARSTATE_ACCOUNTS.SUCCESS, payload: { response, payload }, meta })
+  } catch (error) {
+    let errorText = ''
+    if (error.response) errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: CLEARSTATE_ACCOUNTS.ERROR, error })
   }
 }
 
@@ -191,6 +206,7 @@ export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNTFROMCHATWOOT.ACTION, createAccountFromChatwoot)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
   yield takeLatest(FIND_ACCOUNTS.ACTION, findAccounts)
+  yield takeLatest(CLEARSTATE_ACCOUNTS.ACTION, clearStateAccounts)
   yield takeLatest(FETCH_ACCOUNTS_CREATE_TICKET.ACTION, fetchAccountsCreateTicket)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
   yield takeEvery(DELETE_ACCOUNT.ACTION, deleteAccount)
