@@ -87,11 +87,11 @@ class MappingChatwootContainer extends React.Component {
     // this.props.fetchAccounts()
     // this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
     // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
-    this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+      this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
 
-      this.hasMore = response.count >= 5
-    })
-    // console.log(content);
+        this.hasMore = response.count >= 5
+      })
+      // console.log(content);
     helpers.UI.inputs()
     this.initialLoad = false
     helpers.formvalidator()
@@ -272,7 +272,7 @@ class MappingChatwootContainer extends React.Component {
           <TableRow
             key={user.get('_id')}
             clickable={true}
-
+            
           >
             <TableCell className={'vam nbb'}>
               <div key={user.get('_id')} className={'uk-float-left'}>
@@ -302,7 +302,7 @@ class MappingChatwootContainer extends React.Component {
           </TableRow>
         )
       })
-    console.log(rowsUsers)
+      console.log(rowsUsers)
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width: '80%' }}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
@@ -311,7 +311,7 @@ class MappingChatwootContainer extends React.Component {
           </h2>
         </div>
         <div style={{ margin: '24px 24px 0 24px' }}>
-
+        
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
@@ -339,41 +339,40 @@ class MappingChatwootContainer extends React.Component {
                 Please select a role for this user
               </span>
             </div> */}
-            <PageContent id={'mapping-page-content'}>
-              <InfiniteScroll
-                pageStart={this.pageStart}
-                loadMore={this.getUsersWithPage}
-                hasMore={this.hasMore}
-                initialLoad={this.initialLoad}
-                threshold={5}
-                loader={
-                  <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                    <i className={'uk-icon-refresh uk-icon-spin'} />
-                  </div>
-                }
-                useWindow={false}
-              // getScrollParent={() => document.getElementById('mapping-page-content')}
-
-              >
-                {rowsUsers}
-              </InfiniteScroll>
-              <Table
-                tableRef={ref => (this.usersTable = ref)}
-                style={{ margin: 0 }}
-                extraClass={'pDataTable'}
-                stickyHeader={true}
-                striped={true}
-                headers={[
-                  <TableHeader key={0} width={'5%'} height={50} />,
-                  <TableHeader key={1} width={'20%'} text={'Username'} />,
-                  <TableHeader key={2} width={'20%'} text={'Name'} />,
-                  <TableHeader key={3} width={'20%'} text={'Email'} />,
-                  <TableHeader key={4} width={'10%'} text={'Group'} />,
-                ]}
-              >
-                {/* {
+            <PageContent id={'mapping-page-content'} >
+            <InfiniteScroll
+                  pageStart={this.pageStart}
+                  loadMore={this.getUsersWithPage}
+                  hasMore={this.hasMore}
+                  initialLoad={this.initialLoad}
+                  threshold={5}
+                  loader={
+                    <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                      <i className={'uk-icon-refresh uk-icon-spin'} />
+                    </div>
+                  }
+                  useWindow={false}
+                  getScrollParent={() => document.getElementById('mapping-page-content')}
+                  
+                >
+            
+            <Table
+              tableRef={ref => (this.usersTable = ref)}
+              style={{ margin: 0 }}
+              extraClass={'pDataTable'}
+              stickyHeader={true}
+              striped={true}
+              headers={[
+                <TableHeader key={0} width={'5%'} height={50} padding={-50}/>,
+                <TableHeader key={1} width={'20%'} text={'Username'} />,
+                <TableHeader key={2} width={'20%'} text={'Name'} />,
+                <TableHeader key={3} width={'20%'} text={'Email'} />,
+                <TableHeader key={4} width={'10%'} text={'Group'} />,
+              ]}
+            >
+              {
           
-          const users =  this.props.accountsState.accounts.map(user => {
+          this.props.accountsState.accounts.map(user => {
              let groupUser; 
              this.props.groups.map(group => {
                   let members = group.get('members').toArray();
@@ -423,11 +422,34 @@ class MappingChatwootContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{groupUser}</TableCell>
                   </TableRow>
                 )
-              })} */}
+              })}
 
 
-              </Table>
-            </PageContent>
+
+              {/* <PageContent id={'mapping-page-content'} width='80%' >
+                <InfiniteScroll
+                  pageStart={this.pageStart}
+                  loadMore={this.getUsersWithPage}
+                  hasMore={this.hasMore}
+                  initialLoad={this.initialLoad}
+                  threshold={5}
+                  loader={
+                    <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                      <i className={'uk-icon-refresh uk-icon-spin'} />
+                    </div>
+                  }
+                  useWindow={false}
+                  getScrollParent={() => document.getElementById('mapping-page-content')}
+                  
+                >
+                  {rowsUsers}
+                </InfiniteScroll>
+                </PageContent> */}
+                
+               
+            </Table>
+              </InfiniteScroll>   
+              </PageContent> 
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">
                 <a class="uk-float-left uk-width-1-1 uk-text-center" href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
@@ -437,7 +459,7 @@ class MappingChatwootContainer extends React.Component {
               <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
           </form>
-
+          
         </div>
       </BaseModal>
 
