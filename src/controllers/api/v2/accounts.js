@@ -137,11 +137,13 @@ accountsApi.get = function (req, res) {
   const type = query.type || 'customers'
   const limit = query.limit ? Number(query.limit) : 25
   const page = query.page ? Number(query.page) : 0
+  const search = query.search || ''
 
   const obj = {
     limit: limit === -1 ? 999999 : limit,
     page: page,
-    showDeleted: query.showDeleted && query.showDeleted === 'true'
+    showDeleted: query.showDeleted && query.showDeleted === 'true',
+    search:search
   }
 
   switch (type) {

@@ -68,7 +68,7 @@ class MappingChatwootContainer extends React.Component {
   @observable customAttributes = this.props.customAttributes
   @observable defaultRole
   @observable defaultGroup
-
+  @observable search =''
   @observable pageStart = -1
   @observable hasMore = true
   @observable initialLoad = true
@@ -87,7 +87,7 @@ class MappingChatwootContainer extends React.Component {
     // this.props.fetchAccounts()
     // this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
     // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
-      this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+      this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
 
         this.hasMore = response.count >= 5
       })
@@ -117,6 +117,20 @@ class MappingChatwootContainer extends React.Component {
 
   onUserRadioChange(e) {
     this.selectedUser = e.target.value
+  }
+
+  onSearchChanged (e) {
+    this.search = e.target.value
+    this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
+
+      this.hasMore = response.count >= 5
+    })
+    // if (this.searchTerm.length > 3) {
+    //   SearchResults.toggleAnimation(true, true)
+    //   this.props.fetchSearchResults({ term: this.searchTerm })
+    // } else {
+    //   SearchResults.toggleAnimation(true, false)
+    // }
   }
 
   getUsersWithPage(page) {
@@ -249,7 +263,7 @@ class MappingChatwootContainer extends React.Component {
       }
     }
 
-    const rowsUsers =
+    let rowsUsers =
       // this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map(user => {
         let groupUser;
@@ -302,7 +316,8 @@ class MappingChatwootContainer extends React.Component {
           </TableRow>
         )
       })
-      console.log(rowsUsers)
+
+      if(this.search !=='') rowsUsers=this.search;
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width: '80%' }}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
@@ -313,6 +328,7 @@ class MappingChatwootContainer extends React.Component {
         <div style={{ margin: '24px 24px 0 24px' }}>
         
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
+         
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
               <input
@@ -322,6 +338,15 @@ class MappingChatwootContainer extends React.Component {
                 onChange={e => this.onInputChanged(e, 'phone')}
               />
             </div>
+            <input
+                      type='text'
+                      id='tickets_Search'
+                      placeholder={'Search'}
+                      className={'ticket-top-search'}
+                      value={this.search}
+                      onChange={e => this.onSearchChanged(e)}
+                      // onFocus={e => this._onSearchFocus(e)}
+                    />
             {/* <div className='uk-margin-medium-bottom'>
               <label className={'uk-form-label'}>User</label>
               <SingleSelect
@@ -494,7 +519,8 @@ const mapStateToProps = state => ({
 })
 
 MappingChatwootContainer.defaultProps = {
-  view: 'customers'
+  // view: 'customers'
+  view: 'all'
 }
 
 export default connect(mapStateToProps, {
