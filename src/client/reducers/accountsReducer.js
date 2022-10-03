@@ -20,6 +20,7 @@ import {
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FIND_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
@@ -55,6 +56,27 @@ const reducer = handleActions(
         loading: false
       }
     },
+
+    [FIND_ACCOUNTS.PENDING]: state => {
+      return {
+        ...state,
+        loading: true
+      }
+    },
+
+    [FIND_ACCOUNTS.SUCCESS]: (state, action) => {
+      const arr = []
+      action.payload.response.accounts.forEach(i => {
+        arr.push(i)
+      })
+      return {
+        ...state,
+        accounts: fromJS(arr),
+        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers',
+        loading: false
+      }
+    },
+
 
     [FETCH_ACCOUNTS_CREATE_TICKET.PENDING]: state => {
       return {

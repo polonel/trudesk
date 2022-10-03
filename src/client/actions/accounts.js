@@ -19,6 +19,7 @@ import {
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FIND_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS,
@@ -31,6 +32,13 @@ export const fetchAccounts = createAction(
   payload => payload,
   () => ({ thunk: true })
 )
+
+export const findAccounts = createAction(
+  FIND_ACCOUNTS.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
+
 export const fetchAccountsCreateTicket = createAction(
   FETCH_ACCOUNTS_CREATE_TICKET.ACTION,
   payload => payload,

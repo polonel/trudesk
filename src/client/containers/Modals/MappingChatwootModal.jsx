@@ -123,10 +123,11 @@ class MappingChatwootContainer extends React.Component {
 
   onSearchChanged (e) {
     this.search = e.target.value
+    console.log(this.props.accountsState.accounts)
     this.foundUsers = this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
       this.hasMore = response.count >= 5
     })
-    if(this.search !=='') rowsUsers= this.foundUsers;
+    console.log(this.props.accountsState.accounts)
     // if (this.searchTerm.length > 3) {
     //   SearchResults.toggleAnimation(true, true)
     //   this.props.fetchSearchResults({ term: this.searchTerm })
@@ -265,34 +266,35 @@ class MappingChatwootContainer extends React.Component {
       }
     }
 
-    let rowsUsers =  
+    let rowsUsers =
+      // this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map(user => {
-         let groupUser; 
-         this.props.groups.map(group => {
-              let members = group.get('members').toArray();
-              let member;
-              members.map(userGroup => {
-                if(userGroup.get('_id') == user.get('_id')){
-                  if(userGroup.get('_id')!==undefined)
-                  {
-                    member = userGroup.get('_id')
-                  }  
-                }
-              });
-              if(member !== undefined){
-                groupUser = group.get('name');
+        let groupUser;
+        this.props.groups.map(group => {
+          let members = group.get('members').toArray();
+          let member;
+          members.map(userGroup => {
+            if (userGroup.get('_id') == user.get('_id')) {
+              if (userGroup.get('_id') !== undefined) {
+                member = userGroup.get('_id')
               }
-            });
+            }
+          });
+          if (member !== undefined) {
+            groupUser = group.get('name');
+          }
+        });
+        console.log(user.get('_id'))
+        return (
+          <TableRow
+            key={user.get('_id')}
+            clickable={true}
             
-            return (
-              <TableRow
-                key={user.get('_id')}
-                clickable={true}
-              >
-                <TableCell  className={'vam nbb'}>
-                <div key={user.get('_id')} className={'uk-float-left'}>
+          >
+            <TableCell className={'vam nbb'}>
+              <div key={user.get('_id')} className={'uk-float-left'}>
                 <span className={'icheck-inline'}>
-                <input
+                  <input
                     id={'u___' + user.get('_id')}
                     name={'user'}
                     type='radio'
@@ -304,19 +306,19 @@ class MappingChatwootContainer extends React.Component {
                     checked={this.selectedUser === user.get('_id')}
                     data-md-icheck
                   />
-                   <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
+                  <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
 
                   </label>
                 </span>
               </div>
-                </TableCell>
-                <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
-                <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
-                <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-                <TableCell className={'vam nbb'}>{groupUser}</TableCell>
-              </TableRow>
-            )
-          })
+            </TableCell>
+            <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
+            <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
+            <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
+            <TableCell className={'vam nbb'}>{groupUser}</TableCell>
+          </TableRow>
+        )
+      })
 
       
     return (
@@ -396,9 +398,61 @@ class MappingChatwootContainer extends React.Component {
                 <TableHeader key={4} width={'10%'} text={'Group'} />,
               ]}
             >
-              
+              {
+          
+          this.props.accountsState.accounts.map(user => {
+             let groupUser; 
+             this.props.groups.map(group => {
+                  let members = group.get('members').toArray();
+                  let member;
+                  members.map(userGroup => {
+                    if(userGroup.get('_id') == user.get('_id')){
+                      if(userGroup.get('_id')!==undefined)
+                      {
+                        member = userGroup.get('_id')
+                      }  
+                    }
+                  });
+                  if(member !== undefined){
+                    groupUser = group.get('name');
+                  }
+                });
+                
+                return (
+                  <TableRow
+                    key={user.get('_id')}
+                    clickable={true}
+                  >
+                    <TableCell  className={'vam nbb'}>
+                    <div key={user.get('_id')} className={'uk-float-left'}>
+                    <span className={'icheck-inline'}>
+                    <input
+                        id={'u___' + user.get('_id')}
+                        name={'user'}
+                        type='radio'
+                        className={'with-gap'}
+                        value={user.get('_id')}
+                        onChange={e => {
+                          this.onUserRadioChange(e)
+                        }}
+                        checked={this.selectedUser === user.get('_id')}
+                        data-md-icheck
+                      />
+                       <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
 
-              {rowsUsers}
+                      </label>
+                    </span>
+                  </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
+                    <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
+                    <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
+                    <TableCell className={'vam nbb'}>{groupUser}</TableCell>
+                  </TableRow>
+                )
+              })}
+
+
 
               {/* <PageContent id={'mapping-page-content'} width='80%' >
                 <InfiniteScroll
