@@ -339,7 +339,7 @@ class MappingChatwootContainer extends React.Component {
                 Please select a role for this user
               </span>
             </div> */}
-            <PageContent id={'mapping-page-content'} >
+            <PageContent id={'mapping-page-content'} padding={0}>
             <InfiniteScroll
                   pageStart={this.pageStart}
                   loadMore={this.getUsersWithPage}
@@ -363,7 +363,7 @@ class MappingChatwootContainer extends React.Component {
               stickyHeader={true}
               striped={true}
               headers={[
-                <TableHeader key={0} width={'5%'} height={50} padding={-50}/>,
+                <TableHeader key={0} width={'5%'} height={50} />,
                 <TableHeader key={1} width={'20%'} text={'Username'} />,
                 <TableHeader key={2} width={'20%'} text={'Name'} />,
                 <TableHeader key={3} width={'20%'} text={'Email'} />,
