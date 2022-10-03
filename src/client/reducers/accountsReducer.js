@@ -26,7 +26,6 @@ import {
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
 } from 'actions/types'
-import { Console } from 'winston/lib/winston/transports'
 
 const initialState = {
   accounts: List([]),
@@ -49,8 +48,6 @@ const reducer = handleActions(
     [FETCH_ACCOUNTS.SUCCESS]: (state, action) => {
       const arr = state.accounts.toArray()
       action.payload.response.accounts.forEach(i => {
-        console.log('Из редуцера')
-        console.log(i);
         arr.push(i)
       })
       return {

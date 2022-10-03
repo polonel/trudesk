@@ -163,11 +163,7 @@ class MappingChatwootContainer extends React.Component {
 
   }
 
-  onOkClicked (page) {
 
-    // this.getUsersWithPage = this.getUsersWithPage.bind(this)
-    // this.componentDidMount() 
-  }
 
   onGroupSelectChange() {
     const selectedGroups = this.groupSelect.getSelected()
