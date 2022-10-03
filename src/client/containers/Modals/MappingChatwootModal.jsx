@@ -27,7 +27,8 @@ import TableRow from 'components/Table/TableRow'
 import TitlePagination from 'components/TitlePagination'
 import PageContent from 'components/PageContent'
 import TableCell from 'components/Table/TableCell'
-import { createAccount, fetchAccounts, saveEditAccount, unloadAccounts } from 'actions/accounts'
+import { createAccount, fetchAccounts, saveEditAccount, 
+  unloadAccounts, findAccounts, clearStateAccounts } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles, showModal } from 'actions/common'
@@ -68,7 +69,7 @@ class MappingChatwootContainer extends React.Component {
   @observable customAttributes = this.props.customAttributes
   @observable defaultRole
   @observable defaultGroup
-  @observable search =''
+  @observable search = ''
   @observable foundUsers = true
   @observable pageStart = -1
   @observable hasMore = true
@@ -89,11 +90,14 @@ class MappingChatwootContainer extends React.Component {
     // this.props.fetchAccounts()
     // this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
     // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
-      this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
+    // this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
 
-        this.hasMore = response.count >= 5
-      })
-      // console.log(content);
+    //   this.hasMore = response.count >= 5
+    // })
+    this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+      this.hasMore = response.count >= 5
+    })
+    // console.log(content);
     helpers.UI.inputs()
     this.initialLoad = false
     helpers.formvalidator()
@@ -121,10 +125,13 @@ class MappingChatwootContainer extends React.Component {
     this.selectedUser = e.target.value
   }
 
-  onSearchChanged (e) {
+  onSearchChanged(e) {
     this.search = e.target.value
     console.log(this.props.accountsState.accounts)
-    this.foundUsers = this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
+    this.props.clearStateAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true }).then(({ response }) => {
+      this.hasMore = response.count >= 5
+    })
+    this.props.findAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true }).then(({ response }) => {
       this.hasMore = response.count >= 5
     })
     console.log(this.props.accountsState.accounts)
@@ -139,11 +146,16 @@ class MappingChatwootContainer extends React.Component {
   getUsersWithPage(page) {
     this.hasMore = false
     // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
-    this.props.fetchAccounts({ page, limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+    // if (this.search !== '' && this.search !== undefined) {
+      this.props.findAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true }).then(({ response }) => {
+        this.hasMore = response.count >= 5
+      })
+    // } else {
+    //   this.props.fetchAccounts({ page, limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+    //     this.hasMore = response.count >= 5
+    //   })
+    // }
 
-      this.hasMore = response.count >= 5
-    })
-    console.log(content);
   }
 
   onGroupSelectChange() {
@@ -232,7 +244,6 @@ class MappingChatwootContainer extends React.Component {
   }
 
   render() {
-
     const roles = this.props.roles
       .map(role => {
         return { text: role.get('name'), value: role.get('_id') }
@@ -289,7 +300,7 @@ class MappingChatwootContainer extends React.Component {
           <TableRow
             key={user.get('_id')}
             clickable={true}
-            
+
           >
             <TableCell className={'vam nbb'}>
               <div key={user.get('_id')} className={'uk-float-left'}>
@@ -320,7 +331,7 @@ class MappingChatwootContainer extends React.Component {
         )
       })
 
-      
+
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width: '80%' }}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
@@ -329,9 +340,9 @@ class MappingChatwootContainer extends React.Component {
           </h2>
         </div>
         <div style={{ margin: '24px 24px 0 24px' }}>
-        
+
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
-         
+
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
               <input
@@ -342,14 +353,14 @@ class MappingChatwootContainer extends React.Component {
               />
             </div>
             <input
-                      type='text'
-                      id='tickets_Search'
-                      placeholder={'Search'}
-                      className={'ticket-top-search'}
-                      value={this.search}
-                      onChange={e => this.onSearchChanged(e)}
-                      // onFocus={e => this._onSearchFocus(e)}
-                    />
+              type='text'
+              id='tickets_Search'
+              placeholder={'Search'}
+              className={'ticket-top-search'}
+              value={this.search}
+              onChange={e => this.onSearchChanged(e)}
+            // onFocus={e => this._onSearchFocus(e)}
+            />
             {/* <div className='uk-margin-medium-bottom'>
               <label className={'uk-form-label'}>User</label>
               <SingleSelect
@@ -368,93 +379,92 @@ class MappingChatwootContainer extends React.Component {
               </span>
             </div> */}
             <PageContent id={'mapping-page-content'} padding={0}>
-            <InfiniteScroll
-                  pageStart={this.pageStart}
-                  loadMore={this.getUsersWithPage}
-                  hasMore={this.hasMore}
-                  initialLoad={this.initialLoad}
-                  threshold={5}
-                  loader={
-                    <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                      <i className={'uk-icon-refresh uk-icon-spin'} />
-                    </div>
-                  }
-                  useWindow={false}
-                  getScrollParent={() => document.getElementById('mapping-page-content')}
-                  
-                >
-            
-            <Table
-              tableRef={ref => (this.usersTable = ref)}
-              style={{ margin: 0 }}
-              extraClass={'pDataTable'}
-              stickyHeader={true}
-              striped={true}
-              headers={[
-                <TableHeader key={0} width={'5%'} height={50} />,
-                <TableHeader key={1} width={'20%'} text={'Username'} />,
-                <TableHeader key={2} width={'20%'} text={'Name'} />,
-                <TableHeader key={3} width={'20%'} text={'Email'} />,
-                <TableHeader key={4} width={'10%'} text={'Group'} />,
-              ]}
-            >
-              {
-          
-          this.props.accountsState.accounts.map(user => {
-             let groupUser; 
-             this.props.groups.map(group => {
-                  let members = group.get('members').toArray();
-                  let member;
-                  members.map(userGroup => {
-                    if(userGroup.get('_id') == user.get('_id')){
-                      if(userGroup.get('_id')!==undefined)
-                      {
-                        member = userGroup.get('_id')
-                      }  
-                    }
-                  });
-                  if(member !== undefined){
-                    groupUser = group.get('name');
-                  }
-                });
-                
-                return (
-                  <TableRow
-                    key={user.get('_id')}
-                    clickable={true}
-                  >
-                    <TableCell  className={'vam nbb'}>
-                    <div key={user.get('_id')} className={'uk-float-left'}>
-                    <span className={'icheck-inline'}>
-                    <input
-                        id={'u___' + user.get('_id')}
-                        name={'user'}
-                        type='radio'
-                        className={'with-gap'}
-                        value={user.get('_id')}
-                        onChange={e => {
-                          this.onUserRadioChange(e)
-                        }}
-                        checked={this.selectedUser === user.get('_id')}
-                        data-md-icheck
-                      />
-                       <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
-
-                      </label>
-                    </span>
+              <InfiniteScroll
+                pageStart={this.pageStart}
+                loadMore={this.getUsersWithPage}
+                hasMore={this.hasMore}
+                initialLoad={this.initialLoad}
+                threshold={5}
+                loader={
+                  <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                    <i className={'uk-icon-refresh uk-icon-spin'} />
                   </div>
-                    </TableCell>
-                    <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
-                    <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
-                    <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-                    <TableCell className={'vam nbb'}>{groupUser}</TableCell>
-                  </TableRow>
-                )
-              })}
+                }
+                useWindow={false}
+                getScrollParent={() => document.getElementById('mapping-page-content')}
+
+              >
+
+                <Table
+                  tableRef={ref => (this.usersTable = ref)}
+                  style={{ margin: 0 }}
+                  extraClass={'pDataTable'}
+                  stickyHeader={true}
+                  striped={true}
+                  headers={[
+                    <TableHeader key={0} width={'5%'} height={50} />,
+                    <TableHeader key={1} width={'20%'} text={'Username'} />,
+                    <TableHeader key={2} width={'20%'} text={'Name'} />,
+                    <TableHeader key={3} width={'20%'} text={'Email'} />,
+                    <TableHeader key={4} width={'10%'} text={'Group'} />,
+                  ]}
+                >
+                  {
+
+                    this.props.accountsState.accounts.map(user => {
+                      let groupUser;
+                      this.props.groups.map(group => {
+                        let members = group.get('members').toArray();
+                        let member;
+                        members.map(userGroup => {
+                          if (userGroup.get('_id') == user.get('_id')) {
+                            if (userGroup.get('_id') !== undefined) {
+                              member = userGroup.get('_id')
+                            }
+                          }
+                        });
+                        if (member !== undefined) {
+                          groupUser = group.get('name');
+                        }
+                      });
+
+                      return (
+                        <TableRow
+                          key={user.get('_id')}
+                          clickable={true}
+                        >
+                          <TableCell className={'vam nbb'}>
+                            <div key={user.get('_id')} className={'uk-float-left'}>
+                              <span className={'icheck-inline'}>
+                                <input
+                                  id={'u___' + user.get('_id')}
+                                  name={'user'}
+                                  type='radio'
+                                  className={'with-gap'}
+                                  value={user.get('_id')}
+                                  onChange={e => {
+                                    this.onUserRadioChange(e)
+                                  }}
+                                  checked={this.selectedUser === user.get('_id')}
+                                  data-md-icheck
+                                />
+                                <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
+
+                                </label>
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
+                          <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
+                          <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
+                          <TableCell className={'vam nbb'}>{groupUser}</TableCell>
+                        </TableRow>
+                      )
+                    })}
 
 
 
-              {/* <PageContent id={'mapping-page-content'} width='80%' >
+                  {/* <PageContent id={'mapping-page-content'} width='80%' >
                 <InfiniteScroll
                   pageStart={this.pageStart}
                   loadMore={this.getUsersWithPage}
@@ -473,11 +483,11 @@ class MappingChatwootContainer extends React.Component {
                   {rowsUsers}
                 </InfiniteScroll>
                 </PageContent> */}
-                
-               
-            </Table>
-              </InfiniteScroll>   
-              </PageContent> 
+
+
+                </Table>
+              </InfiniteScroll>
+            </PageContent>
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">
                 <a class="uk-float-left uk-width-1-1 uk-text-center" href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
@@ -487,7 +497,7 @@ class MappingChatwootContainer extends React.Component {
               <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
           </form>
-          
+
         </div>
       </BaseModal>
 
@@ -536,5 +546,7 @@ export default connect(mapStateToProps, {
   fetchAccounts,
   saveEditAccount,
   showModal,
-  unloadAccounts
+  unloadAccounts,
+  findAccounts,
+  clearStateAccounts
 })(MappingChatwootContainer)

@@ -21,6 +21,7 @@ import {
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
   FIND_ACCOUNTS,
+  CLEARSTATE_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
@@ -65,10 +66,27 @@ const reducer = handleActions(
     },
 
     [FIND_ACCOUNTS.SUCCESS]: (state, action) => {
-      const arr = []
+      const arr = state.accounts.toArray()
       action.payload.response.accounts.forEach(i => {
         arr.push(i)
       })
+      return {
+        ...state,
+        accounts: fromJS(arr),
+        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers',
+        loading: false
+      }
+    },
+
+    [CLEARSTATE_ACCOUNTS.PENDING]: state => {
+      return {
+        ...state,
+        loading: true
+      }
+    },
+
+    [CLEARSTATE_ACCOUNTS.SUCCESS]: (state, action) => {
+      const arr = []
       return {
         ...state,
         accounts: fromJS(arr),
