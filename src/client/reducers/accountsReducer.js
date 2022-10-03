@@ -47,8 +47,20 @@ const reducer = handleActions(
 
     [FETCH_ACCOUNTS.SUCCESS]: (state, action) => {
       const arr = state.accounts.toArray()
+
+      const arrToCheck = state.accounts
+      .map(user => {
+        return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
+      })
+      .toArray()
+
       action.payload.response.accounts.forEach(i => {
-        arr.push(i)
+        let resultArr =[];
+        console.log('resultArr');
+        resultArr = arrToCheck.filter((user)=> user.value == i._id);
+        console.log(resultArr);
+        if (resultArr.length == 0) arr.push(i)
+
       })
       return {
         ...state,
