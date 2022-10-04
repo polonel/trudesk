@@ -51,7 +51,6 @@ class MappingChatwootContainer extends React.Component {
   @observable username = this.props.email
   @observable fullname = this.props.username
   @observable email = this.props.email
-  // @observable phone = this.props.phone.replace(' ','+')
   @observable phone = this.props.phone.replace(' ', '+')
   @observable title = this.props.username
   @observable selectedUser = ''
@@ -75,7 +74,6 @@ class MappingChatwootContainer extends React.Component {
   @observable hasMore = true
   @observable initialLoad = true
 
-
   selectedUsers = []
   constructor(props) {
     super(props)
@@ -85,19 +83,9 @@ class MappingChatwootContainer extends React.Component {
 
   componentDidMount() {
     this.props.fetchGroups({ type: 'all' })
-    // this.props.fetchTeams()
-    // this.props.fetchRoles()
-    // this.props.fetchAccounts()
-    // this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
-    // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
-      // this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
-
-      //   this.hasMore = response.count >= 5
-      // })
     this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
         this.hasMore = response.count >= 5
       })
-      // console.log(content);
     helpers.UI.inputs()
     this.initialLoad = false
     helpers.formvalidator()
@@ -128,51 +116,28 @@ class MappingChatwootContainer extends React.Component {
   onSearchChanged (e) {
     this.hasMore = false
     this.search = e.target.value
-    // this.props.clearStateAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true }).then(({ response }) => {
-    //   this.hasMore = response.count >= 5
-    // })
-    // this.props.accountsState.accounts =List([]);
 
-
-
-    console.log('this.props.accountsState.accounts')
-    console.log(this.props.accountsState.accounts)
-
-    console.log('this.search')
-    console.log(this.search)
-  if (this.search !=='' || this.search !==undefined){
-    console.log('Search не пустой')
-    console.log(this.search)
+  // if (this.search !=='' || this.search !==undefined){
     this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
       this.hasMore = response.count >= 5
     })
-  }else{
-    console.log('Search пустой')
-    this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
-      this.hasMore = response.count >= 5
-    })
-  }
-
+  // }else{
+    // this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+    //   this.hasMore = response.count >= 5
+    // })
+  // }
   }
 
   getUsersWithPage(page) {
     this.hasMore = false
-
-      console.log('getUsersWithPage')
-      console.log('this.search: '+this.search)
       this.props.fetchAccounts({ page, limit: 5,search:this.search, type: this.props.view, showDeleted: true }).then(({ response }) => {
-        console.log('response.count: '+response.count);
         this.hasMore = response.count >= 5
-
-    
   })
   }
 
 
   onGroupSelectChange() {
     const selectedGroups = this.groupSelect.getSelected()
-    console.log(selectedGroups)
-    console.log(this.groupSelect)
     if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
     else this.groupSelectErrorMessage.classList.add('hide')
   }
@@ -288,61 +253,7 @@ class MappingChatwootContainer extends React.Component {
       }
     }
 
-    let rowsUsers =
-      // this.props.accountsState.accounts &&
-      this.props.accountsState.accounts.map(user => {
-        let groupUser;
-        this.props.groups.map(group => {
-          let members = group.get('members').toArray();
-          let member;
-          members.map(userGroup => {
-            if (userGroup.get('_id') == user.get('_id')) {
-              if (userGroup.get('_id') !== undefined) {
-                member = userGroup.get('_id')
-              }
-            }
-          });
-          if (member !== undefined) {
-            groupUser = group.get('name');
-          }
-        });
-        console.log(user.get('_id'))
-
-        if (user.get('username').toLowerCase().includes(this.search.toLowerCase()))
-        return (
-          <TableRow
-            key={user.get('_id')}
-            clickable={true}
-            
-          >
-            <TableCell className={'vam nbb'}>
-              <div key={user.get('_id')} className={'uk-float-left'}>
-                <span className={'icheck-inline'}>
-                  <input
-                    id={'u___' + user.get('_id')}
-                    name={'user'}
-                    type='radio'
-                    className={'with-gap'}
-                    value={user.get('_id')}
-                    onChange={e => {
-                      this.onUserRadioChange(e)
-                    }}
-                    checked={this.selectedUser === user.get('_id')}
-                    data-md-icheck
-                  />
-                  <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}>
-
-                  </label>
-                </span>
-              </div>
-            </TableCell>
-            <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
-            <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
-            <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-            <TableCell className={'vam nbb'}>{groupUser}</TableCell>
-          </TableRow>
-        )
-      })
+    
 
       
     return (
@@ -437,7 +348,8 @@ class MappingChatwootContainer extends React.Component {
                   if(member !== undefined){
                     groupUser = group.get('name');
                   }
-                }); 
+                });  
+                if (user.get('fullname').toLowerCase().includes(this.search.toLowerCase()))
                 return (
                   <TableRow
                     key={user.get('_id')}
@@ -505,14 +417,6 @@ class MappingChatwootContainer extends React.Component {
                 </a>
               </button>
               <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
-              <Button
-              text={'Ok'}
-              type={'button'}
-              flat={true}
-              waves={true}
-              style={'success'}
-              onClick={e => this.onOkClicked(e)}
-            />
             </div>
           </form>
           
