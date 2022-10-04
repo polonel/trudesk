@@ -56,12 +56,11 @@ const reducer = handleActions(
 
       action.payload.response.accounts.forEach(i => {
         let resultArr =[];
-        console.log('resultArr');
         resultArr = arrToCheck.filter((user)=> user.value == i._id);
-        console.log(resultArr);
         if (resultArr.length == 0) arr.push(i)
-
       })
+
+      console.log(arr);
       return {
         ...state,
         accounts: fromJS(arr),

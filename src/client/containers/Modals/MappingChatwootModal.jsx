@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { each, without, uniq } from 'lodash'
-
+import { fromJS, List } from 'immutable'
 
 import Table from 'components/Table'
 import TableHeader from 'components/Table/TableHeader'
@@ -126,15 +126,23 @@ class MappingChatwootContainer extends React.Component {
   }
 
   onSearchChanged (e) {
+    this.hasMore = false
     this.search = e.target.value
-   
-    
-    this.props.clearStateAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true }).then(({ response }) => {
-      this.hasMore = response.count >= 5
-    })
-  
+    // this.props.clearStateAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true }).then(({ response }) => {
+    //   this.hasMore = response.count >= 5
+    // })
+    // this.props.accountsState.accounts =List([]);
+
+
+
+    console.log('this.props.accountsState.accounts')
+    console.log(this.props.accountsState.accounts)
+
+    console.log('this.search')
+    console.log(this.search)
   if (this.search !=='' || this.search !==undefined){
     console.log('Search не пустой')
+    console.log(this.search)
     this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
       this.hasMore = response.count >= 5
     })
@@ -145,24 +153,20 @@ class MappingChatwootContainer extends React.Component {
     })
   }
 
-    // if (this.searchTerm.length > 3) {
-    //   SearchResults.toggleAnimation(true, true)
-    //   this.props.fetchSearchResults({ term: this.searchTerm })
-    // } else {
-    //   SearchResults.toggleAnimation(true, false)
-    // }
   }
 
   getUsersWithPage(page) {
     this.hasMore = false
-    // this.props.fetchAccounts({ page, limit: 25, type: this.props.view, showDeleted: true }).then(({ response }) => {
-    this.props.fetchAccounts({ page, limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
 
-      this.hasMore = response.count >= 5
-    })
+      console.log('getUsersWithPage')
+      console.log('this.search: '+this.search)
+      this.props.fetchAccounts({ page, limit: 5,search:this.search, type: this.props.view, showDeleted: true }).then(({ response }) => {
+        console.log('response.count: '+response.count);
+        this.hasMore = response.count >= 5
 
+    
+  })
   }
-
 
 
   onGroupSelectChange() {
@@ -303,6 +307,8 @@ class MappingChatwootContainer extends React.Component {
           }
         });
         console.log(user.get('_id'))
+
+        if (user.get('username').toLowerCase().includes(this.search.toLowerCase()))
         return (
           <TableRow
             key={user.get('_id')}
@@ -398,10 +404,8 @@ class MappingChatwootContainer extends React.Component {
                     </div>
                   }
                   useWindow={false}
-                  getScrollParent={() => document.getElementById('mapping-page-content')}
-                  
+                  getScrollParent={() => document.getElementById('mapping-page-content')}   
                 >
-            
             <Table
               tableRef={ref => (this.usersTable = ref)}
               style={{ margin: 0 }}
@@ -416,8 +420,7 @@ class MappingChatwootContainer extends React.Component {
                 <TableHeader key={4} width={'10%'} text={'Group'} />,
               ]}
             >
-              {
-          
+              {     
           this.props.accountsState.accounts.map(user => {
              let groupUser; 
              this.props.groups.map(group => {
@@ -434,8 +437,7 @@ class MappingChatwootContainer extends React.Component {
                   if(member !== undefined){
                     groupUser = group.get('name');
                   }
-                });
-                
+                }); 
                 return (
                   <TableRow
                     key={user.get('_id')}
