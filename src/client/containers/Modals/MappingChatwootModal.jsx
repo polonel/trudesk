@@ -276,32 +276,16 @@ class MappingChatwootContainer extends React.Component {
                 onChange={e => this.onInputChanged(e, 'phone')}
               />
             </div>
+            <div className='uk-text-right'style={{padding:'5px'}}>
             <input
                       type='text'
                       id='tickets_Search'
                       placeholder={'Search'}
                       className={'ticket-top-search'}
                       value={this.search}
-                      onChange={e => this.onSearchChanged(e)}
-                      // onFocus={e => this._onSearchFocus(e)}
+                      onChange={e => this.onSearchChanged(e)}                    
                     />
-            {/* <div className='uk-margin-medium-bottom'>
-              <label className={'uk-form-label'}>User</label>
-              <SingleSelect
-                items={users}
-                width={'100'}
-                showTextbox={false}
-                defaultValue={this.defaultUser}
-                onSelectChange={e => this.onUserSelectChange(e)}
-              />
-              <span
-                className='hide help-block'
-                style={{ display: 'inline-block', marginTop: '10px', fontWeight: 'bold', color: '#d85030' }}
-                ref={r => (this.roleSelectErrorMessage = r)}
-              >
-                Please select a role for this user
-              </span>
-            </div> */}
+            </div>
             <PageContent id={'mapping-page-content'} padding={0}>
             <InfiniteScroll
                   pageStart={this.pageStart}
