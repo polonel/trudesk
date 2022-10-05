@@ -76,7 +76,6 @@ mainController.loginChatwootPost = function (req, res) {
   content.data.phone = req.body.phone_number
   content.data.email = req.body.email
 
-
   return res.render('loginChatwoot', content)
 }
 
@@ -114,14 +113,13 @@ mainController.changeMappingOrCreate = function (req, res) {
       if (user.email !== content.email) {
         return res.render('changeMappingOrCreate', content)
       }
-      else return res.redirect('/tickets')
+      else return res.render('createTicketFromChatwoot')
     }
     else {
       return res.render('changeMappingOrCreate', content)
     }
   })
 
-  // return res.render('changeMappingOrCreate', content)
 }
 
 mainController.loginChatwoot = function (req, res) {
@@ -135,38 +133,6 @@ mainController.loginChatwoot = function (req, res) {
   content.customAttributes = req.query.customAttributes;
 
   return res.render('loginChatwoot', content);
-
-  // User.findOne({ phone: content.phone }, function (err, user) {
-  //   if (err) return res.render('error', {
-  //     layout: false,
-  //     error: err,
-  //     message: err.message
-  //   })
-
-  //   if (user) {
-  //     if (user.email !== content.email) {
-  //       return res.render('mappingChatwoot', content);
-  //     }
-  //     else return res.redirect('/tickets')
-  //   }
-  //   else {
-  //     User.findOne({ email: content.email }, function (err, user) {
-  //       if (err) return res.render('error', {
-  //         layout: false,
-  //         error: err,
-  //         message: err.message
-  //       })
-  //       if (user) {
-  //         return res.render('mappingChatwoot', content);
-  //       }
-  //       else {
-  //         return res.render('loginChatwoot', content);
-  //       }
-  //     })
-  //   }
-  // })
-
-
 
 }
 

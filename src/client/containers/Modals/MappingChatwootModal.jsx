@@ -135,7 +135,6 @@ class MappingChatwootContainer extends React.Component {
   })
   }
 
-
   onGroupSelectChange() {
     const selectedGroups = this.groupSelect.getSelected()
     if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
@@ -267,7 +266,36 @@ class MappingChatwootContainer extends React.Component {
         
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
          
-            <div className='uk-margin-medium-bottom'>
+
+
+
+          <div className='uk-margin-medium-bottom uk-clearfix'>
+              <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
+                <label className={'uk-form-label'}>Name</label>
+                <input
+                type='text'
+                className={'md-input'}
+                value={this.phone}
+                onChange={e => this.onInputChanged(e, 'phone')}
+                />
+              </div>
+              <div className='uk-float-left uk-width-1-2'>
+                <label className={'uk-form-label'}></label>
+                <input
+                   type='text'
+                   id='tickets_Search'
+                   placeholder={'Search'}
+                   className={'md-input'}
+                   value={this.search}
+                   onChange={e => this.onSearchChanged(e)}   
+                />
+              </div>
+            </div>
+
+
+
+
+            {/* <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Phone</label>
               <input
                 type='text'
@@ -285,7 +313,7 @@ class MappingChatwootContainer extends React.Component {
                       value={this.search}
                       onChange={e => this.onSearchChanged(e)}                    
                     />
-            </div>
+            </div> */}
             <PageContent id={'mapping-page-content'} padding={0}>
             <InfiniteScroll
                   pageStart={this.pageStart}
@@ -368,29 +396,6 @@ class MappingChatwootContainer extends React.Component {
                 )
               })}
 
-
-
-              {/* <PageContent id={'mapping-page-content'} width='80%' >
-                <InfiniteScroll
-                  pageStart={this.pageStart}
-                  loadMore={this.getUsersWithPage}
-                  hasMore={this.hasMore}
-                  initialLoad={this.initialLoad}
-                  threshold={5}
-                  loader={
-                    <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                      <i className={'uk-icon-refresh uk-icon-spin'} />
-                    </div>
-                  }
-                  useWindow={false}
-                  getScrollParent={() => document.getElementById('mapping-page-content')}
-                  
-                >
-                  {rowsUsers}
-                </InfiniteScroll>
-                </PageContent> */}
-                
-               
             </Table>
               </InfiniteScroll>   
               </PageContent> 
@@ -400,7 +405,7 @@ class MappingChatwootContainer extends React.Component {
                   Close
                 </a>
               </button>
-              <Button text={'Link to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
+              <Button text={'Map to Chatwoot'} flat={true} waves={true} style={'success'} type={'submit'} />
             </div>
           </form>
           

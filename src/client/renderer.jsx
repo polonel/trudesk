@@ -27,6 +27,7 @@ import LoginChatwootContainer from 'containers/LoginChatwoot' //ShaturaPro LIN
 // import MappingChatwootPhoneContainer from 'containers/MappingChatwootPhone' //ShaturaPro LIN
 import MappingChatwootContainer from 'containers/Modals/MappingChatwootModal' //ShaturaPro LIN
 import ChangeMappingOrCreateModalContainer from 'containers/Modals/ChangeMappingOrCreateModal'
+import CreateTicketFromChatwootModalContainer from 'containers/Modals/ChangeMappingOrCreateModal'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
@@ -168,6 +169,24 @@ export default function (store) {
     )
 
     ReactDOM.render(ChangeMappingOrCreateModalContainerWithProvider, document.getElementById('changeMappingOrCreate-container'))
+  }
+
+  if (document.getElementById('createTicketFromChatwoot-container')) {
+    const username = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-username')
+    const phone = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-phone')
+    const email = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-email')
+    const contactID = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-contactID')
+    const accountID = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-accountID')
+    const customAttributes = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-customAttributes')
+
+    const CreateTicketFromChatwootModalContainerWithProvider = (
+      <Provider store={store}>
+        <CreateTicketFromChatwootModalContainer username={username} phone={phone} email={email} 
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes}/>
+      </Provider>
+    )
+
+    ReactDOM.render(CreateTicketFromChatwootModalContainerWithProvider, document.getElementById('createTicketFromChatwoot-container'))
   }
 
   if (document.getElementById('teams-container')) {
