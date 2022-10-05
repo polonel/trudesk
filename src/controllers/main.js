@@ -21,6 +21,7 @@ const pkg = require('../../package')
 const xss = require('xss')
 const ldap = require('ldapjs')
 const User = require('../models/user')
+const Group = require('../models/group')
 // const action = require('../client/actions/common')
 
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
@@ -113,7 +114,20 @@ mainController.changeMappingOrCreate = function (req, res) {
       if (user.email !== content.email) {
         return res.render('changeMappingOrCreate', content)
       }
-      else return res.render('createTicketFromChatwoot')
+      else{
+      const data = {}
+      data.user = user._id;
+      Group.findOne({members:user._id},function(err,group){
+          if (err) return res.render('error', {
+            layout: false,
+            error: err,
+            message: err.message
+          })
+           data.group =  group?._id
+           return res.render('createTicketFromChatwoot',data)
+        })
+        
+      } 
     }
     else {
       return res.render('changeMappingOrCreate', content)
