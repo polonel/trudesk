@@ -118,6 +118,7 @@ mainController.changeMappingOrCreate = function (req, res) {
       else{
       const data = {}
       data.conversationID=content.conversationID;
+      data.accountID = content.accountID
       data.user = user._id;
       Group.findOne({members:user._id},function(err,group){
           if (err) return res.render('error', {

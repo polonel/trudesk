@@ -174,9 +174,13 @@ export default function (store) {
   if (document.getElementById('createTicketFromChatwoot-container')) {
     const user = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-user')
     const group = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-group')
+    const conversationID = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-conversationID')
+    const accountID = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-accountID')
+    
     const CreateTicketFromChatwootModalContainerWithProvider = (
       <Provider store={store}>
-        <CreateTicketFromChatwootModalContainer user={user} group={group} />
+        <CreateTicketFromChatwootModalContainer user={user} group={group} 
+        conversationID={conversationID} accountID={accountID} />
       </Provider>
     )
 

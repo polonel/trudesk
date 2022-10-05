@@ -46,6 +46,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable group = this.props.group;
     @observable defaultTicketTypes
     @observable conversationID = this.props.conversationID
+    @observable accountID = this.props.accountID
+    @observable messages = []
+    
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -136,21 +139,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
-        let config = {
-            method: 'Get',
-            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}`,
-            headers: {
-              'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
-              'Content-Type': 'application/json',
-            },
-          };
-          axios(config)
-            .then((response) => {
-              console.log(JSON.stringify(response.data));
-            })
-            .catch((error) => {
-              console.log(error);
-            });
 
 
 
@@ -185,6 +173,36 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         //   viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
         //   (shared.sessionUser.role.isAdmin || shared.sessionUser.role.isAgent)
 
+
+        let config = {
+            method: 'Get',
+            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+            headers: {
+                'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+                'Content-Type': 'application/json',
+            },
+        };
+        axios(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+                this.messages = response.data.payload;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+            this.messages.map(message => {
+                const date = new Date(message.get('created_at')*1000);
+                this.issueText = this.issueText + `
+                \n ${message.get('name')}: 
+                \n ${message.get('content')}
+                \n (${date.toUTCString()})
+                \n 
+                \n
+                ` 
+            })
+            
+        
         const mappedAccounts = this.props.accounts
             .map(a => {
                 return { text: a.get('fullname'), value: a.get('_id') }
