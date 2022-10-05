@@ -45,6 +45,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable user = this.props.user;
     @observable group = this.props.group;
     @observable defaultTicketTypes
+    @observable conversationID = this.props.conversationID
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -135,6 +136,25 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
+        let config = {
+            method: 'Get',
+            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}`,
+            headers: {
+              'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+              'Content-Type': 'application/json',
+            },
+          };
+          axios(config)
+            .then((response) => {
+              console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+
+
+
         data.subject = e.target.subject.value
         data.group = this.groupSelect.value
         data.type = this.typeSelect.value
@@ -142,7 +162,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.priority = this.selectedPriority
         data.issue = this.issueMde.easymde.value()
         data.socketid = this.props.socket.io.engine.id
-
+        data.assignee = this.props.shared.sessionUser._id
+        console.log('data');
+        console.log(data);
         this.props.createTicket(data)
     }
 
@@ -202,7 +224,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                                     <SingleSelect
                                         showTextbox={true}
                                         items={mappedAccounts}
-                                        defaultValue={this.props.user._id}
+                                        defaultValue={this.user}
                                         width={'100%'}
                                         ref={i => (this.ownerSelect = i)}
                                     />
@@ -213,7 +235,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                                 <SingleSelect
                                     showTextbox={false}
                                     items={mappedGroups}
-                                    defaultValue={this.group._id}
+                                    defaultValue={this.group}
                                     onSelectChange={e => this.onGroupSelectChange(e)}
                                     width={'100%'}
                                     ref={i => (this.groupSelect = i)}

@@ -434,7 +434,8 @@ apiTickets.create = function (req, res) {
         var HistoryItem = {
           action: 'ticket:created',
           description: 'Ticket was created.',
-          owner: req.user._id
+          owner: req.body.owner,
+          assignee:req.body.assignee
         }
 
         var TicketSchema = require('../../../models/ticket')

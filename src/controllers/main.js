@@ -102,6 +102,7 @@ mainController.changeMappingOrCreate = function (req, res) {
   content.contactID = req.query.contactID;
   content.accountID = req.query.accountID;
   content.customAttributes = req.query.customAttributes;
+  content.conversationID = req.query.conversationID;
 
   User.findOne({ phone: content.phone }, function (err, user) {
     if (err) return res.render('error', {
@@ -116,6 +117,7 @@ mainController.changeMappingOrCreate = function (req, res) {
       }
       else{
       const data = {}
+      data.conversationID=content.conversationID;
       data.user = user._id;
       Group.findOne({members:user._id},function(err,group){
           if (err) return res.render('error', {
