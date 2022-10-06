@@ -47,7 +47,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable defaultTicketTypes
     @observable conversationID = this.props.conversationID
     @observable accountID = this.props.accountID
-    @observable messages = []
+    @observable comment
     
     constructor(props) {
         super(props)
@@ -139,10 +139,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
-
-
-
-
+        
         data.subject = e.target.subject.value
         data.group = this.groupSelect.value
         data.type = this.typeSelect.value
@@ -151,8 +148,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.issue = this.issueMde.easymde.value()
         data.socketid = this.props.socket.io.engine.id
         data.assignee = this.props.shared.sessionUser._id
-        console.log('data');
-        console.log(data);
+        data.comment = this.comment
         this.props.createTicket(data)
     }
 
@@ -182,25 +178,44 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 'Content-Type': 'application/json',
             },
         };
+
+        
         axios(config)
             .then((response) => {
-                console.log(JSON.stringify(response.data));
                 this.messages = response.data.payload;
+                this.messages.map(message => {
+                    const date = new Date(message.created_at*1000);
+                    if(!message.sender){
+                        message.sender.name ='Системное сообщение'; 
+                    }
+                    
+                    this.comment = this.comment + `
+                    \n ${message.sender.name}: 
+                    \n ${message.content}
+                    \n (${date.toUTCString()})
+                    \n 
+                    \n
+                    ` 
+                })
             })
             .catch((error) => {
                 console.log(error);
             });
 
-            this.messages.map(message => {
-                const date = new Date(message.get('created_at')*1000);
-                this.issueText = this.issueText + `
-                \n ${message.get('name')}: 
-                \n ${message.get('content')}
-                \n (${date.toUTCString()})
-                \n 
-                \n
-                ` 
-            })
+          
+
+        //    const content = response.data.payload.map(message => {
+        //         return { text: message.get('content')}
+               
+        //         // const date = new Date(message.get('created_at')*1000);
+        //         // this.issueText = this.issueText + `
+        //         // \n ${message.get('name')}: 
+        //         // \n ${message.get('content')}
+        //         // \n (${date.toUTCString()})
+        //         // \n 
+        //         // \n
+        //         // ` 
+        //     })
             
         
         const mappedAccounts = this.props.accounts
