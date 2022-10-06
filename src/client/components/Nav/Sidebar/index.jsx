@@ -339,6 +339,12 @@ class Sidebar extends React.Component {
                     href='/settings/legal'
                     active={activeSubItem === 'settings-legal'}
                   />
+                   <SubmenuItem
+                    text='Chatwoot'
+                    icon='gavel'
+                    href='/settings/chatwoot'
+                    active={activeSubItem === 'settings-chatwoot'}
+                  />
                   {sessionUser && Helpers.canUser('settings:logs') && (
                     <SubmenuItem
                       text='Logs'

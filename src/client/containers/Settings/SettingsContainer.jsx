@@ -147,6 +147,13 @@ class SettingsContainer extends React.Component {
                 }}
               />
               <MenuItem
+                title='Chatwoot'
+                active={this.state.activeCategory === 'settings-chatwoot'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'chatwoot')
+                }}
+              />
+              <MenuItem
                 title='Legal'
                 active={this.state.activeCategory === 'settings-legal'}
                 onClick={e => {

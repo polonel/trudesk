@@ -48,6 +48,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable conversationID = this.props.conversationID
     @observable accountID = this.props.accountID
     @observable comment
+    @observable clientName =''
+    @observable agentName = ''
     
     constructor(props) {
         super(props)
@@ -139,7 +141,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
-        
         data.subject = e.target.subject.value
         data.group = this.groupSelect.value
         data.type = this.typeSelect.value
@@ -149,7 +150,12 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.socketid = this.props.socket.io.engine.id
         data.assignee = this.props.shared.sessionUser._id
         data.comment = this.comment
-        this.props.createTicket(data)
+        data.fromChatwoot = true;
+
+        axios.post('/api/v1/tickets/create', data).then(res => {
+            let ticketUID  = res.data.ticket.uid
+            location.href = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
+          }) 
     }
 
     onGroupSelectChange(e) {
@@ -164,11 +170,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     render() {
-        // const { shared, viewdata } = this.props
-        // const allowAgentUserTickets =
-        //   viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
-        //   (shared.sessionUser.role.isAdmin || shared.sessionUser.role.isAgent)
-
 
         let config = {
             method: 'Get',
@@ -185,16 +186,23 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 this.messages = response.data.payload;
                 this.messages.map(message => {
                     const date = new Date(message.created_at*1000);
+                    let senderName;
                     if(!message.sender){
-                        message.sender.name ='Системное сообщение'; 
+                        senderName =`<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`; 
+                    } else if(message.sender.name == this.clientName || this.clientName =='') {
+                        this.clientName = message.sender.name
+                        senderName =`<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
+                    } else {
+                        this.agentName = message.sender.name;
+                        senderName =`<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
                     }
-                    
+
+                    if (!this.comment) this.comment = '';
                     this.comment = this.comment + `
-                    \n ${message.sender.name}: 
-                    \n ${message.content}
-                    \n (${date.toUTCString()})
-                    \n 
-                    \n
+                     ${senderName} 
+                    <p>${message.content}</p>
+                    <p></p> 
+                    <p></p> 
                     ` 
                 })
             })
@@ -202,21 +210,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 console.log(error);
             });
 
-          
-
-        //    const content = response.data.payload.map(message => {
-        //         return { text: message.get('content')}
-               
-        //         // const date = new Date(message.get('created_at')*1000);
-        //         // this.issueText = this.issueText + `
-        //         // \n ${message.get('name')}: 
-        //         // \n ${message.get('content')}
-        //         // \n (${date.toUTCString()})
-        //         // \n 
-        //         // \n
-        //         // ` 
-        //     })
-            
         
         const mappedAccounts = this.props.accounts
             .map(a => {
@@ -257,6 +250,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                                     <SingleSelect
                                         showTextbox={true}
                                         items={mappedAccounts}
+                                        //items={}
                                         defaultValue={this.user}
                                         width={'100%'}
                                         ref={i => (this.ownerSelect = i)}

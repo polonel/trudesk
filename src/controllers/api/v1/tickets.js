@@ -438,14 +438,6 @@ apiTickets.create = function (req, res) {
           assignee: req.body.assignee
         }
 
-        if (req.body.comment) {
-          var HistoryItemComment = {
-            action: 'ticket:comment:added',
-            description: 'Comment was added',
-            owner:  req.body.owner
-          }
-        }
-
         var TicketSchema = require('../../../models/ticket')
         var ticket = new TicketSchema(postData)
         if (!_.isUndefined(postData.owner)) {
@@ -456,20 +448,26 @@ apiTickets.create = function (req, res) {
 
         ticket.subject = sanitizeHtml(ticket.subject).trim()
 
+        if (req.body.comment) {
+          var HistoryItemComment = {
+            action: 'ticket:comment:added',
+            description: 'Comment was added',
+            owner:  req.body.owner
+          }
+
+          let Comment = {
+            owner: req.body.owner,
+            date: new Date(),
+            comment: req.body.comment
+          }
+          ticket.comments = [Comment]
+        }
+
         var marked = require('marked')
         var tIssue = ticket.issue
         tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
         tIssue = sanitizeHtml(tIssue).trim()
 
-        let commentText = sanitizeHtml(req.body.comment).trim()
-
-        let Comment = {
-          owner: ticket.owner,
-          date: new Date(),
-          comment: xss(marked.parse(commentText))
-        }
-
-        ticket.comments = [Comment]
         ticket.issue = xss(marked.parse(tIssue))
         if (req.body.comment) {
           ticket.history = [HistoryItem, HistoryItemComment]
@@ -492,6 +490,7 @@ apiTickets.create = function (req, res) {
 
             response.ticket = tt
             res.json(response)
+
           })
         })
       }

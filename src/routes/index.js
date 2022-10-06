@@ -350,7 +350,9 @@
    )
    router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal)
    router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs)
- 
+   router.get('/settings/chatwoot', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.chatwoot)
+
+
    router.get(
      '/settings/editor/:template',
      middleware.redirectToLogin,
