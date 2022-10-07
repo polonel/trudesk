@@ -50,7 +50,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable comment
     @observable clientName =''
     @observable agentName = ''
-    
+    @observable ActiveUnloadingTheDialog = false
+ 
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -158,6 +159,10 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
           }) 
     }
 
+    onActiveUnloadingTheDialog(e){
+        this.ActiveUnloadingTheDialog = !this.ActiveUnloadingTheDialog ;
+    }
+
     onGroupSelectChange(e) {
         // this.groupAccounts = this.props.groups
         //   .filter(grp => grp.get('_id') === e.target.value)
@@ -245,18 +250,19 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                     <div className='uk-margin-medium-bottom'>
                         <Grid>
                             {
-                                <GridItem width={'1-3'}>
+                                <GridItem width={'2-3'}>
                                     <label className={'uk-form-label'}>Owner</label>
                                     <SingleSelect
                                         showTextbox={true}
-                                        items={[]}
+                                        items={mappedAccounts}
                                         defaultValue={this.user}
+                                        disabled = {true}
                                         width={'100%'}
                                         ref={i => (this.ownerSelect = i)}
                                     />
                                 </GridItem>
                             }
-                            <GridItem width={'2-3'}>
+                            <GridItem width={'1-3'}>
                                 <label className={'uk-form-label'}>Group</label>
                                 <SingleSelect
                                     showTextbox={false}
@@ -337,6 +343,18 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                             })}
                         </div>
                     </div>
+                    <input
+                        type='checkbox'
+                        style={{ display: 'none' }}
+                        onChange={e => this.onActiveUnloadingTheDialog(e)}
+                        className='svgcheckinput'
+                      />
+                      <label  className='svgcheck'>
+                        <svg width='16px' height='16px' viewBox='0 0 18 18'>
+                          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+                          <polyline points='1 9 7 14 15 4' />
+                        </svg>
+                      </label>
                     <div className='uk-margin-medium-bottom'>
                         <span>Description</span>
                         <div className='error-border-wrap uk-clearfix'>
