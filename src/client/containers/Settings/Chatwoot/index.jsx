@@ -38,7 +38,8 @@ class ChatwootSettingsController extends React.Component {
     makeObservable(this)
 
     this.state = {
-      restarting: false
+      restarting: false,
+      chatwootEnabled: false,
     }
 
     this.restartServer = this.restartServer.bind(this)
@@ -53,6 +54,8 @@ class ChatwootSettingsController extends React.Component {
     if (prevProps.settings !== this.props.settings) {
       if (this.maintenanceModeEnabled !== this.getSetting('maintenanceMode'))
         this.maintenanceModeEnabled = this.getSetting('maintenanceMode')
+      if (this.state.chatwootEnabled !== this.getSetting('chatwootEnabled'))
+        this.state.chatwootEnabled = this.getSetting('chatwootEnabled')
     }
   }
 
@@ -88,40 +91,11 @@ class ChatwootSettingsController extends React.Component {
   }
 
   onMaintenanceModeChange (e) {
-    const self = this
-    const val = e.target.checked
-
-    if (val === true) {
-      UIKit.modal.confirm(
-        `<h2>Are you sure?</h2>
-        <p style="font-size: 15px;">
-            <span class="uk-text-danger" style="font-size: 15px;">This will force logout every user and prevent non-administrators from logging in.</span> 
-        </p>
-        `,
-        () => {
-          this.props
-            .updateSetting({
-              name: 'maintenanceMode:enable',
-              value: val,
-              stateName: 'maintenanceMode',
-              noSnackbar: true
-            })
-            .then(() => {
-              self.maintenanceModeEnabled = val
-            })
-        },
-        {
-          labels: { Ok: 'Yes', Cancel: 'No' },
-          confirmButtonClass: 'md-btn-danger'
-        }
-      )
-    } else {
-      this.props
-        .updateSetting({ name: 'maintenanceMode:enable', value: val, stateName: 'maintenanceMode', noSnackbar: true })
-        .then(() => {
-          self.maintenanceModeEnabled = val
-        })
-    }
+   
+    const chatwootSettings = [
+      { name: 'chatwootSettings:enable', value: this.state.chatwootEnabled },
+    ]
+    this.props.updateMultipleSettings(chatwootSettings);
   }
 
   render () {

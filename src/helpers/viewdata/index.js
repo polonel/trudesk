@@ -422,6 +422,15 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
+          viewdata.chatwootEnabled= res.data.settings.chatwootEnabled.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
           viewdata.ldapPassword= res.data.settings.ldapPassword.value
 
           return callback()
