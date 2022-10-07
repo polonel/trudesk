@@ -249,8 +249,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                                     <label className={'uk-form-label'}>Owner</label>
                                     <SingleSelect
                                         showTextbox={true}
-                                        items={mappedAccounts}
-                                        //items={}
+                                        items={[]}
                                         defaultValue={this.user}
                                         width={'100%'}
                                         ref={i => (this.ownerSelect = i)}
