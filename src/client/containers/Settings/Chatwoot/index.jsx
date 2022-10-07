@@ -30,33 +30,32 @@ import UIKit from 'uikit'
 
 @observer
 class ChatwootSettingsController extends React.Component {
-  @observable maintenanceModeEnabled = false
-
+  @observable chatwootEnabled = false
   constructor (props) {
     super(props)
 
     makeObservable(this)
 
-    this.state = {
-      restarting: false,
-      chatwootEnabled: false,
-    }
-
-    this.restartServer = this.restartServer.bind(this)
   }
 
   componentDidMount () {
     // helpers.UI.inputs()
   }
 
+  updateSetting(stateName, name, value) {
+    this.props.updateSetting({ stateName, name, value })
+  }
+
   componentDidUpdate (prevProps) {
     // helpers.UI.reRenderInputs()
+    console.log('this.chatwootSettings1')
+    console.log(this.chatwootEnabled)
     if (prevProps.settings !== this.props.settings) {
-      if (this.maintenanceModeEnabled !== this.getSetting('maintenanceMode'))
-        this.maintenanceModeEnabled = this.getSetting('maintenanceMode')
-      if (this.state.chatwootEnabled !== this.getSetting('chatwootEnabled'))
-        this.state.chatwootEnabled = this.getSetting('chatwootEnabled')
+      if (this.chatwootEnabled !== this.getSetting('chatwootSettings'))
+        this.chatwootEnabled = this.getSetting('chatwootSettings')
     }
+    console.log('this.chatwootSettings2')
+    console.log(this.chatwootEnabled)
   }
 
   restartServer () {
@@ -90,42 +89,22 @@ class ChatwootSettingsController extends React.Component {
       : ''
   }
 
-  onMaintenanceModeChange (e) {
-   
-    const chatwootSettings = [
-      { name: 'chatwootSettings:enable', value: this.state.chatwootEnabled },
-    ]
-    this.props.updateMultipleSettings(chatwootSettings);
-  }
-
   render () {
     const { active } = this.props
     return (
       <div className={active ? 'active' : 'hide'}>
+
         <SettingItem
-          title={'Restart Server'}
-          subtitle={'Restart the Trudesk Instance. '}
-          component={
-            <Button
-              text={'Restart'}
-              flat={false}
-              waves={true}
-              style={'danger'}
-              extraClass={'right mt-8 mr-5'}
-              onClick={this.restartServer}
-              disabled={this.state.restarting}
-            />
-          }
-        />
-        <SettingItem
-          title={'Maintenance Mode'}
-          subtitle={'Only Administrators are allowed to login.'}
+          title={'Integration'}
+          subtitle={'Enable functionality for linking with chatwoot'}
           component={
             <EnableSwitch
-              stateName={'maintenanceMode'}
+              stateName={'chatwootSettings'}
               label={'Enable'}
-              checked={this.maintenanceModeEnabled}
-              onChange={e => this.onMaintenanceModeChange(e)}
+              checked={this.chatwootEnabled}
+              onChange={e => {
+                this.updateSetting('chatwootSettings', 'chatwootSettings:enable', e.target.checked)
+              }}
             />
           }
         />

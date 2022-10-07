@@ -131,7 +131,8 @@ util.getSettings = async callback => {
         // s.ldapPort= parseSetting(settings, 'ldapSettings:port', true)
         s.ldapUsername= parseSetting(settings, 'ldapSettings:username', true)
         s.ldapPassword= parseSetting(settings, 'ldapSettings:password', true)
-        s.chatwootEnabled= parseSetting(settings, 'chatwootSettings:enable', true)
+        
+       s.chatwootSettings= parseSetting(settings, 'chatwootSettings:enable', true)
         //-- ShaturaPro LIN 22.08.2022
         const types = await ticketTypeSchema.getTypes()
         content.data.ticketTypes = _.sortBy(types, o => o.name)

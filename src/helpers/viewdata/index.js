@@ -395,6 +395,15 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
+          viewdata.chatwootSettings= res.data.settings.chatwootSettings.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
           viewdata.ldapSettings = res.data.settings.ldapSettings.value
 
           return callback()
@@ -418,15 +427,7 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
-      function (callback) {
-        settingsUtil.getSettings(function (err, res) {
-          if (err) return callback(err)
-
-          viewdata.chatwootEnabled= res.data.settings.chatwootEnabled.value
-
-          return callback()
-        })
-      },
+     
       function (callback) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)

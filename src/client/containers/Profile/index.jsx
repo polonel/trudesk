@@ -381,6 +381,17 @@ class ProfileContainer extends React.Component {
                           onUpdate={val => (this.twitterUrl = val)}
                         />
                       </div>
+                      <Spacer top={25} bottom={25} showBorder={true} />
+                      <h4 style={{ marginBottom: 15 }}>Chatwoot</h4>
+                      <div style={{ display: 'flex', marginTop: 25 }}>
+                        <InfoItem
+                          label={'Facebook Url'}
+                          prop={this.props.sessionUser.facebookUrl}
+                          paddingLeft={0}
+                          paddingRight={30}
+                          onUpdate={val => (this.facebookUrl = val)}
+                        />
+                      </div>
                       {this.editingProfile && (
                         <div className={'uk-display-flex uk-margin-large-top'}>
                           <Button
