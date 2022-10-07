@@ -150,7 +150,11 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.issue = this.issueMde.easymde.value()
         data.socketid = this.props.socket.io.engine.id
         data.assignee = this.props.shared.sessionUser._id
-        data.comment = this.comment
+        if (this.ActiveUnloadingTheDialog) {
+            data.comment = this.comment
+        } else {
+            data.comment = ''
+        }
         data.fromChatwoot = true;
 
         axios.post('/api/v1/tickets/create', data).then(res => {
@@ -161,6 +165,47 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
     onActiveUnloadingTheDialog(e) {
         this.ActiveUnloadingTheDialog = !this.ActiveUnloadingTheDialog;
+        console.log('this.comment')
+        if (this.ActiveUnloadingTheDialog && !this.comment) {
+
+            let config = {
+                method: 'Get',
+                url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+                headers: {
+                    'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            axios(config)
+                .then((response) => {
+                    this.messages = response.data.payload;
+                    this.messages.map(message => {
+                        const date = new Date(message.created_at * 1000);
+                        let senderName;
+                        if (!message.sender) {
+                            senderName = `<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
+                        } else if (message.sender.name == this.clientName || this.clientName == '') {
+                            this.clientName = message.sender.name
+                            senderName = `<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
+                        } else {
+                            this.agentName = message.sender.name;
+                            senderName = `<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
+                        }
+
+                        if (!this.comment) this.comment = '';
+                        this.comment = this.comment + `
+                     ${senderName} 
+                    <p>${message.content}</p>
+                    <p></p> 
+                    <p></p> 
+                    `
+                    })
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     onGroupSelectChange(e) {
@@ -175,46 +220,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     render() {
-
-        let config = {
-            method: 'Get',
-            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-            headers: {
-                'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
-                'Content-Type': 'application/json',
-            },
-        };
-
-
-        axios(config)
-            .then((response) => {
-                this.messages = response.data.payload;
-                this.messages.map(message => {
-                    const date = new Date(message.created_at * 1000);
-                    let senderName;
-                    if (!message.sender) {
-                        senderName = `<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
-                    } else if (message.sender.name == this.clientName || this.clientName == '') {
-                        this.clientName = message.sender.name
-                        senderName = `<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
-                    } else {
-                        this.agentName = message.sender.name;
-                        senderName = `<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
-                    }
-
-                    if (!this.comment) this.comment = '';
-                    this.comment = this.comment + `
-                     ${senderName} 
-                    <p>${message.content}</p>
-                    <p></p> 
-                    <p></p> 
-                    `
-                })
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
 
         const mappedAccounts = this.props.accounts
             .map(a => {
@@ -343,14 +348,24 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                             })}
                         </div>
                     </div>
-                    <div class="uk-text-left" style="padding-bottom: 15px">
-                        <h style="font-weight: 500; font-size: 14px;background-color:" class="">Unloading the dialog</h>
-                        <input type="checkbox" id="activeUnloadingTheDialog" class="svgcheckinput" style="display: none;" />
-                        <label for="activeUnloadingTheDialog" class="svgcheck" style="display:inline">
-                            <svg style="margin-left: 5px" text="Unloading" width="16px" height="16px" viewBox="0 0 18 18">
-                                <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-                                <polyline points="1 9 7 14 15 4">Unloading</polyline></svg>
-                        </label></div>
+                    <div className={'uk-text-left'} style={{ 'padding-bottom': '15px' }}>
+
+                        <h style={{ 'font-weight': '500', 'font-size': '14px' }}>Attach conversation as a ticket comment</h>
+                        <input
+                            type='checkbox'
+                            id={`activeUnloadingTheDialog`}
+                            style={{ display: 'none' }}
+                            onChange={e => this.onActiveUnloadingTheDialog(e)}
+                            className='svgcheckinput'
+                        />
+                        <label htmlFor={`activeUnloadingTheDialog`} className='svgcheck' style={{ 'display': 'inline' }}>
+                            <svg style={{ 'margin-left': '5px' }} width='16px' height='16px' viewBox='0 0 18 18'>
+                                <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+                                <polyline points='1 9 7 14 15 4' />
+                            </svg>
+                        </label>
+                    </div>
+
                     <div className='uk-margin-medium-bottom'>
                         <span>Description</span>
                         <div className='error-border-wrap uk-clearfix'>
