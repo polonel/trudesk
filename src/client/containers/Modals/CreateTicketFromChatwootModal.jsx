@@ -172,7 +172,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 method: 'Get',
                 url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
                 headers: {
-                    'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+                    'api_access_token': this.props.sessionUser.chatwootApiKey,
                     'Content-Type': 'application/json',
                 },
             };
@@ -417,7 +417,8 @@ const mapStateToProps = state => ({
     priorities: state.ticketsState.priorities,
     ticketTags: state.tagsSettings.tags,
     groups: state.groupsState.groups,
-    accounts: state.accountsState.accountsCreateTicket
+    accounts: state.accountsState.accountsCreateTicket,
+    sessionUser: state.shared.sessionUser
 })
 
 export default connect(mapStateToProps, {

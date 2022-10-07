@@ -204,7 +204,7 @@ class MappingChatwootContainer extends React.Component {
       method: 'put',
       url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
       headers: {
-        'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+        'api_access_token': this.props.sessionUser.chatwootApiKey,
         'Content-Type': 'application/json',
       },
       data: contact
@@ -440,6 +440,7 @@ const mapStateToProps = state => ({
   groups: state.groupsState.groups,
   teams: state.teamsState.teams,
   accountsState: state.accountsState,
+  sessionUser: state.shared.sessionUser
 })
 
 MappingChatwootContainer.defaultProps = {

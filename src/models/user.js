@@ -66,6 +66,7 @@ var userSchema = mongoose.Schema({
   facebookUrl: { type: String },
   linkedinUrl: { type: String },
   twitterUrl: { type: String },
+  chatwootApiKey: {type: String},
 
   resetPassHash: { type: String, select: false },
   resetPassExpire: { type: Date, select: false },

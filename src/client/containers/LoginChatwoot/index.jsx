@@ -175,7 +175,7 @@ class LoginChatwootContainer extends React.Component {
       method: 'put',
       url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
       headers: {
-        'api_access_token': 'DmqbNynqFJFK7ZDdpHv4AQzf',
+        'api_access_token': this.props.sessionUser.chatwootApiKey,
         'Content-Type': 'application/json',
       },
       data: contact
@@ -399,14 +399,15 @@ LoginChatwootContainer.propTypes = {
   unloadGroups: PropTypes.func.isRequired,
   fetchTeams: PropTypes.func.isRequired,
   unloadTeams: PropTypes.func.isRequired,
-  fetchRoles: PropTypes.func.isRequired
+  fetchRoles: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   roles: state.shared.roles,
   common: state.common,
   groups: state.groupsState.groups,
-  teams: state.teamsState.teams
+  teams: state.teamsState.teams,
+  sessionUser: state.shared.sessionUser
 })
 
 export default connect(mapStateToProps, {

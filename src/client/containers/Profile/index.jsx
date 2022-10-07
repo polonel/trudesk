@@ -38,6 +38,7 @@ class ProfileContainer extends React.Component {
   @observable facebookUrl = null
   @observable linkedinUrl = null
   @observable twitterUrl = null
+  @observable chatwootApiKey = null
 
   // Security
   // -- Password
@@ -69,6 +70,7 @@ class ProfileContainer extends React.Component {
       this.facebookUrl = this.props.sessionUser.facebookUrl
       this.linkedinUrl = this.props.sessionUser.linkedinUrl
       this.twitterUrl = this.props.sessionUser.twitterUrl
+      this.chatwootApiKey = this.props.sessionUser.chatwootApiKey
     }
   }
 
@@ -106,7 +108,8 @@ class ProfileContainer extends React.Component {
         companyName: this.companyName,
         facebookUrl: this.facebookUrl,
         linkedinUrl: this.linkedinUrl,
-        twitterUrl: this.twitterUrl
+        twitterUrl: this.twitterUrl,
+        chatwootApiKey: this.chatwootApiKey
       })
       .then(() => {
         this.editingProfile = false
@@ -385,11 +388,11 @@ class ProfileContainer extends React.Component {
                       <h4 style={{ marginBottom: 15 }}>Chatwoot</h4>
                       <div style={{ display: 'flex', marginTop: 25 }}>
                         <InfoItem
-                          label={'Facebook Url'}
-                          prop={this.props.sessionUser.facebookUrl}
+                          label={'Api Key'}
+                          prop={this.props.sessionUser.chatwootApiKey}
                           paddingLeft={0}
                           paddingRight={30}
-                          onUpdate={val => (this.facebookUrl = val)}
+                          onUpdate={val => (this.chatwootApiKey = val)}
                         />
                       </div>
                       {this.editingProfile && (

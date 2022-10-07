@@ -391,8 +391,8 @@ accountsApi.saveProfile = async (req, res) => {
     if (!_.isUndefined(payload.fullname) && !_.isNull(payload.fullname)) dbUser.fullname = payload.fullname
     if (!_.isUndefined(payload.title) && !_.isNull(payload.title)) dbUser.workNumber = payload.title
     if (!_.isUndefined(payload.workNumber) && !_.isNull(payload.workNumber)) dbUser.workNumber = payload.workNumber
-    if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber))
-      dbUser.mobileNumber = payload.mobileNumber
+    if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber)) dbUser.mobileNumber = payload.mobileNumber
+    if (!_.isUndefined(payload.chatwootApiKey) && !_.isNull(payload.chatwootApiKey)) dbUser.chatwootApiKey = payload.chatwootApiKey
 
     dbUser = await dbUser.save()
     return apiUtil.sendApiSuccess(res, { user: dbUser })
