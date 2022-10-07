@@ -126,16 +126,13 @@ class AccountsSettingsContainer extends React.Component {
 
   getRoles() {
     let rolesArray =this.props.roles;
-    console.log(rolesArray);
     rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
-    console.log(rolesArray);
     rolesArray = JSON.stringify(rolesArray);
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
     for (let i = 0; i < rolesArray.length; i++) {
       rolesName.push({name:rolesArray[i]['name'], _id:rolesArray[i]['_id'], ldapGroupID:rolesArray[i]['ldapGroupID']});
     }
-    console.log(rolesName);
     return rolesName;
   }
   getLDAPGroups() {
@@ -143,15 +140,11 @@ class AccountsSettingsContainer extends React.Component {
     let ldapGArray = [];
     axios.get('https://trudesk-dev.shatura.pro/api/v2/ldapGroups').then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
-      console.log ('this.ldapGroupsArray: ')
-      console.log ( this.ldapGroupsArray)
     }).catch(err=>{console.log(err)})
 
      for (let i = 0; i <  this.ldapGroupsArray.length; i++) {
       ldapGArray.push( {text: this.ldapGroupsArray[i]['name'],value: this.ldapGroupsArray[i]['_id']});
     }
-
-    console.log(ldapGArray);
     return ldapGArray;
   }
 
@@ -174,7 +167,6 @@ class AccountsSettingsContainer extends React.Component {
     
   }
   addToMap(e,role,ldapGroupID){
-    console.log(role);
     const roles = this.getRoles();
     let roleExist = false;
       for(let map of this.state.mapping){
@@ -187,19 +179,6 @@ class AccountsSettingsContainer extends React.Component {
       if (roleExist == false){
         this.state.mapping.push({roleID: role._id, ldapGroupID: ldapGroupID})
       }
-  
-    console.log(this.state.mapping)
-    // axios
-    //   .put(`/api/v2/ldapGroups/updateMapping`, {
-    //     role: role._id, ldapGroupID: ldapGroupID
-    //   })
-    //   .then(function (res) {
-    //     if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-    //   })
-    //   .catch(function (err) {
-    //     Log.error(err)
-    //     helpers.UI.showSnackbar(err, true)
-    //   })
     
   }
 

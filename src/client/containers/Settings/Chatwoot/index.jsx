@@ -160,7 +160,7 @@ class ChatwootSettingsController extends React.Component {
   }
 }
 
-ServerSettingsController.propTypes = {
+ChatwootSettingsController.propTypes = {
   active: PropTypes.bool.isRequired,
   updateSetting: PropTypes.func.isRequired,
   updateMultipleSettings: PropTypes.func.isRequired,
