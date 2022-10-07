@@ -30,6 +30,7 @@ import ElasticsearchSettingsContainer from './Elasticsearch'
 // import TPSSettingsContainer from './TPS'
 import BackupRestoreSettingsContainer from './BackupRestore'
 import ServerSettingsController from './Server'
+import ChatwootSettingsController from 'containers/Settings/Chatwoot'
 import LegalSettingsContainer from 'containers/Settings/Legal'
 
 import helpers from 'lib/helpers'
@@ -179,6 +180,7 @@ class SettingsContainer extends React.Component {
               <ElasticsearchSettingsContainer active={this.state.activeCategory === 'settings-elasticsearch'} />
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
               <ServerSettingsController active={this.state.activeCategory === 'settings-server'} />
+              <ChatwootSettingsController active={this.state.activeCategory === 'settings-chatwoot'} />
               <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />
             </div>
           </div>
