@@ -154,6 +154,7 @@
             const phone = eventData.data.contact.phone_number;
             const email = eventData.data.contact.email;
             const contactID = eventData.data.contact.id;
+            const contactName = eventData.data.contact.name;
             const accountID = eventData.data.conversation.account_id;
             const conversationID = eventData.data.conversation.id
             let customAttributes =  eventData.data.conversation.custom_attributes.trudesk;
@@ -162,7 +163,7 @@
                     customAttributes = customAttributes.replace('#','');
                     window.location = `https://trudesk-dev.shatura.pro/tickets/${customAttributes}`
                 }else{
-                    window.location = `https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}&conversationID=${conversationID}` 
+                    window.location = `https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}&conversationID=${conversationID}&contactName=${contactName}` 
                 }
                 }
           });

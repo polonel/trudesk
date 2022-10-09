@@ -75,7 +75,6 @@ class ChatwootSettingsController extends React.Component {
 
   onFormSubmit(e) {
     e.preventDefault()
-
     const chatwootSettings = [
       { name: 'chatwootSettings:templateMessage', value: this.state.chatwootTemplateMessage }
     ]
@@ -106,7 +105,7 @@ class ChatwootSettingsController extends React.Component {
           <div>
             <SettingItem
               title={'Template message'}
-              tooltip={'Template Parameters: {numberPhone}, {ticketUrl}, {name}'}
+              tooltip={'Template Parameters: {phoneNumber}, {ticketUrl}, {contactName}'}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>

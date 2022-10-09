@@ -23,6 +23,7 @@ import Log from '../../logger'
 import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
+import { fetchSettings } from 'actions/settings'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -47,6 +48,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable defaultTicketTypes
     @observable conversationID = this.props.conversationID
     @observable accountID = this.props.accountID
+    @observable contactName = this.props.contactName
+    @observable phoneNumber = this.props.phoneNumber
     @observable comment
     @observable clientName = ''
     @observable agentName = ''
@@ -55,6 +58,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     constructor(props) {
         super(props)
         makeObservable(this)
+        this.state = {
+            chatwootTemplateMessage: ''
+          }
     }
 
     componentDidMount() {
@@ -62,6 +68,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         this.props.getTagsWithPage({ limit: -1 })
         this.props.fetchGroups()
         this.props.fetchAccountsCreateTicket({ type: 'all', limit: 1000 })
+        this.props.fetchSettings()
         helpers.UI.inputs()
         helpers.formvalidator()
         this.defaultTicketTypeWatcher = when(
@@ -71,9 +78,16 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 this.selectedPriority = head(this.priorities) ? head(this.priorities)._id : ''
             }
         )
+
     }
 
-    componentDidUpdate() { }
+    componentDidUpdate(prevProps) {
+        // helpers.UI.reRenderInputs()
+        if (prevProps.settings !== this.props.settings) {
+          if (this.state.chatwootTemplateMessage !== this.getSetting('chatwootTemplateMessage'))
+            this.state.chatwootTemplateMessage = this.getSetting('chatwootTemplateMessage')
+        }
+      }
 
     componentWillUnmount() {
         if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
@@ -165,8 +179,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         axios.post('/api/v1/tickets/create', data).then(res => {
             let ticketUID = res.data.ticket.uid
+            let ticketUrl = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
             if (ticketUID) {
-                this.sendNotification();
+                this.sendNotification(ticketUrl);
             }
             location.href = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
         })
@@ -175,7 +190,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     unloadingTheDialog() {
 
         let config = {
-            method: 'Post',
+            method: 'Get',
             url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
             headers: {
                 'api_access_token': this.props.sessionUser.chatwootApiKey,
@@ -213,10 +228,13 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             });
     }
 
-    sendNotification() {
-        const content = this.getSetting('chatwootTemplateMessage');
+    sendNotification(ticketUrl) {
+        let contentMessage = this.getSetting('chatwootTemplateMessage');
+        contentMessage.replace('{phoneNumber}',this.phoneNumber);
+        contentMessage.replace('{ticketUrl}',ticketUrl);
+        contentMessage.replace('{contactName}',this.contactName);
         const message = {
-            "content": content,
+            "content": contentMessage,
             "message_type": "outgoing",
             "private": false,
             "content_attributes": {}
@@ -242,9 +260,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
     onActiveUnloadingTheDialog(e) {
         this.ActiveUnloadingTheDialog = !this.ActiveUnloadingTheDialog;
-        console.log('this.comment')
         if (this.ActiveUnloadingTheDialog && !this.comment) {
-            this.UnloadingTheDialog();
+            this.unloadingTheDialog();
         }
     }
 
@@ -446,7 +463,8 @@ CreateTicketFromChatwootModalContainer.propTypes = {
     fetchTicketTypes: PropTypes.func.isRequired,
     getTagsWithPage: PropTypes.func.isRequired,
     fetchGroups: PropTypes.func.isRequired,
-    fetchAccountsCreateTicket: PropTypes.func.isRequired
+    fetchAccountsCreateTicket: PropTypes.func.isRequired,
+    settings: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -467,5 +485,6 @@ export default connect(mapStateToProps, {
     fetchTicketTypes,
     getTagsWithPage,
     fetchGroups,
-    fetchAccountsCreateTicket
+    fetchAccountsCreateTicket,
+    fetchSettings
 })(CreateTicketFromChatwootModalContainer)
