@@ -79,6 +79,12 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
     }
 
+    getSetting(stateName) {
+        return this.props.settings.getIn(['settings', stateName, 'value'])
+          ? this.props.settings.getIn(['settings', stateName, 'value'])
+          : ''
+      }
+
     onTicketTypeSelectChange(e) {
         this.priorityWrapper.classList.add('hide')
         this.priorityLoader.classList.remove('hide')
@@ -208,8 +214,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     sendNotification() {
+        const content = this.getSetting('chatwootTemplateMessage');
         const message = {
-            "content": "Создана заявка",
+            "content": content,
             "message_type": "outgoing",
             "private": false,
             "content_attributes": {}
@@ -451,7 +458,8 @@ const mapStateToProps = state => ({
     ticketTags: state.tagsSettings.tags,
     groups: state.groupsState.groups,
     accounts: state.accountsState.accountsCreateTicket,
-    sessionUser: state.shared.sessionUser
+    sessionUser: state.shared.sessionUser,
+    settings: state.settings.settings
 })
 
 export default connect(mapStateToProps, {

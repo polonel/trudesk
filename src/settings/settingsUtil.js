@@ -133,7 +133,7 @@ util.getSettings = async callback => {
         s.ldapPassword = parseSetting(settings, 'ldapSettings:password', true)
 
         s.chatwootSettings = parseSetting(settings, 'chatwootSettings:enable', true)
-        s.chatwootTemplateMessage = parseSetting(settings, 'chatwootSettings:templateMessage', true)
+        s.chatwootTemplateMessage = parseSetting(settings, 'chatwootSettings:templateMessage', '')
         //-- ShaturaPro LIN 22.08.2022
         const types = await ticketTypeSchema.getTypes()
         content.data.ticketTypes = _.sortBy(types, o => o.name)

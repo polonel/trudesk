@@ -116,7 +116,7 @@ class ChatwootSettingsController extends React.Component {
                     className={'md-input md-input-width-medium'}
                     name={''}
                     value={this.state.chatwootTemplateMessage}
-                    onChange={e => this.onInputValueChanged(e, 'templateMessage')}
+                    onChange={e => this.onInputValueChanged(e, 'chatwootTemplateMessage')}
                     style={{ 'height': '200px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />
