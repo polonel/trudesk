@@ -179,9 +179,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         axios.post('/api/v1/tickets/create', data).then(res => {
             let ticketUID = res.data.ticket.uid
-            let ticketUrl = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
+            let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
             if (ticketUID) {
-                this.sendNotification(ticketUrl);
+                this.sendNotification(ticketSubject);
             }
             location.href = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
         })
@@ -228,10 +228,10 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             });
     }
 
-    sendNotification(ticketUrl) {
+    sendNotification(ticketSubject) {
         let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
         contentMessage = contentMessage.replace('{phoneNumber}',this.phoneNumber);
-        contentMessage = contentMessage.replace('{ticketUrl}',ticketUrl);
+        contentMessage = contentMessage.replace('{ticketSubject}',ticketSubject);
         contentMessage = contentMessage.replace('{contactName}',this.contactName);
         const message = {
             "content": contentMessage,

@@ -126,6 +126,13 @@ class SettingsContainer extends React.Component {
                   this.onMenuItemClick(e, 'mailer')
                 }}
               />
+                <MenuItem
+                title='Chatwoot'
+                active={this.state.activeCategory === 'settings-chatwoot'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'chatwoot')
+                }}
+              />
               <MenuItem
                 title={'Elasticsearch'}
                 active={this.state.activeCategory === 'settings-elasticsearch'}
@@ -145,13 +152,6 @@ class SettingsContainer extends React.Component {
                 active={this.state.activeCategory === 'settings-server'}
                 onClick={e => {
                   this.onMenuItemClick(e, 'server')
-                }}
-              />
-              <MenuItem
-                title='Chatwoot'
-                active={this.state.activeCategory === 'settings-chatwoot'}
-                onClick={e => {
-                  this.onMenuItemClick(e, 'chatwoot')
                 }}
               />
               <MenuItem
@@ -177,10 +177,10 @@ class SettingsContainer extends React.Component {
               <PermissionsSettingsContainer active={this.state.activeCategory === 'settings-permissions'} />
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
               <MailerSettingsContainer active={this.state.activeCategory === 'settings-mailer'} />
+              <ChatwootSettingsController active={this.state.activeCategory === 'settings-chatwoot'} />
               <ElasticsearchSettingsContainer active={this.state.activeCategory === 'settings-elasticsearch'} />
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
               <ServerSettingsController active={this.state.activeCategory === 'settings-server'} />
-              <ChatwootSettingsController active={this.state.activeCategory === 'settings-chatwoot'} />
               <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />
             </div>
           </div>

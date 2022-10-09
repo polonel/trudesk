@@ -219,19 +219,9 @@ class ProfileContainer extends React.Component {
   }
 
   render() {
-    // return (
-    //   <div>
-    //     <PageTitle title={'Dashboard'} />
-    //     <PageContent>
-    //       <RGrid />
-    //     </PageContent>
-    //   </div>
-    // )
-    let ChatwootBlock = '';
-    console.log("this.getSetting('chatwootSettings')");
-    console.log(this.getSetting('chatwootSettings'));
-    if (this.getSetting('chatwootSettings')) {
-    ChatwootBlock = ()=>{
+
+   const ChatwootBlock = ()=>{
+    if(this.getSetting('chatwootSettings')){
       return(
           <div>
           <h4 style={{ marginBottom: 15 }}>Chatwoot</h4>
@@ -246,10 +236,10 @@ class ProfileContainer extends React.Component {
           </div>
         </div>
       )
+    } else {
+      return (<div></div>)
     }
     }
-    console.log('chatwootBlock')
-    console.log(ChatwootBlock)
 
 
     if (!this.props.sessionUser) return <div />
@@ -421,7 +411,7 @@ class ProfileContainer extends React.Component {
                         />
                       </div>
                       <Spacer top={25} bottom={25} showBorder={true} />
-
+                      
                       <ChatwootBlock/>
 
                       {this.editingProfile && (

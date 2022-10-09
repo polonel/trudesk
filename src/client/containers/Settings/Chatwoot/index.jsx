@@ -87,8 +87,8 @@ class ChatwootSettingsController extends React.Component {
     return (
       <div className={active ? 'active' : 'hide'}>
         <SettingItem
-          title={'Integration'}
-          subtitle={'Enable functionality for linking with chatwoot'}
+          title={'Chatwoot'}
+          subtitle={'Enable Chatwoot integration'}
           component={
             <EnableSwitch
               stateName={'chatwootSettings'}
@@ -104,8 +104,11 @@ class ChatwootSettingsController extends React.Component {
         <div className={active ? 'active' : 'hide'}>
           <div>
             <SettingItem
-              title={'Template message'}
-              tooltip={'Template Parameters: {phoneNumber}, {ticketUrl}, {contactName}'}
+              title={'Notification message template'}
+              tooltip={`Template Parameters: 
+              {phoneNumber} - customer phone number 
+              {ticketSubject} - link to the application 
+              {contactName} - customer name`}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>

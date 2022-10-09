@@ -147,7 +147,6 @@
         
     window.addEventListener("message", function (event) {
 
-       
             const eventData = JSON.parse(event.data);
             console.log(eventData)
             const username = eventData.data.contact.name;
@@ -167,8 +166,6 @@
                 }
                 }
           });
-
-
 
     if (screen.width <= 800) {
         document.location = '/mobile';
