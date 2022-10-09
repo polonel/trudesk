@@ -52,14 +52,10 @@ class ChatwootSettingsController extends React.Component {
 
   componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
-    console.log('this.chatwootSettings1')
-    console.log(this.chatwootEnabled)
     if (prevProps.settings !== this.props.settings) {
       if (this.chatwootEnabled !== this.getSetting('chatwootSettings'))
         this.chatwootEnabled = this.getSetting('chatwootSettings')
     }
-    console.log('this.chatwootSettings2')
-    console.log(this.chatwootEnabled)
   }
 
   onInputValueChanged(e, stateName) {
@@ -96,11 +92,10 @@ class ChatwootSettingsController extends React.Component {
         <div className={active ? 'active' : 'hide'}>
           <div>
             <SettingItem
-              title={'Integration'}
-              subtitle={'Enable functionality for linking with chatwoot'}
+              title={'Template message'}
+              tooltip={'Template Parameters: {numberPhone}, {url}, {name}'}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
-                <label>Template message</label>
                 <div className='uk-margin-medium-bottom'>
 
                   <textarea
