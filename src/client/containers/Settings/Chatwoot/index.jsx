@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings } from 'actions/settings'
 
+
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
 
@@ -37,7 +38,7 @@ class ChatwootSettingsController extends React.Component {
     makeObservable(this)
 
     this.state = {
-      templateMessage: ''
+      chatwootTemplateMessage: ''
     }
 
   }
@@ -55,6 +56,8 @@ class ChatwootSettingsController extends React.Component {
     if (prevProps.settings !== this.props.settings) {
       if (this.chatwootEnabled !== this.getSetting('chatwootSettings'))
         this.chatwootEnabled = this.getSetting('chatwootSettings')
+      if (this.state.chatwootTemplateMessage !== this.getSetting('chatwootTemplateMessage'))
+        this.state.chatwootTemplateMessage = this.getSetting('chatwootTemplateMessage')
     }
   }
 
@@ -68,6 +71,16 @@ class ChatwootSettingsController extends React.Component {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
       : ''
+  }
+
+  onFormSubmit(e) {
+    e.preventDefault()
+
+    const chatwootSettings = [
+      { name: 'chatwootSettings:templateMessage', value: this.state.chatwootTemplateMessage }
+    ]
+    this.props.updateMultipleSettings(chatwootSettings);
+
   }
 
   render() {
@@ -93,7 +106,7 @@ class ChatwootSettingsController extends React.Component {
           <div>
             <SettingItem
               title={'Template message'}
-              tooltip={'Template Parameters: {numberPhone}, {url}, {name}'}
+              tooltip={'Template Parameters: {numberPhone}, {ticketUrl}, {name}'}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>
@@ -102,14 +115,24 @@ class ChatwootSettingsController extends React.Component {
                     type='text'
                     className={'md-input md-input-width-medium'}
                     name={''}
-                    value={this.state.templateMessage}
+                    value={this.state.chatwootTemplateMessage}
                     onChange={e => this.onInputValueChanged(e, 'templateMessage')}
                     style={{ 'height': '200px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />
                 </div>
+                <Button
+                  text={'Apply'}
+                  type={'submit'}
+                  extraClass={'uk-float-right'}
+                  flat={true}
+                  waves={true}
+                  style={'success'}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
               </form>
             </SettingItem>
+
           </div>
         </div>
       </div>
