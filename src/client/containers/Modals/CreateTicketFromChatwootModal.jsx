@@ -159,52 +159,85 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         axios.post('/api/v1/tickets/create', data).then(res => {
             let ticketUID = res.data.ticket.uid
+            if (ticketUID) {
+                this.sendNotification();
+            }
             location.href = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
         })
+    }
+
+    unloadingTheDialog() {
+
+        let config = {
+            method: 'Post',
+            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+            headers: {
+                'api_access_token': this.props.sessionUser.chatwootApiKey,
+                'Content-Type': 'application/json',
+            },
+        };
+
+        axios(config)
+            .then((response) => {
+                this.messages = response.data.payload;
+                this.messages.map(message => {
+                    const date = new Date(message.created_at * 1000);
+                    let senderName;
+                    if (!message.sender) {
+                        senderName = `<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
+                    } else if (message.sender.name == this.clientName || this.clientName == '') {
+                        this.clientName = message.sender.name
+                        senderName = `<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
+                    } else {
+                        this.agentName = message.sender.name;
+                        senderName = `<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
+                    }
+
+                    if (!this.comment) this.comment = '';
+                    this.comment = this.comment + `
+                 ${senderName} 
+                <p>${message.content}</p>
+                <p></p> 
+                <p></p> 
+                `
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    sendNotification() {
+        const message = {
+            "content": "Создана заявка",
+            "message_type": "outgoing",
+            "private": false,
+            "content_attributes": {}
+        }
+        let config = {
+            method: 'Post',
+            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+            headers: {
+                'api_access_token': this.props.sessionUser.chatwootApiKey,
+                'Content-Type': 'application/json',
+            },
+            data: message
+        };
+
+        axios(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     onActiveUnloadingTheDialog(e) {
         this.ActiveUnloadingTheDialog = !this.ActiveUnloadingTheDialog;
         console.log('this.comment')
         if (this.ActiveUnloadingTheDialog && !this.comment) {
-
-            let config = {
-                method: 'Get',
-                url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-                headers: {
-                    'api_access_token': this.props.sessionUser.chatwootApiKey,
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            axios(config)
-                .then((response) => {
-                    this.messages = response.data.payload;
-                    this.messages.map(message => {
-                        const date = new Date(message.created_at * 1000);
-                        let senderName;
-                        if (!message.sender) {
-                            senderName = `<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
-                        } else if (message.sender.name == this.clientName || this.clientName == '') {
-                            this.clientName = message.sender.name
-                            senderName = `<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
-                        } else {
-                            this.agentName = message.sender.name;
-                            senderName = `<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
-                        }
-
-                        if (!this.comment) this.comment = '';
-                        this.comment = this.comment + `
-                     ${senderName} 
-                    <p>${message.content}</p>
-                    <p></p> 
-                    <p></p> 
-                    `
-                    })
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            this.UnloadingTheDialog();
         }
     }
 

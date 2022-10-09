@@ -35,6 +35,10 @@ class ChatwootSettingsController extends React.Component {
     super(props)
 
     makeObservable(this)
+    
+    this.state = {
+      templateMessage: ''
+    }
 
   }
 
@@ -58,29 +62,10 @@ class ChatwootSettingsController extends React.Component {
     console.log(this.chatwootEnabled)
   }
 
-  restartServer () {
-    this.setState({ restarting: true })
-
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    axios
-      .post(
-        '/api/v1/admin/restart',
-        {},
-        {
-          headers: {
-            'CSRF-TOKEN': token
-          }
-        }
-      )
-      .catch(error => {
-        helpers.hideLoader()
-        Log.error(error.responseText)
-        Log.error('Unable to restart server. Server must run under PM2 and Account must have admin rights.')
-        helpers.UI.showSnackbar('Unable to restart server. Are you an Administrator?', true)
-      })
-      .then(() => {
-        this.setState({ restarting: false })
-      })
+  onInputValueChanged(e, stateName) {
+    this.setState({
+      [stateName]: e.target.value
+    })
   }
 
   getSetting (stateName) {
@@ -93,7 +78,6 @@ class ChatwootSettingsController extends React.Component {
     const { active } = this.props
     return (
       <div className={active ? 'active' : 'hide'}>
-
         <SettingItem
           title={'Integration'}
           subtitle={'Enable functionality for linking with chatwoot'}
@@ -105,9 +89,27 @@ class ChatwootSettingsController extends React.Component {
               onChange={e => {
                 this.updateSetting('chatwootSettings', 'chatwootSettings:enable', e.target.checked)
               }}
-            />
+            /> 
           }
-        />
+        >
+         <div>
+       <form onSubmit={e => this.onFormSubmit(e)}>
+       <label>Template message</label>
+              <div className='uk-margin-medium-bottom'>
+                
+                <textarea
+                  type='text'
+                  className={'md-input md-input-width-medium'}
+                  name={''}
+                  value={this.state.templateMessage}
+                  onChange={e => this.onInputValueChanged(e, 'templateMessage')}
+                  style={{'height':'200px'}}
+                // disabled={!this.getSetting('mailerCheckEnabled')}
+                />
+              </div>
+        </form>
+        </div>
+        </SettingItem>
       </div>
     )
   }
