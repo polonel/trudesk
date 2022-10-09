@@ -404,7 +404,7 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.chatwootTemplateMessage= res.data.settings.chatwootTemplateMessage.value
+          viewdata.chatwootMessageTemplate= res.data.settings.chatwootMessageTemplate.value
 
           return callback()
         })

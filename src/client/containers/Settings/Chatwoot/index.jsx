@@ -38,7 +38,7 @@ class ChatwootSettingsController extends React.Component {
     makeObservable(this)
 
     this.state = {
-      chatwootTemplateMessage: ''
+      chatwootMessageTemplate: ''
     }
 
   }
@@ -56,8 +56,8 @@ class ChatwootSettingsController extends React.Component {
     if (prevProps.settings !== this.props.settings) {
       if (this.chatwootEnabled !== this.getSetting('chatwootSettings'))
         this.chatwootEnabled = this.getSetting('chatwootSettings')
-      if (this.state.chatwootTemplateMessage !== this.getSetting('chatwootTemplateMessage'))
-        this.state.chatwootTemplateMessage = this.getSetting('chatwootTemplateMessage')
+      if (this.state.chatwootMessageTemplate !== this.getSetting('chatwootMessageTemplate'))
+        this.state.chatwootMessageTemplate = this.getSetting('chatwootMessageTemplate')
     }
   }
 
@@ -76,7 +76,7 @@ class ChatwootSettingsController extends React.Component {
   onFormSubmit(e) {
     e.preventDefault()
     const chatwootSettings = [
-      { name: 'chatwootSettings:templateMessage', value: this.state.chatwootTemplateMessage }
+      { name: 'chatwootSettings:messageTemplate', value: this.state.chatwootMessageTemplate }
     ]
     this.props.updateMultipleSettings(chatwootSettings);
 
@@ -114,8 +114,8 @@ class ChatwootSettingsController extends React.Component {
                     type='text'
                     className={'md-input md-input-width-medium'}
                     name={''}
-                    value={this.state.chatwootTemplateMessage}
-                    onChange={e => this.onInputValueChanged(e, 'chatwootTemplateMessage')}
+                    value={this.state.chatwootMessageTemplate}
+                    onChange={e => this.onInputValueChanged(e, 'chatwootMessageTemplate')}
                     style={{ 'height': '200px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />

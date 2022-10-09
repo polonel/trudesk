@@ -58,9 +58,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     constructor(props) {
         super(props)
         makeObservable(this)
-        this.state = {
-            chatwootTemplateMessage: ''
-          }
+        // this.state = {
+        //     chatwootTemplateMessage: ''
+        //   }
     }
 
     componentDidMount() {
@@ -83,10 +83,10 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
     componentDidUpdate(prevProps) {
         // helpers.UI.reRenderInputs()
-        if (prevProps.settings !== this.props.settings) {
-          if (this.state.chatwootTemplateMessage !== this.getSetting('chatwootTemplateMessage'))
-            this.state.chatwootTemplateMessage = this.getSetting('chatwootTemplateMessage')
-        }
+        // if (prevProps.settings !== this.props.settings) {
+        //   if (this.state.chatwootTemplateMessage !== this.getSetting('chatwootTemplateMessage'))
+        //     this.state.chatwootTemplateMessage = this.getSetting('chatwootTemplateMessage')
+        // }
       }
 
     componentWillUnmount() {
@@ -229,10 +229,10 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     sendNotification(ticketUrl) {
-        let contentMessage = this.getSetting('chatwootTemplateMessage');
-        contentMessage.replace('{phoneNumber}',this.phoneNumber);
-        contentMessage.replace('{ticketUrl}',ticketUrl);
-        contentMessage.replace('{contactName}',this.contactName);
+        let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
+        contentMessage = contentMessage.replace('{phoneNumber}',this.phoneNumber);
+        contentMessage = contentMessage.replace('{ticketUrl}',ticketUrl);
+        contentMessage = contentMessage.replace('{contactName}',this.contactName);
         const message = {
             "content": contentMessage,
             "message_type": "outgoing",
