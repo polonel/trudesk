@@ -31,18 +31,18 @@ import UIKit from 'uikit'
 @observer
 class ChatwootSettingsController extends React.Component {
   @observable chatwootEnabled = false
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     makeObservable(this)
-    
+
     this.state = {
       templateMessage: ''
     }
 
   }
 
-  componentDidMount () {
+  componentDidMount() {
     // helpers.UI.inputs()
   }
 
@@ -50,7 +50,7 @@ class ChatwootSettingsController extends React.Component {
     this.props.updateSetting({ stateName, name, value })
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
     console.log('this.chatwootSettings1')
     console.log(this.chatwootEnabled)
@@ -68,13 +68,13 @@ class ChatwootSettingsController extends React.Component {
     })
   }
 
-  getSetting (stateName) {
+  getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
       : ''
   }
 
-  render () {
+  render() {
     const { active } = this.props
     return (
       <div className={active ? 'active' : 'hide'}>
@@ -89,27 +89,34 @@ class ChatwootSettingsController extends React.Component {
               onChange={e => {
                 this.updateSetting('chatwootSettings', 'chatwootSettings:enable', e.target.checked)
               }}
-            /> 
+            />
           }
         >
-         <div>
-       <form onSubmit={e => this.onFormSubmit(e)}>
-       <label>Template message</label>
-              <div className='uk-margin-medium-bottom'>
-                
-                <textarea
-                  type='text'
-                  className={'md-input md-input-width-medium'}
-                  name={''}
-                  value={this.state.templateMessage}
-                  onChange={e => this.onInputValueChanged(e, 'templateMessage')}
-                  style={{'height':'200px'}}
-                // disabled={!this.getSetting('mailerCheckEnabled')}
-                />
-              </div>
-        </form>
-        </div>
         </SettingItem>
+        <div className={active ? 'active' : 'hide'}>
+          <div>
+            <SettingItem
+              title={'Integration'}
+              subtitle={'Enable functionality for linking with chatwoot'}
+            >
+              <form onSubmit={e => this.onFormSubmit(e)}>
+                <label>Template message</label>
+                <div className='uk-margin-medium-bottom'>
+
+                  <textarea
+                    type='text'
+                    className={'md-input md-input-width-medium'}
+                    name={''}
+                    value={this.state.templateMessage}
+                    onChange={e => this.onInputValueChanged(e, 'templateMessage')}
+                    style={{ 'height': '200px' }}
+                  // disabled={!this.getSetting('mailerCheckEnabled')}
+                  />
+                </div>
+              </form>
+            </SettingItem>
+          </div>
+        </div>
       </div>
     )
   }
