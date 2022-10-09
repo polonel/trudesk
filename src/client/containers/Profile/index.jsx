@@ -227,10 +227,13 @@ class ProfileContainer extends React.Component {
     //     </PageContent>
     //   </div>
     // )
-    let chatwootBlock = '';
+    let ChatwootBlock = '';
+    console.log("this.getSetting('chatwootSettings')");
+    console.log(this.getSetting('chatwootSettings'));
     if (this.getSetting('chatwootSettings')) {
-    chatwootBlock = 
-        <div>
+    ChatwootBlock = ()=>{
+      return(
+          <div>
           <h4 style={{ marginBottom: 15 }}>Chatwoot</h4>
           <div style={{ display: 'flex', marginTop: 25 }}>
             <InfoItem
@@ -241,9 +244,12 @@ class ProfileContainer extends React.Component {
               onUpdate={val => (this.chatwootApiKey = val)}
             />
           </div>
-        </div>; 
+        </div>
+      )
     }
-    
+    }
+    console.log('chatwootBlock')
+    console.log(ChatwootBlock)
 
 
     if (!this.props.sessionUser) return <div />
@@ -416,7 +422,7 @@ class ProfileContainer extends React.Component {
                       </div>
                       <Spacer top={25} bottom={25} showBorder={true} />
 
-                      {chatwootBlock}
+                      <ChatwootBlock/>
 
                       {this.editingProfile && (
                         <div className={'uk-display-flex uk-margin-large-top'}>
