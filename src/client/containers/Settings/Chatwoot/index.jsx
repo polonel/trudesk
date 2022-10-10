@@ -105,10 +105,16 @@ class ChatwootSettingsController extends React.Component {
           <div>
             <SettingItem
               title={'Notification message template'}
-              tooltip={`Template Parameters: 
+              tooltip={`
+              Template Parameters: 
+              ____________________________ 
               {phoneNumber} - customer phone number 
-              {ticketSubject} - link to the application 
-              {contactName} - customer name`}
+              ____________________________ 
+              {ticketSubject} - link to the ticket 
+              ____________________________            
+              {contactName} - customer name 
+              ____________________________
+              `}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>

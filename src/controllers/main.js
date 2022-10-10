@@ -94,62 +94,65 @@ mainController.mappingChatwoot = function (req, res) {
 }
 
 mainController.changeMappingOrCreate = function (req, res) {
-  let chatwootSetting = false;
+
   Setting.findOne({ name: "chatwootSettings:enable" }, function (err, setting) {
     if (err) return res.render('error', {
       layout: false,
       error: err,
       message: err.message
     })
-    chatwootSetting = setting.value;
-  })
 
-  if (chatwootSetting) {
-    const content = {}
-    content.username = req.query.username;
-    content.phone = req.query.phone.replace(' ', '+');
-    content.email = req.query.email;
-    content.contactID = req.query.contactID;
-    content.accountID = req.query.accountID;
-    content.customAttributes = req.query.customAttributes;
-    content.conversationID = req.query.conversationID;
-    content.contactName = req.query.contactName;
+    let chatwootSetting = setting.value;
 
-    User.findOne({ phone: content.phone }, function (err, user) {
-      if (err) return res.render('error', {
-        layout: false,
-        error: err,
-        message: err.message
-      })
+    if (chatwootSetting) {
+      const content = {}
+      content.username = req.query.username;
+      content.phone = req.query.phone.replace(' ', '+');
+      content.email = req.query.email;
+      content.contactID = req.query.contactID;
+      content.accountID = req.query.accountID;
+      content.customAttributes = req.query.customAttributes;
+      content.conversationID = req.query.conversationID;
+      content.contactName = req.query.contactName;
 
-      if (user) {
-        if (user.email !== content.email) {
-          return res.render('changeMappingOrCreate', content)
+      User.findOne({ phone: content.phone }, function (err, user) {
+        if (err) return res.render('error', {
+          layout: false,
+          error: err,
+          message: err.message
+        })
+
+        if (user) {
+          if (user.email !== content.email) {
+            return res.render('changeMappingOrCreate', content)
+          }
+          else {
+            const data = {}
+            data.conversationID = content.conversationID;
+            data.accountID = content.accountID
+            data.user = user._id;
+            data.contactName = content.contactName;
+            data.phoneNumber = content.phone;
+            Group.findOne({ members: user._id }, function (err, group) {
+              if (err) return res.render('error', {
+                layout: false,
+                error: err,
+                message: err.message
+              })
+              data.group = group?._id
+              return res.render('createTicketFromChatwoot', data)
+            })
+
+          }
         }
         else {
-          const data = {}
-          data.conversationID = content.conversationID;
-          data.accountID = content.accountID
-          data.user = user._id;
-          data.contactName = content.contactName;
-          data.phoneNumber = content.phone;
-          Group.findOne({ members: user._id }, function (err, group) {
-            if (err) return res.render('error', {
-              layout: false,
-              error: err,
-              message: err.message
-            })
-            data.group = group?._id
-            return res.render('createTicketFromChatwoot', data)
-          })
-
+          return res.render('changeMappingOrCreate', content)
         }
-      }
-      else {
-        return res.render('changeMappingOrCreate', content)
-      }
-    })
-  }
+      })
+    } else {
+      return res.render('integrationIsDisabled', { layout: false })
+    }
+  })
 }
 
 mainController.loginChatwoot = function (req, res) {
