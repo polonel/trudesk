@@ -87,7 +87,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         //   if (this.state.chatwootTemplateMessage !== this.getSetting('chatwootTemplateMessage'))
         //     this.state.chatwootTemplateMessage = this.getSetting('chatwootTemplateMessage')
         // }
-      }
+    }
 
     componentWillUnmount() {
         if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
@@ -95,9 +95,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
     getSetting(stateName) {
         return this.props.settings.getIn(['settings', stateName, 'value'])
-          ? this.props.settings.getIn(['settings', stateName, 'value'])
-          : ''
-      }
+            ? this.props.settings.getIn(['settings', stateName, 'value'])
+            : ''
+    }
 
     onTicketTypeSelectChange(e) {
         this.priorityWrapper.classList.add('hide')
@@ -229,10 +229,11 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     sendNotification(ticketSubject) {
+        if (this.getSetting('chatwootSettings')) {
         let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
-        contentMessage = contentMessage.replace('{phoneNumber}',this.phoneNumber);
-        contentMessage = contentMessage.replace('{ticketSubject}',ticketSubject);
-        contentMessage = contentMessage.replace('{contactName}',this.contactName);
+        contentMessage = contentMessage.replace('{phoneNumber}', this.phoneNumber);
+        contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
+        contentMessage = contentMessage.replace('{contactName}', this.contactName);
         const message = {
             "content": contentMessage,
             "message_type": "outgoing",
@@ -256,12 +257,15 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             .catch((error) => {
                 console.log(error);
             });
+        }
     }
 
     onActiveUnloadingTheDialog(e) {
-        this.ActiveUnloadingTheDialog = !this.ActiveUnloadingTheDialog;
-        if (this.ActiveUnloadingTheDialog && !this.comment) {
-            this.unloadingTheDialog();
+        if (this.getSetting('chatwootSettings')) {
+            this.ActiveUnloadingTheDialog = !this.ActiveUnloadingTheDialog;
+            if (this.ActiveUnloadingTheDialog && !this.comment) {
+                this.unloadingTheDialog();
+            }
         }
     }
 
