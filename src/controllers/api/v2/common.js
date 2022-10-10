@@ -51,26 +51,17 @@ commonV2.loginChatwoot = async (req, res) => {
     email: req.body.email
   }
 
-  User.createUserFromChatwoot(payload,function (err, response) {
+  User.createUserFromChatwoot(payload, function (err, response) {
     if (err) return apiUtils.sendApiSuccess(res)
 
     return apiUtils.sendApiError(res, 500, e.message)
   })
- 
+
 }
 
 commonV2.loginLDAP = async (req, res) => {
 
   ldapCallBack = function (req, username, password, done) {
-    // for (group of req.memberOf){
-    //   console.log(group);
-    //   if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro'){
-    //       role = 'admin';
-    //   }
-    // }
-    console.log(req);
-    console.log(username);
-    // return done(null, username);
     User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
       .select('+password +tOTPKey +tOTPPeriod')
       .exec(function (err, user) {
@@ -133,8 +124,6 @@ commonV2.pushLDAPGroup = async (req, res) => {
     .catch(error => {
       console.log(error);
     })
-
-  console.log(req);
 }
 
 

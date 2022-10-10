@@ -96,8 +96,6 @@ class LoginChatwootContainer extends React.Component {
 
   onGroupSelectChange() {
     const selectedGroups = this.groupSelect.getSelected()
-    console.log(selectedGroups)
-    console.log(this.groupSelect)
     if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
     else this.groupSelectErrorMessage.classList.add('hide')
   }

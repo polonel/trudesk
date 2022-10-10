@@ -60,7 +60,6 @@ const reducer = handleActions(
         if (resultArr.length == 0) arr.push(i)
       })
 
-      console.log(arr);
       return {
         ...state,
         accounts: fromJS(arr),

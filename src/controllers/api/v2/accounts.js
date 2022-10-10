@@ -512,7 +512,6 @@ accountsApi.updatePassword = async (req, res) => {
 
 accountsApi.LDAPMapping = async (req, res) => {
   try {
-    console.log(req);
     return apiUtil.sendApiSuccess(res, {})
   } catch (err) {
     return apiUtil.sendApiError(res, 500, err.message)
