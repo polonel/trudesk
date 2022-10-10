@@ -42,8 +42,8 @@ var allMods = {
   redux: function () {
     return require('redux')
   },
-  LoginChatwootContainer: function () {
-    return require('../../client/containers/LoginChatwoot')
+  AccountChatwootContainer: function () {
+    return require('../../client/containers/accountChatwoot')
   },
   reactRedux: function () {
     return require('react-redux')

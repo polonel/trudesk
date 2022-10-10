@@ -13,7 +13,7 @@
             const eventData = JSON.parse(event.data);
          $.ajax({
                 type: 'POST',
-                url: '/loginChatwoot',
+                url: '/accountChatwoot',
                 data: eventData.data.contact,
                 async: true,
                 success: function(data) {

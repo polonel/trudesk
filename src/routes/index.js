@@ -18,7 +18,7 @@
  
  function mainRoutes (router, middleware, controllers) {
    router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index)
-   router.get('/loginChatwoot', controllers.main.loginChatwoot)
+   router.get('/accountChatwoot', controllers.main.accountChatwoot)
    router.get('/mappingChatwoot', controllers.main.mappingChatwoot)
    router.get('/changeMappingOrCreate', controllers.main.changeMappingOrCreate)
    router.get('/healthz', function (req, res) {
@@ -36,10 +36,7 @@
    })
  
    router.post('/login', controllers.main.loginPost)
-   router.post('/loginChatwoot', controllers.main.loginChatwootPost)  // Chatwoot
-   // router.get('/loginChatwoot', controllers.main.loginChatwoot)   // Chatwoot
-   // router.post('/loginChatwoot', controllers.main.index) 
-   // router.post('/login', controllers.main.loginPost)
+   router.post('/accountChatwoot', controllers.main.accountChatwootPost)  // Chatwoot
    router.get('/l2auth', controllers.main.l2authget)
    router.post('/l2auth', controllers.main.l2AuthPost)
    router.get('/logout', controllers.main.logout)

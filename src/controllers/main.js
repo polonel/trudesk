@@ -69,16 +69,16 @@ mainController.index = function (req, res) {
   })
 }
 
-mainController.loginChatwootPost = function (req, res) {
+mainController.accountChatwootPost = function (req, res) {
 
   const content = {}
-  content.title = "LoginChatwoot"
+  content.title = "AccountChatwoot"
   content.data = {}
   content.data.username = req.body.name
   content.data.phone = req.body.phone_number
   content.data.email = req.body.email
 
-  return res.render('loginChatwoot', content)
+  return res.render('AccountChatwoot', content)
 }
 
 mainController.mappingChatwoot = function (req, res) {
@@ -155,7 +155,7 @@ mainController.changeMappingOrCreate = function (req, res) {
   })
 }
 
-mainController.loginChatwoot = function (req, res) {
+mainController.accountChatwoot = function (req, res) {
 
   const content = {}
   content.username = req.query.username;
@@ -165,7 +165,7 @@ mainController.loginChatwoot = function (req, res) {
   content.accountID = req.query.accountID;
   content.customAttributes = req.query.customAttributes;
 
-  return res.render('loginChatwoot', content);
+  return res.render('accountChatwoot', content);
 
 }
 
