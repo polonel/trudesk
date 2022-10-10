@@ -43,7 +43,7 @@ commonV2.login = async (req, res) => {
 }
 
 // Обработка данных из формы Chatwoot
-commonV2.accountChatwoot = async (req, res) => {
+commonV2.loginChatwoot = async (req, res) => {
 
   const payload = {
     username: req.body.username,
