@@ -159,6 +159,7 @@ mainController.loginChatwoot = function (req, res) {
 
   const content = {}
   content.username = req.query.username;
+  content.fullname = req.query.fullname;
   content.phone = req.query.phone.replace(' ', '+');
   content.email = req.query.email;
   content.contactID = req.query.contactID;

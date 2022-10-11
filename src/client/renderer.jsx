@@ -156,6 +156,7 @@ export default function (store) {
 
   if (document.getElementById('changeMappingOrCreate-container')) {
     const username = document.getElementById('changeMappingOrCreate-container').getAttribute('data-username')
+    const fullname = document.getElementById('changeMappingOrCreate-container').getAttribute('data-fullname')
     const phone = document.getElementById('changeMappingOrCreate-container').getAttribute('data-phone')
     const email = document.getElementById('changeMappingOrCreate-container').getAttribute('data-email')
     const contactID = document.getElementById('changeMappingOrCreate-container').getAttribute('data-contactID')
@@ -165,7 +166,7 @@ export default function (store) {
     const ChangeMappingOrCreateModalContainerWithProvider = (
       <Provider store={store}>
         <ChangeMappingOrCreateModalContainer username={username} phone={phone} email={email} 
-        contactID={contactID} accountID={accountID} customAttributes={customAttributes}/>
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes} fullname={fullname} />
       </Provider>
     )
 

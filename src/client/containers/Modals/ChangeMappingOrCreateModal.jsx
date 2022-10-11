@@ -39,7 +39,7 @@ import axios from 'axios'
 class ChangeMappingOrCreateModalContainer extends React.Component {
 
   @observable username = this.props.email
-  @observable fullname = this.props.username
+  @observable fullname = this.props.fullname
   @observable email = this.props.email
   // @observable phone = this.props.phone.replace(' ','+')
   @observable phone = this.props.phone.replace(' ', '+')
@@ -79,7 +79,6 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
 
 
   render() {
-
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
          <div className=" uk-text-center" style={{ 'padding-top': '10px' }}>
