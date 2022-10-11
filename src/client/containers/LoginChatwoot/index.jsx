@@ -38,11 +38,11 @@ import axios from 'axios'
 @observer
 class LoginChatwootContainer extends React.Component {
 
-  @observable username = this.props.email ? this.props.email : '';
-  @observable fullname = this.props.fullname ? this.props.fullname : '';
-  @observable email = this.props.email ? this.props.email : '';
+  @observable username = this.props.email !== 'null' ? this.props.email : '';
+  @observable fullname = this.props.fullname !== 'null' ? this.props.fullname : '';
+  @observable email = this.props.email !== 'null' ? this.props.email : '';
   // @observable phone = this.props.phone.replace(' ','+')
-  @observable phone = this.props.phone ? this.props.phone.replace(' ', '+'): '';
+  @observable phone = this.props.phone !== 'null' ? this.props.phone.replace(' ', '+'): '';
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
