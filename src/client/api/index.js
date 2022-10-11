@@ -183,7 +183,6 @@ api.accounts.create = payload => {
 }
 
 api.accounts.createFromChatwoot = payload => {
-  // return axios.post('/api/v2/accountsFromChatwoot', payload).then(res => {
   return axios.post('/api/v2/loginChatwoot', payload).then(res => {
     return res.data
   })

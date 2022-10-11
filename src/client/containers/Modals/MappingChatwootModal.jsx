@@ -66,7 +66,6 @@ class MappingChatwootContainer extends React.Component {
   @observable contactID = this.props.contactID
   @observable accountID = this.props.accountID
   @observable customAttributes = this.props.customAttributes
-  @observable defaultRole
   @observable defaultGroup
   @observable search =''
   @observable foundUsers = true
@@ -116,16 +115,9 @@ class MappingChatwootContainer extends React.Component {
   onSearchChanged (e) {
     this.hasMore = false
     this.search = e.target.value
-
-  // if (this.search !=='' || this.search !==undefined){
     this.props.fetchAccounts({ limit: 5, type: this.props.view, search:this.search, showDeleted: true }).then(({ response }) => {
       this.hasMore = response.count >= 5
     })
-  // }else{
-    // this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
-    //   this.hasMore = response.count >= 5
-    // })
-  // }
   }
 
   getUsersWithPage(page) {
@@ -175,12 +167,13 @@ class MappingChatwootContainer extends React.Component {
       })
       .toArray()
 
+    //Updating user data in mongodb
     let updateUser = {
       username: '',
       email: '',
       phone: ''
     }
-
+    
     for (let user of users) {
       if (user.value == this.selectedUser) {
         updateUser.username = user.username;
@@ -196,6 +189,7 @@ class MappingChatwootContainer extends React.Component {
     }
     this.props.saveEditAccount(data)
 
+    //Updating contact data in chatwoot
     const contact = {
       "email": updateUser.email,
       "phone_number": this.phone
@@ -219,19 +213,6 @@ class MappingChatwootContainer extends React.Component {
   }
 
   render() {
-    const roles = this.props.roles
-      .map(role => {
-        return { text: role.get('name'), value: role.get('_id') }
-      })
-      .toArray()
-
-    let defaultRole;
-    for (let role of roles) {
-      if (role.text == 'User') {
-        defaultRole = role.value;
-      }
-    }
-
     const users = this.props.accountsState.accounts
       .map(user => {
         return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
@@ -251,10 +232,7 @@ class MappingChatwootContainer extends React.Component {
         }
       }
     }
-
-    
-
-      
+     
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width: '80%' }}>
         <div className='user-heading-content' style={{ background: '#1976d2', padding: '24px' }}>
@@ -262,13 +240,8 @@ class MappingChatwootContainer extends React.Component {
             <span className={'uk-text-truncate'}>User Mapping</span>
           </h2>
         </div>
-        <div style={{ margin: '24px 24px 0 24px' }}>
-        
+        <div style={{ margin: '24px 24px 0 24px' }}>   
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
-         
-
-
-
           <div className='uk-margin-medium-bottom uk-clearfix'>
               <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
                 <label className={'uk-form-label'}>Name</label>
@@ -291,29 +264,6 @@ class MappingChatwootContainer extends React.Component {
                 />
               </div>
             </div>
-
-
-
-
-            {/* <div className='uk-margin-medium-bottom'>
-              <label className='uk-form-label'>Phone</label>
-              <input
-                type='text'
-                className={'md-input'}
-                value={this.phone}
-                onChange={e => this.onInputChanged(e, 'phone')}
-              />
-            </div>
-            <div className='uk-text-right'style={{padding:'5px'}}>
-            <input
-                      type='text'
-                      id='tickets_Search'
-                      placeholder={'Search'}
-                      className={'ticket-top-search'}
-                      value={this.search}
-                      onChange={e => this.onSearchChanged(e)}                    
-                    />
-            </div> */}
             <PageContent id={'mapping-page-content'} padding={0}>
             <InfiniteScroll
                   pageStart={this.pageStart}
@@ -411,8 +361,6 @@ class MappingChatwootContainer extends React.Component {
           
         </div>
       </BaseModal>
-
-
     )
   }
 }
@@ -421,13 +369,11 @@ MappingChatwootContainer.propTypes = {
   common: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
   teams: PropTypes.object.isRequired,
-  roles: PropTypes.object.isRequired,
   createAccount: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
   fetchTeams: PropTypes.func.isRequired,
   unloadTeams: PropTypes.func.isRequired,
-  fetchRoles: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   accountsState: PropTypes.object.isRequired,
   saveEditAccount: PropTypes.func.isRequired,
@@ -435,7 +381,6 @@ MappingChatwootContainer.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  roles: state.shared.roles,
   common: state.common,
   groups: state.groupsState.groups,
   teams: state.teamsState.teams,
@@ -444,7 +389,6 @@ const mapStateToProps = state => ({
 })
 
 MappingChatwootContainer.defaultProps = {
-  // view: 'customers'
   view: 'all'
 }
 
@@ -454,7 +398,6 @@ export default connect(mapStateToProps, {
   unloadGroups,
   fetchTeams,
   unloadTeams,
-  fetchRoles,
   fetchAccounts,
   saveEditAccount,
   showModal,
