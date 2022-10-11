@@ -30,8 +30,6 @@ import TableCell from 'components/Table/TableCell'
 import { createAccount, fetchAccounts, saveEditAccount,
    unloadAccounts, findAccounts, clearStateAccounts } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
-import { fetchTeams, unloadTeams } from 'actions/teams'
-import { fetchRoles, showModal } from 'actions/common'
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
@@ -133,7 +131,7 @@ class MappingChatwootContainer extends React.Component {
     else this.groupSelectErrorMessage.classList.add('hide')
   }
 
-  //Валидация номера телефона
+  //Phone number validation
   _validatePhone(phone) {
     if (!phone) return false
     return phone
@@ -160,7 +158,6 @@ class MappingChatwootContainer extends React.Component {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
-
     const users = this.props.accountsState.accounts
       .map(user => {
         return { text: user.get('email'), value: user.get('_id'), username: user.get('username'), phone: user.get('phone') }
@@ -218,7 +215,6 @@ class MappingChatwootContainer extends React.Component {
         return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
       })
       .toArray()
-
     for (let user of users) {
       if (user.text == this.email) {
         this.defaultUser = user.value;
@@ -366,24 +362,17 @@ class MappingChatwootContainer extends React.Component {
 }
 
 MappingChatwootContainer.propTypes = {
-  common: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
-  teams: PropTypes.object.isRequired,
   createAccount: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
-  fetchTeams: PropTypes.func.isRequired,
-  unloadTeams: PropTypes.func.isRequired,
-  showModal: PropTypes.func.isRequired,
   accountsState: PropTypes.object.isRequired,
   saveEditAccount: PropTypes.func.isRequired,
   unloadAccounts: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-  common: state.common,
   groups: state.groupsState.groups,
-  teams: state.teamsState.teams,
   accountsState: state.accountsState,
   sessionUser: state.shared.sessionUser
 })
@@ -396,11 +385,8 @@ export default connect(mapStateToProps, {
   createAccount,
   fetchGroups,
   unloadGroups,
-  fetchTeams,
-  unloadTeams,
   fetchAccounts,
   saveEditAccount,
-  showModal,
   unloadAccounts,
   findAccounts,
   clearStateAccounts

@@ -88,13 +88,13 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
         <div style={{ margin: ' 0px 25px 0px' }}>
           <div className='uk-modal-footer uk-text-center'>
           {/* <a  class="uk-button uk-button-accent" style="padding: 10px 15px;" href={`https://trudesk-dev.shatura.pro/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>Test Mapping</a> */}
-          <a class={'md-btn'} style={{ fontSize: '20px', margin: '20px 5 0 5px','margin-right':'50px', color:'white','background-color':'#7cb342' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
+          <a class={'md-btn'} style={{ fontSize: '20px', margin: '20px 5 0 5px','margin-right':'50px', color:'white','background-color':'#7cb342' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}&fullname=${this.fullname}`}>
               Create User
             </a>
            <a class={'md-btn'} style={{ fontSize: '20px', margin: '5px 5 0 20px', 'margin-left':'50px', color: 'white','background-color':'#1976d2' }} href={`https://trudesk-dev.shatura.pro/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
               User Mapping
             </a>
-          </div>
+          </div> 
         </div>
       </BaseModal>
 

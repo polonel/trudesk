@@ -118,6 +118,7 @@ export default function (store) {
 
   if (document.getElementById('loginChatwoot-container')) {
     const username = document.getElementById('loginChatwoot-container').getAttribute('data-username')
+    const fullname = document.getElementById('loginChatwoot-container').getAttribute('data-fullname')
     const phone = document.getElementById('loginChatwoot-container').getAttribute('data-phone')
     const email = document.getElementById('loginChatwoot-container').getAttribute('data-email')
     const contactID = document.getElementById('loginChatwoot-container').getAttribute('data-contactID')
@@ -126,7 +127,7 @@ export default function (store) {
     const LoginChatwootContainerWithProvider = (
       <Provider store={store}>
         <LoginChatwootContainer username={username} phone={phone} email={email} 
-        contactID={contactID} accountID={accountID} customAttributes={customAttributes}/>
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes} fullname={fullname}/>
       </Provider>
     )
 

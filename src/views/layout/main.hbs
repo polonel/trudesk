@@ -160,7 +160,7 @@
             if (window.location == 'https://trudesk-dev.shatura.pro/dashboard'){
                 if(customAttributes){
                     customAttributes = customAttributes.replace('#','');
-                    window.location = `https://trudesk-dev.shatura.pro/tickets/${customAttributes}`
+                    window.location = `https://trudesk-dev.shatura.pro/tickets/${customAttributes}` 
                 }else{
                     window.location = `https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}&conversationID=${conversationID}&contactName=${contactName}` 
                 }
