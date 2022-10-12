@@ -62,7 +62,7 @@ ldapClient.bind = function (url, userDN, password, callback) {
          res.on('end', (result) => {
             console.log('status: ' + result.status);
             // api.common.pushLDAPGroup(dnGroupsArray);
-            axios.post('http://trudesk-dev.shatura.pro:8118/api/v2/pushLDAPGroup', { dnGroupsArray }).then(res => {
+            axios.post('https://trudesk-dev.shatura.pro/api/v2/pushLDAPGroup', { dnGroupsArray }).then(res => {
               console.log (res.data)
             }).catch(err=>{console.log(err)})
             // axios.post('/api/v2/pushLDAPGroup', { dnGroupsArray });

@@ -77,13 +77,13 @@ class AccountsSettingsContainer extends React.Component {
         this.allowUserRegistrationEnabled = this.getSetting('allowUserRegistration')
       if (this.ldapEnabled !== this.getSetting('ldapSettings'))
         this.ldapEnabled = this.getSetting('ldapSettings')
-      if (this.state.ldapHost !== this.getSetting('ldapHost'))
+      if (this.state.ldapHost !== this.getSetting('ldapHost') && this.getSetting('ldapHost') !== true)
         this.state.ldapHost = this.getSetting('ldapHost')
-      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN'))
+      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !==true)
         this.state.ldapBindDN = this.getSetting('ldapBindDN')
-      if (this.state.ldapPassword !== this.getSetting('ldapPassword'))
+      if (this.state.ldapPassword !== this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== true)
         this.state.ldapPassword = this.getSetting('ldapPassword')
-      if (this.state.ldapUsername !== this.getSetting('ldapUsername'))
+      if (this.state.ldapUsername !== this.getSetting('ldapUsername') && this.getSetting('ldapUsername') !== true)
         this.state.ldapUsername = this.getSetting('ldapUsername')
     }
   }
@@ -140,8 +140,9 @@ class AccountsSettingsContainer extends React.Component {
     let ldapGArray = [];
     axios.get('https://trudesk-dev.shatura.pro/api/v2/ldapGroups').then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
+      console.log( 'this.ldapGroupsArray = res.data.ldapGroups')
     }).catch(err=>{console.log(err)})
-
+ 
      for (let i = 0; i <  this.ldapGroupsArray.length; i++) {
       ldapGArray.push( {text: this.ldapGroupsArray[i]['name'],value: this.ldapGroupsArray[i]['_id']});
     }
@@ -222,6 +223,8 @@ class AccountsSettingsContainer extends React.Component {
 
   render() {
     const ldapGArray = this.getLDAPGroups();
+    console.log('ldapGArray')
+    console.log(ldapGArray)
     const rolesName = this.getRoles();
     const ElementArray = ({ role }) => {
       const roleGroup = role;
