@@ -58,9 +58,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     constructor(props) {
         super(props)
         makeObservable(this)
-        // this.state = {
-        //     chatwootTemplateMessage: ''
-        //   }
     }
 
     componentDidMount() {
@@ -136,9 +133,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         const data = {}
         if (this.issueText.length < 1) return
         const allowAgentUserTickets = true
-        //   this.props.viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
-        //   (this.props.shared.sessionUser.role.isAdmin || this.props.shared.sessionUser.role.isAgent)
-
         const minIssueLength = this.props.viewdata.get('ticketSettings').get('minIssue')
         let $mdeError
         const $issueTextbox = $(this.issueMde.element)

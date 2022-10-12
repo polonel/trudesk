@@ -28,39 +28,55 @@ const crypto = require('crypto')
 const Setting = require('../models/setting')
 const { ConstraintViolationError } = require('ldapjs')
 
-serverSettings = function(server){
+serverSettings = function (server) {
 
-  Setting.findOne({name:'ldapSettings:host'},(err, host)=>{
+  Setting.findOne({ name: 'ldapSettings:host' }, (err, host) => {
     if (err) console.log(err);
-    server.url = host.value;
+    if (host) {
+      server.url = host.value;
+    } else {
+      server.url = ''
+    }
   })
 
-  Setting.findOne({name:'ldapSettings:bindDN'},(err, bindDN)=>{
+  Setting.findOne({ name: 'ldapSettings:bindDN' }, (err, bindDN) => {
     if (err) console.log(err);
-    server.bindDN = bindDN.value;
+    if (bindDN) {
+      server.bindDN = bindDN.value;
+    } else {
+      server.bindDN = '';
+    }
   })
 
-  Setting.findOne({name:'ldapSettings:password'},(err, password)=>{
+  Setting.findOne({ name: 'ldapSettings:password' }, (err, password) => {
     if (err) console.log(err);
-    server.bindCredentials = password.value;
+    if (password) {
+      server.bindCredentials = password.value;
+    } else {
+      server.bindCredentials = '';
+    }
   })
-  
-  Setting.findOne({name:'ldapSettings:username'},(err, username)=>{
+
+  Setting.findOne({ name: 'ldapSettings:username' }, (err, username) => {
     if (err) console.log(err);
-    server.username = username.value;
+    if (username) {
+      server.username = username.value;
+    } else {
+      server.username = '';
+    }
   })
- 
+
 }
 
-var  server = {
-    url: '',
-    bindDN: '',
-    bindCredentials: '',
-    searchBase: 'CN=Users,DC=shatura,DC=pro',
-    searchFilter: '(&(userPrincipalName={{username}}))'
-  }
+var server = {
+  url: '',
+  bindDN: '',
+  bindCredentials: '',
+  searchBase: 'CN=Users,DC=shatura,DC=pro',
+  searchFilter: '(&(userPrincipalName={{username}}))'
+}
 
-  serverSettings(server);
+serverSettings(server);
 
 module.exports = function () {
   passport.serializeUser(function (user, done) {
@@ -111,7 +127,8 @@ module.exports = function () {
                       if (group == ldapGroup.name) {
                         if (user.role._id !== role._id) {
                           rolesForUser.push({ name: role.name, _id: role._id })
-                        }}
+                        }
+                      }
 
                       if (countRole == roles.length && countGroup == req.memberOf.length) {
                         if (rolesForUser.length == 0) {
@@ -123,13 +140,18 @@ module.exports = function () {
                           roleUser = rolesForUser.filter(role => role.name == "Support")[0];
                           if (!roleUser) {
                             roleUser = rolesForUser.filter(role => role.name == "User")[0];
-                          }}
+                          }
+                        }
 
                         User.updateOne({ _id: user._id }, { role: roleUser._id }, (err) => {
                           if (err) return done(err)
                         })
                         return done(null, user)
-                      }}})}})
+                      }
+                    }
+                  })
+                }
+              })
 
             } else {
               let countRole = 0;
@@ -156,21 +178,22 @@ module.exports = function () {
                           roleUser = rolesForUser.filter(role => role.name == "Support")[0];
                           if (!roleUser) {
                             roleUser = rolesForUser.filter(role => role.name == "User")[0];
-                          }}
-                          const passwordGuid = crypto.randomUUID();
-                          const newUser = {
-                            username: req.userPrincipalName,
-                            password: passwordGuid,
-                            fullname: req.userPrincipalName,
-                            email: req.userPrincipalName,
-                            role: roleUser._id
                           }
-                          
-                          User.create(newUser, function (err, user) {
-                            if (err) return done(err)
-                            return done(null, user)
-                          })
-                        
+                        }
+                        const passwordGuid = crypto.randomUUID();
+                        const newUser = {
+                          username: req.userPrincipalName,
+                          password: passwordGuid,
+                          fullname: req.userPrincipalName,
+                          email: req.userPrincipalName,
+                          role: roleUser._id
+                        }
+
+                        User.create(newUser, function (err, user) {
+                          if (err) return done(err)
+                          return done(null, user)
+                        })
+
                       }
                     }
                   })

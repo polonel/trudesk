@@ -41,7 +41,6 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
   @observable username = this.props.email
   @observable fullname = this.props.fullname
   @observable email = this.props.email
-  // @observable phone = this.props.phone.replace(' ','+')
   @observable phone = this.props.phone.replace(' ', '+')
   @observable title = this.props.username
   @observable selectedUser = ''
@@ -74,10 +73,6 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
     helpers.formvalidator()
   }
 
-
-
-
-
   render() {
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
@@ -86,7 +81,6 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
         </h2></div>
         <div style={{ margin: ' 0px 25px 0px' }}>
           <div className='uk-modal-footer uk-text-center'>
-          {/* <a  class="uk-button uk-button-accent" style="padding: 10px 15px;" href={`https://trudesk-dev.shatura.pro/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>Test Mapping</a> */}
           <a class={'md-btn'} style={{ fontSize: '20px', margin: '20px 5 0 5px','margin-right':'50px', color:'white','background-color':'#7cb342' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}&fullname=${this.fullname}`}>
               Create User
             </a>
