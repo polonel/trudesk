@@ -198,6 +198,7 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
+      window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
       window.location.reload(true)
   }
 
@@ -217,7 +218,6 @@ class AccountsSettingsContainer extends React.Component {
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
     window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
-    window.location.reload(true)
   }
 
 
