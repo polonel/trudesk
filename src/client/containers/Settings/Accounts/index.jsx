@@ -140,7 +140,6 @@ class AccountsSettingsContainer extends React.Component {
     let ldapGArray = [];
     axios.get('https://trudesk-dev.shatura.pro/api/v2/ldapGroups').then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
-      console.log( 'this.ldapGroupsArray = res.data.ldapGroups')
     }).catch(err=>{console.log(err)})
  
      for (let i = 0; i <  this.ldapGroupsArray.length; i++) {
@@ -199,6 +198,7 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
+      window.location.reload(true)
   }
 
 
@@ -216,15 +216,13 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
+    window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
     window.location.reload(true)
   }
 
 
-
   render() {
     const ldapGArray = this.getLDAPGroups();
-    console.log('ldapGArray')
-    console.log(ldapGArray)
     const rolesName = this.getRoles();
     const ElementArray = ({ role }) => {
       const roleGroup = role;
