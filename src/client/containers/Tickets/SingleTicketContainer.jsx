@@ -19,9 +19,11 @@ import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
 
+import { fetchSettings } from 'actions/settings'
 import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { showModal } from 'actions/common'
+import { fetchAccounts } from 'actions/accounts'
 
 import {
   TICKETS_UPDATE,
@@ -117,7 +119,11 @@ class SingleTicketContainer extends React.Component {
     this.props.socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
     this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
     this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
-
+    this.props.fetchSettings();
+    this.props.fetchAccounts({ limit: -1, search: this.ticket.assignee.fullname }).then(({ response }) => {
+      this.pageStart = -1
+      this.hasMore = response.count >= 25
+    })
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
@@ -214,6 +220,45 @@ class SingleTicketContainer extends React.Component {
       })
   }
 
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+        ? this.props.settings.getIn(['settings', stateName, 'value'])
+        : ''
+}
+
+  sendNotification() {
+    if (this.getSetting('chatwootSettings')) {
+    let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`
+    let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
+    contentMessage = contentMessage.replace('{phoneNumber}', this.phoneNumber);
+    contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
+    contentMessage = contentMessage.replace('{contactName}', this.contactName);
+    const message = {
+        "content": contentMessage,
+        "message_type": "outgoing",
+        "private": false,
+        "content_attributes": {}
+    }
+    let config = {
+        method: 'Post',
+        url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+        headers: {
+            'api_access_token': this.props.sessionUser.chatwootApiKey,
+            'Content-Type': 'application/json',
+        },
+        data: message
+    };
+
+    axios(config)
+        .then((response) => {
+            console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
+}
+
   onSubscriberChanged (e) {
     axios
       .put(`/api/v1/tickets/${this.ticket._id}/subscribe`, {
@@ -260,6 +305,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   render () {
+   
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
           return { text: group.get('name'), value: group.get('_id') }
@@ -278,12 +324,15 @@ class SingleTicketContainer extends React.Component {
       const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
       const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
       if (isAgent || isAdmin) {
+        this.sendNotification()
         return helpers.canUser('tickets:update')
       } else {
         if (!this.ticket || !this.props.sessionUser) return false
         return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
       }
     }
+    
+   
 
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
@@ -886,7 +935,9 @@ const mapStateToProps = state => ({
   sessionUser: state.shared.sessionUser,
   socket: state.shared.socket,
   ticketTypes: state.ticketsState.types,
-  groupsState: state.groupsState
+  groupsState: state.groupsState,
+  settings: state.settings.settings,
+  accountsState: state.accountsState,
 })
 
 export default connect(mapStateToProps, {
@@ -894,5 +945,7 @@ export default connect(mapStateToProps, {
   fetchGroups,
   unloadGroups,
   showModal,
-  transferToThirdParty
+  transferToThirdParty,
+  fetchSettings,
+  fetchAccounts
 })(SingleTicketContainer)

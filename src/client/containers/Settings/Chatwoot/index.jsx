@@ -126,19 +126,19 @@ class ChatwootSettingsController extends React.Component {
                     name={''}
                     value={this.state.chatwootMessageTemplate}
                     onChange={e => this.onInputValueChanged(e, 'chatwootMessageTemplate')}
-                    style={{ 'height': '200px' }}
+                    style={{ 'height': '200px', 'padding-top':'30px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />
                 </div>
                 <div className='uk-margin-medium-bottom'>
-                <label style={{'font-size':'16px', 'color':'#E74C3C','padding-bottom':'10px'}} > When the status changes </label>
+                <label style={{'font-size':'16px', 'color':'#E74C3C'}} > When the status changes </label>
                   <textarea
                     type='text'
                     className={'md-input md-input-width-medium'}
                     name={''}
                     value={this.state.chatwootStatusChangeMessageTemplate}
                     onChange={e => this.onInputValueChanged(e, 'chatwootStatusChangeMessageTemplate')}
-                    style={{ 'height': '200px' }}
+                    style={{ 'height': '200px', 'padding-top':'30px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />
                 </div>
