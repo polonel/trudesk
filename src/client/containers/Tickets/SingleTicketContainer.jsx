@@ -238,29 +238,33 @@ class SingleTicketContainer extends React.Component {
           contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
           contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
           contentMessage = contentMessage.replace('{contactName}', account.fullname);
-          const message = {
-            "content": contentMessage,
-            "message_type": "outgoing",
-            "private": false,
-            "content_attributes": {}
-          }
-          let config = {
-            method: 'Post',
-            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-            headers: {
-              'api_access_token': this.props.sessionUser.chatwootApiKey,
-              'Content-Type': 'application/json',
-            },
-            data: message
-          };
+          console.log('this.ticket.chatwootAccountID')
+          console.log(this.ticket.chatwootAccountID)
+          console.log('this.ticket.chatwootConversationID')
+          console.log(this.ticket.chatwootConversationID)
+          // const message = {
+          //   "content": contentMessage,
+          //   "message_type": "outgoing",
+          //   "private": false,
+          //   "content_attributes": {}
+          // }
+          // let config = {
+          //   method: 'Post',
+          //   url: `https://cw.shatura.pro/api/v1/accounts/${this.ticket.chatwootAccountID}/conversations/${this.ticket.chatwootConversationID}/messages`,
+          //   headers: {
+          //     'api_access_token': this.props.sessionUser.chatwootApiKey,
+          //     'Content-Type': 'application/json',
+          //   },
+          //   data: message
+          // };
 
-          axios(config)
-            .then((response) => {
-              console.log(JSON.stringify(response.data));
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          // axios(config)
+          //   .then((response) => {
+          //     console.log(JSON.stringify(response.data));
+          //   })
+          //   .catch((error) => {
+          //     console.log(error);
+          //   });
 
         })
           .catch((error) => {
