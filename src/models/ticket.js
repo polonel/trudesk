@@ -102,6 +102,8 @@ var ticketSchema = mongoose.Schema({
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags', autopopulate: true }],
   subject: { type: String, required: true },
   issue: { type: String, required: true },
+  chatwootAccountID: {type: String},
+  chatwootConversationID: {type: String},
   closedDate: { type: Date },
   dueDate: { type: Date },
   comments: [commentSchema],

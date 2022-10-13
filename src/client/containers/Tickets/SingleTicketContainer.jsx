@@ -226,51 +226,49 @@ class SingleTicketContainer extends React.Component {
     if (this.getSetting('chatwootSettings')) {
 
       this.props.fetchAccounts({ limit: -1, search: this.ticket.assignee.fullname }).then(({ response }) => {
-        // console.log('response');
-        // console.log(response.accounts[0].fullname);
-        // let accountName = '';
-        // this.props.accountsState.accounts.map(account => {
-        //   accountName = account.get('fullname')
-        // })
-        console.log('this.ticket.owner')
-        console.log(this.ticket.owner);
+ 
        
         axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
+          console.log(JSON.stringify(response.data));
+          let account;
+          account = response.data.user;
+
+          let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`;
+          let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
+          contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
+          contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
+          contentMessage = contentMessage.replace('{contactName}', account.fullname);
+          const message = {
+            "content": contentMessage,
+            "message_type": "outgoing",
+            "private": false,
+            "content_attributes": {}
+          }
+          let config = {
+            method: 'Post',
+            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+            headers: {
+              'api_access_token': this.props.sessionUser.chatwootApiKey,
+              'Content-Type': 'application/json',
+            },
+            data: message
+          };
+
+          axios(config)
+            .then((response) => {
               console.log(JSON.stringify(response.data));
             })
             .catch((error) => {
               console.log(error);
             });
-           
-    
-          // let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`;
-          // let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
-          // contentMessage = contentMessage.replace('{phoneNumber}', this.phoneNumber);
-          // contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
-          // contentMessage = contentMessage.replace('{contactName}', this.contactName);
-          // const message = {
-          //   "content": contentMessage,
-          //   "message_type": "outgoing",
-          //   "private": false,
-          //   "content_attributes": {}
-          // }
-          // let config = {
-          //   method: 'Post',
-          //   url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-          //   headers: {
-          //     'api_access_token': this.props.sessionUser.chatwootApiKey,
-          //     'Content-Type': 'application/json',
-          //   },
-          //   data: message
-          // };
 
-          // axios(config)
-          //   .then((response) => {
-          //     console.log(JSON.stringify(response.data));
-          //   })
-          //   .catch((error) => {
-          //     console.log(error);
-          //   });
+        })
+          .catch((error) => {
+            console.log(error);
+          });
+
+
+
       })
 
 

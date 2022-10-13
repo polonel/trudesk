@@ -170,6 +170,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             data.comment = ''
         }
         data.fromChatwoot = true;
+        data.chatwootConversationID = this.conversationID;
+        data.chatwootAccountID = this.accountID;
 
         axios.post('/api/v1/tickets/create', data).then(res => {
             let ticketUID = res.data.ticket.uid

@@ -463,6 +463,14 @@ apiTickets.create = function (req, res) {
           ticket.comments = [Comment]
         }
 
+        if (req.body.chatwootAccountID){
+          ticket.chatwootAccountID = req.body.chatwootAccountID;
+        }
+
+        if (req.body.chatwootConversationID){
+          ticket.chatwootConversationID = req.body.chatwootConversationID;
+        }
+
         var marked = require('marked')
         var tIssue = ticket.issue
         tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
