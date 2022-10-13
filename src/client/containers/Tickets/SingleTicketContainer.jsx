@@ -84,8 +84,8 @@ const fetchTicket = parent => {
 const showPriorityConfirm = () => {
   UIkit.modal.confirm(
     'Selected Priority does not exist for this ticket type. Priority has reset to the default for this type.' +
-      '<br><br><strong>Please select a new priority</strong>',
-    () => {},
+    '<br><br><strong>Please select a new priority</strong>',
+    () => { },
     { cancelButtonClass: 'uk-hidden' }
   )
 }
@@ -96,7 +96,7 @@ class SingleTicketContainer extends React.Component {
   @observable isSubscribed = false
   assigneeDropdownPartial = createRef()
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
 
@@ -111,7 +111,7 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.socket.on(TICKETS_UPDATE, this.onUpdateTicket)
     this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
     this.props.socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
@@ -120,21 +120,17 @@ class SingleTicketContainer extends React.Component {
     this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
     this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
     this.props.fetchSettings();
-    this.props.fetchAccounts({ limit: -1, search: this.ticket.assignee.fullname }).then(({ response }) => {
-      this.pageStart = -1
-      this.hasMore = response.count >= 25
-    })
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     helpers.resizeFullHeight()
     helpers.setupScrollers()
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.socket.off(TICKETS_UPDATE, this.onUpdateTicket)
     this.props.socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
     this.props.socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
@@ -146,21 +142,21 @@ class SingleTicketContainer extends React.Component {
     this.props.unloadGroups()
   }
 
-  onUpdateTicket (data) {
+  onUpdateTicket(data) {
     if (this.ticket._id === data._id) {
       this.ticket = data
     }
   }
 
-  onSocketUpdateComments (data) {
+  onSocketUpdateComments(data) {
     if (this.ticket._id === data._id) this.ticket.comments = data.comments
   }
 
-  onUpdateTicketNotes (data) {
+  onUpdateTicketNotes(data) {
     if (this.ticket._id === data._id) this.ticket.notes = data.notes
   }
 
-  onUpdateAssignee (data) {
+  onUpdateAssignee(data) {
     if (this.ticket._id === data._id) {
       this.ticket.assignee = data.assignee
       if (this.ticket.assignee && this.ticket.assignee._id === this.props.shared.sessionUser._id)
@@ -168,27 +164,27 @@ class SingleTicketContainer extends React.Component {
     }
   }
 
-  onUpdateTicketType (data) {
+  onUpdateTicketType(data) {
     if (this.ticket._id === data._id) this.ticket.type = data.type
   }
 
-  onUpdateTicketPriority (data) {
+  onUpdateTicketPriority(data) {
     if (this.ticket._id === data._id) this.ticket.priority = data.priority
   }
 
-  onUpdateTicketGroup (data) {
+  onUpdateTicketGroup(data) {
     if (this.ticket._id === data._id) this.ticket.group = data.group
   }
 
-  onUpdateTicketDueDate (data) {
+  onUpdateTicketDueDate(data) {
     if (this.ticket._id === data._id) this.ticket.dueDate = data.dueDate
   }
 
-  onUpdateTicketTags (data) {
+  onUpdateTicketTags(data) {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
   }
 
-  onCommentNoteSubmit (e, type) {
+  onCommentNoteSubmit(e, type) {
     e.preventDefault()
     const isNote = type === 'note'
     axios
@@ -222,44 +218,66 @@ class SingleTicketContainer extends React.Component {
 
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
-        ? this.props.settings.getIn(['settings', stateName, 'value'])
-        : ''
-}
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
 
   sendNotification() {
     if (this.getSetting('chatwootSettings')) {
-    let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`
-    let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
-    contentMessage = contentMessage.replace('{phoneNumber}', this.phoneNumber);
-    contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
-    contentMessage = contentMessage.replace('{contactName}', this.contactName);
-    const message = {
-        "content": contentMessage,
-        "message_type": "outgoing",
-        "private": false,
-        "content_attributes": {}
-    }
-    let config = {
-        method: 'Post',
-        url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-        headers: {
-            'api_access_token': this.props.sessionUser.chatwootApiKey,
-            'Content-Type': 'application/json',
-        },
-        data: message
-    };
 
-    axios(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    }
-}
+      this.props.fetchAccounts({ limit: -1, search: this.ticket.assignee.fullname }).then(({ response }) => {
+        // console.log('response');
+        // console.log(response.accounts[0].fullname);
+        // let accountName = '';
+        // this.props.accountsState.accounts.map(account => {
+        //   accountName = account.get('fullname')
+        // })
+        console.log('this.ticket.owner')
+        console.log(this.ticket.owner);
+       
+        axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
+              console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+           
+    
+          // let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`;
+          // let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
+          // contentMessage = contentMessage.replace('{phoneNumber}', this.phoneNumber);
+          // contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
+          // contentMessage = contentMessage.replace('{contactName}', this.contactName);
+          // const message = {
+          //   "content": contentMessage,
+          //   "message_type": "outgoing",
+          //   "private": false,
+          //   "content_attributes": {}
+          // }
+          // let config = {
+          //   method: 'Post',
+          //   url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+          //   headers: {
+          //     'api_access_token': this.props.sessionUser.chatwootApiKey,
+          //     'Content-Type': 'application/json',
+          //   },
+          //   data: message
+          // };
 
-  onSubscriberChanged (e) {
+          // axios(config)
+          //   .then((response) => {
+          //     console.log(JSON.stringify(response.data));
+          //   })
+          //   .catch((error) => {
+          //     console.log(error);
+          //   });
+      })
+
+
+    }
+  }
+
+  onSubscriberChanged(e) {
     axios
       .put(`/api/v1/tickets/${this.ticket._id}/subscribe`, {
         user: this.props.shared.sessionUser._id,
@@ -276,18 +294,18 @@ class SingleTicketContainer extends React.Component {
       })
   }
 
-  transferToThirdParty (e) {
+  transferToThirdParty(e) {
     this.props.transferToThirdParty({ uid: this.ticket.uid })
   }
 
   @computed
-  get notesTagged () {
+  get notesTagged() {
     this.ticket.notes.forEach(i => (i.isNote = true))
 
     return this.ticket.notes
   }
 
-  @computed get commentsAndNotes () {
+  @computed get commentsAndNotes() {
     if (!this.ticket) return []
     if (!helpers.canUser('tickets:notes', true)) {
       return sortBy(this.ticket.comments, 'date')
@@ -299,23 +317,23 @@ class SingleTicketContainer extends React.Component {
     return commentsAndNotes
   }
 
-  @computed get hasCommentsOrNotes () {
+  @computed get hasCommentsOrNotes() {
     if (!this.ticket) return false
     return this.ticket.comments.length > 0 || this.ticket.notes.length > 0
   }
 
-  render () {
-   
+  render() {
+
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
-          return { text: group.get('name'), value: group.get('_id') }
-        })
+        return { text: group.get('name'), value: group.get('_id') }
+      })
       : []
 
     const mappedTypes = this.props.ticketTypes
       ? this.props.ticketTypes.map(type => {
-          return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() }
-        })
+        return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() }
+      })
       : []
 
     // Perms
@@ -324,15 +342,16 @@ class SingleTicketContainer extends React.Component {
       const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
       const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
       if (isAgent || isAdmin) {
-        this.sendNotification()
+        console.log('this.sendNotification()')
+        // this.sendNotification()
         return helpers.canUser('tickets:update')
       } else {
         if (!this.ticket || !this.props.sessionUser) return false
         return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
       }
     }
-    
-   
+
+
 
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
@@ -350,7 +369,10 @@ class SingleTicketContainer extends React.Component {
                     ticketId={this.ticket._id}
                     status={this.ticket.status}
                     socket={this.props.socket}
-                    onStatusChange={status => (this.ticket.status = status)}
+                    onStatusChange={status => {
+                      this.sendNotification()
+                      this.ticket.status = status
+                    }}
                     hasPerm={hasTicketStatusUpdate()}
                   />
                 </div>
