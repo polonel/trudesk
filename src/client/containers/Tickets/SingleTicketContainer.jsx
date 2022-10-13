@@ -222,6 +222,19 @@ class SingleTicketContainer extends React.Component {
       : ''
   }
 
+ statusToName = status => {
+    switch (status) {
+      case 0:
+        return 'New'
+      case 1:
+        return 'Open'
+      case 2:
+        return 'Pending'
+      case 3:
+        return 'Closed'
+    }
+  }
+
   sendNotification() {
     if (this.getSetting('chatwootSettings')) {
 
@@ -234,6 +247,8 @@ class SingleTicketContainer extends React.Component {
         contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
         contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
         contentMessage = contentMessage.replace('{contactName}', account.fullname);
+        contentMessage = contentMessage.replace('{ticketStatus}',this.statusToName(this.ticket.status));
+        // contentMessage = contentMessage.replace('{ticketStatus}',this.ticket.);
         const message = {
           "content": contentMessage,
           "message_type": "outgoing",
@@ -330,8 +345,6 @@ class SingleTicketContainer extends React.Component {
       const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
       const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
       if (isAgent || isAdmin) {
-        console.log('this.sendNotification()')
-        // this.sendNotification()
         return helpers.canUser('tickets:update')
       } else {
         if (!this.ticket || !this.props.sessionUser) return false
@@ -359,6 +372,7 @@ class SingleTicketContainer extends React.Component {
                     socket={this.props.socket}
                     onStatusChange={status => {
                       this.sendNotification()
+                      console.log(this.ticket.status)
                       this.ticket.status = status
                     }}
                     hasPerm={hasTicketStatusUpdate()}
