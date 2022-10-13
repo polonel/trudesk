@@ -134,6 +134,7 @@ util.getSettings = async callback => {
 
         s.chatwootSettings = parseSetting(settings, 'chatwootSettings:enable', true)
         s.chatwootMessageTemplate = parseSetting(settings, 'chatwootSettings:messageTemplate', '')
+        s.chatwootStatusChangeMessageTemplate = parseSetting(settings, 'chatwootSettings:statusChangeMessageTemplate', '')
         //-- ShaturaPro LIN 22.08.2022
         const types = await ticketTypeSchema.getTypes()
         content.data.ticketTypes = _.sortBy(types, o => o.name)

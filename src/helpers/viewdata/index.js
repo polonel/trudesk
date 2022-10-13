@@ -413,6 +413,15 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
+          viewdata.chatwootStatusChangeMessageTemplate= res.data.settings.chatwootStatusChangeMessageTemplate.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
           viewdata.ldapSettings = res.data.settings.ldapSettings.value
 
           return callback()

@@ -35,7 +35,8 @@ class ChatwootSettingsController extends React.Component {
     makeObservable(this)
 
     this.state = {
-      chatwootMessageTemplate: ''
+      chatwootMessageTemplate: '',
+      chatwootStatusChangeMessageTemplate:''
     }
 
   }
@@ -53,8 +54,10 @@ class ChatwootSettingsController extends React.Component {
     if (prevProps.settings !== this.props.settings) {
       if (this.chatwootEnabled !== this.getSetting('chatwootSettings'))
         this.chatwootEnabled = this.getSetting('chatwootSettings')
-      if (this.state.chatwootMessageTemplate !== this.getSetting('chatwootMessageTemplate'))
+      if (this.state.chatwootMessageTemplate !== this.getSetting('chatwootMessageTemplate') && this.getSetting('chatwootMessageTemplate') !== true)
         this.state.chatwootMessageTemplate = this.getSetting('chatwootMessageTemplate')
+        if (this.state.chatwootStatusChangeMessageTemplate !== this.getSetting('chatwootStatusChangeMessageTemplate') && this.getSetting('chatwootStatusChangeMessageTemplate')!== true)
+        this.state.chatwootStatusChangeMessageTemplate = this.getSetting('chatwootStatusChangeMessageTemplate')
     }
   }
 
@@ -73,7 +76,8 @@ class ChatwootSettingsController extends React.Component {
   onFormSubmit(e) {
     e.preventDefault()
     const chatwootSettings = [
-      { name: 'chatwootSettings:messageTemplate', value: this.state.chatwootMessageTemplate }
+      { name: 'chatwootSettings:messageTemplate', value: this.state.chatwootMessageTemplate },
+      { name: 'chatwootSettings:statusChangeMessageTemplate', value: this.state.chatwootStatusChangeMessageTemplate }
     ]
     this.props.updateMultipleSettings(chatwootSettings);
 
@@ -115,13 +119,25 @@ class ChatwootSettingsController extends React.Component {
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>
-
+                <label style={{'font-size':'16px', 'color':'#E74C3C','padding-bottom':'10px'}}> When creating a ticket </label>
                   <textarea
                     type='text'
                     className={'md-input md-input-width-medium'}
                     name={''}
                     value={this.state.chatwootMessageTemplate}
                     onChange={e => this.onInputValueChanged(e, 'chatwootMessageTemplate')}
+                    style={{ 'height': '200px' }}
+                  // disabled={!this.getSetting('mailerCheckEnabled')}
+                  />
+                </div>
+                <div className='uk-margin-medium-bottom'>
+                <label style={{'font-size':'16px', 'color':'#E74C3C','padding-bottom':'10px'}} > When the status changes </label>
+                  <textarea
+                    type='text'
+                    className={'md-input md-input-width-medium'}
+                    name={''}
+                    value={this.state.chatwootStatusChangeMessageTemplate}
+                    onChange={e => this.onInputValueChanged(e, 'chatwootStatusChangeMessageTemplate')}
                     style={{ 'height': '200px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />
