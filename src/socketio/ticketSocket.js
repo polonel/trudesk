@@ -18,6 +18,7 @@ var marked = require('marked')
 var sanitizeHtml = require('sanitize-html')
 var utils = require('../helpers/utils')
 var emitter = require('../emitter')
+var logger = require('../logger')
 var socketEvents = require('./socketEventConsts')
 var ticketSchema = require('../models/ticket')
 var prioritySchema = require('../models/ticketpriority')
@@ -28,7 +29,11 @@ var xss = require('xss')
 var { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 var settingSchema = require('../models/setting')
 var templateSchema = require('../models/template')
+// /home/ilobanov/trudesk-dev/src/mailer/templates
+var path = require('path')
+var templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
 var Email = require('email-templates')
+var Mailer = require('../mailer')
 var events = {}
 
 function register (socket) {
@@ -59,9 +64,7 @@ events.onUpdateTicketGrid = function (socket) {
 
 
 const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
-
   let email = null
-
   if (betaEnabled) {
     email = new Email({
       render: (view, locals) => {
@@ -69,7 +72,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
           ; (async () => {
             try {
               if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
-              const template = await Template.findOne({ name: view })
+              const template = await templateSchema.findOne({ name: view })
               if (!template) return reject(new Error('Invalid Template'))
               const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
               const results = await email.juiceResources(html)
@@ -126,7 +129,7 @@ const configForSendMail = async ticket =>{
 
     //++ ShaturaPro LIN 14.10.2022
     //const [emails] = await Promise.all([parseMemberEmails(ticket)])
-    const [emails] = []
+    const emails = []
     if (ticket.owner.email && ticket.owner.email !== '') {
       emails.push(ticket.owner.email)
     }

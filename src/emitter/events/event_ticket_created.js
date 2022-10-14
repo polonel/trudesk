@@ -191,7 +191,7 @@ module.exports = async data => {
 
     //++ ShaturaPro LIN 14.10.2022
     //const [emails] = await Promise.all([parseMemberEmails(ticket)])
-    const [emails] = []
+    const emails = []
     if (ticket.owner.email && ticket.owner.email !== '') {
       emails.push(ticket.owner.email)
     }
