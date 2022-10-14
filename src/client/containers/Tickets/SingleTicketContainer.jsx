@@ -235,9 +235,35 @@ class SingleTicketContainer extends React.Component {
     }
   }
 
-  sendNotification() {
-    if (this.getSetting('chatwootSettings')) {
+  sendNotificationMail(){
+    axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
+      console.log(JSON.stringify(response.data));
+      let account;
+      account = response.data.user;
+      let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`;
+      let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
+      contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
+      contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
+      contentMessage = contentMessage.replace('{contactName}', account.fullname);
+      contentMessage = contentMessage.replace('{ticketStatus}',this.statusToName(this.ticket.status));
+      const message = {
+        "content": contentMessage,
+        "message_type": "outgoing",
+        "private": false,
+        "content_attributes": {}
+      }
+    
 
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+
+  }
+
+  sendNotification() {
+    this.sendNotificationMail();
+    if (this.getSetting('chatwootSettings')) {
       axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
         console.log(JSON.stringify(response.data));
         let account;
@@ -248,7 +274,6 @@ class SingleTicketContainer extends React.Component {
         contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
         contentMessage = contentMessage.replace('{contactName}', account.fullname);
         contentMessage = contentMessage.replace('{ticketStatus}',this.statusToName(this.ticket.status));
-        // contentMessage = contentMessage.replace('{ticketStatus}',this.ticket.);
         const message = {
           "content": contentMessage,
           "message_type": "outgoing",
@@ -372,7 +397,6 @@ class SingleTicketContainer extends React.Component {
                     socket={this.props.socket}
                     onStatusChange={status => {
                       this.sendNotification()
-                      console.log(this.ticket.status)
                       this.ticket.status = status
                     }}
                     hasPerm={hasTicketStatusUpdate()}

@@ -88,8 +88,6 @@ class StatusSelector extends React.Component {
 
   changeStatus (status) {
     if (!this.props.hasPerm) return
-    console.log('status')
-    console.log(status)
     this.props.socket.emit(TICKETS_STATUS_SET, { _id: this.props.ticketId, value: status })
     this.forceClose()
   }

@@ -112,7 +112,9 @@ class ChatwootSettingsController extends React.Component {
               {phoneNumber} - customer phone number 
               ____________________________ 
               {ticketSubject} - link to the ticket 
-              ____________________________            
+              ____________________________         
+              {ticketStatus} - ticket status
+              ____________________________     
               {contactName} - customer name 
               ____________________________
               `}

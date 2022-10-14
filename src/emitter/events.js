@@ -26,6 +26,7 @@ const notifications = require('../notifications') // Load Push Events
 
 const eventTicketCreated = require('./events/event_ticket_created')
 
+
 ;(function () {
   notifications.init(emitter)
 
