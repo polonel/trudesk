@@ -470,6 +470,7 @@ apiTickets.create = function (req, res) {
         if (req.body.chatwootConversationID){
           ticket.chatwootConversationID = req.body.chatwootConversationID;
         }
+        
 
         var marked = require('marked')
         var tIssue = ticket.issue
@@ -483,6 +484,9 @@ apiTickets.create = function (req, res) {
           ticket.history = [HistoryItem]
         }
         ticket.subscribers = [user._id]
+        if (req.body.owner.email || req.body.owner.email !==''){
+          ticket.subscribers.push(req.body.owner)
+        }
 
         ticket.save(function (err, t) {
           if (err) return done({ status: 400, error: err })

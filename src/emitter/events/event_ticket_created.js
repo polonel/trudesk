@@ -123,6 +123,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
   const template = await Template.findOne({ name: 'new-ticket' })
   if (template) {
     const ticketJSON = ticket.toJSON()
+
     const context = { base_url: baseUrl, ticket: ticketJSON }
 
     const html = await email.render('new-ticket', context)

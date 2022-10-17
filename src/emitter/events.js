@@ -23,7 +23,9 @@ const Email = require('email-templates')
 const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 const socketEvents = require('../socketio/socketEventConsts')
 const notifications = require('../notifications') // Load Push Events
-
+const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
+const settingSchema = require('../models/setting')
+const templateSchema = require('../models/template')
 const eventTicketCreated = require('./events/event_ticket_created')
 
 
@@ -233,21 +235,94 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   return c()
                 }
 
-                const email = new Email({
-                  views: {
-                    root: templateDir,
-                    options: {
-                      extension: 'handlebars'
-                    }
+
+                const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
+                  let email = null
+                  if (betaEnabled) {
+                    email = new Email({
+                      render: (view, locals) => {
+                        return new Promise((resolve, reject) => {
+                          ; (async () => {
+                            try {
+                              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+                              const template = await templateSchema.findOne({ name: view })
+                              if (!template) return reject(new Error('Invalid Template'))
+                              const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+                              const results = await email.juiceResources(html)
+                              return resolve(results)
+                            } catch (e) {
+                              return reject(e)
+                            }
+                          })()
+                        })
+                      }
+                    })
+                  } else {
+                    email = new Email({
+                      views: {
+                        root: templateDir,
+                        options: {
+                          extension: 'handlebars'
+                        }
+                      }
+                    })
                   }
-                })
+                
+                  const template = await templateSchema.findOne({ name: templateName })
+                  if (template) {
+                    const ticketJSON = ticket.toJSON()
+                    const context = { base_url: baseUrl, ticket: ticketJSON }
+                
+                    const html = await email.render(templateName, context)
+                    const subjectParsed = global.Handlebars.compile(template.subject)(context)
+                    const mailOptions = {
+                      to: emails.join(),
+                      subject: subjectParsed,
+                      html,
+                      generateTextFromHTML: true
+                    }
+                
+                    await Mailer.sendMail(mailOptions)
+                
+                    logger.debug(`Sent [${emails.length}] emails.`)
+                  }
+                }
+
+                const configForSendMail = async (ticket,templateName) =>{
+                  const ticketObject = ticket
+                  try {
+                    const ticket = await ticketSchema.getTicketById(ticketObject._id)
+                    const settings = await settingSchema.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
+                
+                    const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
+                    let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
+                    mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
+                    let betaEnabled = head(filter(settings, ['name', 'beta:email']))
+                    betaEnabled = !betaEnabled ? false : betaEnabled.value
+                
+                    //++ ShaturaPro LIN 14.10.2022
+                    //const [emails] = await Promise.all([parseMemberEmails(ticket)])
+                    const emails = []
+                    if (ticket.owner.email && ticket.owner.email !== '') {
+                      emails.push(ticket.owner.email)
+                    }
+                
+                    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
+                
+                  } catch (e) {
+                    logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`)
+                  }
+                }
+
+
 
                 ticket.populate('comments.owner', function (err, ticket) {
                   if (err) winston.warn(err)
                   if (err) return c()
 
                   ticket = ticket.toJSON()
-
+                  ticket.comments = tail(ticket.comments)
+                  configForSendMail(ticket,'comment-added')
                   email
                     .render('ticket-comment-added', {
                       ticket: ticket,
@@ -256,8 +331,8 @@ const eventTicketCreated = require('./events/event_ticket_created')
                     .then(function (html) {
                       const mailOptions = {
                         to: emails.join(),
-                        subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
-                        html: html,
+                        subject: subjectParsed,
+                        html,
                         generateTextFromHTML: true
                       }
 
