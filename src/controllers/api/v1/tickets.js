@@ -987,6 +987,7 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
+      
       emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
 
       return res.json({ success: true, error: null, ticket: tt })

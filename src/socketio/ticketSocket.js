@@ -63,7 +63,7 @@ events.onUpdateTicketGrid = function (socket) {
 }
 
 
-const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
+const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
   let email = null
   if (betaEnabled) {
     email = new Email({
@@ -95,12 +95,12 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
     })
   }
 
-  const template = await templateSchema.findOne({ name: 'status-change' })
+  const template = await templateSchema.findOne({ name: templateName })
   if (template) {
     const ticketJSON = ticket.toJSON()
     const context = { base_url: baseUrl, ticket: ticketJSON }
 
-    const html = await email.render('status-change', context)
+    const html = await email.render(templateName, context)
     const subjectParsed = global.Handlebars.compile(template.subject)(context)
     const mailOptions = {
       to: emails.join(),
@@ -115,7 +115,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
   }
 }
 
-const configForSendMail = async ticket =>{
+const configForSendMail = async (ticket,templateName) =>{
   const ticketObject = ticket
   try {
     const ticket = await ticketSchema.getTicketById(ticketObject._id)
@@ -134,7 +134,7 @@ const configForSendMail = async ticket =>{
       emails.push(ticket.owner.email)
     }
 
-    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled)
+    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
 
   } catch (e) {
     logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`)
@@ -151,7 +151,7 @@ events.onUpdateTicketStatus = socket => {
       let ticket = await ticketSchema.getTicketById(ticketId)
       ticket = await ticket.setStatus(ownerId, status)
       ticket = await ticket.save()
-      configForSendMail(ticket)
+      configForSendMail(ticket, 'status-change')
       // emitter.emit('ticket:updated', t)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
         tid: ticket._id,
@@ -170,7 +170,7 @@ events.onUpdateTicket = function (socket) {
   socket.on(socketEvents.TICKETS_UPDATE, async data => {
     try {
       const ticket = await ticketSchema.getTicketById(data._id)
-
+      configForSendMail(ticket, 'comment-added')
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
     } catch (error) {
       // Blank
@@ -431,7 +431,7 @@ events.onCommentNoteSet = socket => {
       if (!isNote) ticket = await ticket.updateComment(ownerId, itemId, markedText)
       else ticket = await ticket.updateNote(ownerId, itemId, markedText)
       ticket = await ticket.save()
-
+      configForSendMail(ticket)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
     } catch (e) {
       winston.error(e)
