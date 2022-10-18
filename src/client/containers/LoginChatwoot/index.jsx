@@ -120,7 +120,7 @@ class LoginChatwootContainer extends React.Component {
 
     if (!$form.isValid(null, null, false)) isValid = false
 
-    if (!this._validatePhone(this.phone)) {
+    if (!this._validatePhone(this.phone) && this.phone !== '' ) {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
