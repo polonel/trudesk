@@ -274,20 +274,12 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   if (template) {
                     const ticketJSON = ticket.toJSON()
                     ticketJSON.status = ticket.statusFormatted
-                    ticketJSON.comments =  ticketJSON.comments.splice(-1)[0].comment
-                    const context = { base_url: baseUrl, ticket: ticketJSON }
-                    // email
-                  //   .render('ticket-comment-added', {
-                  //     ticket: ticket,
-                  //     comment: comment
-                  //   })
-                  //   .then(function (html) {
-                  //     const mailOptions = {
-                  //       to: emails.join(),
-                  //       subject: subjectParsed,
-                  //       html,
-                  //       generateTextFromHTML: true
-                  //     }
+                    const comment ={
+                      text:  ticketJSON.comments.splice(-1)[0].comment.replace(/(<([^>]+)>)/gi, ""),
+                      owner: ticketJSON.comments.splice(-1)[0].owner.fullname
+                    }
+                    const context = { base_url: baseUrl, ticket: ticketJSON, comment: comment }
+
                     const html = await email.render(templateName, context)
                     const subjectParsed = global.Handlebars.compile(template.subject)(context)
                     const mailOptions = {
