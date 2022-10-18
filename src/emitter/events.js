@@ -237,7 +237,6 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   return c()
                 }
 
-
                 const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
                   let email = null
                   if (betaEnabled) {
@@ -308,7 +307,6 @@ const eventTicketCreated = require('./events/event_ticket_created')
                     betaEnabled = !betaEnabled ? false : betaEnabled.value
                 
                     //++ ShaturaPro LIN 14.10.2022
-                    //const [emails] = await Promise.all([parseMemberEmails(ticket)])
                     const emails = []
                     if (ticket.owner.email && ticket.owner.email !== '') {
                       emails.push(ticket.owner.email)
@@ -328,31 +326,6 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   ticket = ticket.toJSON()
                   ticket.comments = ticket.comments.splice(-1)
                   configForSendMail(ticket,'comment-added')
-                  // email
-                  //   .render('ticket-comment-added', {
-                  //     ticket: ticket,
-                  //     comment: comment
-                  //   })
-                  //   .then(function (html) {
-                  //     const mailOptions = {
-                  //       to: emails.join(),
-                  //       subject: subjectParsed,
-                  //       html,
-                  //       generateTextFromHTML: true
-                  //     }
-
-                  //     mailer.sendMail(mailOptions, function (err) {
-                  //       if (err) winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-
-                  //       winston.debug('Sent [' + emails.length + '] emails.')
-                  //     })
-
-                  //     return c()
-                  //   })
-                  //   .catch(function (err) {
-                  //     winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-                  //     return c(err)
-                  //   })
                 })
               }
             )
