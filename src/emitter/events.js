@@ -25,7 +25,9 @@ const socketEvents = require('../socketio/socketEventConsts')
 const notifications = require('../notifications') // Load Push Events
 const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 const settingSchema = require('../models/setting')
+const ticketSchema = require('../models/ticket')
 const templateSchema = require('../models/template')
+const logger = require('../logger')
 const eventTicketCreated = require('./events/event_ticket_created')
 
 
@@ -271,8 +273,21 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   const template = await templateSchema.findOne({ name: templateName })
                   if (template) {
                     const ticketJSON = ticket.toJSON()
+                    ticketJSON.status = ticket.statusFormatted
+                    ticketJSON.comments =  ticketJSON.comments.splice(-1)[0].comment
                     const context = { base_url: baseUrl, ticket: ticketJSON }
-                
+                    // email
+                  //   .render('ticket-comment-added', {
+                  //     ticket: ticket,
+                  //     comment: comment
+                  //   })
+                  //   .then(function (html) {
+                  //     const mailOptions = {
+                  //       to: emails.join(),
+                  //       subject: subjectParsed,
+                  //       html,
+                  //       generateTextFromHTML: true
+                  //     }
                     const html = await email.render(templateName, context)
                     const subjectParsed = global.Handlebars.compile(template.subject)(context)
                     const mailOptions = {
@@ -282,7 +297,7 @@ const eventTicketCreated = require('./events/event_ticket_created')
                       generateTextFromHTML: true
                     }
                 
-                    await Mailer.sendMail(mailOptions)
+                    await mailer.sendMail(mailOptions)
                 
                     logger.debug(`Sent [${emails.length}] emails.`)
                   }
@@ -314,40 +329,38 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   }
                 }
 
-
-
                 ticket.populate('comments.owner', function (err, ticket) {
                   if (err) winston.warn(err)
                   if (err) return c()
 
                   ticket = ticket.toJSON()
-                  ticket.comments = tail(ticket.comments)
+                  ticket.comments = ticket.comments.splice(-1)
                   configForSendMail(ticket,'comment-added')
-                  email
-                    .render('ticket-comment-added', {
-                      ticket: ticket,
-                      comment: comment
-                    })
-                    .then(function (html) {
-                      const mailOptions = {
-                        to: emails.join(),
-                        subject: subjectParsed,
-                        html,
-                        generateTextFromHTML: true
-                      }
+                  // email
+                  //   .render('ticket-comment-added', {
+                  //     ticket: ticket,
+                  //     comment: comment
+                  //   })
+                  //   .then(function (html) {
+                  //     const mailOptions = {
+                  //       to: emails.join(),
+                  //       subject: subjectParsed,
+                  //       html,
+                  //       generateTextFromHTML: true
+                  //     }
 
-                      mailer.sendMail(mailOptions, function (err) {
-                        if (err) winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
+                  //     mailer.sendMail(mailOptions, function (err) {
+                  //       if (err) winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
 
-                        winston.debug('Sent [' + emails.length + '] emails.')
-                      })
+                  //       winston.debug('Sent [' + emails.length + '] emails.')
+                  //     })
 
-                      return c()
-                    })
-                    .catch(function (err) {
-                      winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-                      return c(err)
-                    })
+                  //     return c()
+                  //   })
+                  //   .catch(function (err) {
+                  //     winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
+                  //     return c(err)
+                  //   })
                 })
               }
             )
