@@ -26,6 +26,7 @@ const notifications = require('../notifications') // Load Push Events
 const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 const settingSchema = require('../models/setting')
 const ticketSchema = require('../models/ticket')
+const userSchema = require('../models/user')
 const templateSchema = require('../models/template')
 const logger = require('../logger')
 const eventTicketCreated = require('./events/event_ticket_created')
@@ -270,9 +271,16 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   }
                 
                   const template = await templateSchema.findOne({ name: templateName })
+                 
                   if (template) {
+                    
                     const ticketJSON = ticket.toJSON()
                     ticketJSON.status = ticket.statusFormatted
+                    if (ticketJSON.assignee){
+                    const assignee = await userSchema.findOne({ _id: ticketJSON.assignee })
+                    ticketJSON.assignee = assignee.fullname
+                    }
+                    
                     const comment ={
                       text:  ticketJSON.comments.splice(-1)[0].comment.replace(/(<([^>]+)>)/gi, ""),
                       owner: ticketJSON.comments.splice(-1)[0].owner.fullname
