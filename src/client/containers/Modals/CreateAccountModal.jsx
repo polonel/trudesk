@@ -89,9 +89,9 @@ class CreateAccountModal extends React.Component {
     if (!phone) return false
     return phone
       .toString()
-      .toLowerCase()
+      .toLowerCase() 
       .match(
-        /^\+(\d{11})$/
+        /^\+(\d)$/
       )
   }
 
