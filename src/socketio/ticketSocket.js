@@ -98,7 +98,27 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
   const template = await templateSchema.findOne({ name: templateName })
   if (template) {
     const ticketJSON = ticket.toJSON()
+    ticketJSON.status = ticket.statusFormatted
+    switch ( ticketJSON.status) {
+      case 'New':
+        ticketJSON.status = 'Новая'
+        break
+      case 'Open':
+        ticketJSON.status = 'Открыта'
+        break
+      case 'Pending':
+        ticketJSON.status = 'В ожидании'
+        break
+      case 'Closed':
+        ticketJSON.status = 'Закрыта'
+        break
+    }
+    if (ticketJSON.assignee){
+      const assignee = await userSchema.findOne({ _id: ticketJSON.assignee })
+      ticketJSON.assignee = assignee.fullname
+      }
     const context = { base_url: baseUrl, ticket: ticketJSON }
+
 
     const html = await email.render(templateName, context)
     const subjectParsed = global.Handlebars.compile(template.subject)(context)
@@ -151,7 +171,7 @@ events.onUpdateTicketStatus = socket => {
       let ticket = await ticketSchema.getTicketById(ticketId)
       ticket = await ticket.setStatus(ownerId, status)
       ticket = await ticket.save()
-      configForSendMail(ticket, 'status-change')
+      configForSendMail(ticket, 'status-changed')
       // emitter.emit('ticket:updated', t)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
         tid: ticket._id,
