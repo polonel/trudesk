@@ -91,7 +91,7 @@ class CreateAccountModal extends React.Component {
       .toString()
       .toLowerCase() 
       .match(
-        /^\+(\d)$/
+        /^\+\d+$/
       )
   }
 

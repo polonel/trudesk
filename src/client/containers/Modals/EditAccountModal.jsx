@@ -113,9 +113,23 @@ class EditAccountModal extends React.Component {
 
     this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
   }
+  
+  _validatePhone (phone) {
+    if (!phone) return false
+    return phone
+      .toString()
+      .toLowerCase() 
+      .match(
+        /^\+\d+$/
+      )
+  }
 
   onSubmitSaveAccount (e) {
     e.preventDefault()
+    if (!this._validatePhone(this.phone) && this.phone !== '') {
+      helpers.UI.showSnackbar('Invalid Phone', true)
+      return
+    }
     if (!this.props.edit) return
     const data = {
       username: this.props.user.username,

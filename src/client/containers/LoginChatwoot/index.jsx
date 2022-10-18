@@ -107,7 +107,7 @@ class LoginChatwootContainer extends React.Component {
       .toString()
       .toLowerCase()
       .match(
-        /^\+(\d)$/
+        /^\+\d+$/
       )
   }
 
