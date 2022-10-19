@@ -274,9 +274,18 @@ function handleMessages(messages, done) {
 
           var comment = message.responseToComment
           var owner = user._id
+
           var resultTicketUID = comment.toLowerCase().match(/ticket \d+/);
           resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
           var ticketUID = resultTicketUID;
+
+          comment = comment.match(/```(.*?)```/gs);
+          if(comment){
+            comment = comment[0].replace(/```/gi, '');
+          } else {
+            comment = undefined;
+          }
+          
 
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, function (err, t) {
