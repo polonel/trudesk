@@ -18,6 +18,8 @@ const Imap = require('imap')
 const winston = require('../logger')
 const simpleParser = require('mailparser').simpleParser
 const cheerio = require('cheerio')
+const sanitizeHtml = require('sanitize-html')
+const xss = require('xss')
 
 const emitter = require('../emitter')
 const userSchema = require('../models/user')
@@ -126,13 +128,13 @@ mailCheck.refetch = function () {
   mailCheck.fetchMail()
 }
 
-function bindImapError () {
+function bindImapError() {
   mailCheck.Imap.on('error', function (err) {
     winston.error(err)
   })
 }
 
-function bindImapReady () {
+function bindImapReady() {
   try {
     mailCheck.Imap.on('end', function () {
       handleMessages(mailCheck.messages, function () {
@@ -191,6 +193,18 @@ function bindImapReady () {
                           message.subject = message.from
                         }
 
+                        if (mail?.inReplyTo) {
+                          message.responseToComment = mail.text
+                        } else {
+                          message.responseToComment = message.from
+                        }
+
+                        // if (mail.subject) {
+                        //   message.subject = mail.subject
+                        // } else {
+                        //   message.subject = message.from
+                        // }
+
                         if (_.isUndefined(mail.textAsHtml)) {
                           var $ = cheerio.load(mail.html)
                           var $body = $('body')
@@ -247,168 +261,232 @@ mailCheck.fetchMail = function () {
   }
 }
 
-function handleMessages (messages, done) {
+function handleMessages(messages, done) {
   var count = 0
   messages.forEach(function (message) {
-    if (
-      !_.isUndefined(message.from) &&
-      !_.isEmpty(message.from) &&
-      !_.isUndefined(message.subject) &&
-      !_.isEmpty(message.subject) &&
-      !_.isUndefined(message.body) &&
-      !_.isEmpty(message.body)
-    ) {
-      async.auto(
-        {
-          handleUser: function (callback) {
-            userSchema.getUserByEmail(message.from, function (err, user) {
-              if (err) winston.warn(err)
-              if (!err && user) {
-                message.owner = user
-                return callback(null, user)
-              }
+    //Если сообщение с почты это ответ то действует следующий код
+    if (!_.isUndefined(message.responseToComment) &&
+      !_.isEmpty(message.responseToComment)) {
 
-              // User doesn't exist. Lets create public user... If we want too
-              if (mailCheck.fetchMailOptions.createAccount) {
-                userSchema.createUserFromEmail(message.from, function (err, response) {
-                  if (err) return callback(err)
+      userSchema.getUserByEmail(message.from, function (err, user) {
+        if (err) winston.warn(err)
+        if (!err && user) {
 
-                  message.owner = response.user
-                  message.group = response.group
+          var comment = message.responseToComment
+          var owner = user._id
+          var resultTicketUID = comment.toLowerCase().match(/ticket \d+/);
+          resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
+          var ticketUID = resultTicketUID;
 
-                  return callback(null, response)
-                })
-              } else {
-                return callback('No User found.')
-              }
+          if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
+          Ticket.findOne({ uid: ticketUID }, function (err, t) {
+            if (err) return winston.warn('Invalid Post Data')
+
+            if (_.isUndefined(comment)) return winston.warn('Invalid Post Data')
+
+            var marked = require('marked')
+            marked.setOptions({
+              breaks: true
+
             })
-          },
-          handleGroup: [
-            'handleUser',
-            function (results, callback) {
-              if (!_.isUndefined(message.group)) {
-                return callback()
-              }
 
-              groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
-                if (err) return callback(err)
-                if (!group) return callback('Unknown group for user: ' + message.owner.email)
+            comment = sanitizeHtml(comment).trim()
+            var Comment = {
+              owner: owner,
+              date: new Date(),
+              comment: xss(marked.parse(comment))
+            }
 
-                if (_.isArray(group)) {
-                  message.group = _.first(group)
-                } else {
-                  message.group = group
+            t.updated = Date.now()
+            t.comments.push(Comment)
+            var HistoryItem = {
+              action: 'ticket:comment:added',
+              description: 'Comment was added',
+              owner: owner
+            }
+            t.history.push(HistoryItem)
+
+            t.save(function (err, tt) {
+              if (err) return winston.warn(err.message)
+
+              emitter.emit('ticket:comment:added', tt, Comment, 'trudesk-dev.shatura.pro')
+
+              return winston.warn({ success: true, error: null, ticket: tt })
+            })
+          })
+
+          return true
+        }
+      })
+
+
+    }
+
+    else {
+
+      if (
+        !_.isUndefined(message.from) &&
+        !_.isEmpty(message.from) &&
+        !_.isUndefined(message.subject) &&
+        !_.isEmpty(message.subject) &&
+        !_.isUndefined(message.body) &&
+        !_.isEmpty(message.body)
+      ) {
+        async.auto(
+          {
+            handleUser: function (callback) {
+              userSchema.getUserByEmail(message.from, function (err, user) {
+                if (err) winston.warn(err)
+                if (!err && user) {
+                  message.owner = user
+                  return callback(null, user)
                 }
 
-                if (!message.group) {
-                  groupSchema.create(
-                    {
-                      name: message.owner.email,
-                      members: [message.owner._id],
-                      sendMailTo: [message.owner._id],
-                      public: true
-                    },
-                    function (err, group) {
-                      if (err) return callback(err)
-                      message.group = group
-                      return callback(null, group)
-                    }
-                  )
-                } else {
-                  return callback(null, group)
-                }
-              })
-            }
-          ],
-          handleTicketType: function (callback) {
-            if (mailCheck.fetchMailOptions.defaultTicketType === 'Issue') {
-              ticketTypeSchema.getTypeByName('Issue', function (err, type) {
-                if (err) return callback(err)
+                // User doesn't exist. Lets create public user... If we want too
+                if (mailCheck.fetchMailOptions.createAccount) {
+                  userSchema.createUserFromEmail(message.from, function (err, response) {
+                    if (err) return callback(err)
 
-                mailCheck.fetchMailOptions.defaultTicketType = type._id
-                message.type = type
+                    message.owner = response.user
+                    message.group = response.group
 
-                return callback(null, type)
-              })
-            } else {
-              ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
-                if (err) return callback(err)
-
-                message.type = type
-
-                return callback(null, type)
-              })
-            }
-          },
-          handlePriority: [
-            'handleTicketType',
-            function (result, callback) {
-              var type = result.handleTicketType
-
-              if (mailCheck.fetchMailOptions.defaultPriority !== '') {
-                return callback(null, mailCheck.fetchMailOptions.defaultPriority)
-              }
-
-              var firstPriority = _.first(type.priorities)
-              if (!_.isUndefined(firstPriority)) {
-                mailCheck.fetchMailOptions.defaultPriority = firstPriority._id
-              } else {
-                return callback('Invalid default priority')
-              }
-
-              return callback(null, firstPriority._id)
-            }
-          ],
-          handleCreateTicket: [
-            'handleGroup',
-            'handlePriority',
-            function (results, callback) {
-              var HistoryItem = {
-                action: 'ticket:created',
-                description: 'Ticket was created.',
-                owner: message.owner._id
-              }
-
-              Ticket.create(
-                {
-                  owner: message.owner._id,
-                  group: message.group._id,
-                  type: message.type._id,
-                  status: 0,
-                  priority: results.handlePriority,
-                  subject: message.subject,
-                  issue: message.body,
-                  history: [HistoryItem]
-                },
-                function (err, ticket) {
-                  if (err) {
-                    winston.warn('Failed to create ticket from email: ' + err)
-                    return callback(err)
-                  }
-
-                  emitter.emit('ticket:created', {
-                    socketId: '',
-                    ticket: ticket
+                    return callback(null, response)
                   })
-
-                  count++
+                } else {
+                  return callback('No User found.')
+                }
+              })
+            },
+            handleGroup: [
+              'handleUser',
+              function (results, callback) {
+                if (!_.isUndefined(message.group)) {
                   return callback()
                 }
-              )
-            }
-          ]
-        },
-        function (err) {
-          winston.debug('Created %s tickets from mail', count)
-          if (err) winston.warn(err)
-          return done(err)
-        }
-      )
+
+                groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
+                  if (err) return callback(err)
+                  if (!group) return callback('Unknown group for user: ' + message.owner.email)
+
+                  if (_.isArray(group)) {
+                    message.group = _.first(group)
+                  } else {
+                    message.group = group
+                  }
+
+                  if (!message.group) {
+                    groupSchema.create(
+                      {
+                        name: message.owner.email,
+                        members: [message.owner._id],
+                        sendMailTo: [message.owner._id],
+                        public: true
+                      },
+                      function (err, group) {
+                        if (err) return callback(err)
+                        message.group = group
+                        return callback(null, group)
+                      }
+                    )
+                  } else {
+                    return callback(null, group)
+                  }
+                })
+              }
+            ],
+            handleTicketType: function (callback) {
+              if (mailCheck.fetchMailOptions.defaultTicketType === 'Issue') {
+                ticketTypeSchema.getTypeByName('Issue', function (err, type) {
+                  if (err) return callback(err)
+
+                  mailCheck.fetchMailOptions.defaultTicketType = type._id
+                  message.type = type
+
+                  return callback(null, type)
+                })
+              } else {
+                ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
+                  if (err) return callback(err)
+
+                  message.type = type
+
+                  return callback(null, type)
+                })
+              }
+            },
+            handlePriority: [
+              'handleTicketType',
+              function (result, callback) {
+                var type = result.handleTicketType
+
+                if (mailCheck.fetchMailOptions.defaultPriority !== '') {
+                  return callback(null, mailCheck.fetchMailOptions.defaultPriority)
+                }
+
+                var firstPriority = _.first(type.priorities)
+                if (!_.isUndefined(firstPriority)) {
+                  mailCheck.fetchMailOptions.defaultPriority = firstPriority._id
+                } else {
+                  return callback('Invalid default priority')
+                }
+
+                return callback(null, firstPriority._id)
+              }
+            ],
+            handleCreateTicket: [
+              'handleGroup',
+              'handlePriority',
+              function (results, callback) {
+                var HistoryItem = {
+                  action: 'ticket:created',
+                  description: 'Ticket was created.',
+                  owner: message.owner._id
+                }
+
+                Ticket.create(
+                  {
+                    owner: message.owner._id,
+                    group: message.group._id,
+                    type: message.type._id,
+                    status: 0,
+                    priority: results.handlePriority,
+                    subject: message.subject,
+                    issue: message.body,
+                    history: [HistoryItem]
+                  },
+                  function (err, ticket) {
+                    if (err) {
+                      winston.warn('Failed to create ticket from email: ' + err)
+                      return callback(err)
+                    }
+
+                    emitter.emit('ticket:created', {
+                      socketId: '',
+                      ticket: ticket
+                    })
+
+                    count++
+                    return callback()
+                  }
+                )
+              }
+            ]
+          },
+          function (err) {
+            winston.debug('Created %s tickets from mail', count)
+            if (err) winston.warn(err)
+            return done(err)
+          }
+        )
+
+      }
+
+
     }
   })
 }
 
-function openInbox (cb) {
+function openInbox(cb) {
   mailCheck.Imap.openBox('INBOX', cb)
 }
 module.exports = mailCheck

@@ -307,7 +307,7 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   try {
                     const ticket = await ticketSchema.getTicketById(ticketObject._id)
                     const settings = await settingSchema.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
-                
+                    const ticketJSON = ticket.toJSON()
                     const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
                     let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
                     mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
@@ -316,11 +316,12 @@ const eventTicketCreated = require('./events/event_ticket_created')
                 
                     //++ ShaturaPro LIN 14.10.2022
                     const emails = []
-                    if (ticket.owner.email && ticket.owner.email !== '') {
+                    if (ticket.owner.email && ticket.owner.email !== ''
+                    && ticketJSON.comments.splice(-1)[0].owner.email !==  ticket.owner.email) {
                       emails.push(ticket.owner.email)
                     }
                 
-                    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
+                    if (mailerEnabled && emails.length !== 0) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
                 
                   } catch (e) {
                     logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`)
