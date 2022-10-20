@@ -265,8 +265,8 @@ class SingleTicketContainer extends React.Component {
           return { text: group.get('name'), value: group.get('_id') }
         })
       : []
-
-    const mappedTypes = this.props.ticketTypes
+      
+      const mappedTypes = this.props.ticketTypes
       ? this.props.ticketTypes.map(type => {
           return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() }
         })
@@ -301,7 +301,7 @@ class SingleTicketContainer extends React.Component {
                     ticketId={this.ticket._id}
                     status={this.ticket.status}
                     socket={this.props.socket}
-                    onStatusChange={status => (this.ticket.status = status)}
+                    onStatusChange={status => {console.log("ticket Status changed"); (this.ticket.status = status)}}
                     hasPerm={hasTicketStatusUpdate()}
                   />
                 </div>

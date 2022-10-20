@@ -2,6 +2,7 @@ const User = require('./user')
 const Ticket = require('./ticket')
 const TicketType = require('./tickettype')
 const Priority = require('./ticketpriority')
+const Status = require('./ticketStatus')
 const TicketTags = require('./tag')
 const Role = require('./role')
 const Session = require('./session')
@@ -25,5 +26,6 @@ module.exports = {
   Team,
   Department,
   Message,
-  Conversation
+  Conversation,
+  Status
 }
