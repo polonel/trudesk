@@ -201,6 +201,44 @@ function removeAgentsFromGroups (callback) {
   })
 }
 
+function createTicketStatus (callback) {
+  const Status = require('../models/ticketStatus')
+  const counterSchema = require('../models/counters')
+       async.series([
+        function (next) {
+        Status.create([
+          {
+            name: 'New',
+            htmlColor: '#29b955',
+            uid: 0,
+            isLocked: true,
+          },
+          {
+            name: 'Open',
+            htmlColor: '#d32f2f',
+            uid: 1,
+            isLocked: true,
+          },
+          {
+            name: 'Pending',
+            htmlColor: '#2196F3',
+            uid: 2,
+            isLocked: true,
+          },
+          {
+            name: 'Closed',
+            htmlColor: '#CCCCCC',
+            uid: 3,
+            isLocked: true,
+          }], next ) 
+        },  function (next) {
+          counterSchema.setCounter('status', 4, next)
+        }
+       ], callback);
+  
+}
+
+
 migrations.run = function (callback) {
   var databaseVersion
 
@@ -233,6 +271,12 @@ migrations.run = function (callback) {
         } else {
           return next()
         }
+      },
+      function (next) {
+        if (semver.satisfies(semver.coerce(databaseVersion).version, '<1.2.7')) 
+          return createTicketStatus(next)  
+        
+        return next()
       }
     ],
     function (err) {
