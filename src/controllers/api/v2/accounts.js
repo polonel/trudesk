@@ -383,7 +383,7 @@ accountsApi.saveProfile = async (req, res) => {
     if (!dbUser) return apiUtil.sendApiError(res, 404, 'Invalid User Account')
 
     if (!_.isUndefined(payload.fullname) && !_.isNull(payload.fullname)) dbUser.fullname = payload.fullname
-    if (!_.isUndefined(payload.title) && !_.isNull(payload.title)) dbUser.workNumber = payload.title
+    if (!_.isUndefined(payload.title) && !_.isNull(payload.title)) dbUser.title = payload.title
     if (!_.isUndefined(payload.workNumber) && !_.isNull(payload.workNumber)) dbUser.workNumber = payload.workNumber
     if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber))
       dbUser.mobileNumber = payload.mobileNumber
