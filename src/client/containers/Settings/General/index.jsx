@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import moment from 'moment-timezone'
 import { updateSetting } from 'actions/settings'
+import { fetchGroups } from 'actions/groups'
 
 import SettingItem from 'components/Settings/SettingItem'
 
@@ -32,7 +33,9 @@ class GeneralSettings extends React.Component {
     super(props)
   }
 
-  componentDidMount () {}
+  componentDidMount () {
+    this.props.fetchGroups({ type: 'all' })
+  }
   componentWillUnmount () {}
 
   getSettingsValue (name) {
@@ -62,6 +65,10 @@ class GeneralSettings extends React.Component {
       })
   }
 
+  getGroups () {
+    return
+  }
+
   onTimezoneChange (e) {
     if (e.target.value) this.updateSetting('timezone', 'gen:timezone', e.target.value)
   }
@@ -79,6 +86,19 @@ class GeneralSettings extends React.Component {
 
     const SiteUrl = (
       <InputWithSave stateName='siteUrl' settingName='gen:siteurl' initialValue={this.getSettingsValue('siteUrl')} />
+    )
+
+    const DefaultGroup = (
+      <SingleSelect
+        stateName='defaultGroup'
+        settingName='gen:defaultGroup'
+        items={this.getTimezones()}
+        defaultValue={this.props.groups}
+        onSelectChange={e => {
+          this.onTimezoneChange(e)
+        }}
+        showTextbox={true}
+      />
     )
 
     const Timezone = (
@@ -113,6 +133,15 @@ class GeneralSettings extends React.Component {
             </div>
           }
           component={SiteUrl}
+        />
+        <SettingItem
+          title='Default Group'
+          subtitle={
+            <div>
+             Default group for users with unknown domain.
+            </div>
+          }
+          component={DefaultGroup}
         />
         <SettingItem
           title='Time Zone'
@@ -182,12 +211,15 @@ GeneralSettings.propTypes = {
   active: PropTypes.bool,
   updateSetting: PropTypes.func.isRequired,
   viewdata: PropTypes.object.isRequired,
-  settings: PropTypes.object.isRequired
+  settings: PropTypes.object.isRequired,
+  groups: PropTypes.object.isRequired,
+  fetchGroups: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   viewdata: state.common.viewdata,
-  settings: state.settings.settings
+  settings: state.settings.settings,
+  groups: state.groupsState.groups
 })
 
-export default connect(mapStateToProps, { updateSetting })(GeneralSettings)
+export default connect(mapStateToProps, { updateSetting, fetchGroups })(GeneralSettings)

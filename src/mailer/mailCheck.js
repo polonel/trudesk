@@ -195,9 +195,10 @@ function bindImapReady() {
 
                         if (mail?.inReplyTo) {
                           message.responseToComment = mail.text
-                        } else {
-                          message.responseToComment = message.from
-                        }
+                        } 
+                        // else {
+                        //   message.responseToComment = message.from
+                        // }
 
                         // if (mail.subject) {
                         //   message.subject = mail.subject

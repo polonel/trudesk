@@ -431,6 +431,15 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
+          viewdata.defaultGroup = res.data.settings.defaultGroup.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
           viewdata.ldapHost = res.data.settings.ldapHost.value
 
           return callback()
