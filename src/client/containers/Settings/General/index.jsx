@@ -75,7 +75,9 @@ class GeneralSettings extends React.Component {
 
   render () {
     const { active } = this.props
-
+    const groups = this.props.groups.map(group => {
+      return { text: group.name, value: group._id }
+    })
     const SiteTitle = (
       <InputWithSave
         stateName='siteTitle'
@@ -92,7 +94,7 @@ class GeneralSettings extends React.Component {
       <SingleSelect
         stateName='defaultGroup'
         settingName='gen:defaultGroup'
-        items={this.getTimezones()}
+        items={groups}
         defaultValue={this.getSettingsValue('defaultGroup')}
         onSelectChange={e => {
           this.onDefaultGroupChange(e)
