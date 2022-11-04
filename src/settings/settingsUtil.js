@@ -53,6 +53,7 @@ util.getSettings = async callback => {
 
         s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk')
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
+        s.defaultGroup = parseSetting(settings, 'gen:defaultGroup', '')
         s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York')
         s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma')
         s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY')

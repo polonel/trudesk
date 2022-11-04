@@ -34,7 +34,7 @@ class GeneralSettings extends React.Component {
   }
 
   componentDidMount () {
-    this.props.fetchGroups({ type: 'all' })
+   this.props.fetchGroups({ type: 'all' })
   }
   componentWillUnmount () {}
 
@@ -65,12 +65,12 @@ class GeneralSettings extends React.Component {
       })
   }
 
-  getGroups () {
-    return
-  }
-
   onTimezoneChange (e) {
     if (e.target.value) this.updateSetting('timezone', 'gen:timezone', e.target.value)
+  }
+
+  onDefaultGroupChange (e) {
+    if (e.target.value) this.updateSetting('defaultGroup', 'gen:defaultGroup', e.target.value)
   }
 
   render () {
@@ -93,9 +93,9 @@ class GeneralSettings extends React.Component {
         stateName='defaultGroup'
         settingName='gen:defaultGroup'
         items={this.getTimezones()}
-        defaultValue={this.props.groups}
+        defaultValue={this.getSettingsValue('defaultGroup')}
         onSelectChange={e => {
-          this.onTimezoneChange(e)
+          this.onDefaultGroupChange(e)
         }}
         showTextbox={true}
       />
@@ -134,7 +134,7 @@ class GeneralSettings extends React.Component {
           }
           component={SiteUrl}
         />
-        <SettingItem
+        {/* <SettingItem
           title='Default Group'
           subtitle={
             <div>
@@ -142,7 +142,7 @@ class GeneralSettings extends React.Component {
             </div>
           }
           component={DefaultGroup}
-        />
+        /> */}
         <SettingItem
           title='Time Zone'
           subtitle='Set the local timezone for date display'
