@@ -134,7 +134,7 @@ class GeneralSettings extends React.Component {
           }
           component={SiteUrl}
         />
-        {/* <SettingItem
+        <SettingItem
           title='Default Group'
           subtitle={
             <div>
@@ -142,7 +142,7 @@ class GeneralSettings extends React.Component {
             </div>
           }
           component={DefaultGroup}
-        /> */}
+        />
         <SettingItem
           title='Time Zone'
           subtitle='Set the local timezone for date display'
