@@ -75,9 +75,13 @@ class GeneralSettings extends React.Component {
 
   render () {
     const { active } = this.props
-    const groups = this.props.groups.map(group => {
-      return { text: group.name, value: group._id }
-    })
+    console.log('this.props.groups');
+    console.log(this.props.groups);
+    const groups = this.props.groups
+            .map(grp => {
+                return { text: grp.get('name'), value: grp.get('_id') }
+            })
+            .toArray()
     const SiteTitle = (
       <InputWithSave
         stateName='siteTitle'

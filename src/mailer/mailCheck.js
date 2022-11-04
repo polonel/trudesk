@@ -26,6 +26,7 @@ const userSchema = require('../models/user')
 const groupSchema = require('../models/group')
 const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
+const settingSchema = require('../models/ticket')
 
 const mailCheck = {}
 mailCheck.inbox = []
@@ -195,7 +196,7 @@ function bindImapReady() {
 
                         if (mail?.inReplyTo) {
                           message.responseToComment = mail.text
-                        } 
+                        }
                         // else {
                         //   message.responseToComment = message.from
                         // }
@@ -277,21 +278,21 @@ function handleMessages(messages, done) {
           var owner = user._id
 
           var resultTicketUID = comment.toLowerCase().match(/#\d+/);
-          if(resultTicketUID){
-          resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
+          if (resultTicketUID) {
+            resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
           } else {
             return winston.warn('Нет номера заявки')
           }
           var ticketUID = resultTicketUID;
 
           comment = comment.match(/(.*?)____________/gs);
-          if(comment){
+          if (comment) {
             comment = comment[0].replace(/____________/gi, '');
           } else {
             comment = undefined;
           }
-          
-          comment = comment.replace(comment.match(/\n.*\n$/)[0],'')
+
+          comment = comment.replace(comment.match(/\n.*\n$/)[0], '')
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, function (err, t) {
             if (err) return winston.warn('Invalid Post Data')
@@ -380,30 +381,59 @@ function handleMessages(messages, done) {
 
                 groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
                   if (err) return callback(err)
-                  if (!group) return callback('Unknown group for user: ' + message.owner.email)
-
-                  if (_.isArray(group)) {
-                    message.group = _.first(group)
+                  if (!group) {
+                    settingSchema.findOne({ name: 'gen:defaultGroup' }, function (err, setting) {
+                      groupSchema.findById(setting.value, function (err, group) {
+                        group.members.push(message.owner._id);
+                        group.save();
+                        if (_.isArray(group)) {
+                          message.group = _.first(group)
+                        } else {
+                          message.group = group
+                        }
+                        if (!message.group) {
+                          groupSchema.create(
+                            {
+                              name: message.owner.email,
+                              members: [message.owner._id],
+                              sendMailTo: [message.owner._id],
+                              public: true
+                            },
+                            function (err, group) {
+                              if (err) return callback(err)
+                              message.group = group
+                              return callback(null, group)
+                            }
+                          )
+                        } else {
+                          return callback(null, group)
+                        }
+                      })
+                    })
                   } else {
-                    message.group = group
-                  }
+                    if (_.isArray(group)) {
+                      message.group = _.first(group)
+                    } else {
+                      message.group = group
+                    }
 
-                  if (!message.group) {
-                    groupSchema.create(
-                      {
-                        name: message.owner.email,
-                        members: [message.owner._id],
-                        sendMailTo: [message.owner._id],
-                        public: true
-                      },
-                      function (err, group) {
-                        if (err) return callback(err)
-                        message.group = group
-                        return callback(null, group)
-                      }
-                    )
-                  } else {
-                    return callback(null, group)
+                    if (!message.group) {
+                      groupSchema.create(
+                        {
+                          name: message.owner.email,
+                          members: [message.owner._id],
+                          sendMailTo: [message.owner._id],
+                          public: true
+                        },
+                        function (err, group) {
+                          if (err) return callback(err)
+                          message.group = group
+                          return callback(null, group)
+                        }
+                      )
+                    } else {
+                      return callback(null, group)
+                    }
                   }
                 })
               }
