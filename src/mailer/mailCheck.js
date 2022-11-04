@@ -265,8 +265,8 @@ function handleMessages(messages, done) {
   var count = 0
   messages.forEach(function (message) {
     //Если сообщение с почты это ответ то действует следующий код
-    if (!_.isUndefined(message.responseToComment) &&
-      !_.isEmpty(message.responseToComment)) {
+    if (!_.isUndefined(message?.responseToComment) &&
+      !_.isEmpty(message?.responseToComment)) {
 
       userSchema.getUserByEmail(message.from, function (err, user) {
         if (err) winston.warn(err)
@@ -275,18 +275,22 @@ function handleMessages(messages, done) {
           var comment = message.responseToComment
           var owner = user._id
 
-          var resultTicketUID = comment.toLowerCase().match(/ticket \d+/);
+          var resultTicketUID = comment.toLowerCase().match(/#\d+/);
+          if(resultTicketUID){
           resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
+          } else {
+            return winston.warn('Нет номера заявки')
+          }
           var ticketUID = resultTicketUID;
 
-          comment = comment.match(/```(.*?)```/gs);
+          comment = comment.match(/(.*?)____________/gs);
           if(comment){
-            comment = comment[0].replace(/```/gi, '');
+            comment = comment[0].replace(/____________/gi, '');
           } else {
             comment = undefined;
           }
           
-
+          comment = comment.replace(comment.match(/\n.*\n$/)[0],'')
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, function (err, t) {
             if (err) return winston.warn('Invalid Post Data')
