@@ -291,10 +291,18 @@ function handleMessages(messages, done) {
           } else {
             comment = undefined;
           }
-
+          if (comment.match(/\n.*\n$/)) {
             comment = comment.replace(comment.match(/\n.*\n$/)[0], '')
-     
-          
+          }
+          if (comment.match(/\n.*\n>$/)) {
+            comment = comment.replace(comment.match(/\n.*\n>$/)[0], '')
+          }
+          if (comment.match(/\n.*\n> $/)) {
+            comment = comment.replace(comment.match(/\n.*\n*> $/)[0], '')
+          }
+
+
+
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, function (err, t) {
             if (err) return winston.warn('Invalid Post Data')
@@ -475,7 +483,7 @@ function handleMessages(messages, done) {
                   {
                     owner: message.owner._id,
                     group: message.group._id,
-                    subscribers:  message.owner._id,
+                    subscribers: message.owner._id,
                     type: message.type._id,
                     status: 0,
                     priority: results.handlePriority,
