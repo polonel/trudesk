@@ -292,7 +292,7 @@ function handleMessages(messages, done) {
             comment = undefined;
           }
 
-            comment = comment.replace(comment.match(/\n.*\n*$/)[0], '')
+            comment = comment.replace(comment.match(/\n.*\n$/)[0], '')
      
           
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
