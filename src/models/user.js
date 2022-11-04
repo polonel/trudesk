@@ -611,12 +611,22 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
         // Если уже существует группа с данным доменом, то добавить туда пользователя
         mongoose.model('groups').findOne({ domainName: email.split('@')[1] }, function (err, group) {
           if (err) return callback(err);
-          if (group == null) return callback('The group with this domain does not exist. Link the domain to the group');
+          if (group == null) {
+           mongoose.model('settings').findOne({ name: 'gen:defaultGroup' }, function (err, setting) {
+              mongoose.model('groups').findById(setting.value, function (err, group) {
+                if (err) return callback(err)
+                group.members.push(user._id);
+                group.save();
+                return callback(null, {user:user, group:group})
+              })
+            })
+          } else {
           group.addMember(user._id, function (err, user) {
             if (err) return callback(err);
             group.save();//Сохранение добавления члена группы
             return callback(`The user has been added to the group ${group.name}`);
           })
+        }
         })
       })
       //-- ShaturaPRO LIN 

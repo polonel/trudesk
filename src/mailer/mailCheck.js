@@ -26,7 +26,7 @@ const userSchema = require('../models/user')
 const groupSchema = require('../models/group')
 const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
-const settingSchema = require('../models/ticket')
+const settingSchema = require('../models/setting')
 
 const mailCheck = {}
 mailCheck.inbox = []
@@ -381,33 +381,15 @@ function handleMessages(messages, done) {
 
                 groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
                   if (err) return callback(err)
-                  if (!group) {
+                  if (!group || group.length == 0) {
                     settingSchema.findOne({ name: 'gen:defaultGroup' }, function (err, setting) {
                       groupSchema.findById(setting.value, function (err, group) {
+                        if (err) return callback(err)
                         group.members.push(message.owner._id);
                         group.save();
-                        if (_.isArray(group)) {
-                          message.group = _.first(group)
-                        } else {
-                          message.group = group
-                        }
-                        if (!message.group) {
-                          groupSchema.create(
-                            {
-                              name: message.owner.email,
-                              members: [message.owner._id],
-                              sendMailTo: [message.owner._id],
-                              public: true
-                            },
-                            function (err, group) {
-                              if (err) return callback(err)
-                              message.group = group
-                              return callback(null, group)
-                            }
-                          )
-                        } else {
-                          return callback(null, group)
-                        }
+                        message.group = group
+                        return callback(null, group)
+
                       })
                     })
                   } else {
