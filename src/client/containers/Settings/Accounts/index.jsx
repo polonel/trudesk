@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings, fetchRoles } from 'actions/settings'
 import { fetchLDAPGroups } from 'actions/ldapGroups'
+import { fetchSettings } from 'actions/settings'
 // import { fetchRoles } from 'actions/common'
 // import settingUtil from '../../../../settings/settingsUtil'
 
@@ -42,6 +43,8 @@ class AccountsSettingsContainer extends React.Component {
   @observable passwordComplexityEnabled = false
   @observable allowUserRegistrationEnabled = false
   @observable ldapEnabled = false
+  @observable siteURL = ''
+  
   ldapGroupsArray = []
   // @observable LDAPSettings = false
 
@@ -138,7 +141,7 @@ class AccountsSettingsContainer extends React.Component {
   getLDAPGroups() {
   
     let ldapGArray = [];
-    axios.get('https://trudesk-dev.shatura.pro/api/v2/ldapGroups').then(res => {
+    axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
     }).catch(err=>{console.log(err)})
  
@@ -198,7 +201,7 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
-      window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
+      window.location.href = `${this.siteURL}/settings/accounts`;
       window.location.reload(true)
   }
 
@@ -217,11 +220,12 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
-    window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
+    window.location.href = `${this.siteURL}/settings/accounts`;
   }
 
 
   render() {
+    this.siteURL = this.getSetting('siteurl');
     const ldapGArray = this.getLDAPGroups();
     const rolesName = this.getRoles();
     const ElementArray = ({ role }) => {
@@ -391,4 +395,4 @@ const mapStateToProps = state => ({
   ldapGroups: state.shared.ldapGroups
 })
 
-export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles, fetchLDAPGroups })(AccountsSettingsContainer)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles, fetchLDAPGroups,fetchSettings })(AccountsSettingsContainer)

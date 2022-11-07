@@ -94,6 +94,7 @@ const showPriorityConfirm = () => {
 class SingleTicketContainer extends React.Component {
   @observable ticket = null
   @observable isSubscribed = false
+  @observable siteURL = ''
   assigneeDropdownPartial = createRef()
 
   constructor(props) {
@@ -237,10 +238,9 @@ class SingleTicketContainer extends React.Component {
 
   sendNotificationMail(){
     axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
-      console.log(JSON.stringify(response.data));
       let account;
       account = response.data.user;
-      let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`;
+      let ticketSubject = `${this.siteURL}/tickets/${this.ticket.uid}`;
       let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
       contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
       contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
@@ -268,7 +268,7 @@ class SingleTicketContainer extends React.Component {
         console.log(JSON.stringify(response.data));
         let account;
         account = response.data.user;
-        let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${this.ticket.uid}`;
+        let ticketSubject = `${this.siteURL}/tickets/${this.ticket.uid}`;
         let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
         contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
         contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
@@ -351,7 +351,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   render() {
-
+    this.siteURL = this.getSetting('siteurl');
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
         return { text: group.get('name'), value: group.get('_id') }
