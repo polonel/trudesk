@@ -23,6 +23,7 @@ import { createAccount, fetchAccounts, saveEditAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles, showModal } from 'actions/common'
+import { fetchSettings } from 'actions/settings'
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
 import Button from 'components/Button'
@@ -69,25 +70,33 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
     // this.props.fetchTeams()
     // this.props.fetchRoles()
     // this.props.fetchAccounts()
+    this.props.fetchSettings()
     helpers.UI.inputs()
     helpers.formvalidator()
   }
 
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
+
   render() {
+    const siteURL = this.getSetting('siteUrl');
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
-         <div className=" uk-text-center" style={{ 'padding-top': '10px' }}>
+        <div className=" uk-text-center" style={{ 'padding-top': '10px' }}>
           <h2>Select an action
-        </h2></div>
+          </h2></div>
         <div style={{ margin: ' 0px 25px 0px' }}>
           <div className='uk-modal-footer uk-text-center'>
-          <a class={'md-btn'} style={{ fontSize: '20px', margin: '20px 5 0 5px','margin-right':'50px', color:'white','background-color':'#7cb342' }} href={`https://trudesk-dev.shatura.pro/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}&fullname=${this.fullname}`}>
+            <a class={'md-btn'} style={{ fontSize: '20px', margin: '20px 5 0 5px', 'margin-right': '50px', color: 'white', 'background-color': '#7cb342' }} href={`${siteURL}/loginChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}&fullname=${this.fullname}`}>
               Create User
             </a>
-           <a class={'md-btn'} style={{ fontSize: '20px', margin: '5px 5 0 20px', 'margin-left':'50px', color: 'white','background-color':'#1976d2' }} href={`https://trudesk-dev.shatura.pro/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
+            <a class={'md-btn'} style={{ fontSize: '20px', margin: '5px 5 0 20px', 'margin-left': '50px', color: 'white', 'background-color': '#1976d2' }} href={`${siteURL}/mappingChatwoot?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
               User Mapping
             </a>
-          </div> 
+          </div>
         </div>
       </BaseModal>
 
@@ -117,6 +126,7 @@ const mapStateToProps = state => ({
   groups: state.groupsState.groups,
   teams: state.teamsState.teams,
   accountsState: state.accountsState,
+  settings: state.settings.settings
 })
 
 export default connect(mapStateToProps, {
@@ -128,5 +138,6 @@ export default connect(mapStateToProps, {
   fetchRoles,
   fetchAccounts,
   saveEditAccount,
-  showModal
+  showModal,
+  fetchSettings
 })(ChangeMappingOrCreateModalContainer)

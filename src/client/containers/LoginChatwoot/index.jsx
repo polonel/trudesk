@@ -23,6 +23,7 @@ import { createAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
+import { fetchSettings } from 'actions/settings'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
@@ -68,7 +69,7 @@ class LoginChatwootContainer extends React.Component {
     this.props.fetchGroups({ type: 'all' })
     this.props.fetchTeams()
     this.props.fetchRoles()
-
+    this.props.fetchSettings()
     helpers.UI.inputs()
     helpers.formvalidator()
   }
@@ -111,6 +112,11 @@ class LoginChatwootContainer extends React.Component {
       )
   }
 
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+        ? this.props.settings.getIn(['settings', stateName, 'value'])
+        : ''
+}
 
   onFormSubmit(e) {
     e.preventDefault()
@@ -188,6 +194,8 @@ class LoginChatwootContainer extends React.Component {
   }
 
   render() {
+
+    const siteURL = this.getSetting('siteUrl');
 
     const roles = this.props.roles
       .map(role => {
@@ -368,7 +376,7 @@ class LoginChatwootContainer extends React.Component {
             )}
             <div className='uk-modal-footer uk-text-right'>
               <button class="uk-clearfix md-btn md-btn-flat  md-btn-wave waves-effect waves-button" type="button">
-                <a class="uk-float-left uk-width-1-1 uk-text-center" href={`https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
+                <a class="uk-float-left uk-width-1-1 uk-text-center" href={`${siteURL}/changeMappingOrCreate?username=${this.username}&phone=${this.phone}&email=${this.email}&contactID=${this.contactID}&accountID=${this.accountID}&customAttributes=${this.customAttributes}`}>
                   Close
                 </a>
               </button>
@@ -400,7 +408,8 @@ const mapStateToProps = state => ({
   common: state.common,
   groups: state.groupsState.groups,
   teams: state.teamsState.teams,
-  sessionUser: state.shared.sessionUser
+  sessionUser: state.shared.sessionUser,
+  settings: state.settings.settings
 })
 
 export default connect(mapStateToProps, {
@@ -409,5 +418,6 @@ export default connect(mapStateToProps, {
   unloadGroups,
   fetchTeams,
   unloadTeams,
-  fetchRoles
+  fetchRoles,
+  fetchSettings
 })(LoginChatwootContainer)
