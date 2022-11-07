@@ -54,7 +54,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable clientName = ''
     @observable agentName = ''
     @observable ActiveUnloadingTheDialog = false
-
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -173,13 +172,15 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.chatwootConversationID = this.conversationID;
         data.chatwootAccountID = this.accountID;
 
+        const siteURL = this.getSetting('siteUrl')
+
         axios.post('/api/v1/tickets/create', data).then(res => {
             let ticketUID = res.data.ticket.uid
-            let ticketSubject = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
+            let ticketSubject = `${siteURL}/tickets/${ticketUID}`
             if (ticketUID) {
                 this.sendNotification(ticketSubject);
             }
-            location.href = `https://trudesk-dev.shatura.pro/tickets/${ticketUID}`
+            location.href = `${siteURL}/tickets/${ticketUID}`
         })
     }
 

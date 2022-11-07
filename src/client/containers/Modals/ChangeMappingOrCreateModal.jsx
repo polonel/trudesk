@@ -82,7 +82,7 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
   }
 
   render() {
-    const siteURL = this.getSetting('siteUrl');
+    const siteURL = this.getSetting('siteurl');
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
         <div className=" uk-text-center" style={{ 'padding-top': '10px' }}>
