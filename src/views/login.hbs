@@ -217,34 +217,30 @@
 </div>
 
 <script type="text/javascript">
-    window.truRequire(['jquery', 'helpers'], function(loadedModules) {
+
+ window.truRequire(['jquery', 'helpers'], function(loadedModules) {
         var $ = loadedModules[0];
         var helpers = loadedModules[1];
         helpers.UI.inputs();
         helpers.UI.waves();
-
         $('#loginForm').submit(function(e) {
             var u = $('#login-username').val();
             var p = $('#login-password').val();
             if (u.length < 4 || p.length < 4)
                 e.preventDefault();
         });
-
         $('#forgotPass').click(function(e) {
             e.preventDefault();
             $('.loginForm').fadeOut(100, function() {
                 $('.forgotPassForm').fadeIn();
             });
-
         });
-
         $('#backToLogin').click(function(e) {
             e.preventDefault();
             $('.forgotPassForm').fadeOut(100, function() {
                 $('.loginForm').fadeIn();
             })
         });
-
         $('#forgotPassForm').submit(function(e) {
             e.preventDefault();
             var self = $(this);
@@ -259,29 +255,23 @@
                             .addClass('green')
                             .find('p')
                             .html('Password Reset Email Sent!');
-
                     $('#forgotPass-email').val('');
-
                     $('.forgotPassForm').fadeOut(100, function() {
                         $('.loginForm').fadeIn();
                     })
                 },
-
                 error: function(xhr, ajaxOptions, thrownError) {
                     alertMessage.removeClass('hide')
                             .find('p')
                             .html(xhr.responseText);
                 }
             });
-
             return false;
         });
-
         $(document).ready(function() {
             if (screen.width <= 800) {
                 document.location = '/mobile';
             }
-
             setTimeout(function() {
                 $('#login-username').focus();
             }, 700);

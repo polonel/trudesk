@@ -315,6 +315,12 @@ class Sidebar extends React.Component {
                     href='/settings/mailer'
                     active={activeSubItem === 'settings-mailer'}
                   />
+                   <SubmenuItem
+                    text='Chatwoot'
+                    icon='gavel'
+                    href='/settings/chatwoot'
+                    active={activeSubItem === 'settings-chatwoot'}
+                  />
                   <SubmenuItem
                     href={'/settings/elasticsearch'}
                     text={'Elasticsearch'}

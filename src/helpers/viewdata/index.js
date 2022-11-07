@@ -395,7 +395,43 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
+          viewdata.chatwootSettings= res.data.settings.chatwootSettings.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.chatwootMessageTemplate= res.data.settings.chatwootMessageTemplate.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.chatwootStatusChangeMessageTemplate= res.data.settings.chatwootStatusChangeMessageTemplate.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
           viewdata.ldapSettings = res.data.settings.ldapSettings.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.defaultGroup = res.data.settings.defaultGroup.value
 
           return callback()
         })
@@ -418,6 +454,7 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
+     
       function (callback) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)

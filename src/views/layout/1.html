@@ -1,0 +1,38 @@
+<script type="text/javascript">
+
+    
+    window.truRequire(['jquery', 'helpers'], function(loadedModules) {
+        var $ = loadedModules[0];
+        var helpers = loadedModules[1];
+        var alertMessage = $('.alert-message');
+        helpers.UI.inputs();
+        helpers.UI.waves();
+
+         window.addEventListener("message", function (event) {
+            console.log("Запрос от chatwoot");  
+            const eventData = JSON.parse(event.data);
+         $.ajax({
+                type: 'POST',
+                url: '/loginChatwoot',
+                data: eventData.data.contact,
+                async: true,
+                success: function(data) {
+                    alertMessage.removeClass('hide')
+                            .addClass('green')
+                            .find('p')
+                            .html('Connection to Chatwoot is successful');
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alertMessage.removeClass('hide')
+                            .find('p')
+                            .html(xhr.responseText);
+                }
+            });
+        });
+    })
+
+    if (screen.width <= 800) {
+        document.location = '/mobile';
+    }
+    
+</script>

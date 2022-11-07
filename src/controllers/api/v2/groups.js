@@ -29,16 +29,6 @@ apiGroups.create = async function (req, res) {
   Group.create(postGroup, function (err, group) {
     if (err) apiUtils.sendApiError(res, 500, err.message)
     else addDomain(group, res);
-    //++ ShaturaPro LIN 10.08.2022
-    
-
-    // if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-    // group.populate('members sendMailTo', function (err, group) {
-    //   if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-    //   return apiUtils.sendApiSuccess(res, { group: group })
-    // })
   })
 }
 

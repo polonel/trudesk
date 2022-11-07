@@ -110,7 +110,6 @@ class CreateGroupModal extends React.Component {
     }
 
     if (!this._validateSite(this.site)) {
-      console.log('Не валидно')
       helpers.UI.showSnackbar('Invalid Website', true)
       return
     }

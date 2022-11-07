@@ -30,6 +30,7 @@ import ElasticsearchSettingsContainer from './Elasticsearch'
 // import TPSSettingsContainer from './TPS'
 import BackupRestoreSettingsContainer from './BackupRestore'
 import ServerSettingsController from './Server'
+import ChatwootSettingsController from 'containers/Settings/Chatwoot'
 import LegalSettingsContainer from 'containers/Settings/Legal'
 
 import helpers from 'lib/helpers'
@@ -125,6 +126,13 @@ class SettingsContainer extends React.Component {
                   this.onMenuItemClick(e, 'mailer')
                 }}
               />
+                <MenuItem
+                title='Chatwoot'
+                active={this.state.activeCategory === 'settings-chatwoot'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'chatwoot')
+                }}
+              />
               <MenuItem
                 title={'Elasticsearch'}
                 active={this.state.activeCategory === 'settings-elasticsearch'}
@@ -169,6 +177,7 @@ class SettingsContainer extends React.Component {
               <PermissionsSettingsContainer active={this.state.activeCategory === 'settings-permissions'} />
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
               <MailerSettingsContainer active={this.state.activeCategory === 'settings-mailer'} />
+              <ChatwootSettingsController active={this.state.activeCategory === 'settings-chatwoot'} />
               <ElasticsearchSettingsContainer active={this.state.activeCategory === 'settings-elasticsearch'} />
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
               <ServerSettingsController active={this.state.activeCategory === 'settings-server'} />

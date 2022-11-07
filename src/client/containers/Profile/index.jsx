@@ -7,6 +7,7 @@ import axios from 'axios'
 
 import { saveProfile, genMFA } from 'actions/accounts'
 import { showModal, hideModal, setSessionUser } from 'actions/common'
+import { fetchSettings } from 'actions/settings'
 
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
@@ -38,6 +39,7 @@ class ProfileContainer extends React.Component {
   @observable facebookUrl = null
   @observable linkedinUrl = null
   @observable twitterUrl = null
+  @observable chatwootApiKey = null
 
   // Security
   // -- Password
@@ -51,13 +53,16 @@ class ProfileContainer extends React.Component {
   @observable l2ShowCantSeeQR = null
   @observable l2VerifyText = null
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     makeObservable(this)
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidMount() {
+    this.props.fetchSettings()
+  }
+  componentDidUpdate(prevProps, prevState, snapshot) {
     // This should load initial state values
     if (prevProps.sessionUser === null && this.props.sessionUser !== null) {
       this.fullname = this.props.sessionUser.fullname
@@ -69,10 +74,18 @@ class ProfileContainer extends React.Component {
       this.facebookUrl = this.props.sessionUser.facebookUrl
       this.linkedinUrl = this.props.sessionUser.linkedinUrl
       this.twitterUrl = this.props.sessionUser.twitterUrl
+      if (this.getSetting('chatwootSettings')) {
+        this.chatwootApiKey = this.props.sessionUser.chatwootApiKey
+      }
     }
   }
 
-  _validateEmail (email) {
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
+  _validateEmail(email) {
     if (!email) return false
     return email
       .toString()
@@ -106,7 +119,8 @@ class ProfileContainer extends React.Component {
         companyName: this.companyName,
         facebookUrl: this.facebookUrl,
         linkedinUrl: this.linkedinUrl,
-        twitterUrl: this.twitterUrl
+        twitterUrl: this.twitterUrl,
+        chatwootApiKey: this.chatwootApiKey
       })
       .then(() => {
         this.editingProfile = false
@@ -126,7 +140,7 @@ class ProfileContainer extends React.Component {
       helpers.UI.showSnackbar('Password length is too short', true)
       return
     }
-    
+
     if (this.currentPassword.length > 255 || this.newPassword.length > 255 || this.confirmPassword.length > 255) {
       helpers.UI.showSnackbar('Password length is too long', true)
       return
@@ -204,15 +218,30 @@ class ProfileContainer extends React.Component {
     this.props.showModal('PASSWORD_PROMPT', { user: this.props.sessionUser, onVerifyComplete })
   }
 
-  render () {
-    // return (
-    //   <div>
-    //     <PageTitle title={'Dashboard'} />
-    //     <PageContent>
-    //       <RGrid />
-    //     </PageContent>
-    //   </div>
-    // )
+  render() {
+
+   const ChatwootBlock = ()=>{
+    if(this.getSetting('chatwootSettings')){
+      return(
+          <div>
+          <h4 style={{ marginBottom: 15 }}>Chatwoot</h4>
+          <div style={{ display: 'flex', marginTop: 25 }}>
+            <InfoItem
+              label={'Api Key'}
+              prop={this.props.sessionUser.chatwootApiKey}
+              paddingLeft={0}
+              paddingRight={30}
+              onUpdate={val => (this.chatwootApiKey = val)}
+            />
+          </div>
+        </div>
+      )
+    } else {
+      return (<div></div>)
+    }
+    }
+
+
     if (!this.props.sessionUser) return <div />
 
     const InfoItem = ({ label, prop, paddingLeft, paddingRight, isRequired, onUpdate }) => {
@@ -381,6 +410,10 @@ class ProfileContainer extends React.Component {
                           onUpdate={val => (this.twitterUrl = val)}
                         />
                       </div>
+                      <Spacer top={25} bottom={25} showBorder={true} />
+                      
+                      <ChatwootBlock/>
+
                       {this.editingProfile && (
                         <div className={'uk-display-flex uk-margin-large-top'}>
                           <Button
@@ -587,12 +620,14 @@ ProfileContainer.propTypes = {
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   saveProfile: PropTypes.func.isRequired,
-  genMFA: PropTypes.func.isRequired
+  genMFA: PropTypes.func.isRequired,
+  settings: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
   sessionUser: state.shared.sessionUser,
-  socket: state.shared.socket
+  socket: state.shared.socket,
+  settings: state.settings.settings
 })
 
-export default connect(mapStateToProps, { showModal, hideModal, saveProfile, setSessionUser, genMFA })(ProfileContainer)
+export default connect(mapStateToProps, { showModal, hideModal, saveProfile, setSessionUser, genMFA, fetchSettings })(ProfileContainer)

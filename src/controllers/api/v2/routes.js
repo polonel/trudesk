@@ -25,13 +25,16 @@ module.exports = function (middleware, router, controllers) {
   // Common
   router.get('/api/v2/login', apiv2Auth, apiv2.accounts.sessionUser)
   router.post('/api/v2/login', controllers.api.v2.common.login)
+  router.post('/api/v2/loginChatwoot', controllers.api.v2.common.loginChatwoot)
   router.post('/api/v2/token', controllers.api.v2.common.token)
   router.get('/api/v2/viewdata', middleware.loadCommonData, controllers.api.v2.common.viewData)
   router.post('/api/v2/loginLDAP', controllers.api.v2.common.loginLDAP) //++ ShaturaPro LIN 24.08.2022
   router.post('/api/v2/pushLDAPGroup', controllers.api.v2.common.pushLDAPGroup) //++ ShaturaPro LIN 24.08.2022
+  
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
+  // router.post('/api/v2/accountsFromChatwoot', apiv2Auth, apiv2.accounts.create)
   router.put('/api/v2/accounts/profile', apiv2Auth, csrfCheck, apiv2.accounts.saveProfile)
   router.post('/api/v2/accounts/profile/mfa', apiv2Auth, csrfCheck, apiv2.accounts.generateMFA)
   router.post('/api/v2/accounts/profile/mfa/verify', apiv2Auth, csrfCheck, apiv2.accounts.verifyMFA)

@@ -94,7 +94,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
     email = new Email({
       render: (view, locals) => {
         return new Promise((resolve, reject) => {
-          ;(async () => {
+          ; (async () => {
             try {
               if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
               const template = await Template.findOne({ name: view })
@@ -123,6 +123,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
   const template = await Template.findOne({ name: 'new-ticket' })
   if (template) {
     const ticketJSON = ticket.toJSON()
+
     const context = { base_url: baseUrl, ticket: ticketJSON }
 
     const html = await email.render('new-ticket', context)
@@ -189,7 +190,12 @@ module.exports = async data => {
     let betaEnabled = head(filter(settings, ['name', 'beta:email']))
     betaEnabled = !betaEnabled ? false : betaEnabled.value
 
-    const [emails] = await Promise.all([parseMemberEmails(ticket)])
+    //++ ShaturaPro LIN 14.10.2022
+    //const [emails] = await Promise.all([parseMemberEmails(ticket)])
+    const emails = []
+    if (ticket.owner.email && ticket.owner.email !== '') {
+      emails.push(ticket.owner.email)
+    }
 
     if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled)
     if (ticket.group.public) await createPublicNotification(ticket)

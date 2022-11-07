@@ -38,9 +38,20 @@ var allMods = {
   },
   uikit: function () {
     return require('uikit')
-  }
+  },
+  redux: function () {
+    return require('redux')
+  },
+  LoginChatwootContainer: function () {
+    return require('../../client/containers/LoginChatwoot')
+  },
+  reactRedux: function () {
+    return require('react-redux')
+  },
+  actionChatwoot: function () {
+    return require('actions/chatwootData')
+  },
 }
-
 module.exports = function (modules, cb) {
   var loadedModules = modules.map(function (x) {
     return allMods[x]()

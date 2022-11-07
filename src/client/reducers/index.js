@@ -13,7 +13,6 @@
  */
 
 import { combineReducers } from 'redux'
-
 import shared from './shared'
 import common from './shared/common'
 import modal from './shared/modalReducer'
@@ -25,6 +24,7 @@ import tagsSettings from './tagsReducer'
 import accountsState from './accountsReducer'
 import groupsState from './groupsReducer'
 import ldapGroupsState from './ldapGroupsReducer'
+import chatwootDataState from './chatwootDataReducer'
 import teamsState from './teamsReducer'
 import departmentsState from './departmentsReducer'
 import noticesState from './noticesReducer'
@@ -58,6 +58,7 @@ const IndexReducer = combineReducers({
   accountsState,
   groupsState,
   ldapGroupsState,
+  chatwootDataState,
   teamsState,
   departmentsState,
   noticesState,

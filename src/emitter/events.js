@@ -23,8 +23,14 @@ const Email = require('email-templates')
 const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 const socketEvents = require('../socketio/socketEventConsts')
 const notifications = require('../notifications') // Load Push Events
-
+const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
+const settingSchema = require('../models/setting')
+const ticketSchema = require('../models/ticket')
+const userSchema = require('../models/user')
+const templateSchema = require('../models/template')
+const logger = require('../logger')
 const eventTicketCreated = require('./events/event_ticket_created')
+
 
 ;(function () {
   notifications.init(emitter)
@@ -232,46 +238,103 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   return c()
                 }
 
-                const email = new Email({
-                  views: {
-                    root: templateDir,
-                    options: {
-                      extension: 'handlebars'
-                    }
+                const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
+                  let email = null
+                  if (betaEnabled) {
+                    email = new Email({
+                      render: (view, locals) => {
+                        return new Promise((resolve, reject) => {
+                          ; (async () => {
+                            try {
+                              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+                              const template = await templateSchema.findOne({ name: view })
+                              if (!template) return reject(new Error('Invalid Template'))
+                              const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+                              const results = await email.juiceResources(html)
+                              return resolve(results)
+                            } catch (e) {
+                              return reject(e)
+                            }
+                          })()
+                        })
+                      }
+                    })
+                  } else {
+                    email = new Email({
+                      views: {
+                        root: templateDir,
+                        options: {
+                          extension: 'handlebars'
+                        }
+                      }
+                    })
                   }
-                })
+                
+                  const template = await templateSchema.findOne({ name: templateName })
+                 
+                  if (template) {
+                    
+                    const ticketJSON = ticket.toJSON()
+                    ticketJSON.status = ticket.statusFormatted
+                    if (ticketJSON.assignee){
+                    const assignee = await userSchema.findOne({ _id: ticketJSON.assignee })
+                    ticketJSON.assignee = assignee.fullname
+                    }
+                    
+                    const comment ={
+                      text:  ticketJSON.comments.splice(-1)[0].comment.replace(/(<([^>]+)>)/gi, ""),
+                      owner: ticketJSON.comments.splice(-1)[0].owner.fullname
+                    }
+                    const context = { base_url: baseUrl, ticket: ticketJSON, comment: comment }
+
+                    const html = await email.render(templateName, context)
+                    const subjectParsed = global.Handlebars.compile(template.subject)(context)
+                    const mailOptions = {
+                      to: emails.join(),
+                      subject: subjectParsed,
+                      html,
+                      generateTextFromHTML: true
+                    }
+                
+                    await mailer.sendMail(mailOptions)
+                
+                    logger.debug(`Sent [${emails.length}] emails.`)
+                  }
+                }
+
+                const configForSendMail = async (ticket,templateName) =>{
+                  const ticketObject = ticket
+                  try {
+                    const ticket = await ticketSchema.getTicketById(ticketObject._id)
+                    const settings = await settingSchema.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
+                    const ticketJSON = ticket.toJSON()
+                    const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
+                    let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
+                    mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
+                    let betaEnabled = head(filter(settings, ['name', 'beta:email']))
+                    betaEnabled = !betaEnabled ? false : betaEnabled.value
+                
+                    //++ ShaturaPro LIN 14.10.2022
+                    const emails = []
+                    if (ticket.owner.email && ticket.owner.email !== ''
+                    && ticketJSON.comments.splice(-1)[0].owner.email !==  ticket.owner.email) {
+                      emails.push(ticket.owner.email)
+                    }
+                
+                    if (mailerEnabled && emails.length !== 0) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
+                
+                  } catch (e) {
+                    logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`)
+                  }
+                }
 
                 ticket.populate('comments.owner', function (err, ticket) {
                   if (err) winston.warn(err)
                   if (err) return c()
 
                   ticket = ticket.toJSON()
-
-                  email
-                    .render('ticket-comment-added', {
-                      ticket: ticket,
-                      comment: comment
-                    })
-                    .then(function (html) {
-                      const mailOptions = {
-                        to: emails.join(),
-                        subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
-                        html: html,
-                        generateTextFromHTML: true
-                      }
-
-                      mailer.sendMail(mailOptions, function (err) {
-                        if (err) winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-
-                        winston.debug('Sent [' + emails.length + '] emails.')
-                      })
-
-                      return c()
-                    })
-                    .catch(function (err) {
-                      winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-                      return c(err)
-                    })
+                  ticket.comments = ticket.comments.splice(-1)
+                  configForSendMail(ticket,'comment-added')
                 })
               }
             )
@@ -292,6 +355,13 @@ const eventTicketCreated = require('./events/event_ticket_created')
   emitter.on('trudesk:profileImageUpdate', function (data) {
     io.sockets.emit('trudesk:profileImageUpdate', data)
   })
+
+  emitter.on('message', function (event) {
+    console.log("Запрос от chatwoot");  
+    const eventData = JSON.parse(event.data);
+    window.location = "https://trudesk-dev.shatura.pro/loginChatwoot"
+    })
+  
 
   emitter.on(socketEvents.ROLES_FLUSH, function () {
     require('../permissions').register(function () {

@@ -18,6 +18,7 @@ var marked = require('marked')
 var sanitizeHtml = require('sanitize-html')
 var utils = require('../helpers/utils')
 var emitter = require('../emitter')
+var logger = require('../logger')
 var socketEvents = require('./socketEventConsts')
 var ticketSchema = require('../models/ticket')
 var prioritySchema = require('../models/ticketpriority')
@@ -25,7 +26,14 @@ var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
 var permissions = require('../permissions')
 var xss = require('xss')
-
+var { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
+var settingSchema = require('../models/setting')
+var templateSchema = require('../models/template')
+// /home/ilobanov/trudesk-dev/src/mailer/templates
+var path = require('path')
+var templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
+var Email = require('email-templates')
+var Mailer = require('../mailer')
 var events = {}
 
 function register (socket) {
@@ -54,6 +62,105 @@ events.onUpdateTicketGrid = function (socket) {
   })
 }
 
+
+const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
+  let email = null
+  if (betaEnabled) {
+    email = new Email({
+      render: (view, locals) => {
+        return new Promise((resolve, reject) => {
+          ; (async () => {
+            try {
+              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+              const template = await templateSchema.findOne({ name: view })
+              if (!template) return reject(new Error('Invalid Template'))
+              const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+              const results = await email.juiceResources(html)
+              return resolve(results)
+            } catch (e) {
+              return reject(e)
+            }
+          })()
+        })
+      }
+    })
+  } else {
+    email = new Email({
+      views: {
+        root: templateDir,
+        options: {
+          extension: 'handlebars'
+        }
+      }
+    })
+  }
+
+  const template = await templateSchema.findOne({ name: templateName })
+  if (template) {
+    const ticketJSON = ticket.toJSON()
+    ticketJSON.status = ticket.statusFormatted
+    switch ( ticketJSON.status) {
+      case 'New':
+        ticketJSON.status = 'Новая'
+        break
+      case 'Open':
+        ticketJSON.status = 'Открыта'
+        break
+      case 'Pending':
+        ticketJSON.status = 'В ожидании'
+        break
+      case 'Closed':
+        ticketJSON.status = 'Закрыта'
+        break
+    }
+    if (ticketJSON.assignee){
+      const assignee = await userSchema.findOne({ _id: ticketJSON.assignee })
+      ticketJSON.assignee = assignee.fullname
+      }
+    const context = { base_url: baseUrl, ticket: ticketJSON }
+
+
+    const html = await email.render(templateName, context)
+    const subjectParsed = global.Handlebars.compile(template.subject)(context)
+    const mailOptions = {
+      to: emails.join(),
+      subject: subjectParsed,
+      html,
+      generateTextFromHTML: true
+    }
+
+    await Mailer.sendMail(mailOptions)
+
+    logger.debug(`Sent [${emails.length}] emails.`)
+  }
+}
+
+const configForSendMail = async (ticket,templateName) =>{
+  const ticketObject = ticket
+  try {
+    const ticket = await ticketSchema.getTicketById(ticketObject._id)
+    const settings = await settingSchema.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
+
+    const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
+    let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
+    mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
+    let betaEnabled = head(filter(settings, ['name', 'beta:email']))
+    betaEnabled = !betaEnabled ? false : betaEnabled.value
+
+    //++ ShaturaPro LIN 14.10.2022
+    //const [emails] = await Promise.all([parseMemberEmails(ticket)])
+    const emails = []
+    if (ticket.owner.email && ticket.owner.email !== '') {
+      emails.push(ticket.owner.email)
+    }
+
+    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
+
+  } catch (e) {
+    logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`)
+  }
+}
+
 events.onUpdateTicketStatus = socket => {
   socket.on(socketEvents.TICKETS_STATUS_SET, async data => {
     const ticketId = data._id
@@ -64,13 +171,15 @@ events.onUpdateTicketStatus = socket => {
       let ticket = await ticketSchema.getTicketById(ticketId)
       ticket = await ticket.setStatus(ownerId, status)
       ticket = await ticket.save()
-
+      configForSendMail(ticket, 'status-changed')
       // emitter.emit('ticket:updated', t)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
         tid: ticket._id,
         owner: ticket.owner,
         status: status
       })
+
+
     } catch (e) {
       // Blank
     }
@@ -81,7 +190,7 @@ events.onUpdateTicket = function (socket) {
   socket.on(socketEvents.TICKETS_UPDATE, async data => {
     try {
       const ticket = await ticketSchema.getTicketById(data._id)
-
+      configForSendMail(ticket, 'comment-added')
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
     } catch (error) {
       // Blank
@@ -342,7 +451,7 @@ events.onCommentNoteSet = socket => {
       if (!isNote) ticket = await ticket.updateComment(ownerId, itemId, markedText)
       else ticket = await ticket.updateNote(ownerId, itemId, markedText)
       ticket = await ticket.save()
-
+      configForSendMail(ticket)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
     } catch (e) {
       winston.error(e)

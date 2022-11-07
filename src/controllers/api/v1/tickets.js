@@ -23,14 +23,14 @@ var sanitizeHtml = require('sanitize-html')
 
 var apiTickets = {}
 
-function buildGraphData (arr, days, callback) {
+function buildGraphData(arr, days, callback) {
   var graphData = []
   var today = moment()
     .hour(23)
     .minute(59)
     .second(59)
   var timespanArray = []
-  for (var i = days; i--; ) {
+  for (var i = days; i--;) {
     timespanArray.push(i)
   }
 
@@ -43,10 +43,10 @@ function buildGraphData (arr, days, callback) {
       return (
         v.date <= d.toDate() &&
         v.date >=
-          d
-            .clone()
-            .subtract(1, 'd')
-            .toDate()
+        d
+          .clone()
+          .subtract(1, 'd')
+          .toDate()
       )
     })
 
@@ -62,7 +62,7 @@ function buildGraphData (arr, days, callback) {
   return graphData
 }
 
-function buildAvgResponse (ticketArray, callback) {
+function buildAvgResponse(ticketArray, callback) {
   var cbObj = {}
   var $ticketAvg = []
   _.each(ticketArray, function (ticket) {
@@ -434,7 +434,8 @@ apiTickets.create = function (req, res) {
         var HistoryItem = {
           action: 'ticket:created',
           description: 'Ticket was created.',
-          owner: req.user._id
+          owner: req.body.owner,
+          assignee: req.body.assignee
         }
 
         var TicketSchema = require('../../../models/ticket')
@@ -447,13 +448,45 @@ apiTickets.create = function (req, res) {
 
         ticket.subject = sanitizeHtml(ticket.subject).trim()
 
+        if (req.body.comment) {
+          var HistoryItemComment = {
+            action: 'ticket:comment:added',
+            description: 'Comment was added',
+            owner:  req.body.owner
+          }
+
+          let Comment = {
+            owner: req.body.owner,
+            date: new Date(),
+            comment: req.body.comment
+          }
+          ticket.comments = [Comment]
+        }
+
+        if (req.body.chatwootAccountID){
+          ticket.chatwootAccountID = req.body.chatwootAccountID;
+        }
+
+        if (req.body.chatwootConversationID){
+          ticket.chatwootConversationID = req.body.chatwootConversationID;
+        }
+        
+
         var marked = require('marked')
         var tIssue = ticket.issue
         tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
         tIssue = sanitizeHtml(tIssue).trim()
+
         ticket.issue = xss(marked.parse(tIssue))
-        ticket.history = [HistoryItem]
+        if (req.body.comment) {
+          ticket.history = [HistoryItem, HistoryItemComment]
+        } else {
+          ticket.history = [HistoryItem]
+        }
         ticket.subscribers = [user._id]
+        if (req.body.owner.email || req.body.owner.email !==''){
+          ticket.subscribers.push(req.body.owner)
+        }
 
         ticket.save(function (err, t) {
           if (err) return done({ status: 400, error: err })
@@ -469,6 +502,7 @@ apiTickets.create = function (req, res) {
 
             response.ticket = tt
             res.json(response)
+
           })
         })
       }
@@ -957,6 +991,7 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
+      
       emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
 
       return res.json({ success: true, error: null, ticket: tt })
@@ -1472,7 +1507,7 @@ apiTickets.getTicketStats = function (req, res) {
   // return res.send(obj);
 }
 
-function parseTicketStats (role, tickets, callback) {
+function parseTicketStats(role, tickets, callback) {
   if (_.isEmpty(tickets)) return callback({ tickets: tickets, tags: {} })
   var t = []
   var tags = {}

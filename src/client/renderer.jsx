@@ -23,6 +23,11 @@ import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
 import AccountsImportContainer from 'containers/Accounts/AccountsImport'
 import GroupsContainer from 'containers/Groups'
+import LoginChatwootContainer from 'containers/LoginChatwoot' //ShaturaPro LIN
+// import MappingChatwootPhoneContainer from 'containers/MappingChatwootPhone' //ShaturaPro LIN
+import MappingChatwootContainer from 'containers/Modals/MappingChatwootModal' //ShaturaPro LIN
+import ChangeMappingOrCreateModalContainer from 'containers/Modals/ChangeMappingOrCreateModal'
+import CreateTicketFromChatwootModalContainer from 'containers/Modals/CreateTicketFromChatwootModal'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 import NoticeContainer from 'containers/Notice/NoticeContainer'
@@ -76,7 +81,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(ProfileContainerWithProvider, document.getElementById('profile-container'))
+    ReactDOM.render(ProfileContainerWithProvider, document.getElementById('profile-container')) 
   }
 
   if (document.getElementById('accounts-container')) {
@@ -109,6 +114,80 @@ export default function (store) {
     )
 
     ReactDOM.render(GroupsContainerWithProvider, document.getElementById('groups-container'))
+  }
+
+  if (document.getElementById('loginChatwoot-container')) {
+    const username = document.getElementById('loginChatwoot-container').getAttribute('data-username')
+    const fullname = document.getElementById('loginChatwoot-container').getAttribute('data-fullname')
+    const phone = document.getElementById('loginChatwoot-container').getAttribute('data-phone')
+    const email = document.getElementById('loginChatwoot-container').getAttribute('data-email')
+    const contactID = document.getElementById('loginChatwoot-container').getAttribute('data-contactID')
+    const accountID = document.getElementById('loginChatwoot-container').getAttribute('data-accountID')
+    const customAttributes = document.getElementById('loginChatwoot-container').getAttribute('data-customAttributes')
+    const LoginChatwootContainerWithProvider = (
+      <Provider store={store}>
+        <LoginChatwootContainer username={username} phone={phone} email={email} 
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes} fullname={fullname}/>
+      </Provider>
+    )
+
+    ReactDOM.render(LoginChatwootContainerWithProvider, document.getElementById('loginChatwoot-container'))
+  }
+
+  if (document.getElementById('mappingChatwoot-container')) {
+    const username = document.getElementById('mappingChatwoot-container').getAttribute('data-username')
+    const phone = document.getElementById('mappingChatwoot-container').getAttribute('data-phone')
+    const email = document.getElementById('mappingChatwoot-container').getAttribute('data-email')
+    const contactID = document.getElementById('mappingChatwoot-container').getAttribute('data-contactID')
+    const accountID = document.getElementById('mappingChatwoot-container').getAttribute('data-accountID')
+    const customAttributes = document.getElementById('mappingChatwoot-container').getAttribute('data-customAttributes')
+    const page = document.getElementById('mappingChatwoot-container').getAttribute('data-page')
+    
+    const MappingChatwootContainerWithProvider = (
+      <Provider store={store}>
+        <MappingChatwootContainer username={username} phone={phone} email={email} 
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes}
+        page={page} />
+      </Provider>
+    )
+
+    ReactDOM.render(MappingChatwootContainerWithProvider, document.getElementById('mappingChatwoot-container'))
+  }
+
+  if (document.getElementById('changeMappingOrCreate-container')) {
+    const username = document.getElementById('changeMappingOrCreate-container').getAttribute('data-username')
+    const fullname = document.getElementById('changeMappingOrCreate-container').getAttribute('data-fullname')
+    const phone = document.getElementById('changeMappingOrCreate-container').getAttribute('data-phone')
+    const email = document.getElementById('changeMappingOrCreate-container').getAttribute('data-email')
+    const contactID = document.getElementById('changeMappingOrCreate-container').getAttribute('data-contactID')
+    const accountID = document.getElementById('changeMappingOrCreate-container').getAttribute('data-accountID')
+    const customAttributes = document.getElementById('changeMappingOrCreate-container').getAttribute('data-customAttributes')
+
+    const ChangeMappingOrCreateModalContainerWithProvider = (
+      <Provider store={store}>
+        <ChangeMappingOrCreateModalContainer username={username} phone={phone} email={email} 
+        contactID={contactID} accountID={accountID} customAttributes={customAttributes} fullname={fullname} />
+      </Provider>
+    )
+
+    ReactDOM.render(ChangeMappingOrCreateModalContainerWithProvider, document.getElementById('changeMappingOrCreate-container'))
+  }
+
+  if (document.getElementById('createTicketFromChatwoot-container')) {
+    const user = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-user')
+    const group = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-group')
+    const conversationID = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-conversationID')
+    const accountID = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-accountID')
+    const contactName = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-contactName')
+    const phoneNumber = document.getElementById('createTicketFromChatwoot-container').getAttribute('data-phoneNumber')
+    const CreateTicketFromChatwootModalContainerWithProvider = (
+      <Provider store={store}>
+        <CreateTicketFromChatwootModalContainer user={user} group={group} 
+        conversationID={conversationID} accountID={accountID} contactName={contactName} phoneNumber={phoneNumber}/>
+      </Provider>
+    )
+
+    ReactDOM.render(CreateTicketFromChatwootModalContainerWithProvider, document.getElementById('createTicketFromChatwoot-container'))
   }
 
   if (document.getElementById('teams-container')) {

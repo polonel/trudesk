@@ -19,7 +19,11 @@ const passport = require('passport')
 const winston = require('winston')
 const pkg = require('../../package')
 const xss = require('xss')
-const ldap = require('ldapjs');
+const ldap = require('ldapjs')
+const User = require('../models/user')
+const Group = require('../models/group')
+const Setting = require('../models/setting')
+// const action = require('../client/actions/common')
 
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
 
@@ -61,7 +65,109 @@ mainController.index = function (req, res) {
     content.bottom = 'Trudesk v' + pkg.version
 
     res.render('login', content)
+
   })
+}
+
+mainController.loginChatwootPost = function (req, res) {
+
+  const content = {}
+  content.title = "LoginChatwoot"
+  content.data = {}
+  content.data.username = req.body.name
+  content.data.phone = req.body.phone_number
+  content.data.email = req.body.email
+
+  return res.render('loginChatwoot', content)
+}
+
+mainController.mappingChatwoot = function (req, res) {
+
+  const content = {}
+  content.username = req.query.username;
+  content.phone = req.query.phone;
+  content.email = req.query.email;
+  content.accountID = req.query.accountID;
+  content.contactID = req.query.contactID;
+  content.view = 'admin'
+  return res.render('mappingChatwoot', content)
+}
+
+mainController.changeMappingOrCreate = function (req, res) {
+
+  Setting.findOne({ name: "chatwootSettings:enable" }, function (err, setting) {
+    if (err) return res.render('error', {
+      layout: false,
+      error: err,
+      message: err.message
+    })
+
+    let chatwootSetting = setting.value;
+
+    if (chatwootSetting) {
+      const content = {}
+      content.username = req.query.username;
+      content.phone = req.query.phone.replace(' ', '+');
+      content.email = req.query.email;
+      content.contactID = req.query.contactID;
+      content.accountID = req.query.accountID;
+      content.customAttributes = req.query.customAttributes;
+      content.conversationID = req.query.conversationID;
+      content.contactName = req.query.contactName;
+
+      User.findOne({ phone: content.phone }, function (err, user) {
+        if (err) return res.render('error', {
+          layout: false,
+          error: err,
+          message: err.message
+        })
+
+        if (user) {
+          if (user.email !== content.email) {
+            return res.render('changeMappingOrCreate', content)
+          }
+          else {
+            const data = {}
+            data.conversationID = content.conversationID;
+            data.accountID = content.accountID
+            data.user = user._id;
+            data.contactName = content.contactName;
+            data.phoneNumber = content.phone;
+            Group.findOne({ members: user._id }, function (err, group) {
+              if (err) return res.render('error', {
+                layout: false,
+                error: err,
+                message: err.message
+              })
+              data.group = group?._id
+              return res.render('createTicketFromChatwoot', data)
+            })
+
+          }
+        }
+        else {
+          return res.render('changeMappingOrCreate', content)
+        }
+      })
+    } else {
+      return res.render('integrationIsDisabled', { layout: false })
+    }
+  })
+}
+
+mainController.loginChatwoot = function (req, res) {
+
+  const content = {}
+  content.username = req.query.username;
+  content.fullname = req.query.fullname;
+  content.phone = req.query.phone.replace(' ', '+');
+  content.email = req.query.email;
+  content.contactID = req.query.contactID;
+  content.accountID = req.query.accountID;
+  content.customAttributes = req.query.customAttributes;
+
+  return res.render('loginChatwoot', content);
+
 }
 
 mainController.about = function (req, res) {
@@ -121,42 +227,43 @@ mainController.loginPost = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-    if( req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1]=='shatura.pro'){
-    passport.authenticate('ldapauth', async function (request, user, err, status) {
-      if (err) {
-        if (err.message != 'Invalid username/password') {
-          winston.error(err)
-          return next(err)
-        }
-      }
-
-      if (!user) {
-        mainController.loginLocal(req, res, next)
-      }
-
-      if (user) {
-        let redirectUrl = '/dashboard'
-        if (req.session.redirectUrl) {
-          redirectUrl = req.session.redirectUrl
-          req.session.redirectUrl = null
-        }
-
-        req.logIn(user, function (err) {
-          if (err) {
-            winston.debug(err)
+    if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
+      passport.authenticate('ldapauth', async function (request, user, err, status) {
+        if (err) {
+          if (err.message != 'Invalid username/password') {
+            winston.error(err)
             return next(err)
           }
+        }
 
-          return res.redirect(redirectUrl)
-        })
+        if (!user) {
+          mainController.loginLocal(req, res, next)
+        }
 
-      }
-    })(req, res, next)
+        if (user) {
+          let redirectUrl = '/dashboard'
+          if (req.session.redirectUrl) {
+            redirectUrl = req.session.redirectUrl
+            req.session.redirectUrl = null
+          }
 
-  } else {
-    mainController.loginLocal(req, res, next);
+          req.logIn(user, function (err) {
+            if (err) {
+              winston.debug(err)
+              return next(err)
+            }
+
+            return res.redirect(redirectUrl)
+          })
+
+        }
+      })(req, res, next)
+
+    } else {
+      mainController.loginLocal(req, res, next);
+    }
   }
-}}
+}
 
 mainController.loginLocal = async function (req, res, next) {
 
@@ -173,42 +280,42 @@ mainController.loginLocal = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-  passport.authenticate('local', async function (err, user) {
-    if (err) {
-      winston.error(err)
-      return next(err)
-    }
-    if (!user) {
-      try {
-        await limiterSlowBruteByIP.consume(ipAddress)
-        return res.redirect('/')
-      } catch (rlRejected) {
-        if (rlRejected instanceof Error) throw rlRejected
-        else {
-          const timeout = String(Math.round(rlRejected.msBeforeNext / 1000)) || 1
-          res.set('Retry-After', timeout)
-          res.status(429).render('429', { timeout, layout: false })
+    passport.authenticate('local', async function (err, user) {
+      if (err) {
+        winston.error(err)
+        return next(err)
+      }
+      if (!user) {
+        try {
+          await limiterSlowBruteByIP.consume(ipAddress)
+          return res.redirect('/')
+        } catch (rlRejected) {
+          if (rlRejected instanceof Error) throw rlRejected
+          else {
+            const timeout = String(Math.round(rlRejected.msBeforeNext / 1000)) || 1
+            res.set('Retry-After', timeout)
+            res.status(429).render('429', { timeout, layout: false })
+          }
         }
       }
-    }
-    if (user) {
+      if (user) {
 
-      let redirectUrl = '/dashboard'
+        let redirectUrl = '/dashboard'
 
-      if (req.session.redirectUrl) {
-        redirectUrl = req.session.redirectUrl
-        req.session.redirectUrl = null
-      }
-      req.logIn(user, function (err) {
-        if (err) {
-          winston.debug(err)
-          return next(err)
+        if (req.session.redirectUrl) {
+          redirectUrl = req.session.redirectUrl
+          req.session.redirectUrl = null
         }
-        return res.redirect(redirectUrl)
-      })
-    }
-  })(req, res, next)
-}
+        req.logIn(user, function (err) {
+          if (err) {
+            winston.debug(err)
+            return next(err)
+          }
+          return res.redirect(redirectUrl)
+        })
+      }
+    })(req, res, next)
+  }
 }
 
 

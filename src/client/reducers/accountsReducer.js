@@ -16,9 +16,12 @@ import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 import {
   CREATE_ACCOUNT,
+  CREATE_ACCOUNTFROMCHATWOOT,
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FIND_ACCOUNTS,
+  CLEARSTATE_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
@@ -44,8 +47,38 @@ const reducer = handleActions(
 
     [FETCH_ACCOUNTS.SUCCESS]: (state, action) => {
       const arr = state.accounts.toArray()
+
+      const arrToCheck = state.accounts
+      .map(user => {
+        return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
+      })
+      .toArray()
+
       action.payload.response.accounts.forEach(i => {
-        arr.push(i)
+        let resultArr =[];
+        resultArr = arrToCheck.filter((user)=> user.value == i._id);
+        if (resultArr.length == 0) arr.push(i)
+      })
+
+      return {
+        ...state,
+        accounts: fromJS(arr),
+        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers',
+        loading: false
+      }
+    },
+
+    [FIND_ACCOUNTS.PENDING]: state => {
+      return {
+        ...state,
+        loading: true
+      }
+    },
+
+    [FIND_ACCOUNTS.SUCCESS]: (state, action) => {
+      const arr = state.accounts.toArray()
+      action.payload.response.accounts.forEach(i => {
+         arr.push(i)
       })
       return {
         ...state,
@@ -54,6 +87,24 @@ const reducer = handleActions(
         loading: false
       }
     },
+
+    [CLEARSTATE_ACCOUNTS.PENDING]: state => {
+      return {
+        ...state,
+        loading: true
+      }
+    },
+
+    [CLEARSTATE_ACCOUNTS.SUCCESS]: (state, action) => {
+      const arr = []
+      return {
+        ...state,
+        accounts: fromJS(arr),
+        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers',
+        loading: false
+      }
+    },
+
 
     [FETCH_ACCOUNTS_CREATE_TICKET.PENDING]: state => {
       return {
@@ -75,6 +126,21 @@ const reducer = handleActions(
     },
 
     [CREATE_ACCOUNT.SUCCESS]: (state, action) => {
+      const resAccount = action.response.account
+
+      if (!resAccount.role.isAgent && !resAccount.role.isAdmin && state.type !== 'customers') return { ...state }
+      if (resAccount.role.isAgent || (resAccount.role.isAdmin && state.type === 'customers')) return { ...state }
+      if (resAccount.role.isAdmin && !resAccount.role.isAgent && state.type === 'agents') return { ...state }
+      if (resAccount.role.isAgent && !resAccount.role.isAdmin && state.type === 'admins') return { ...state }
+
+      const insertedAccount = state.accounts.push(fromJS(resAccount))
+      return {
+        ...state,
+        accounts: insertedAccount.sortBy(account => account.get('fullname'))
+      }
+    },
+
+    [CREATE_ACCOUNTFROMCHATWOOT.SUCCESS]: (state, action) => {
       const resAccount = action.response.account
 
       if (!resAccount.role.isAgent && !resAccount.role.isAdmin && state.type !== 'customers') return { ...state }

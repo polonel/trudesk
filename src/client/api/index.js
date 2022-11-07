@@ -175,8 +175,15 @@ api.tickets.fetchTicketTypes = () => {
 }
 
 api.accounts = {}
+
 api.accounts.create = payload => {
   return axios.post('/api/v2/accounts', payload).then(res => {
+    return res.data
+  })
+}
+
+api.accounts.createFromChatwoot = payload => {
+  return axios.post('/api/v2/loginChatwoot', payload).then(res => {
     return res.data
   })
 }

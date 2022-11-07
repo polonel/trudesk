@@ -162,6 +162,14 @@ settingsController.legal = function (req, res) {
   renderView(res, content)
 }
 
+settingsController.chatwoot = function (req, res) {
+  if (!checkPerms(req, 'settings:chatwoot')) return res.redirect('/settings')
+
+  const content = initViewContent('chatwoot', req)
+
+  renderView(res, content)
+}
+
 settingsController.logs = function (req, res) {
   if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings')
 

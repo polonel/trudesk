@@ -77,13 +77,13 @@ class AccountsSettingsContainer extends React.Component {
         this.allowUserRegistrationEnabled = this.getSetting('allowUserRegistration')
       if (this.ldapEnabled !== this.getSetting('ldapSettings'))
         this.ldapEnabled = this.getSetting('ldapSettings')
-      if (this.state.ldapHost !== this.getSetting('ldapHost'))
+      if (this.state.ldapHost !== this.getSetting('ldapHost') && this.getSetting('ldapHost') !== true)
         this.state.ldapHost = this.getSetting('ldapHost')
-      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN'))
+      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !==true)
         this.state.ldapBindDN = this.getSetting('ldapBindDN')
-      if (this.state.ldapPassword !== this.getSetting('ldapPassword'))
+      if (this.state.ldapPassword !== this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== true)
         this.state.ldapPassword = this.getSetting('ldapPassword')
-      if (this.state.ldapUsername !== this.getSetting('ldapUsername'))
+      if (this.state.ldapUsername !== this.getSetting('ldapUsername') && this.getSetting('ldapUsername') !== true)
         this.state.ldapUsername = this.getSetting('ldapUsername')
     }
   }
@@ -126,32 +126,25 @@ class AccountsSettingsContainer extends React.Component {
 
   getRoles() {
     let rolesArray =this.props.roles;
-    console.log(rolesArray);
     rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
-    console.log(rolesArray);
     rolesArray = JSON.stringify(rolesArray);
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
     for (let i = 0; i < rolesArray.length; i++) {
       rolesName.push({name:rolesArray[i]['name'], _id:rolesArray[i]['_id'], ldapGroupID:rolesArray[i]['ldapGroupID']});
     }
-    console.log(rolesName);
     return rolesName;
   }
   getLDAPGroups() {
   
     let ldapGArray = [];
-    axios.get('http://trudesk-dev.shatura.pro:8118/api/v2/ldapGroups').then(res => {
+    axios.get('https://trudesk-dev.shatura.pro/api/v2/ldapGroups').then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
-      console.log ('this.ldapGroupsArray: ')
-      console.log ( this.ldapGroupsArray)
     }).catch(err=>{console.log(err)})
-
+ 
      for (let i = 0; i <  this.ldapGroupsArray.length; i++) {
       ldapGArray.push( {text: this.ldapGroupsArray[i]['name'],value: this.ldapGroupsArray[i]['_id']});
     }
-
-    console.log(ldapGArray);
     return ldapGArray;
   }
 
@@ -174,7 +167,6 @@ class AccountsSettingsContainer extends React.Component {
     
   }
   addToMap(e,role,ldapGroupID){
-    console.log(role);
     const roles = this.getRoles();
     let roleExist = false;
       for(let map of this.state.mapping){
@@ -187,19 +179,6 @@ class AccountsSettingsContainer extends React.Component {
       if (roleExist == false){
         this.state.mapping.push({roleID: role._id, ldapGroupID: ldapGroupID})
       }
-  
-    console.log(this.state.mapping)
-    // axios
-    //   .put(`/api/v2/ldapGroups/updateMapping`, {
-    //     role: role._id, ldapGroupID: ldapGroupID
-    //   })
-    //   .then(function (res) {
-    //     if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-    //   })
-    //   .catch(function (err) {
-    //     Log.error(err)
-    //     helpers.UI.showSnackbar(err, true)
-    //   })
     
   }
 
@@ -219,6 +198,8 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
+      window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
+      window.location.reload(true)
   }
 
 
@@ -236,9 +217,8 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
-    window.location.reload(true)
+    window.location.href = 'https://trudesk-dev.shatura.pro/settings/accounts';
   }
-
 
 
   render() {

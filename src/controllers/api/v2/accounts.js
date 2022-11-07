@@ -137,11 +137,13 @@ accountsApi.get = function (req, res) {
   const type = query.type || 'customers'
   const limit = query.limit ? Number(query.limit) : 25
   const page = query.page ? Number(query.page) : 0
+  const search = query.search || ''
 
   const obj = {
     limit: limit === -1 ? 999999 : limit,
     page: page,
-    showDeleted: query.showDeleted && query.showDeleted === 'true'
+    showDeleted: query.showDeleted && query.showDeleted === 'true',
+    search:search
   }
 
   switch (type) {
@@ -271,21 +273,21 @@ accountsApi.update = async function (req, res) {
     if (!user) throw new Error('Invalid User')
 
     postData._id = user._id.toString()
-    if (
-      !_.isUndefined(postData.password) &&
-      !_.isEmpty(postData.password) &&
-      !_.isUndefined(postData.passwordConfirm) &&
-      !_.isEmpty(postData.passwordConfirm)
-    ) {
-      if (postData.password === postData.passwordConfirm) {
-        if (passwordComplexityEnabled) {
-          if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
-        }
+    // if (
+    //   !_.isUndefined(postData.password) &&
+    //   !_.isEmpty(postData.password) &&
+    //   !_.isUndefined(postData.passwordConfirm) &&
+    //   !_.isEmpty(postData.passwordConfirm)
+    // ) {
+    //   if (postData.password === postData.passwordConfirm) {
+    //     if (passwordComplexityEnabled) {
+    //       if (!passwordComplexity.validate(postData.password)) throw new Error('Password does not meet requirements')
+    //     }
 
-        user.password = postData.password
-        passwordUpdated = true
-      } else throw new Error('Password and Confirm Password do not match.')
-    } else throw new Error('Password length is too short.')
+    //     user.password = postData.password
+    //     passwordUpdated = true
+    //   } else throw new Error('Password and Confirm Password do not match.')
+    // } else throw new Error('Password length is too short.')
 
     if (!_.isUndefined(postData.fullname) && postData.fullname.length > 0) user.fullname = postData.fullname
     if (!_.isUndefined(postData.email) && postData.email.length > 0) user.email = postData.email
@@ -389,8 +391,8 @@ accountsApi.saveProfile = async (req, res) => {
     if (!_.isUndefined(payload.fullname) && !_.isNull(payload.fullname)) dbUser.fullname = payload.fullname
     if (!_.isUndefined(payload.title) && !_.isNull(payload.title)) dbUser.workNumber = payload.title
     if (!_.isUndefined(payload.workNumber) && !_.isNull(payload.workNumber)) dbUser.workNumber = payload.workNumber
-    if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber))
-      dbUser.mobileNumber = payload.mobileNumber
+    if (!_.isUndefined(payload.mobileNumber) && !_.isNull(payload.mobileNumber)) dbUser.mobileNumber = payload.mobileNumber
+    if (!_.isUndefined(payload.chatwootApiKey) && !_.isNull(payload.chatwootApiKey)) dbUser.chatwootApiKey = payload.chatwootApiKey
 
     dbUser = await dbUser.save()
     return apiUtil.sendApiSuccess(res, { user: dbUser })
@@ -510,7 +512,6 @@ accountsApi.updatePassword = async (req, res) => {
 
 accountsApi.LDAPMapping = async (req, res) => {
   try {
-    console.log(req);
     return apiUtil.sendApiSuccess(res, {})
   } catch (err) {
     return apiUtil.sendApiError(res, 500, err.message)

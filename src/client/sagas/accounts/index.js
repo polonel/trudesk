@@ -15,9 +15,12 @@
 import { call, put, takeLatest, takeEvery } from 'redux-saga/effects'
 import {
   CREATE_ACCOUNT,
+  CREATE_ACCOUNTFROMCHATWOOT,
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FIND_ACCOUNTS,
+  CLEARSTATE_ACCOUNTS,
   FETCH_ACCOUNTS_CREATE_TICKET,
   HIDE_MODAL,
   SAVE_EDIT_ACCOUNT,
@@ -43,6 +46,35 @@ function * fetchAccounts ({ payload, meta }) {
     yield put({ type: FETCH_ACCOUNTS.ERROR, error })
   }
 }
+
+function * findAccounts ({ payload, meta }) {
+  yield put({ type: FIND_ACCOUNTS.PENDING })
+  try {
+    const response = yield call(api.accounts.getWithPage, payload)
+    yield put({ type: FIND_ACCOUNTS.SUCCESS, payload: { response, payload }, meta })
+  } catch (error) {
+    let errorText = ''
+    if (error.response) errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: FIND_ACCOUNTS.ERROR, error })
+  }
+}
+
+function * clearStateAccounts ({ payload, meta }) {
+  yield put({ type: CLEARSTATE_ACCOUNTS.PENDING })
+  try {
+    const response = yield call(api.accounts.getWithPage, payload)
+    yield put({ type: CLEARSTATE_ACCOUNTS.SUCCESS, payload: { response, payload }, meta })
+  } catch (error) {
+    let errorText = ''
+    if (error.response) errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: CLEARSTATE_ACCOUNTS.ERROR, error })
+  }
+}
+
 
 function * fetchAccountsCreateTicket ({ payload, meta }) {
   try {
@@ -70,6 +102,20 @@ function * createAccount ({ payload }) {
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response || error)
     yield put({ type: CREATE_ACCOUNT.ERROR, error })
+  }
+}
+
+function * createAccountFromChatwoot ({ payload }) {
+  try {
+    const response = yield call(api.accounts.createFromChatwoot, payload)
+    yield put({ type: CREATE_ACCOUNTFROMCHATWOOT.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+    helpers.UI.showSnackbar('Account created successfully')
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: CREATE_ACCOUNTFROMCHATWOOT.ERROR, error })
   }
 }
 
@@ -157,7 +203,10 @@ function * genMFA ({ payload, meta }) {
 
 export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
+  yield takeLatest(CREATE_ACCOUNTFROMCHATWOOT.ACTION, createAccountFromChatwoot)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
+  yield takeLatest(FIND_ACCOUNTS.ACTION, findAccounts)
+  yield takeLatest(CLEARSTATE_ACCOUNTS.ACTION, clearStateAccounts)
   yield takeLatest(FETCH_ACCOUNTS_CREATE_TICKET.ACTION, fetchAccountsCreateTicket)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
   yield takeEvery(DELETE_ACCOUNT.ACTION, deleteAccount)

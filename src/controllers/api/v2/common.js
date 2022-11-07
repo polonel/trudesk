@@ -18,6 +18,7 @@ const apiUtils = require('../apiUtils')
 const passport = require('passport')
 const winston = require('winston')
 const ldapClient = require('../../../ldap')
+const { c } = require('tar')
 
 const commonV2 = {}
 
@@ -41,18 +42,26 @@ commonV2.login = async (req, res) => {
   }
 }
 
+// Обработка данных из формы Chatwoot
+commonV2.loginChatwoot = async (req, res) => {
+
+  const payload = {
+    username: req.body.username,
+    phone: req.body.phone,
+    email: req.body.email
+  }
+
+  User.createUserFromChatwoot(payload, function (err, response) {
+    if (err) return apiUtils.sendApiSuccess(res)
+
+    return apiUtils.sendApiError(res, 500, e.message)
+  })
+
+}
+
 commonV2.loginLDAP = async (req, res) => {
 
   ldapCallBack = function (req, username, password, done) {
-    // for (group of req.memberOf){
-    //   console.log(group);
-    //   if (group = 'CN=rocket,OU=Groups,DC=shatura,DC=pro'){
-    //       role = 'admin';
-    //   }
-    // }
-    console.log(req);
-    console.log(username);
-    // return done(null, username);
     User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
       .select('+password +tOTPKey +tOTPPeriod')
       .exec(function (err, user) {
@@ -85,7 +94,7 @@ commonV2.pushLDAPGroup = async (req, res) => {
       if (err) return console.log(err);
       if (ldapGroup !== null && ldapGroup !== undefined) {
         console.log('Group found: ' + ldapGroup.name);
-      } else if(ldapGroup !== undefined) {
+      } else if (ldapGroup !== undefined) {
 
         LDAPGroup.insertMany({ name: group }, function (err, ldapGroup) {
           if (err) return console.log(err);
@@ -96,27 +105,25 @@ commonV2.pushLDAPGroup = async (req, res) => {
   }
 
   LDAPGroup.find()
-  .then(ldapGroupsMDB => {
-    for(let group of ldapGroupsMDB){
-      if(group.name !== undefined){
-      if (ldapGroups.includes(group.name)){
-        console.log('The group "' + group.name + '" exists in LDAP');
-      } else {
-        console.log('The group "' + group.name + '" does not exist in LDAP');
-        LDAPGroup.remove({ _id: group._id }, function (err, ldapGroup) {
-          if (err) return console.log(err);
-          console.log('Group deleted: ' + group.name)
-        })
+    .then(ldapGroupsMDB => {
+      for (let group of ldapGroupsMDB) {
+        if (group.name !== undefined) {
+          if (ldapGroups.includes(group.name)) {
+            console.log('The group "' + group.name + '" exists in LDAP');
+          } else {
+            console.log('The group "' + group.name + '" does not exist in LDAP');
+            LDAPGroup.remove({ _id: group._id }, function (err, ldapGroup) {
+              if (err) return console.log(err);
+              console.log('Group deleted: ' + group.name)
+            })
+          }
+        }
       }
-    }
-    }
-    
-  })
-  .catch(error => {
-    console.log(error);
-  })
 
-  console.log(req);
+    })
+    .catch(error => {
+      console.log(error);
+    })
 }
 
 

@@ -22,7 +22,7 @@ const roleOrderSchema = require('../models/roleorder')
 
 const util = {}
 
-function parseSetting (settings, name, defaultValue) {
+function parseSetting(settings, name, defaultValue) {
   let s = _.find(settings, function (x) {
     return x.name === name
   })
@@ -42,7 +42,7 @@ util.setSetting = function (setting, value, callback) {
 
 util.getSettings = async callback => {
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    ; (async () => {
       try {
         const settings = await settingSchema.getSettings()
         const s = {}
@@ -53,6 +53,7 @@ util.getSettings = async callback => {
 
         s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk')
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
+        s.defaultGroup = parseSetting(settings, 'gen:defaultGroup', '')
         s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York')
         s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma')
         s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY')
@@ -129,9 +130,12 @@ util.getSettings = async callback => {
         s.ldapHost = parseSetting(settings, 'ldapSettings:host', true)
         s.ldapBindDN = parseSetting(settings, 'ldapSettings:bindDN', true)
         // s.ldapPort= parseSetting(settings, 'ldapSettings:port', true)
-        s.ldapUsername= parseSetting(settings, 'ldapSettings:username', true)
-        s.ldapPassword= parseSetting(settings, 'ldapSettings:password', true)
-        s.ldapPassword= parseSetting(settings, 'ldapSettings:password', true)
+        s.ldapUsername = parseSetting(settings, 'ldapSettings:username', true)
+        s.ldapPassword = parseSetting(settings, 'ldapSettings:password', true)
+
+        s.chatwootSettings = parseSetting(settings, 'chatwootSettings:enable', true)
+        s.chatwootMessageTemplate = parseSetting(settings, 'chatwootSettings:messageTemplate', '')
+        s.chatwootStatusChangeMessageTemplate = parseSetting(settings, 'chatwootSettings:statusChangeMessageTemplate', '')
         //-- ShaturaPro LIN 22.08.2022
         const types = await ticketTypeSchema.getTypes()
         content.data.ticketTypes = _.sortBy(types, o => o.name)
