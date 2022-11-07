@@ -146,7 +146,6 @@
         
         
     window.addEventListener("message", function (event) {
-
             const eventData = JSON.parse(event.data);
             console.log(eventData)
             const username = eventData.data.contact.name;
@@ -157,12 +156,14 @@
             const accountID = eventData.data.conversation.account_id;
             const conversationID = eventData.data.conversation.id
             let customAttributes =  eventData.data.conversation.custom_attributes.trudesk;
-            if (window.location == 'https://trudesk-dev.shatura.pro/dashboard'){
+            let url = window.location.href;
+            url = url.match(/https:\/\/.*\//)[0].slice(0, -1);
+            if (window.location == `${url}/dashboard`){
                 if(customAttributes){
                     customAttributes = customAttributes.replace('#','');
-                    window.location = `https://trudesk-dev.shatura.pro/tickets/${customAttributes}` 
+                    window.location = `${url}/tickets/${customAttributes}` 
                 }else{
-                    window.location = `https://trudesk-dev.shatura.pro/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}&conversationID=${conversationID}&contactName=${contactName}` 
+                    window.location = `${url}/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}&conversationID=${conversationID}&contactName=${contactName}` 
                 }
                 }
           });

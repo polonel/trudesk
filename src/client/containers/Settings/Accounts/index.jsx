@@ -202,7 +202,7 @@ class AccountsSettingsContainer extends React.Component {
         helpers.UI.showSnackbar(err, true)
       })
       window.location.href = `${this.siteURL}/settings/accounts`;
-      window.location.reload(true)
+     // window.location.reload(true)
   }
 
 

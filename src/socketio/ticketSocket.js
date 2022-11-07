@@ -29,7 +29,6 @@ var xss = require('xss')
 var { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 var settingSchema = require('../models/setting')
 var templateSchema = require('../models/template')
-// /home/ilobanov/trudesk-dev/src/mailer/templates
 var path = require('path')
 var templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
 var Email = require('email-templates')

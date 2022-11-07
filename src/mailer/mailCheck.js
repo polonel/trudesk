@@ -333,10 +333,14 @@ function handleMessages(messages, done) {
 
             t.save(function (err, tt) {
               if (err) return winston.warn(err.message)
+              settingSchema.findOne({name:'gen:siteurl'},(err,url)=>{
+                if (err) console.log(err);
+                const hostname = url.value.replace('https://','');
+                emitter.emit('ticket:comment:added', tt, Comment, hostname)
 
-              emitter.emit('ticket:comment:added', tt, Comment, 'trudesk-dev.shatura.pro')
-
-              return winston.warn({ success: true, error: null, ticket: tt })
+                return winston.warn({ success: true, error: null, ticket: tt })
+              })
+              
             })
           })
 
