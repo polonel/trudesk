@@ -53,7 +53,7 @@ roleDefaults.adminGrants = [
 
 settingsDefaults.roleDefaults = roleDefaults
 
-function rolesDefault (callback) {
+function rolesDefault(callback) {
   const roleSchema = require('../models/role')
 
   async.series(
@@ -153,7 +153,7 @@ function rolesDefault (callback) {
   )
 }
 
-function defaultUserRole (callback) {
+function defaultUserRole(callback) {
   var roleOrderSchema = require('../models/roleorder')
   roleOrderSchema.getOrderLean(function (err, roleOrder) {
     if (err) return callback(err)
@@ -175,7 +175,7 @@ function defaultUserRole (callback) {
   })
 }
 
-function createDirectories (callback) {
+function createDirectories(callback) {
   async.parallel(
     [
       function (done) {
@@ -189,7 +189,7 @@ function createDirectories (callback) {
   )
 }
 
-function downloadWin32MongoDBTools (callback) {
+function downloadWin32MongoDBTools(callback) {
   var http = require('http')
   var os = require('os')
   var semver = require('semver')
@@ -238,7 +238,7 @@ function downloadWin32MongoDBTools (callback) {
   }
 }
 
-function timezoneDefault (callback) {
+function timezoneDefault(callback) {
   SettingsSchema.getSettingByName('gen:timezone', function (err, setting) {
     if (err) {
       winston.warn(err)
@@ -276,7 +276,7 @@ function timezoneDefault (callback) {
   })
 }
 
-function showTourSettingDefault (callback) {
+function showTourSettingDefault(callback) {
   SettingsSchema.getSettingByName('showTour:enable', function (err, setting) {
     if (err) {
       winston.warn(err)
@@ -302,7 +302,7 @@ function showTourSettingDefault (callback) {
   })
 }
 
-function ticketTypeSettingDefault (callback) {
+function ticketTypeSettingDefault(callback) {
   SettingsSchema.getSettingByName('ticket:type:default', function (err, setting) {
     if (err) {
       winston.warn(err)
@@ -353,7 +353,7 @@ function ticketTypeSettingDefault (callback) {
   })
 }
 
-function ticketPriorityDefaults (callback) {
+function ticketPriorityDefaults(callback) {
   var priorities = []
 
   var normal = new PrioritySchema({
@@ -394,7 +394,7 @@ function ticketPriorityDefaults (callback) {
   )
 }
 
-function normalizeTags (callback) {
+function normalizeTags(callback) {
   var tagSchema = require('../models/tag')
   tagSchema.find({}, function (err, tags) {
     if (err) return callback(err)
@@ -408,7 +408,7 @@ function normalizeTags (callback) {
   })
 }
 
-function checkPriorities (callback) {
+function checkPriorities(callback) {
   var ticketSchema = require('../models/ticket')
   var migrateP1 = false
   var migrateP2 = false
@@ -514,7 +514,7 @@ function checkPriorities (callback) {
   )
 }
 
-function addedDefaultPrioritiesToTicketTypes (callback) {
+function addedDefaultPrioritiesToTicketTypes(callback) {
   async.waterfall(
     [
       function (next) {
@@ -557,9 +557,11 @@ function addedDefaultPrioritiesToTicketTypes (callback) {
   )
 }
 
-function mailTemplates (callback) {
+function mailTemplates(callback) {
   var newTicket = require('./json/mailer-new-ticket')
   var passwordReset = require('./json/mailer-password-reset')
+  var statusChanged = require('./json/mailer-status-changed')
+  var commentAdded = require('./json/mailer-comment-added')
   var templateSchema = require('../models/template')
   async.parallel(
     [
@@ -582,13 +584,33 @@ function mailTemplates (callback) {
 
           return done()
         })
+      },
+      function (done) {
+        templateSchema.findOne({ name: statusChanged.name }, function (err, templates) {
+          if (err) return done(err)
+          if (!templates || templates.length < 1) {
+            return templateSchema.create(statusChanged, done)
+          }
+
+          return done()
+        })
+      },
+      function (done) {
+        templateSchema.findOne({ name: commentAdded.name }, function (err, templates) {
+          if (err) return done(err)
+          if (!templates || templates.length < 1) {
+            return templateSchema.create(commentAdded, done)
+          }
+
+          return done()
+        })
       }
     ],
     callback
   )
 }
 
-function elasticSearchConfToDB (callback) {
+function elasticSearchConfToDB(callback) {
   const nconf = require('nconf')
   const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
@@ -653,7 +675,7 @@ function elasticSearchConfToDB (callback) {
   )
 }
 
-function installationID (callback) {
+function installationID(callback) {
   const Chance = require('chance')
   const chance = new Chance()
   SettingsSchema.getSettingByName('gen:installid', function (err, setting) {
@@ -672,7 +694,7 @@ function installationID (callback) {
   })
 }
 
-function maintenanceModeDefault (callback) {
+function maintenanceModeDefault(callback) {
   SettingsSchema.getSettingByName('maintenanceMode:enable', function (err, setting) {
     if (err) return callback(err)
     if (!setting) {
