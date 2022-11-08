@@ -108,23 +108,20 @@ class ChatwootSettingsController extends React.Component {
               title={'Notification message template'}
               tooltip={`
               Template Parameters: 
-              ____________________________ 
-              {{phoneNumber}} - customer phone number 
-              ____________________________ 
-              {{ticketSubject}} - link to the ticket 
-              ____________________________         
-              {{ticketStatus}} - ticket status
-              ____________________________     
-              {{contactName}} - customer name 
-              ____________________________
               <br><br>
-              {{ticketUID}}
-              ____________________________
+              {{phoneNumber}} - customer phone number 
+              <br><br>
+              {{ticketLink}} - link to the ticket 
+              <br><br>       
+              {{ticketStatus}} - ticket status
+              <br><br>    
+              {{contactName}} - customer name 
+              <br><br>
+              {{ticketUID}} - ticket number
               `}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>
-                <label style={{'font-size':'16px', 'color':'#E74C3C','padding-bottom':'10px'}}> When creating a ticket </label>
                   <textarea
                     type='text'
                     className={'md-input md-input-width-medium'}

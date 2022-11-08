@@ -145,9 +145,6 @@ class CreateGroupModal extends React.Component {
               className={'md-input'}
               value={this.name}
               onChange={e => this.onInputChange(e)}
-              data-validation='length'
-              data-validation-length={'min2'}
-              data-validation-error-msg={'Please enter a valid Group name. (Must contain 2 characters)'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
@@ -157,9 +154,6 @@ class CreateGroupModal extends React.Component {
               className={'md-input'}
               value={this.domainName}
               onChange={e => this.onInputChangeDomain(e)}
-              data-validation='length'
-              data-validation-length={'min2'}
-              data-validation-error-msg={'Please enter a valid Domain name. (Must contain 2 characters)'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
@@ -169,9 +163,6 @@ class CreateGroupModal extends React.Component {
               className={'md-input'}
               value={this.phone}
               onChange={e => this.onInputChangePhone(e)}
-              data-validation='length'
-              data-validation-length={'min12'}
-              data-validation-error-msg={'Please enter a valid Phone Number'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
