@@ -91,16 +91,6 @@ class EditGroupModal extends React.Component {
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
 
-    if (!this._validatePhone(this.phone)) {
-      helpers.UI.showSnackbar('Invalid Phone Number', true)
-      return
-    }
-
-    if (!this._validateSite(this.site)) {
-      helpers.UI.showSnackbar('Invalid Website', true)
-      return
-    }
-
     const payload = {
       _id: this.props.group._id,
       name: this.name,
@@ -174,9 +164,6 @@ class EditGroupModal extends React.Component {
               className={'md-input'}
               value={this.domainName}
               onChange={e => this.onInputChangeDomain(e)}
-              data-validation='length'
-              data-validation-length={'min2'}
-              data-validation-error-msg={'Please enter a valid Domain name. (Must contain 2 characters)'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
@@ -186,9 +173,6 @@ class EditGroupModal extends React.Component {
               className={'md-input'}
               value={this.phone}
               onChange={e => this.onInputChangePhone(e)}
-              data-validation='length'
-              data-validation-length={'min12'}
-              data-validation-error-msg={'Please enter a valid Phone Number'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>
@@ -198,7 +182,6 @@ class EditGroupModal extends React.Component {
               className={'md-input'}
               value={this.site}
               onChange={e => this.onInputChangeSite(e)}
-              data-validation-error-msg={'Please enter a valid Website'}
             />
           </div>
           <div className={'uk-margin-medium-bottom'}>

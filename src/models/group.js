@@ -40,11 +40,11 @@ var groupSchema = mongoose.Schema({
   ],
   sendMailTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
   public: { type: Boolean, required: true, default: false },
-  domainName: {type: String, required: true, default: ''},
+  domainName: {type: String},
   domainID: { type: mongoose.Schema.Types.ObjectId, ref: 'domains'},
-  phone:{ type: String, required: true, default: ''},
-  site:{ type: String, required: true, default: '',unique: false },
-  address:{ type: String, unique: false},
+  phone:{ type: String},
+  site:{ type: String},
+  address:{ type: String},
   // domainID:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 })
 

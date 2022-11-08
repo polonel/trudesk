@@ -119,7 +119,10 @@ addDomain = function (group, res) {
     } else {
 
       Domain.insertMany({ name: group.domainName, groupID: group._id }, function (err, domains) { //Если домена нет то добавить его в базу
-        let domain = domains[0];
+        let domain = null;
+        if(domains){
+          domain = domains[0];
+        }
         if (domain !== null) {//Если домен добавлен в базу
           if (domain._id !== group.domainID || group.domainID == undefined) { //Если ID домена группы неопределён или не равен новому
             group.domainID = domain._id; //Привязать группе ID домена
@@ -135,6 +138,7 @@ addDomain = function (group, res) {
             })
           }
         }
+        return apiUtils.sendApiSuccess(res, { group: group })
       }); //Добавление домена в базу данных
     } //Запись id домена
   })
