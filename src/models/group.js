@@ -42,9 +42,9 @@ var groupSchema = mongoose.Schema({
   public: { type: Boolean, required: true, default: false },
   domainName: {type: String},
   domainID: { type: mongoose.Schema.Types.ObjectId, ref: 'domains'},
-  phone:{ type: String},
-  site:{ type: String},
-  address:{ type: String},
+  phone: String,
+  site: String,
+  address: String,
   // domainID:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 })
 
