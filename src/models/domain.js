@@ -3,7 +3,7 @@
 let mongoose = require('mongoose');
 let COLLECTION = 'domains';
 let domainSchema = mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String },
     groupID: { type: mongoose.Schema.Types.ObjectId, ref: 'group' }
 });
 

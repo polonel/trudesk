@@ -86,7 +86,7 @@ apiGroups.update = function (req, res) {
 findGroup = async function (group, res) {
   return await new Promise(function (resolve, reject) {
     Group.findOne({ domainName: group.domainName }, function (err, groupDB) { 
-      if (err || (groupDB !== null && groupDB?.name !== group?.name)) return apiUtils.sendApiError(res, 400, 'The domain is already used by the group ' + group.name);
+      if (err || (groupDB !== null && groupDB?.name !== group?.name && groupDB?.domainName !=='')) return apiUtils.sendApiError(res, 400, 'The domain is already used by the group ' + group.name);
       resolve(true)
     });
   });
