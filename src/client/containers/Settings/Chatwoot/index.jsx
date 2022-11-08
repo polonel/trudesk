@@ -109,13 +109,16 @@ class ChatwootSettingsController extends React.Component {
               tooltip={`
               Template Parameters: 
               ____________________________ 
-              {phoneNumber} - customer phone number 
+              {{phoneNumber}} - customer phone number 
               ____________________________ 
-              {ticketSubject} - link to the ticket 
+              {{ticketSubject}} - link to the ticket 
               ____________________________         
-              {ticketStatus} - ticket status
+              {{ticketStatus}} - ticket status
               ____________________________     
-              {contactName} - customer name 
+              {{contactName}} - customer name 
+              ____________________________
+              <br><br>
+              {{ticketUID}}
               ____________________________
               `}
             >

@@ -126,14 +126,13 @@ util.getSettings = async callback => {
 
         s.accountsPasswordComplexity = parseSetting(settings, 'accountsPasswordComplexity:enable', true)
 
-        s.ldapSettings = parseSetting(settings, 'ldapSettings:enable', true)//++ ShaturaPro LIN 22.08.2022
-        s.ldapHost = parseSetting(settings, 'ldapSettings:host', true)
-        s.ldapBindDN = parseSetting(settings, 'ldapSettings:bindDN', true)
-        // s.ldapPort= parseSetting(settings, 'ldapSettings:port', true)
-        s.ldapUsername = parseSetting(settings, 'ldapSettings:username', true)
-        s.ldapPassword = parseSetting(settings, 'ldapSettings:password', true)
+        s.ldapSettings = parseSetting(settings, 'ldapSettings:enable', false)//++ ShaturaPro LIN 22.08.2022
+        s.ldapHost = parseSetting(settings, 'ldapSettings:host', '')
+        s.ldapBindDN = parseSetting(settings, 'ldapSettings:bindDN', '')
+        s.ldapUsername = parseSetting(settings, 'ldapSettings:username', '')
+        s.ldapPassword = parseSetting(settings, 'ldapSettings:password', '')
 
-        s.chatwootSettings = parseSetting(settings, 'chatwootSettings:enable', true)
+        s.chatwootSettings = parseSetting(settings, 'chatwootSettings:enable', false)
         s.chatwootMessageTemplate = parseSetting(settings, 'chatwootSettings:messageTemplate', '')
         s.chatwootStatusChangeMessageTemplate = parseSetting(settings, 'chatwootSettings:statusChangeMessageTemplate', '')
         //-- ShaturaPro LIN 22.08.2022
