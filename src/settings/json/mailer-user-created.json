@@ -1,7 +1,7 @@
 {
     "name": "user-created",
     "displayName": "User created",
-    "description": "An email notification is sent when the ticket status changes.",
+    "description": "An email notification is sent when user created.",
     "subject": "Пользователь создан",
     "data": {
       "gjs-assets": "[]",
