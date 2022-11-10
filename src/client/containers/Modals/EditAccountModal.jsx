@@ -126,7 +126,7 @@ class EditAccountModal extends React.Component {
 
   onSubmitSaveAccount (e) {
     e.preventDefault()
-    if (!this._validatePhone(this.phone) && this.phone !== '') {
+    if (!this._validatePhone(this.phone) && this.phone ) {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }

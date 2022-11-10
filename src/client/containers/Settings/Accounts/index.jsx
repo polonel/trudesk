@@ -189,7 +189,7 @@ class AccountsSettingsContainer extends React.Component {
 
     axios
       .post(`/api/v2/loginLDAP`, {
-        'login-username': this.state.ldapUsername,
+        // 'login-username': this.state.ldapUsername, 
         'login-password': this.state.ldapPassword,
         ldapHost: this.state.ldapHost,
         ldapBindDN: this.state.ldapBindDN,
