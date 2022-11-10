@@ -285,9 +285,9 @@ function handleMessages(messages, done) {
           }
           var ticketUID = resultTicketUID;
 
-          comment = comment.match(/(.*?)____________/gs);
+          comment = comment.match(/(.*?)Ответ-комментарий размещайте выше этой строки/gs);
           if (comment) {
-            comment = comment[0].replace(/____________/gi, '');
+            comment = comment[0].replace(/Ответ-комментарий размещайте выше этой строки/gi, '');
           } else {
             comment = undefined;
           }
@@ -378,7 +378,13 @@ function handleMessages(messages, done) {
 
                     message.owner = response.user
                     message.group = response.group
+                    message.userPassword = response.userPassword
 
+                    emitter.emit('user:created', {
+                      socketId: '',
+                      user: response.user,
+                      userPassword:response.userPassword
+                    })
                     return callback(null, response)
                   })
                 } else {

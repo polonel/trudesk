@@ -593,7 +593,7 @@ apiTickets.createPublicTicket = function (req, res) {
       function (roleDefault, next) {
         var UserSchema = require('../../../models/user')
         plainTextPass = chance.string({
-          length: 6,
+          length: 8,
           pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
         })
 

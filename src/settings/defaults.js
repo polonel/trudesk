@@ -562,6 +562,7 @@ function mailTemplates(callback) {
   var passwordReset = require('./json/mailer-password-reset')
   var statusChanged = require('./json/mailer-status-changed')
   var commentAdded = require('./json/mailer-comment-added')
+  var userCreated = require('./json/mailer-user-created.json')
   var templateSchema = require('../models/template')
   async.parallel(
     [
@@ -570,6 +571,16 @@ function mailTemplates(callback) {
           if (err) return done(err)
           if (!templates || templates.length < 1) {
             return templateSchema.create(newTicket, done)
+          }
+
+          return done()
+        })
+      },
+      function (done) {
+        templateSchema.findOne({ name: userCreated.name }, function (err, templates) {
+          if (err) return done(err)
+          if (!templates || templates.length < 1) {
+            return templateSchema.create(userCreated, done)
           }
 
           return done()

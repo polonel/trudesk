@@ -523,7 +523,7 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
     var chance = new Chance()
 
     var plainTextPass = chance.string({
-      length: 6,
+      length: 8,
       pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
     })
     
@@ -534,7 +534,6 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
         fullname: email.split('@')[0],
         role: userRoleDefault.value
       })
-   
     
     self.model(COLLECTION).find({ username: user.username }, function (err, items) {
       if (err) return callback(err)
@@ -617,7 +616,7 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
                 if (err) return callback(err)
                 group.members.push(user._id);
                 group.save();
-                return callback(null, {user:user, group:group})
+                return callback(null, {user:user, group:group, userPassword: plainTextPass})
               })
             })
           } else {

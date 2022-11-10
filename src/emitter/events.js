@@ -30,6 +30,7 @@ const userSchema = require('../models/user')
 const templateSchema = require('../models/template')
 const logger = require('../logger')
 const eventTicketCreated = require('./events/event_ticket_created')
+const eventUserCreated = require('./events/event_user_created')
 
 
 ;(function () {
@@ -37,6 +38,9 @@ const eventTicketCreated = require('./events/event_ticket_created')
 
   emitter.on('ticket:created', async function (data) {
     await eventTicketCreated(data)
+  })
+  emitter.on('user:created', async function (data) {
+    await eventUserCreated(data)
   })
 
   function sendPushNotification (tpsObj, data) {
