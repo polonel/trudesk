@@ -215,7 +215,7 @@ class AccountsSettingsContainer extends React.Component {
       // { name: 'ldapSettings:port', value: this.state.ldapPort },
       { name: 'ldapSettings:bindDN', value: this.state.ldapBindDN },
       { name: 'ldapSettings:password', value: this.state.ldapPassword },
-      { name: 'ldapSettings:username', value: this.state.ldapUsername },
+      // { name: 'ldapSettings:username', value: this.state.ldapUsername },
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
     this.props.updateMultipleSettings(ldapSettings);
@@ -336,7 +336,7 @@ class AccountsSettingsContainer extends React.Component {
                 // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
               </div>
-              <div className='uk-margin-medium-bottom'>
+              {/* <div className='uk-margin-medium-bottom'>
                 <label>LDAP Username</label>
                 <input
                   type='text'
@@ -346,7 +346,7 @@ class AccountsSettingsContainer extends React.Component {
                   onChange={e => this.onInputValueChanged(e, 'ldapUsername')}
                 // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
-              </div>
+              </div> */}
               <Zone>
                 {rolesName.map(el => <ElementArray role={el}/>)}
               </Zone>
