@@ -132,7 +132,8 @@ addDomain = function (group, res) {
               group.populate('members sendMailTo', function (err, group) {
 
                 if (err) return apiUtils.sendApiError(res, 500, err.message)
-                return apiUtils.sendApiSuccess(res, { group: group })
+                console.log('Группа добавлена')
+                //return apiUtils.sendApiSuccess(res, { group: group })
 
               })
             })

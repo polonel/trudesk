@@ -98,12 +98,18 @@ class CreateGroupModal extends React.Component {
       )
   }
 
+
   onFormSubmit (e) {
     e.preventDefault()
 
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
 
+    if (!this._validatePhone(this.phone) && this.phone ) {
+      helpers.UI.showSnackbar('Invalid Phone', true)
+      return
+    }
+    
     const postData = {
       name: this.name,
       domainName: this.domainName,
