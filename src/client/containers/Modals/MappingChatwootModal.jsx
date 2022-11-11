@@ -141,7 +141,7 @@ class MappingChatwootContainer extends React.Component {
       .toString()
       .toLowerCase()
       .match(
-        /^\+(\d{11})$/
+        /^\+\d+$/
       )
   }
 
