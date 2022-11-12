@@ -186,6 +186,7 @@ function bindImapReady() {
 
                         if (mail.headers.has('from')) {
                           message.from = mail.headers.get('from').value[0].address
+                          message.fromName = mail.headers.get('from').value[0].name
                         }
 
                         if (mail.subject) {
@@ -373,7 +374,7 @@ function handleMessages(messages, done) {
 
                 // User doesn't exist. Lets create public user... If we want too
                 if (mailCheck.fetchMailOptions.createAccount) {
-                  userSchema.createUserFromEmail(message.from, function (err, response) {
+                  userSchema.createUserFromEmail(message.from, message.fromName, function (err, response) {
                     if (err) return callback(err)
 
                     message.owner = response.user

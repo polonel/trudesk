@@ -506,7 +506,7 @@ userSchema.statics.createUser = function (data, callback) {
  * @param email
  * @param callback
  */
-userSchema.statics.createUserFromEmail = async function (email, callback) {
+userSchema.statics.createUserFromEmail = async function (email, fullname, callback) {
 
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
@@ -531,10 +531,11 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
     })
 
     var user = new self({
-      username: email.split('@')[0],
+      // username: email.split('@')[0],
+      username: email,
       email: email,
       password: plainTextPass,
-      fullname: email.split('@')[0],
+      fullname: fullname,
       role: userRoleDefault.value
     })
 
