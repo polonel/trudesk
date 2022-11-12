@@ -49,8 +49,11 @@ class LoginChatwootContainer extends React.Component {
   @observable isAgentRole = false
   @observable chance = new Chance()
   @observable plainTextPass = this.chance.string({
-    length: 10,
-    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    length: 8,
+    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+    alpha: true,
+    numeric: true,
+    casing: 'lower',
   })
   @observable password = this.plainTextPass
   @observable passwordConfirm = this.password
@@ -164,8 +167,8 @@ class LoginChatwootContainer extends React.Component {
       groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
       role: this.selectedRole,
-      password: this.password.length > 3 ? this.password : undefined,
-      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : undefined
+      password: this.password.length > 3 ? this.password : this.plainTextPass,
+      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : this.plainTextPass
     }
 
     this.props.createAccount(payload)

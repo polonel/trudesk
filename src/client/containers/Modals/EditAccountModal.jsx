@@ -41,7 +41,13 @@ class EditAccountModal extends React.Component {
   @observable confirmPassword = ''
   @observable email = ''
   @observable phone = ''
-
+  @observable plainTextPass = this.chance.string({
+    length: 8,
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+          alpha: true,
+          numeric: true,
+          casing: 'lower',
+  })
   selectedRole = ''
   @observable isAgentRole = false
 
@@ -140,8 +146,8 @@ class EditAccountModal extends React.Component {
       groups: !this.isAgentRole && this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.isAgentRole && this.teamsSelect ? this.teamsSelect.getSelected() : undefined,
       role: this.selectedRole,
-      password: this.password.length > 3 ? this.password : undefined,
-      passwordConfirm: this.confirmPassword.length > 3 ? this.confirmPassword : undefined
+      password: this.password.length > 3 ? this.password : this.plainTextPass,
+      passwordConfirm: this.confirmPassword.length > 3 ? this.confirmPassword : this.plainTextPass
     }
 
     this.props.saveEditAccount(data)

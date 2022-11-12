@@ -49,8 +49,11 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
   @observable isAgentRole = false
   @observable chance = new Chance()
   @observable plainTextPass = this.chance.string({
-    length: 10,
-    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    length: 8,
+    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+    alpha: true,
+    numeric: true,
+    casing: 'lower',
   })
   @observable password = this.plainTextPass
   @observable passwordConfirm = this.password

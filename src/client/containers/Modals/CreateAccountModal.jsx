@@ -42,6 +42,13 @@ class CreateAccountModal extends React.Component {
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
+  @observable plainTextPass = this.chance.string({
+    length: 8,
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+          alpha: true,
+          numeric: true,
+          casing: 'lower',
+  })
 
   constructor (props) {
     super(props)
@@ -133,8 +140,8 @@ class CreateAccountModal extends React.Component {
       groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
       teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
       role: this.selectedRole,
-      password: this.password.length > 3 ? this.password : undefined,
-      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : undefined
+      password: this.password.length > 3 ? this.password : this.plainTextPass,
+      passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : this.plainTextPass
     }
 
     this.props.createAccount(payload)
