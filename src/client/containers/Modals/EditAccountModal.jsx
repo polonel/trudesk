@@ -30,7 +30,7 @@ import Button from 'components/Button'
 import BaseModal from 'containers/Modals/BaseModal'
 import SingleSelect from 'components/SingleSelect'
 import MultiSelect from 'components/MultiSelect'
-
+import Chance from 'chance'
 import helpers from 'lib/helpers'
 
 @observer
@@ -41,6 +41,7 @@ class EditAccountModal extends React.Component {
   @observable confirmPassword = ''
   @observable email = ''
   @observable phone = ''
+  @observable chance = new Chance()
   @observable plainTextPass = this.chance.string({
     length: 8,
           pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',

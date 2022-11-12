@@ -13,7 +13,6 @@
  */
 
 import React from 'react'
-import mongoose from 'mongoose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
@@ -25,15 +24,9 @@ import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles, showModal } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
 import BaseModal from 'containers/Modals/BaseModal'
-import MultiSelect from 'components/MultiSelect'
-import Button from 'components/Button'
-import SingleSelect from 'components/SingleSelect'
 import helpers from 'lib/helpers'
-import $ from 'jquery'
-import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
-import setting from '../../../models/setting'
-import axios from 'axios'
+
 
 
 @observer

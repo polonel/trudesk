@@ -22,7 +22,7 @@ import { createAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
-
+import Chance from 'chance'
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
 import SingleSelect from 'components/SingleSelect'
@@ -42,6 +42,7 @@ class CreateAccountModal extends React.Component {
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
+  @observable chance = new Chance()
   @observable plainTextPass = this.chance.string({
     length: 8,
           pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',

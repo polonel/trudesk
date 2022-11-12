@@ -31,9 +31,7 @@ import Button from 'components/Button'
 import SingleSelect from 'components/SingleSelect'
 import helpers from 'lib/helpers'
 import $ from 'jquery'
-import SpinLoader from 'components/SpinLoader'
 import Chance from 'chance'
-import setting from '../../../models/setting'
 import axios from 'axios'
 
 @observer
