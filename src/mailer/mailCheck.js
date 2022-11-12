@@ -492,7 +492,7 @@ function handleMessages(messages, done) {
                 Ticket.create(
                   {
                     owner: message.owner._id,
-                    group: message.group._id,
+                    group: message.group?._id,
                     subscribers: message.owner._id,
                     type: message.type._id,
                     status: 0,

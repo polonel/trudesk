@@ -23,8 +23,7 @@ const Group = require('../../../models/group')
 const Team = require('../../../models/team')
 const Department = require('../../../models/department')
 const passwordComplexity = require('../../../settings/passwordComplexity')
-const SettingsUtil = require('../../../settings/settingsUtil')
-const Session = require('../../../models/session')
+const emitter = require('../../../emitter')
 
 const accountsApi = {}
 
@@ -72,7 +71,7 @@ accountsApi.create = async function (req, res) {
     const passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
-    throw new Error('Password does not meet requirements')
+      throw new Error('Password does not meet requirements')
 
     let user = await User.create({
       username: postData.username,
@@ -85,6 +84,12 @@ accountsApi.create = async function (req, res) {
       accessToken: chance.hash()
     })
 
+    emitter.emit('user:created', {
+      socketId: '',
+      user: user,
+      userPassword: postData.password
+    })
+    
     savedId = user._id
 
     const userPopulated = await user.populate('role')
@@ -143,7 +148,7 @@ accountsApi.get = function (req, res) {
     limit: limit === -1 ? 999999 : limit,
     page: page,
     showDeleted: query.showDeleted && query.showDeleted === 'true',
-    search:search
+    search: search
   }
 
   switch (type) {

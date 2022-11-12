@@ -594,7 +594,10 @@ apiTickets.createPublicTicket = function (req, res) {
         var UserSchema = require('../../../models/user')
         plainTextPass = chance.string({
           length: 8,
-          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+          alpha: true,
+          numeric: true,
+          casing: 'lower',
         })
 
         var sanitizedFullname = xss(postData.user.fullname)

@@ -66,7 +66,7 @@ var userSchema = mongoose.Schema({
   facebookUrl: { type: String },
   linkedinUrl: { type: String },
   twitterUrl: { type: String },
-  chatwootApiKey: {type: String},
+  chatwootApiKey: { type: String },
 
   resetPassHash: { type: String, select: false },
   resetPassExpire: { type: Date, select: false },
@@ -524,17 +524,20 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
 
     var plainTextPass = chance.string({
       length: 8,
-      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+      alpha: true,
+      numeric: true,
+      casing: 'lower',
     })
-    
-      var user = new self({
-        username: email.split('@')[0],
-        email: email,
-        password: plainTextPass,
-        fullname: email.split('@')[0],
-        role: userRoleDefault.value
-      })
-    
+
+    var user = new self({
+      username: email.split('@')[0],
+      email: email,
+      password: plainTextPass,
+      fullname: email.split('@')[0],
+      role: userRoleDefault.value
+    })
+
     self.model(COLLECTION).find({ username: user.username }, function (err, items) {
       if (err) return callback(err)
       if (_.size(items) > 0) return callback('Username already exists')
@@ -548,84 +551,35 @@ userSchema.statics.createUserFromEmail = async function (email, callback) {
         })
         mongoose.model('domains').find({ name: domain.name }, function (err, items) { // Поиск домена в базе данных
           if (err) return callback(err);
-          if (_.size(items) > 0) return true;//callback('Domain already exist');
+          if (items.length > 0) return true;//callback('Domain already exist');
           domain.save(function (err, domain) {
             if (err) return callback(err)
-
-            // Send welcome email
-            var path = require('path')
-            var mailer = require('../mailer')
-            var Email = require('email-templates')
-            var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-
-            var email = new Email({
-              views: {
-                root: templateDir,
-                options: {
-                  extension: 'handlebars'
-                }
-              }
-            })
-
-            var settingSchema = require('./setting')
-            settingSchema.getSetting('gen:siteurl', function (err, setting) {
-              if (err) return callback(err)
-
-              if (!setting) {
-                setting = { value: '' }
-              }
-
-              var dataObject = {
-                user: savedUser,
-                plainTextPassword: plainTextPass,
-                baseUrl: setting.value
-              }
-
-              email
-                .render('public-account-created', dataObject)
-                .then(function (html) {
-                  var mailOptions = {
-                    to: savedUser.email,
-                    subject: 'Welcome to trudesk! - Here are your account details.',
-                    html: html,
-                    generateTextFromHTML: true
-                  }
-
-                  mailer.sendMail(mailOptions, function (err) {
-                    if (err) {
-                      winston.warn(err)
-                      return callback(err)
-                    }
-
-                    return callback(null, { user: savedUser, domain: domain })
-                  })
-                })
-                .catch(function (err) {
-                  winston.warn(err)
-                  return callback(err)
-                })
-            })
           });
         });
         // Если уже существует группа с данным доменом, то добавить туда пользователя
         mongoose.model('groups').findOne({ domainName: email.split('@')[1] }, function (err, group) {
           if (err) return callback(err);
           if (group == null) {
-           mongoose.model('settings').findOne({ name: 'gen:defaultGroup' }, function (err, setting) {
+            mongoose.model('settings').findOne({ name: 'gen:defaultGroup' }, function (err, setting) {
               mongoose.model('groups').findById(setting.value, function (err, group) {
                 if (err) return callback(err)
-                group.members.push(user._id);
-                group.save();
-                return callback(null, {user:user, group:group, userPassword: plainTextPass})
+                if (group) {
+                  group.members.push(user._id);
+                  group.save();
+                  return callback(null, { user: user, group: group, userPassword: plainTextPass })
+                }
+                else {
+                  return callback(null, { user: user, group: group, userPassword: plainTextPass })
+                }
               })
             })
           } else {
-          group.addMember(user._id, function (err, user) {
-            if (err) return callback(err);
-            group.save();//Сохранение добавления члена группы
-            return callback(`The user has been added to the group ${group.name}`);
-          })
-        }
+            group.addMember(user._id, function (err, user) {
+              if (err) return callback(err);
+              group.save();//Сохранение добавления члена группы
+              return callback(`The user has been added to the group ${group.name}`);
+            })
+          }
         })
       })
       //-- ShaturaPRO LIN 
@@ -653,8 +607,11 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
     var chance = new Chance()
 
     var plainTextPass = chance.string({
-      length: 6,
-      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+      length: 8,
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+      alpha: true,
+      numeric: true,
+      casing: 'lower',
     })
 
     var user = new self({
