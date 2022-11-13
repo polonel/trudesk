@@ -43,22 +43,7 @@ class CreateAccountModal extends React.Component {
   selectedRole = ''
   @observable isAgentRole = false
   @observable chance = new Chance()
-  @observable plainTextPass = () => {
-    let passResult = false;
-    while(passResult == false){
-     let pass =  this.chance.string({
-        length: 8,
-              pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
-              alpha: true,
-              numeric: true,
-              casing: 'lower',
-      })
-      if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/) ){
-        passResult = true;
-        return pass
-      }
-    }
-  }
+  @observable plainTextPass = ''
  
 
   constructor (props) {
@@ -159,6 +144,24 @@ class CreateAccountModal extends React.Component {
   }
 
   render () {
+  this.plainTextPass = () => {
+      let passResult = false;
+      while(passResult == false){
+       let pass =  this.chance.string({
+          length: 8,
+                pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+                alpha: true,
+                numeric: true,
+                casing: 'lower',
+        })
+        if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/) ){
+          console.log('passResult = true;')
+          console.log(pass)
+          passResult = true;
+          return pass
+        }
+      }
+    }
     const roles = this.props.roles
       .map(role => {
         return { text: role.get('name'), value: role.get('_id') }
