@@ -522,13 +522,24 @@ userSchema.statics.createUserFromEmail = async function (email, fullname, callba
 
     var chance = new Chance()
 
-    var plainTextPass = chance.string({
-      length: 8,
-      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
-      alpha: true,
-      numeric: true,
-      casing: 'lower',
-    })
+    function passGenerate() {
+      let passResult = false;
+      while (passResult == false) {
+        let pass = chance.string({
+          length: 8,
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+          alpha: true,
+          numeric: true,
+          casing: 'lower',
+        })
+        if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/)) {
+          passResult = true;
+          return pass
+        }
+      }
+    }
+
+    var plainTextPass = passGenerate()
 
     var user = new self({
       // username: email.split('@')[0],
@@ -607,13 +618,24 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
 
     var chance = new Chance()
 
-    var plainTextPass = chance.string({
-      length: 8,
-      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
-      alpha: true,
-      numeric: true,
-      casing: 'lower',
-    })
+    function passGenerate() {
+      let passResult = false;
+      while (passResult == false) {
+        let pass = chance.string({
+          length: 8,
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+          alpha: true,
+          numeric: true,
+          casing: 'lower',
+        })
+        if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/)) {
+          passResult = true;
+          return pass
+        }
+      }
+    }
+
+    var plainTextPass = passGenerate()
 
     var user = new self({
       username: payload.username,

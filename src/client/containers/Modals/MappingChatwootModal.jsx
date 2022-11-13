@@ -53,13 +53,7 @@ class MappingChatwootContainer extends React.Component {
   @observable defaultUser = ''
   @observable isAgentRole = false
   @observable chance = new Chance()
-  @observable plainTextPass = this.chance.string({
-    length: 8,
-    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
-    alpha: true,
-    numeric: true,
-    casing: 'lower',
-  })
+  @observable plainTextPass = this.passGenerate()
   @observable password = this.plainTextPass
   @observable passwordConfirm = this.password
   @observable contactID = this.props.contactID
@@ -148,6 +142,23 @@ class MappingChatwootContainer extends React.Component {
     else this.selectedUser = without(this.selectedUser, id)
 
     this.selectedUser = uniq(this.selectedUser)
+  }
+
+  passGenerate() {
+    let passResult = false;
+    while (passResult == false) {
+      let pass = this.chance.string({
+        length: 8,
+        pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+        alpha: true,
+        numeric: true,
+        casing: 'lower',
+      })
+      if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/)) {
+        passResult = true;
+        return pass
+      }
+    }
   }
 
   onFormSubmit(e) {

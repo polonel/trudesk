@@ -43,15 +43,15 @@ class CreateAccountModal extends React.Component {
   selectedRole = ''
   @observable isAgentRole = false
   @observable chance = new Chance()
-  @observable plainTextPass = ''
- 
+  @observable plainTextPass = this.passGenerate()
 
-  constructor (props) {
+
+  constructor(props) {
     super(props)
     makeObservable(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.fetchGroups({ type: 'all' })
     this.props.fetchTeams()
     this.props.fetchRoles()
@@ -60,15 +60,15 @@ class CreateAccountModal extends React.Component {
     helpers.formvalidator()
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     helpers.UI.reRenderInputs()
   }
 
-  onInputChanged (e, name) {
+  onInputChanged(e, name) {
     this[name] = e.target.value
   }
 
-  onRoleSelectChange (e) {
+  onRoleSelectChange(e) {
     this.selectedRole = e.target.value
 
     const roleObject = this.props.roles.find(role => {
@@ -81,25 +81,25 @@ class CreateAccountModal extends React.Component {
     else this.roleSelectErrorMessage.classList.add('hide')
   }
 
-  onGroupSelectChange () {
+  onGroupSelectChange() {
     const selectedGroups = this.groupSelect.getSelected()
     if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
     else this.groupSelectErrorMessage.classList.add('hide')
   }
 
   //Валидация номера телефона
-  _validatePhone (phone) {
+  _validatePhone(phone) {
     if (!phone) return false
     return phone
       .toString()
-      .toLowerCase() 
+      .toLowerCase()
       .match(
         /^\+\d+$/
       )
   }
 
 
-  onFormSubmit (e) {
+  onFormSubmit(e) {
     e.preventDefault()
     const $form = $(e.target)
 
@@ -143,25 +143,24 @@ class CreateAccountModal extends React.Component {
     this.props.createAccount(payload)
   }
 
-  render () {
-  this.plainTextPass = () => {
-      let passResult = false;
-      while(passResult == false){
-       let pass =  this.chance.string({
-          length: 8,
-                pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
-                alpha: true,
-                numeric: true,
-                casing: 'lower',
-        })
-        if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/) ){
-          console.log('passResult = true;')
-          console.log(pass)
-          passResult = true;
-          return pass
-        }
+  passGenerate() {
+    let passResult = false;
+    while (passResult == false) {
+      let pass = this.chance.string({
+        length: 8,
+        pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+        alpha: true,
+        numeric: true,
+        casing: 'lower',
+      })
+      if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/)) {
+        passResult = true;
+        return pass
       }
     }
+  }
+
+  render() {
     const roles = this.props.roles
       .map(role => {
         return { text: role.get('name'), value: role.get('_id') }
@@ -275,7 +274,7 @@ class CreateAccountModal extends React.Component {
                 className={'md-input'}
                 value={this.phone}
                 onChange={e => this.onInputChanged(e, 'phone')}
-                
+
               />
             </div>
             <div className='uk-margin-medium-bottom'>
@@ -317,7 +316,7 @@ class CreateAccountModal extends React.Component {
               <div>
                 <div className='uk-margin-medium-bottom'>
                   <label className='uk-form-label'>Teams</label>
-                  <MultiSelect items={teams} onChange={() => {}} ref={r => (this.teamSelect = r)} />
+                  <MultiSelect items={teams} onChange={() => { }} ref={r => (this.teamSelect = r)} />
                 </div>
               </div>
             )}
