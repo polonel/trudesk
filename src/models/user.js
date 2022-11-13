@@ -575,10 +575,10 @@ userSchema.statics.createUserFromEmail = async function (email, fullname, callba
               })
             })
           } else {
-            group.addMember(user._id, function (err, user) {
+            group.addMember(user._id, function (err, userGroup) {
               if (err) return callback(err);
               group.save();//Сохранение добавления члена группы
-              return callback(`The user has been added to the group ${group.name}`);
+              return callback(null, { user: user, group: group, userPassword: plainTextPass });
             })
           }
         })

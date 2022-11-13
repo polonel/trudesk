@@ -40,11 +40,9 @@ ldapClient.bind = function (url, userDN, password, callback) {
 
       ldapClient.client.search('OU=Groups,DC=shatura,DC=pro', opts, (err, res) => {
         var dnGroupsArray = [];
-
         if (err) {
           console.log('Error in new connection ' + err);
         } else {
-
           res.on('searchRequest', (searchRequest) => {
             console.log('searchRequest: ', searchRequest.messageID);
           })
@@ -61,22 +59,17 @@ ldapClient.bind = function (url, userDN, password, callback) {
           });
           res.on('end', (result) => {
             console.log('status: ' + result.status);
-            // api.common.pushLDAPGroup(dnGroupsArray);
             Setting.findOne({ name: 'gen:siteurl' }, (err, url) => {
               if (err) console.log(err);
               axios.post(`${url.value}/api/v2/pushLDAPGroup`, { dnGroupsArray }).then(res => {
-                console.log(res.data)
+                if (res)  console.log('pushLDAPGroup = true')
               }).catch(err => { console.log(err) })
             })
-
-            // axios.post('/api/v2/pushLDAPGroup', { dnGroupsArray });
           });
         }
       });
       console.log('Конец кода');
     }
-
-
   })
 
   ldapClient.client.on('error', function (err) {

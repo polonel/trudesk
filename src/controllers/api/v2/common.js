@@ -119,11 +119,11 @@ commonV2.pushLDAPGroup = async (req, res) => {
           }
         }
       }
-
     })
     .catch(error => {
       console.log(error);
     })
+    return true
 }
 
 

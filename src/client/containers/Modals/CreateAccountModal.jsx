@@ -43,13 +43,23 @@ class CreateAccountModal extends React.Component {
   selectedRole = ''
   @observable isAgentRole = false
   @observable chance = new Chance()
-  @observable plainTextPass = this.chance.string({
-    length: 8,
-          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
-          alpha: true,
-          numeric: true,
-          casing: 'lower',
-  })
+  @observable plainTextPass = () => {
+    let passResult = false;
+    while(passResult == false){
+     let pass =  this.chance.string({
+        length: 8,
+              pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+              alpha: true,
+              numeric: true,
+              casing: 'lower',
+      })
+      if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/) ){
+        passResult = true;
+        return pass
+      }
+    }
+  }
+ 
 
   constructor (props) {
     super(props)
