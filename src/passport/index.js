@@ -184,7 +184,7 @@ module.exports = function () {
                         const newUser = {
                           username: req.userPrincipalName,
                           password: passwordGuid,
-                          fullname: req.userPrincipalName,
+                          fullname: req.name,
                           email: req.userPrincipalName,
                           role: roleUser._id
                         }
