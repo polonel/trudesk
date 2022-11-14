@@ -23,6 +23,7 @@ const ldap = require('ldapjs')
 const User = require('../models/user')
 const Group = require('../models/group')
 const Setting = require('../models/setting')
+const emitter = require('../emitter')
 // const action = require('../client/actions/common')
 
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
@@ -668,7 +669,25 @@ mainController.resetPass = function (req, res) {
     if (now < user.resetPassExpire) {
       const Chance = require('chance')
       const chance = new Chance()
-      const gPass = chance.string({ length: 8 })
+
+      function passGenerate() {
+        let passResult = false;
+        while (passResult == false) {
+          let pass = chance.string({
+            length: 8,
+            pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+            alpha: true,
+            numeric: true,
+            casing: 'lower',
+          })
+          if (pass.match(/[0-9]/) && pass.match(/[a-z]/) && pass.match(/[A-Z]/)) {
+            passResult = true;
+            return pass
+          }
+        }
+      }
+
+      const gPass = passGenerate()
       user.password = gPass
 
       user.resetPassHash = undefined
@@ -678,54 +697,14 @@ mainController.resetPass = function (req, res) {
         if (err) {
           return res.status(500).send(err.message)
         }
-
+        
         // Send mail
-        const mailer = require('../mailer')
-        const Email = require('email-templates')
-        const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-
-        const email = new Email({
-          views: {
-            root: templateDir,
-            options: {
-              extension: 'handlebars'
-            }
-          }
+        emitter.emit('password:new', {
+          socketId: '',
+          user: user,
+          userPassword: gPass
         })
 
-        updated = updated.toJSON()
-
-        const data = {
-          password: gPass,
-          user: updated
-        }
-
-        email
-          .render('new-password', data)
-          .then(function (html) {
-            const mailOptions = {
-              to: updated.email,
-              subject: '[Trudesk] New Password',
-              html: html,
-              generateTextFromHTML: true
-            }
-
-            mailer.sendMail(mailOptions, function (err) {
-              if (err) {
-                winston.warn(err)
-                req.flash('loginMessage', err.message)
-                return res.redirect(307, '/')
-              }
-
-              req.flash('loginMessage', 'Password reset successfully')
-              return res.redirect(307, '/')
-            })
-          })
-          .catch(function (err) {
-            winston.warn(err)
-            req.flash('Error: ' + err.message)
-            res.status(400).send(err.message)
-          })
       })
     }
   })
