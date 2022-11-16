@@ -244,6 +244,7 @@ class AccountsSettingsContainer extends React.Component {
               showTextbox={false}
               items={ldapGArray}
               defaultValue={roleGroup.ldapGroupID}
+              disabled = {this.state.ldapEnabled}
               onSelectChange={(e) => {
                 this.addToMap(e,roleGroup,e.target.value)
             }}
