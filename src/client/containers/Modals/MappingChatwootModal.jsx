@@ -260,10 +260,11 @@ class MappingChatwootContainer extends React.Component {
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
             <div className='uk-margin-medium-bottom uk-clearfix'>
               <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
-                <label className={'uk-form-label'}>Name</label>
+                <label className={'uk-form-label'}>Phone number</label>
                 <input
                   type='text'
-                  className={'md-input'}
+                  className={'md-input'} 
+                  disabled={true}
                   value={this.phone}
                   onChange={e => this.onInputChanged(e, 'phone')}
                 />
