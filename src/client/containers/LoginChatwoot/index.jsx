@@ -33,6 +33,7 @@ import helpers from 'lib/helpers'
 import $ from 'jquery'
 import Chance from 'chance'
 import axios from 'axios'
+import role from '../../../models/role'
 
 @observer
 class LoginChatwootContainer extends React.Component {
@@ -41,7 +42,7 @@ class LoginChatwootContainer extends React.Component {
   @observable fullname = this.props.fullname !== 'null' ? this.props.fullname : '';
   @observable email = this.props.email !== 'null' ? this.props.email : '';
   // @observable phone = this.props.phone.replace(' ','+')
-  @observable phone = this.props.phone !== 'null' ? this.props.phone.replace(' ', '+'): '';
+  @observable phone = this.props.phone !== 'null' ? this.props.phone.replace(' ', '+') : '';
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
@@ -126,9 +127,9 @@ class LoginChatwootContainer extends React.Component {
 
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
-        ? this.props.settings.getIn(['settings', stateName, 'value'])
-        : ''
-}
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
 
   onFormSubmit(e) {
     e.preventDefault()
@@ -138,7 +139,7 @@ class LoginChatwootContainer extends React.Component {
 
     if (!$form.isValid(null, null, false)) isValid = false
 
-    if (!this._validatePhone(this.phone) && this.phone !== '' ) {
+    if (!this._validatePhone(this.phone) && this.phone !== '') {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
@@ -209,13 +210,19 @@ class LoginChatwootContainer extends React.Component {
 
     const siteURL = this.getSetting('siteUrl');
 
-    const roles = this.props.roles
+    const rolesMapToArray = this.props.roles
       .map(role => {
-        if(role.get('name') !== 'Admin' && role.get('name') !== 'Support'){
-          return { text: role.get('name'), value: role.get('_id') }
-        }
+        return { text: role.get('name'), value: role.get('_id') }
       })
       .toArray()
+
+    const roles = [];
+    for (role of rolesMapToArray) {
+      if(role.text !== 'Admin' && role.text !== 'Support'){
+        roles.push(role);
+      }
+    }
+
 
     const groups = this.props.groups
       .map(group => {
