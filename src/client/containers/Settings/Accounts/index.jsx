@@ -81,7 +81,7 @@ class AccountsSettingsContainer extends React.Component {
         this.allowUserRegistrationEnabled = this.getSetting('allowUserRegistration')
       if (this.ldapEnabled !== this.getSetting('ldapSettings'))
         this.ldapEnabled = this.getSetting('ldapSettings')
-        this.state.ldapEnabled = this.ldapEnabled
+        this.state.ldapEnabled = !this.ldapEnabled
       if (this.state.ldapHost !== this.getSetting('ldapHost') && this.getSetting('ldapHost') !== true)
         this.state.ldapHost = this.getSetting('ldapHost')
       if (this.state.ldapBindDN !== this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !==true)
@@ -355,7 +355,7 @@ class AccountsSettingsContainer extends React.Component {
               <Zone>
                 {rolesName.map(el => <ElementArray role={el}/>)}
               </Zone>
-              <div className='uk-clearfix'>
+              <div className='uk-clearfix' style = {{paddingTop: '1%'}}>
                 <Button
                   text={'Check Now'}
                   type={'button'}
@@ -364,7 +364,7 @@ class AccountsSettingsContainer extends React.Component {
                   waves={true}
                   style={'primary'}
                   onClick={e => this.onCheckNowClicked(e)}
-                  disabled={!this.getSetting('ldapSettings:enable')}
+                  disabled={this.state.ldapEnabled}
                 />
                 <Button
                   text={'Apply'}
@@ -373,7 +373,7 @@ class AccountsSettingsContainer extends React.Component {
                   flat={true}
                   waves={true}
                   style={'success'}
-                  disabled={!this.getSetting('ldapSettings:enable')}
+                  disabled={this.state.ldapEnabled}
                 />
 
               </div>
