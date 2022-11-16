@@ -61,6 +61,7 @@ class AccountsSettingsContainer extends React.Component {
       ldapUsername: '',
       mapping:[],
       rolesArray: [],
+      ldapEnabled: false
     }
 
     this.restartServer = this.restartServer.bind(this)
@@ -80,6 +81,7 @@ class AccountsSettingsContainer extends React.Component {
         this.allowUserRegistrationEnabled = this.getSetting('allowUserRegistration')
       if (this.ldapEnabled !== this.getSetting('ldapSettings'))
         this.ldapEnabled = this.getSetting('ldapSettings')
+        this.state.ldapEnabled = this.ldapEnabled
       if (this.state.ldapHost !== this.getSetting('ldapHost') && this.getSetting('ldapHost') !== true)
         this.state.ldapHost = this.getSetting('ldapHost')
       if (this.state.ldapBindDN !== this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !==true)
@@ -227,7 +229,6 @@ class AccountsSettingsContainer extends React.Component {
 
 
   render() {
-    let renderDisable = true
     this.siteURL = this.getSetting('siteurl');
     const ldapGArray = this.getLDAPGroups();
     const rolesName = this.getRoles();
@@ -299,7 +300,7 @@ class AccountsSettingsContainer extends React.Component {
               label={'Enable'}
               checked={this.ldapEnabled}
               onChange={e => {
-                renderDisable = !renderDisable;
+                this.state.ldapEnabled = !this.state.ldapEnabled
                 this.updateSetting('ldapSettings', 'ldapSettings:enable', e.target.checked)
               }}
             />
@@ -314,7 +315,7 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapHost'}
                   value={this.state.ldapHost}
-                  disabled={renderDisable}
+                  disabled={this.state.ldapEnabled}
                   onChange={e => this.onInputValueChanged(e, 'ldapHost')}
                 />
               </div>
@@ -325,7 +326,7 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapBindDN'}
                   value={this.state.ldapBindDN}
-                  disabled={!this.getSetting('ldapSettings:enable')}
+                  disabled={this.state.ldapEnabled}
                   onChange={e => this.onInputValueChanged(e, 'ldapBindDN')}
                 />
               </div>
@@ -336,7 +337,7 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapPassword'}
                   value={this.state.ldapPassword}
-                  disabled={!this.getSetting('ldapSettings:enable')}
+                  disabled={this.state.ldapEnabled}
                   onChange={e => this.onInputValueChanged(e, 'ldapPassword')}
                 />
               </div>
