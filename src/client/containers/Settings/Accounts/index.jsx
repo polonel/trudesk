@@ -303,7 +303,7 @@ class AccountsSettingsContainer extends React.Component {
             />
           }
         >
-          <div>
+          <div disable={true} >
             <form onSubmit={e => this.onFormSubmit(e)}>
               <div className='uk-margin-medium-bottom'>
                 <label>LDAP Server</label>

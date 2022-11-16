@@ -229,37 +229,48 @@ mainController.loginPost = async function (req, res, next) {
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
     if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
-      passport.authenticate('ldapauth', async function (request, user, err, status) {
+      Setting.findOne({ name: 'ldapSettings:enable' }, (err, setting) => {
+
         if (err) {
-          if (err.message != 'Invalid username/password') {
-            winston.error(err)
-            return next(err)
-          }
+          winston.error(err)
+          return next(err)
         }
 
-        if (!user) {
-          mainController.loginLocal(req, res, next)
-        }
-
-        if (user) {
-          let redirectUrl = '/dashboard'
-          if (req.session.redirectUrl) {
-            redirectUrl = req.session.redirectUrl
-            req.session.redirectUrl = null
-          }
-
-          req.logIn(user, function (err) {
+        if (setting?.value == true) {
+          passport.authenticate('ldapauth', async function (request, user, err, status) {
             if (err) {
-              winston.debug(err)
-              return next(err)
+              if (err.message != 'Invalid username/password') {
+                winston.error(err)
+                return next(err)
+              }
             }
 
-            return res.redirect(redirectUrl)
-          })
+            if (!user) {
+              mainController.loginLocal(req, res, next)
+            }
 
+            if (user) {
+              let redirectUrl = '/dashboard'
+              if (req.session.redirectUrl) {
+                redirectUrl = req.session.redirectUrl
+                req.session.redirectUrl = null
+              }
+
+              req.logIn(user, function (err) {
+                if (err) {
+                  winston.debug(err)
+                  return next(err)
+                }
+
+                return res.redirect(redirectUrl)
+              })
+
+            }
+          })(req, res, next)
+        } else {
+          mainController.loginLocal(req, res, next);
         }
-      })(req, res, next)
-
+      })
     } else {
       mainController.loginLocal(req, res, next);
     }
@@ -697,7 +708,7 @@ mainController.resetPass = function (req, res) {
         if (err) {
           return res.status(500).send(err.message)
         }
-        
+
         // Send mail
         emitter.emit('password:new', {
           socketId: '',
