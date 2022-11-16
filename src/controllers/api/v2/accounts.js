@@ -73,7 +73,7 @@ accountsApi.create = async function (req, res) {
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
       throw new Error('Password does not meet requirements')
 
-    let user = await User.create({
+    await User.createUser({
       username: postData.username,
       email: postData.email,
       phone: postData.phone,
@@ -82,55 +82,64 @@ accountsApi.create = async function (req, res) {
       title: postData.title,
       role: postData.role,
       accessToken: chance.hash()
-    })
+    }, async (err, userDB) => {
 
-    emitter.emit('user:created', {
-      socketId: '',
-      user: user,
-      userPassword: postData.password
-    })
-    
-    savedId = user._id
+      if (!err && userDB && userDB?.insertedIds) {
 
-    const userPopulated = await user.populate('role')
+        User.findById(userDB.insertedIds[0], async (err, user) => {
 
-    let groups = []
-    if (postData.groups) {
-      groups = await Group.getGroups(postData.groups)
-      for (const group of groups) {
-        await group.addMember(savedId)
-        await group.save()
+          emitter.emit('user:created', {
+            socketId: '',
+            user: user,
+            userPassword: postData.password
+          })
+
+          savedId = user._id
+
+          const userPopulated = await user.populate('role')
+
+          let groups = []
+          if (postData.groups) {
+            groups = await Group.getGroups(postData.groups)
+            for (const group of groups) {
+              await group.addMember(savedId)
+              await group.save()
+            }
+          }
+
+          let teams = []
+          if (postData.teams) {
+            const dbTeams = await Team.getTeamsByIds(postData.teams)
+            for (const team of dbTeams) {
+              await team.addMember(savedId)
+              await team.save()
+            }
+
+            teams = dbTeams
+          }
+
+          const departments = await Department.getUserDepartments(savedId)
+          user = userPopulated.toJSON()
+          user.groups = groups.map(g => {
+            return { _id: g._id, name: g.name }
+          })
+
+          if ((user.role.isAgent || user.role.isAdmin) && teams.length > 0) {
+            user.teams = teams.map(t => {
+              return { _id: t._id, name: t.name }
+            })
+
+            user.departments = departments.map(d => {
+              return { _id: d._id, name: d.name }
+            })
+          }
+
+          return apiUtil.sendApiSuccess(res, { account: user })
+
+        });
+
       }
-    }
-
-    let teams = []
-    if (postData.teams) {
-      const dbTeams = await Team.getTeamsByIds(postData.teams)
-      for (const team of dbTeams) {
-        await team.addMember(savedId)
-        await team.save()
-      }
-
-      teams = dbTeams
-    }
-
-    const departments = await Department.getUserDepartments(savedId)
-    user = userPopulated.toJSON()
-    user.groups = groups.map(g => {
-      return { _id: g._id, name: g.name }
     })
-
-    if ((user.role.isAgent || user.role.isAdmin) && teams.length > 0) {
-      user.teams = teams.map(t => {
-        return { _id: t._id, name: t.name }
-      })
-
-      user.departments = departments.map(d => {
-        return { _id: d._id, name: d.name }
-      })
-    }
-
-    return apiUtil.sendApiSuccess(res, { account: user })
   } catch (e) {
     winston.warn(e)
     return apiUtil.sendApiError(res, 500, e.message)

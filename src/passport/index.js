@@ -180,10 +180,20 @@ module.exports = function () {
                             roleUser = rolesForUser.filter(role => role.name == "User")[0];
                           }
                         }
+
+                        let telephoneNumber = ''
+                        if ( req?.telephoneNumber){
+                          telephoneNumber = req?.telephoneNumber.replace(/ /g,'');
+                          telephoneNumber = telephoneNumber.replace(/\(/g,'');
+                          telephoneNumber = telephoneNumber.replace(/\)/g,'');
+                          telephoneNumber = telephoneNumber.replace(/-/g,'');
+                        }
+                        
                         const passwordGuid = crypto.randomUUID();
                         const newUser = {
                           username: req.userPrincipalName,
                           password: passwordGuid,
+                          phone: telephoneNumber,
                           fullname: req.name,
                           email: req.userPrincipalName,
                           role: roleUser._id

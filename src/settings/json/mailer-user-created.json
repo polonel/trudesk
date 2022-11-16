@@ -1,6 +1,6 @@
 {
     "name": "user-created",
-    "displayName": "User created",
+    "displayName": "User Created",
     "description": "An email notification is sent when user created.",
     "subject": "Пользователь создан",
     "data": {

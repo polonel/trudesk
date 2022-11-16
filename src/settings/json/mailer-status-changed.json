@@ -1,6 +1,6 @@
 {
     "name": "status-changed",
-    "displayName": "Status changed",
+    "displayName": "Status Changed",
     "description": "An email notification is sent when the ticket status changes.",
     "subject": "[shatura.pro] - Изменен статус заявки.",
     "data": {

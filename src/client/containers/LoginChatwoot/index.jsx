@@ -211,7 +211,9 @@ class LoginChatwootContainer extends React.Component {
 
     const roles = this.props.roles
       .map(role => {
-        return { text: role.get('name'), value: role.get('_id') }
+        if(role.get('name') !== 'Admin' && role.get('name') !== 'Support'){
+          return { text: role.get('name'), value: role.get('_id') }
+        }
       })
       .toArray()
 

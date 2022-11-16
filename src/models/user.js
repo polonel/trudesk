@@ -50,10 +50,10 @@ const COLLECTION = 'accounts'
  * @property {Boolean} deleted Account Deleted
  */
 var userSchema = mongoose.Schema({
-  username: { type: String, required: true, unique: true, lowercase: true, maxlength: 100 },
+  username: { type: String, required: true, unique: true, lowercase: true, maxLength: 100 },
   password: { type: String, required: true, select: false },
-  fullname: { type: String, required: true, index: true, maxlength: 100 },
-  email: { type: String, required: true, unique: true, lowercase: true, maxlength: 100 },
+  fullname: { type: String, required: true, index: true, maxLength: 100 },
+  email: { type: String, required: true, unique: true, lowercase: true, maxLength: 100 },
   phone: String,
   role: { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
   lastOnline: Date,

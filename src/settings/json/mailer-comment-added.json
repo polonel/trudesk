@@ -1,6 +1,6 @@
 {
   "name": "comment-added",
-  "displayName": "Comment added",
+  "displayName": "Comment Added",
   "description": "Email notification sent when a new comment is posted.",
   "subject": "Trudesk - comment added {{ticket.status}} {{comment.owner}} {{ticket.assignee}}",
   "data": {
