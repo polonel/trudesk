@@ -134,7 +134,9 @@ class AccountsSettingsContainer extends React.Component {
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
     for (let i = 0; i < rolesArray.length; i++) {
-      rolesName.push({name:rolesArray[i]['name'], _id:rolesArray[i]['_id'], ldapGroupID:rolesArray[i]['ldapGroupID']});
+      if(rolesArray[i]['name'] !=='User'){
+        rolesName.push({name:rolesArray[i]['name'], _id:rolesArray[i]['_id'], ldapGroupID:rolesArray[i]['ldapGroupID']});
+      }
     }
     return rolesName;
   }
