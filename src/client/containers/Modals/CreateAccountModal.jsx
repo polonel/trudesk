@@ -161,7 +161,6 @@ class CreateAccountModal extends React.Component {
   }
 
   render() {
-    console.log(this.fullname)
     const roles = this.props.roles
       .map(role => {
         return { text: role.get('name'), value: role.get('_id') }
