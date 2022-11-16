@@ -303,7 +303,7 @@ class AccountsSettingsContainer extends React.Component {
             />
           }
         >
-          <div disable={true} >
+          <div>
             <form onSubmit={e => this.onFormSubmit(e)}>
               <div className='uk-margin-medium-bottom'>
                 <label>LDAP Server</label>
@@ -312,8 +312,8 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapHost'}
                   value={this.state.ldapHost}
+                  disabled={!this.getSetting('ldapSettings:enable')}
                   onChange={e => this.onInputValueChanged(e, 'ldapHost')}
-                // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
               </div>
               <div className='uk-margin-medium-bottom'>
@@ -323,8 +323,8 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapBindDN'}
                   value={this.state.ldapBindDN}
+                  disabled={!this.getSetting('ldapSettings:enable')}
                   onChange={e => this.onInputValueChanged(e, 'ldapBindDN')}
-                // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
               </div>
               <div className='uk-margin-medium-bottom'>
@@ -334,8 +334,8 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapPassword'}
                   value={this.state.ldapPassword}
+                  disabled={!this.getSetting('ldapSettings:enable')}
                   onChange={e => this.onInputValueChanged(e, 'ldapPassword')}
-                // disabled={!this.getSetting('mailerCheckEnabled')}
                 />
               </div>
               {/* <div className='uk-margin-medium-bottom'>
@@ -361,7 +361,7 @@ class AccountsSettingsContainer extends React.Component {
                   waves={true}
                   style={'primary'}
                   onClick={e => this.onCheckNowClicked(e)}
-                // disabled={!this.getSetting('mailerCheckEnabled')}
+                  disabled={!this.getSetting('ldapSettings:enable')}
                 />
                 <Button
                   text={'Apply'}
@@ -370,7 +370,7 @@ class AccountsSettingsContainer extends React.Component {
                   flat={true}
                   waves={true}
                   style={'success'}
-                // disabled={!this.getSetting('mailerCheckEnabled')}
+                  disabled={!this.getSetting('ldapSettings:enable')}
                 />
 
               </div>
