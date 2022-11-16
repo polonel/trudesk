@@ -227,6 +227,7 @@ class AccountsSettingsContainer extends React.Component {
 
 
   render() {
+    let renderDisable = true
     this.siteURL = this.getSetting('siteurl');
     const ldapGArray = this.getLDAPGroups();
     const rolesName = this.getRoles();
@@ -298,6 +299,7 @@ class AccountsSettingsContainer extends React.Component {
               label={'Enable'}
               checked={this.ldapEnabled}
               onChange={e => {
+                renderDisable = !renderDisable;
                 this.updateSetting('ldapSettings', 'ldapSettings:enable', e.target.checked)
               }}
             />
@@ -312,7 +314,7 @@ class AccountsSettingsContainer extends React.Component {
                   className={'md-input md-input-width-medium'}
                   name={'ldapHost'}
                   value={this.state.ldapHost}
-                  disabled={!this.getSetting('ldapSettings:enable')}
+                  disabled={renderDisable}
                   onChange={e => this.onInputValueChanged(e, 'ldapHost')}
                 />
               </div>
