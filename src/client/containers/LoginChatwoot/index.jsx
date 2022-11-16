@@ -216,7 +216,7 @@ class LoginChatwootContainer extends React.Component {
       .toArray();
 
     const roles = [];
-    for (const role in rolesMapToArray){
+    for (const role of rolesMapToArray){
       if(role.text !== 'Admin' && role.text !== 'Support'){
         roles.push(role)
       }

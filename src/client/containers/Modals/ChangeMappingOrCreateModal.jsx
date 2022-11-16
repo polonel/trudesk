@@ -88,6 +88,7 @@ class ChangeMappingOrCreateModalContainer extends React.Component {
     }
   }
   render() {
+    console.log(this.fullname)
     const siteURL = this.getSetting('siteurl');
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
