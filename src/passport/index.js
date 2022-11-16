@@ -166,9 +166,12 @@ module.exports = function () {
                     countGroup = 0;
                     for (let group of req.memberOf) {
                       countGroup = countGroup + 1;
-                      if (ldapGroup.name == group) {
+                      if (!ldapGroup && role.name == 'User') {
                         rolesForUser.push({ name: role.name, _id: role._id })
-                      }
+                      } else if (ldapGroup?.name == group) {
+                        rolesForUser.push({ name: role.name, _id: role._id })
+                      } 
+                      
                       if (countRole == roles.length && countGroup == req.memberOf.length) {
                         if (rolesForUser.length == 0) {
                           return done(null, false, console.log('loginMessage', 'The LDAP group is not tied to roles'))
