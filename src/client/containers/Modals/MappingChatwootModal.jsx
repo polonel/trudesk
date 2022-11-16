@@ -259,7 +259,7 @@ class MappingChatwootContainer extends React.Component {
         <div style={{ margin: '24px 24px 0 24px' }}>
           <form className='uk-form-stacked' onSubmit={e => this.onFormSubmit(e)} style={{ position: 'center' }}>
             <div className='uk-margin-medium-bottom uk-clearfix'>
-              <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
+              <div className='uk-float-left' style={{ width: '200px', paddingRight: '20px' }}>
                 <label className={'uk-form-label'}>Phone number</label>
                 <input
                   type='text'
@@ -269,7 +269,7 @@ class MappingChatwootContainer extends React.Component {
                   onChange={e => this.onInputChanged(e, 'phone')}
                 />
               </div>
-              <div className='uk-float-left uk-width-1-2'>
+              <div className='uk-float-right uk-width-1-2' style={{ width: '200px' }} >
                 <label className={'uk-form-label'}></label>
                 <input
                   type='text'
