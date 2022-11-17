@@ -63,12 +63,12 @@ ldapClient.bind = function (url, userDN, password, callback) {
               if (err) console.log(err);
               axios.post(`${url.value}/api/v2/pushLDAPGroup`, { dnGroupsArray }).then(res => {
                 if (res)  console.log('pushLDAPGroup = true')
+                return callback(res)
               }).catch(err => { console.log(err) })
             })
           });
         }
       });
-      console.log('Конец кода');
     }
   })
 

@@ -62,26 +62,35 @@ commonV2.loginChatwoot = async (req, res) => {
 commonV2.loginLDAP = async (req, res) => {
 
   ldapCallBack = function (req, username, password, done) {
+    // try {
+    //   User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+    //     .select('+password +tOTPKey +tOTPPeriod')
+    //     .exec(function (err, user) {
+    //       if (err) {
+    //         return done(err)
+    //       }
+
+    //       if (!user || user.deleted || !User.validate(password, user.password)) {
+    //         req.flash('loginMessage', '')
+    //         return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
+    //       }
+    //       req.user = user
+
+    //       return done(null, user)
+    //     })
+    // } catch (err) {
+    //   if (typeof done == 'function'){
+    //     return done(err)
+    //   } else {
+    //     console.log(err)
+    //     return false
+    //   }
+    // }
     try{
-      User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
-      .select('+password +tOTPKey +tOTPPeriod')
-      .exec(function (err, user) {
-        if (err) {
-          return done(err)
-        }
-
-        if (!user || user.deleted || !User.validate(password, user.password)) {
-          req.flash('loginMessage', '')
-          return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
-        }
-        req.user = user
-
-        return done(null, user)
-      })
-    }catch(err){
-      return done(err)
+      return apiUtils.sendApiSuccess(res)
+    }catch{
+      return true
     }
-   
   }
 
   ldapClient.bind(req.body.ldapHost, req.body.ldapBindDN, req.body['login-password'], ldapCallBack)
@@ -92,7 +101,7 @@ commonV2.pushLDAPGroup = async (req, res) => {
   const ldapGroups = req.body.dnGroupsArray;
   for (let group of ldapGroups) {
 
-    LDAPGroup.findOne({ name: group }, function (err, ldapGroup) {
+    LDAPGroup.findOne({ name: group }, async function (err, ldapGroup) {
 
       if (err) return console.log(err);
       if (ldapGroup !== null && ldapGroup !== undefined) {
@@ -102,6 +111,9 @@ commonV2.pushLDAPGroup = async (req, res) => {
         LDAPGroup.insertMany({ name: group }, function (err, ldapGroup) {
           if (err) return console.log(err);
           console.log('Group added: ' + ldapGroup[0].name)
+          if(ldapGroup[0].name == ldapGroups[ldapGroups.length - 1]){
+              return apiUtils.sendApiSuccess(res)
+          }
         })
       }
     })
@@ -126,7 +138,6 @@ commonV2.pushLDAPGroup = async (req, res) => {
     .catch(error => {
       console.log(error);
     })
-    return true
 }
 
 

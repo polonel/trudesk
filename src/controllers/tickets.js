@@ -18,7 +18,8 @@
  const departmentSchema = require('../models/department')
  const permissions = require('../permissions')
  const xss = require('xss')
- const fs = require('fs-extra')
+ const fs = require('fs-extra') 
+ const iconv = require('iconv-lite')
  /**
   * @since 1.0
   * @author Chris Brame <polonel@gmail.com>
@@ -703,8 +704,9 @@
        return file.resume()
      }
  
+     let filenameDecode =  iconv.decode(filename, 'utf-8');
      const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
-     let sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
+     let sanitizedFilename = filenameDecode.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
  
      const ext = path.extname(sanitizedFilename)
      const allowedExts = [

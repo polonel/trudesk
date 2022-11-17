@@ -184,30 +184,29 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   onCheckNowClicked(e) {
-      axios
-        .post(`/api/v2/loginLDAP`, {
-          // 'login-username': this.state.ldapUsername, 
-          'login-password': this.state.ldapPassword,
-          ldapHost: this.state.ldapHost,
-          ldapBindDN: this.state.ldapBindDN,
-        })
-        .then(function (res) {
-          if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-          window.location.href = `${this.siteURL}/settings/accounts`;
-        })
-        .catch(function (err) {
-          Log.error(err)
-          helpers.UI.showSnackbar(err, true)
-          window.location.href = `${this.siteURL}/settings/accounts`;
-        })
-   
+    axios
+      .post(`/api/v2/loginLDAP`, {
+        // 'login-username': this.state.ldapUsername, 
+        'login-password': this.state.ldapPassword,
+        ldapHost: this.state.ldapHost,
+        ldapBindDN: this.state.ldapBindDN,
+      })
+      .then(function (res) {
+        if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+        window.location.href = `/settings/accounts`;
+      })
+      .catch(function (err) {
+        Log.error(err)
+        helpers.UI.showSnackbar(err, true)
+        window.location.href = `/settings/accounts`;
+      })
+
     // window.location.reload(true)
   }
 
 
   onFormSubmit(e) {
     e.preventDefault()
-
     const ldapSettings = [
       // { name: 'ldapSettings:enable', value: this.state.ldapEnabled * 60000 },
       { name: 'ldapSettings:host', value: this.state.ldapHost },
@@ -219,7 +218,7 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
-    window.location.href = `${this.siteURL}/settings/accounts`;
+    window.location.href = `/settings/accounts`;
   }
 
 
@@ -235,7 +234,7 @@ class AccountsSettingsContainer extends React.Component {
       this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !== ''
       &&
       this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== ''
-    ){
+    ) {
       checkNowDisabled = false;
     } else {
       checkNowDisabled = true;

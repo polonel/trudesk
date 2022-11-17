@@ -189,6 +189,10 @@ function bindImapReady() {
                           message.fromName = mail.headers.get('from').value[0].name
                         }
 
+                        if (mail?.attachments.length !== 0) {
+                          message.attachments = mail.attachments
+                        }
+
                         if (mail.subject) {
                           message.subject = mail.subject
                         } else {
