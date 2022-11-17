@@ -18,15 +18,11 @@ import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings, fetchRoles } from 'actions/settings'
 import { fetchLDAPGroups } from 'actions/ldapGroups'
 import { fetchSettings } from 'actions/settings'
-// import { fetchRoles } from 'actions/common'
-// import settingUtil from '../../../../settings/settingsUtil'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
-import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
 import SettingSubItem from 'components/Settings/SettingSubItem'
 import SingleSelect from 'components/SingleSelect'
-import ColorSelector from 'components/ColorSelector'
 import Zone from 'components/ZoneBox/zone'
 import ZoneBox from 'components/ZoneBox'
 
@@ -36,7 +32,6 @@ import Log from '../../../logger'
 import EnableSwitch from 'components/Settings/EnableSwitch'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
-import UIKit from 'uikit'
 
 @observer
 class AccountsSettingsContainer extends React.Component {
@@ -46,7 +41,6 @@ class AccountsSettingsContainer extends React.Component {
   @observable siteURL = ''
 
   ldapGroupsArray = []
-  // @observable LDAPSettings = false
 
   constructor(props) {
     super(props)
@@ -199,12 +193,14 @@ class AccountsSettingsContainer extends React.Component {
         })
         .then(function (res) {
           if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+          window.location.href = `${this.siteURL}/settings/accounts`;
         })
         .catch(function (err) {
           Log.error(err)
           helpers.UI.showSnackbar(err, true)
+          window.location.href = `${this.siteURL}/settings/accounts`;
         })
-    window.location.href = `${this.siteURL}/settings/accounts`;
+   
     // window.location.reload(true)
   }
 

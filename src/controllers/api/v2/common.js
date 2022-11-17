@@ -62,7 +62,8 @@ commonV2.loginChatwoot = async (req, res) => {
 commonV2.loginLDAP = async (req, res) => {
 
   ldapCallBack = function (req, username, password, done) {
-    User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+    try{
+      User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
       .select('+password +tOTPKey +tOTPPeriod')
       .exec(function (err, user) {
         if (err) {
@@ -71,14 +72,16 @@ commonV2.loginLDAP = async (req, res) => {
 
         if (!user || user.deleted || !User.validate(password, user.password)) {
           req.flash('loginMessage', '')
-          //Функция создания пользователя в db с ролями
           return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'))
         }
-        //Функция проверки ролей пользователя, удаление или добавление ролей
         req.user = user
 
         return done(null, user)
       })
+    }catch(err){
+      return done(err)
+    }
+   
   }
 
   ldapClient.bind(req.body.ldapHost, req.body.ldapBindDN, req.body['login-password'], ldapCallBack)
