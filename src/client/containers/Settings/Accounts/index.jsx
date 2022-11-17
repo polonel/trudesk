@@ -44,7 +44,7 @@ class AccountsSettingsContainer extends React.Component {
   @observable allowUserRegistrationEnabled = false
   @observable ldapEnabled = false
   @observable siteURL = ''
-  
+
   ldapGroupsArray = []
   // @observable LDAPSettings = false
 
@@ -59,7 +59,7 @@ class AccountsSettingsContainer extends React.Component {
       ldapBindDN: '',
       ldapPassword: '',
       ldapUsername: '',
-      mapping:[],
+      mapping: [],
       rolesArray: [],
       ldapEnabled: false
     }
@@ -81,15 +81,15 @@ class AccountsSettingsContainer extends React.Component {
         this.allowUserRegistrationEnabled = this.getSetting('allowUserRegistration')
       if (this.ldapEnabled !== this.getSetting('ldapSettings'))
         this.ldapEnabled = this.getSetting('ldapSettings')
-        this.state.ldapEnabled = !this.ldapEnabled
+      this.state.ldapEnabled = !this.ldapEnabled
       if (this.state.ldapHost !== this.getSetting('ldapHost') && this.getSetting('ldapHost') !== true)
         this.state.ldapHost = this.getSetting('ldapHost')
-      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !==true)
+      if (this.state.ldapBindDN !== this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !== true)
         this.state.ldapBindDN = this.getSetting('ldapBindDN')
       if (this.state.ldapPassword !== this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== true)
         this.state.ldapPassword = this.getSetting('ldapPassword')
-      if (this.state.ldapUsername !== this.getSetting('ldapUsername') && this.getSetting('ldapUsername') !== true)
-        this.state.ldapUsername = this.getSetting('ldapUsername')
+      // if (this.state.ldapUsername !== this.getSetting('ldapUsername') && this.getSetting('ldapUsername') !== true)
+      //   this.state.ldapUsername = this.getSetting('ldapUsername')
     }
   }
 
@@ -130,27 +130,27 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   getRoles() {
-    let rolesArray =this.props.roles;
+    let rolesArray = this.props.roles;
     rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
     rolesArray = JSON.stringify(rolesArray);
     rolesArray = JSON.parse(rolesArray);
     let rolesName = [];
     for (let i = 0; i < rolesArray.length; i++) {
-      if(rolesArray[i]['name'] !=='User'){
-        rolesName.push({name:rolesArray[i]['name'], _id:rolesArray[i]['_id'], ldapGroupID:rolesArray[i]['ldapGroupID']});
+      if (rolesArray[i]['name'] !== 'User') {
+        rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
       }
     }
     return rolesName;
   }
   getLDAPGroups() {
-  
+
     let ldapGArray = [];
     axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
-    }).catch(err=>{console.log(err)})
- 
-     for (let i = 0; i <  this.ldapGroupsArray.length; i++) {
-      ldapGArray.push( {text: this.ldapGroupsArray[i]['name'],value: this.ldapGroupsArray[i]['_id']});
+    }).catch(err => { console.log(err) })
+
+    for (let i = 0; i < this.ldapGroupsArray.length; i++) {
+      ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
     }
     return ldapGArray;
   }
@@ -161,8 +161,8 @@ class AccountsSettingsContainer extends React.Component {
     })
   }
 
-  updateMapping(mapping){
-       axios
+  updateMapping(mapping) {
+    axios
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
@@ -171,42 +171,41 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
-    
+
   }
-  addToMap(e,role,ldapGroupID){
+  addToMap(e, role, ldapGroupID) {
     const roles = this.getRoles();
     let roleExist = false;
-      for(let map of this.state.mapping){
-        if(map.roleID == role._id){
-          map.ldapGroupID = ldapGroupID
-          roleExist = true
-        }
+    for (let map of this.state.mapping) {
+      if (map.roleID == role._id) {
+        map.ldapGroupID = ldapGroupID
+        roleExist = true
       }
+    }
 
-      if (roleExist == false){
-        this.state.mapping.push({roleID: role._id, ldapGroupID: ldapGroupID})
-      }
-    
+    if (roleExist == false) {
+      this.state.mapping.push({ roleID: role._id, ldapGroupID: ldapGroupID })
+    }
+
   }
 
   onCheckNowClicked(e) {
-
-    axios
-      .post(`/api/v2/loginLDAP`, {
-        // 'login-username': this.state.ldapUsername, 
-        'login-password': this.state.ldapPassword,
-        ldapHost: this.state.ldapHost,
-        ldapBindDN: this.state.ldapBindDN,
-      })
-      .then(function (res) {
-        if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-      })
-      .catch(function (err) {
-        Log.error(err)
-        helpers.UI.showSnackbar(err, true)
-      })
-      window.location.href = `${this.siteURL}/settings/accounts`;
-     // window.location.reload(true)
+      axios
+        .post(`/api/v2/loginLDAP`, {
+          // 'login-username': this.state.ldapUsername, 
+          'login-password': this.state.ldapPassword,
+          ldapHost: this.state.ldapHost,
+          ldapBindDN: this.state.ldapBindDN,
+        })
+        .then(function (res) {
+          if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+        })
+        .catch(function (err) {
+          Log.error(err)
+          helpers.UI.showSnackbar(err, true)
+        })
+    window.location.href = `${this.siteURL}/settings/accounts`;
+    // window.location.reload(true)
   }
 
 
@@ -232,35 +231,49 @@ class AccountsSettingsContainer extends React.Component {
     this.siteURL = this.getSetting('siteurl');
     const ldapGArray = this.getLDAPGroups();
     const rolesName = this.getRoles();
+    let checkNowDisabled = true;
+    if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
+      &&
+      this.getSetting('ldapHost') && this.getSetting('ldapHost') !== ''
+      &&
+      this.getSetting('ldapBindDN') && this.getSetting('ldapBindDN') !== ''
+      &&
+      this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== ''
+    ){
+      checkNowDisabled = false;
+    } else {
+      checkNowDisabled = true;
+    }
+
     const ElementArray = ({ role }) => {
       const roleGroup = role;
       return <ZoneBox>
         <SettingSubItem
           title={role.name}
-          value = {role._id}
+          value={role._id}
           component={
             <SingleSelect
               width='60%'
               showTextbox={false}
               items={ldapGArray}
               defaultValue={roleGroup.ldapGroupID}
-              disabled = {this.state.ldapEnabled}
+              disabled={this.state.ldapEnabled}
               onSelectChange={(e) => {
-                this.addToMap(e,roleGroup,e.target.value)
-            }}
+                this.addToMap(e, roleGroup, e.target.value)
+              }}
             />
           }
         />
       </ZoneBox>
     }
     // fillInTheListOfRoles();
-    
+
     // const ldapGroupsName = this. getLDAPGroups();
     const { active } = this.props
     return (
 
       <div className={active ? 'active' : 'hide'}>
-    
+
         <SettingItem
           title='Allow User Registration'
           subtitle='Allow users to create accounts on the login screen.'
@@ -354,9 +367,9 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {rolesName.map(el => <ElementArray role={el}/>)}
+                {rolesName.map(el => <ElementArray role={el} />)}
               </Zone>
-              <div className='uk-clearfix' style = {{paddingTop: '1%'}}>
+              <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
                   text={'Check Now'}
                   type={'button'}
@@ -365,7 +378,7 @@ class AccountsSettingsContainer extends React.Component {
                   waves={true}
                   style={'primary'}
                   onClick={e => this.onCheckNowClicked(e)}
-                  disabled={this.state.ldapEnabled}
+                  disabled={checkNowDisabled}
                 />
                 <Button
                   text={'Apply'}
@@ -401,4 +414,4 @@ const mapStateToProps = state => ({
   ldapGroups: state.shared.ldapGroups
 })
 
-export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles, fetchLDAPGroups,fetchSettings })(AccountsSettingsContainer)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings, fetchRoles, fetchLDAPGroups, fetchSettings })(AccountsSettingsContainer)
