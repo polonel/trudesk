@@ -48,6 +48,7 @@ import CommentNotePartial from 'containers/Tickets/CommentNotePartial'
 import DatePicker from 'components/DatePicker'
 import EasyMDE from 'components/EasyMDE'
 import IssuePartial from 'containers/Tickets/IssuePartial'
+import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
 import OffCanvasEditor from 'components/OffCanvasEditor'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
 import StatusSelector from 'containers/Tickets/StatusSelector'
@@ -797,19 +798,21 @@ class SingleTicketContainer extends React.Component {
                                   })
                                 }}
                               />) && (
-                                <IssuePartial
-                                  ticketId={this.ticket._id}
-                                  status={this.ticket.status}
-                                  owner={this.ticket.owner}
-                                  subject={this.ticket.subject}
-                                  issue={this.ticket.issue}
-                                  date={this.ticket.date}
-                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
-                                  attachments={this.ticket.attachments}
-                                  editorWindow={this.editorWindow}
-                                  socket={this.props.socket}
-                                />
+                                <AttachedСommentFiles
+                                ticketId={this.ticket._id}
+                                status={this.ticket.status}
+                                owner={this.ticket.owner}
+                                subject={this.ticket.subject}
+                                issue={this.ticket.issue}
+                                date={this.ticket.date}
+                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
+                                attachments={this.ticket.attachments}
+                                editorWindow={this.editorWindow}
+                                socket={this.props.socket}
+                              />
                               )
+                                
+                              
 
 
                             ))}
