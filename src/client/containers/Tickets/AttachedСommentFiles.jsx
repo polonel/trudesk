@@ -38,6 +38,7 @@ const setupLinks = parent => {
 @observer
 class AttachedСommentFiles extends React.Component {
   @observable ticketId = ''
+  @observable commentId = ''
   @observable status = null
   @observable owner = null
   @observable subject = ''
