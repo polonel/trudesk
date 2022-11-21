@@ -48,12 +48,12 @@ class CommentNotePartial extends React.Component {
   componentDidUpdate() {
     setupImages(this)
     setupLinks(this)
-    if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
-    if (prevProps.status !== this.props.status) this.status = this.props.status
-    if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
-    if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
-    if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
+    // if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
+    // if (prevProps.status !== this.props.status) this.status = this.props.status
+    // if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
+    // if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
+    // if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
+    // if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
   componentWillUnmount() { }
