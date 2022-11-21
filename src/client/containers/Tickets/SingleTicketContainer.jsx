@@ -767,7 +767,20 @@ class SingleTicketContainer extends React.Component {
                         <TruTabSection sectionId={0} active={true}>
                           <div className='all-comments'>
                             {this.commentsAndNotes.map(item => (
-                              (<CommentNotePartial
+                              (
+                              <AttachedСommentFiles
+                                ticketId={this.ticket._id}
+                                status={this.ticket.status}
+                                owner={this.ticket.owner}
+                                subject={this.ticket.subject}
+                                issue={this.ticket.issue}
+                                date={this.ticket.date}
+                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
+                                attachments={this.ticket.attachments}
+                                editorWindow={this.editorWindow}
+                                socket={this.props.socket}
+                              />,
+                              <CommentNotePartial
                                 key={item._id}
                                 ticketStatus={this.ticket.status}
                                 ticketSubject={this.ticket.subject}
@@ -797,23 +810,7 @@ class SingleTicketContainer extends React.Component {
                                     isNote: item.isNote
                                   })
                                 }}
-                              />) && (
-                                <AttachedСommentFiles
-                                ticketId={this.ticket._id}
-                                status={this.ticket.status}
-                                owner={this.ticket.owner}
-                                subject={this.ticket.subject}
-                                issue={this.ticket.issue}
-                                date={this.ticket.date}
-                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
-                                attachments={this.ticket.attachments}
-                                editorWindow={this.editorWindow}
-                                socket={this.props.socket}
-                              />
-                              )
-                                
-                              
-
+                              />) 
 
                             ))}
                           </div>

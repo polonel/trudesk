@@ -125,7 +125,6 @@ class AttachedСommentFiles extends React.Component {
   render () {
     return (
       <div className='initial-issue uk-clearfix'>
-        <Avatar image={this.owner.image} userId={this.owner._id} />
         {/* Issue */}
         <div className='issue-text'>
           {/* Attachments */}
@@ -149,7 +148,7 @@ class AttachedСommentFiles extends React.Component {
               ))}
           </ul>
           <div className='issue-body' ref={r => (this.issueBody = r)}>
-            {ReactHtmlParser(this.issue)}
+         
           </div>
         </div>
         {/* Permissions on Fragment for edit */}
