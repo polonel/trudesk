@@ -27,7 +27,7 @@ var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
 var permissions = require('../permissions')
 var xss = require('xss')
-var { head, filter} = require('lodash')
+var { head, filter } = require('lodash')
 var settingSchema = require('../models/setting')
 var templateSchema = require('../models/template')
 var path = require('path')
@@ -36,7 +36,7 @@ var Email = require('email-templates')
 var Mailer = require('../mailer')
 var events = {}
 
-function register (socket) {
+function register(socket) {
   events.onUpdateTicketGrid(socket)
   events.onUpdateTicketStatus(socket)
   events.onUpdateTicket(socket)
@@ -54,7 +54,7 @@ function register (socket) {
   events.onAttachmentsUIUpdate(socket)
 }
 
-function eventLoop () {}
+function eventLoop() { }
 
 events.onUpdateTicketGrid = function (socket) {
   socket.on('ticket:updategrid', function () {
@@ -99,7 +99,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
   if (template) {
     const ticketJSON = ticket.toJSON()
     ticketJSON.status = ticket.statusFormatted
-    switch ( ticketJSON.status) {
+    switch (ticketJSON.status) {
       case 'New':
         ticketJSON.status = 'Новая'
         break
@@ -113,10 +113,10 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
         ticketJSON.status = 'Закрыта'
         break
     }
-    if (ticketJSON.assignee){
+    if (ticketJSON.assignee) {
       const assignee = await userSchema.findOne({ _id: ticketJSON.assignee })
       ticketJSON.assignee = assignee.fullname
-      }
+    }
     const context = { base_url: baseUrl, ticket: ticketJSON }
 
 
@@ -135,7 +135,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
   }
 }
 
-const configForSendMail = async (ticket,templateName) =>{
+const configForSendMail = async (ticket, templateName) => {
   const ticketObject = ticket
   try {
     const ticket = await ticketSchema.getTicketById(ticketObject._id)
@@ -504,19 +504,20 @@ events.onAttachmentsUIUpdate = socket => {
     }
   })
   socket.on(socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, async data => {
-    const commentId = data._id
-
+    const commentId = data.commentId
+    const ticketId = data.ticketId
     if (_.isUndefined(commentId)) return true
-
+    if (_.isUndefined(ticketId)) return true
     try {
-      const comment = await commentSchema.findOne({_id:commentId})
+      const ticket = await ticketSchema.getTicketById(ticketId)
       const user = socket.request.user
       if (_.isUndefined(user)) return true
 
       const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
 
       const data = {
-        comment,
+        ticket,
+        commentId,
         canRemoveAttachments
       }
 

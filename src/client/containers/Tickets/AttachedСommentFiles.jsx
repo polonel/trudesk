@@ -82,6 +82,9 @@ class AttachedСommentFiles extends React.Component {
   }
 
   onUpdateCommentAttachments (data) {
+    console.log('onUpdateCommentAttachments')
+    console.log('data.comment._id')
+    console.log(data.comment._id)
     if (this.commentId === data.comment._id) {
       this.attachments = data.comment.attachments
     }
@@ -102,7 +105,7 @@ class AttachedСommentFiles extends React.Component {
         }
       })
       .then(() => {
-        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { _id: this.commentId })
+        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
         helpers.UI.showSnackbar('Attachment Successfully Uploaded')
       })
       .catch(error => {
@@ -127,6 +130,8 @@ class AttachedСommentFiles extends React.Component {
   }
 
   render () {
+    console.log('this.attachments')
+    console.log(this.attachments)
     return (
       <div className='initial-issue uk-clearfix'>
         {/* Issue */}

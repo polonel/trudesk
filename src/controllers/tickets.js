@@ -731,7 +731,8 @@ ticketsController.uploadAttachment = function (req, res) {
       '.mpeg',
       '.eps',
       '.ai',
-      '.psd'
+      '.psd',
+      '.gz'
     ]
     const badExts = ['.html', '.htm', '.js', '.svg']
 
@@ -894,7 +895,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
     }
 
     let filenameDecode = iconv.decode(filename, 'utf-8');
-    const savePath = path.join(__dirname, `../../public/uploads/tickets/comments/${object.ticketId}`, object.commentId)
+    const savePath = path.join(__dirname, `../../public/uploads/tickets/${object.ticketId}/comments`, object.commentId)
     let sanitizedFilename = filenameDecode.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
     const ext = path.extname(sanitizedFilename)
@@ -920,7 +921,8 @@ ticketsController.uploadCommentAttachment = function (req, res) {
       '.mpeg',
       '.eps',
       '.ai',
-      '.psd'
+      '.psd',
+      '.gz'
     ]
     const badExts = ['.html', '.htm', '.js', '.svg']
 
@@ -1000,12 +1002,14 @@ ticketsController.uploadCommentAttachment = function (req, res) {
         const attachment = {
           owner: object.ownerId,
           name: object.filename,
-          path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
+          path: '/uploads/tickets/' + object.ticketId + '/comments/' + object.commentId + '/attachment_' + object.filename,
           type: object.mimetype
         }
 
-        let comment =  ticket.comments.find(comment => comment._id === object.commentId);
-        comment.attachments.push(attachment)
+        let comment = ticket.comments.filter(function (comment) {
+          return comment._id == object.commentId;
+        });
+        comment[0].attachments.push(attachment)
 
         const historyItem = {
           action: 'ticket:added:attachment',
