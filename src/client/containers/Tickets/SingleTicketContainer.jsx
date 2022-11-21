@@ -826,7 +826,7 @@ class SingleTicketContainer extends React.Component {
                                   attachments={this.ticket.attachments}
                                   editorWindow={this.editorWindow}
                                   socket={this.props.socket}
-
+                                  ticket = {this.ticket}
                                   key={comment._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
@@ -874,7 +874,7 @@ class SingleTicketContainer extends React.Component {
                                   attachments={this.ticket.attachments}
                                   editorWindow={this.editorWindow}
                                   socket={this.props.socket}
-
+                                  ticket = {this.ticket}
                                   key={note._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}

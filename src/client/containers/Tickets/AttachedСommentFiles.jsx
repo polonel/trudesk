@@ -39,6 +39,7 @@ const setupLinks = parent => {
 @observer
 class AttachedСommentFiles extends React.Component {
   @observable ticketId = ''
+  @observable ticket = ''
   @observable commentId = ''
   @observable status = null
   @observable owner = null
@@ -57,7 +58,7 @@ class AttachedСommentFiles extends React.Component {
     this.subject = this.props.subject
     this.issue = this.props.issue
     this.commentId = this.props.commentId
-    let comment = ticket.comments.filter(function (comment) {
+    let comment = this.props.ticket.comments.filter(function (comment) {
         return comment._id == commentId;
       });
     this.attachments = comment.attachments
