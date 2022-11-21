@@ -15,11 +15,7 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
-import axios from 'axios'
-import Log from '../../logger'
-import { observer } from 'mobx-react'
-import { makeObservable, observable } from 'mobx'
-import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
+import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
 
 import helpers from 'lib/helpers'
 
@@ -34,75 +30,17 @@ const setupLinks = parent => {
 }
 
 class CommentNotePartial extends React.Component {
-  @observable ticketId = ''
-  @observable status = null
-  @observable owner = null
-  @observable subject = ''
-  @observable issue = ''
-  @observable attachments = []
-  constructor (props) {
-    super(props)
-    makeObservable(this)
-
-    this.ticketId = this.props.ticketId
-    this.status = this.props.status
-    this.owner = this.props.owner
-    this.subject = this.props.subject
-    this.issue = this.props.issue
-    this.attachments = this.props.attachments
-
-    this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
-  }
-
   componentDidMount () {
     setupImages(this)
     setupLinks(this)
-    
-    this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
   componentDidUpdate () {
     setupImages(this)
     setupLinks(this)
-    if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
-    if (prevProps.status !== this.props.status) this.status = this.props.status
-    if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
-    if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
-    if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
   componentWillUnmount () {}
-
-  onUpdateTicketAttachments (data) {
-    if (this.ticketId === data.ticket._id) {
-      this.attachments = data.ticket.attachments
-    }
-  }
-
-  onAttachmentInputChange (e) {
-    const formData = new FormData()
-    const attachmentFile = e.target.files[0]
-    formData.append('ticketId', this.ticketId)
-    formData.append('attachment', attachmentFile)
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    axios
-      .post(`/tickets/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        }
-      })
-      .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
-        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
-  }
 
   render () {
     const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props
@@ -142,40 +80,7 @@ class CommentNotePartial extends React.Component {
             )}
           </div>
         )}
-         {/* Permissions on Fragment for edit */}
-          <Fragment>
-            <div
-              className={'edit-issue'}
-              onClick={() => {
-                if (this.props.editorWindow)
-                  this.props.editorWindow.openEditorWindow({
-                    subject: this.subject,
-                    text: this.issue,
-                    onPrimaryClick: data => {
-                      this.props.socket.emit(TICKETS_ISSUE_SET, {
-                        _id: this.ticketId,
-                        value: data.text,
-                        subject: data.subjectText
-                      })
-                    }
-                  })
-              }}
-            >
-              <i className='material-icons'>&#xE254;</i>
-            </div>
-            <form className='form nomargin' encType='multipart/form-data'>
-              <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons'>&#xE226;</i>
-              </div>
-
-              <input
-                ref={r => (this.attachmentInput = r)}
-                className='hide'
-                type='file'
-                onChange={e => this.onAttachmentInputChange(e)}
-              />
-            </form>
-          </Fragment>
+        <AttachedСommentFiles />
       </div>
     )
   }
@@ -188,8 +93,7 @@ CommentNotePartial.propTypes = {
   dateFormat: PropTypes.string.isRequired,
   isNote: PropTypes.bool.isRequired,
   onEditClick: PropTypes.func.isRequired,
-  onRemoveClick: PropTypes.func.isRequired,
-  socket: PropTypes.object.isRequired
+  onRemoveClick: PropTypes.func.isRequired
 }
 
 CommentNotePartial.defaultProps = {
