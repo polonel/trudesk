@@ -769,46 +769,46 @@ class SingleTicketContainer extends React.Component {
                             {this.commentsAndNotes.map(item => (
                               (
                                 <CommentNotePartial
-                                ticketId={this.ticket._id}
-                                status={this.ticket.status}
-                                owner={this.ticket.owner}
-                                subject={this.ticket.subject}
-                                issue={this.ticket.issue}
-                                date={this.ticket.date}
-                                attachments={this.ticket.attachments}
-                                editorWindow={this.editorWindow}
-                                socket={this.props.socket}
+                                  ticketId={this.ticket._id}
+                                  status={this.ticket.status}
+                                  owner={this.ticket.owner}
+                                  subject={this.ticket.subject}
+                                  issue={this.ticket.issue}
+                                  date={this.ticket.date}
+                                  attachments={this.ticket.attachments}
+                                  editorWindow={this.editorWindow}
+                                  socket={this.props.socket}
 
-                                key={item._id}
-                                ticketStatus={this.ticket.status}
-                                ticketSubject={this.ticket.subject}
-                                comment={item}
-                                isNote={item.isNote}
-                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
-                                  'timeFormat'
-                                )}`}
-                                onEditClick={() => {
-                                  this.editorWindow.openEditorWindow({
-                                    showSubject: false,
-                                    text: !item.isNote ? item.comment : item.note,
-                                    onPrimaryClick: data => {
-                                      this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
-                                        _id: this.ticket._id,
-                                        item: item._id,
-                                        isNote: item.isNote,
-                                        value: data.text
-                                      })
-                                    }
-                                  })
-                                }}
-                                onRemoveClick={() => {
-                                  this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
-                                    _id: this.ticket._id,
-                                    value: item._id,
-                                    isNote: item.isNote
-                                  })
-                                }}
-                              />) 
+                                  key={item._id}
+                                  ticketStatus={this.ticket.status}
+                                  ticketSubject={this.ticket.subject}
+                                  comment={item}
+                                  isNote={item.isNote}
+                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
+                                    'timeFormat'
+                                  )}`}
+                                  onEditClick={() => {
+                                    this.editorWindow.openEditorWindow({
+                                      showSubject: false,
+                                      text: !item.isNote ? item.comment : item.note,
+                                      onPrimaryClick: data => {
+                                        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
+                                          _id: this.ticket._id,
+                                          item: item._id,
+                                          isNote: item.isNote,
+                                          value: data.text
+                                        })
+                                      }
+                                    })
+                                  }}
+                                  onRemoveClick={() => {
+                                    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
+                                      _id: this.ticket._id,
+                                      value: item._id,
+                                      isNote: item.isNote
+                                    })
+                                  }}
+                                />)
                             ))}
                           </div>
                         </TruTabSection>
@@ -817,6 +817,16 @@ class SingleTicketContainer extends React.Component {
                             {this.ticket &&
                               this.ticket.comments.map(comment => (
                                 <CommentNotePartial
+                                  ticketId={this.ticket._id}
+                                  status={this.ticket.status}
+                                  owner={this.ticket.owner}
+                                  subject={this.ticket.subject}
+                                  issue={this.ticket.issue}
+                                  date={this.ticket.date}
+                                  attachments={this.ticket.attachments}
+                                  editorWindow={this.editorWindow}
+                                  socket={this.props.socket}
+
                                   key={comment._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
@@ -854,6 +864,17 @@ class SingleTicketContainer extends React.Component {
                             {this.ticket &&
                               this.ticket.notes.map(note => (
                                 <CommentNotePartial
+
+                                  ticketId={this.ticket._id}
+                                  status={this.ticket.status}
+                                  owner={this.ticket.owner}
+                                  subject={this.ticket.subject}
+                                  issue={this.ticket.issue}
+                                  date={this.ticket.date}
+                                  attachments={this.ticket.attachments}
+                                  editorWindow={this.editorWindow}
+                                  socket={this.props.socket}
+
                                   key={note._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}

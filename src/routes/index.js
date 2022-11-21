@@ -216,6 +216,12 @@
      middleware.csrfCheck,
      controllers.tickets.uploadAttachment
    )
+   router.post(
+    '/tickets/comments/uploadattachment',
+    middleware.redirectToLogin,
+    middleware.csrfCheck,
+    controllers.tickets.uploadCommentAttachment
+  )
    router.post('/tickets/uploadmdeimage', middleware.redirectToLogin, controllers.tickets.uploadImageMDE)
  
    // Messages

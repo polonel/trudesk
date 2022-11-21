@@ -21,6 +21,7 @@ var emitter = require('../emitter')
 var logger = require('../logger')
 var socketEvents = require('./socketEventConsts')
 var ticketSchema = require('../models/ticket')
+var commentSchema = require('../models/comment')
 var prioritySchema = require('../models/ticketpriority')
 var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
@@ -498,6 +499,28 @@ events.onAttachmentsUIUpdate = socket => {
       }
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, data)
+    } catch (e) {
+      // Blank
+    }
+  })
+  socket.on(socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, async data => {
+    const commentId = data._id
+
+    if (_.isUndefined(commentId)) return true
+
+    try {
+      const comment = await commentSchema.findOne({_id:commentId})
+      const user = socket.request.user
+      if (_.isUndefined(user)) return true
+
+      const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
+
+      const data = {
+        comment,
+        canRemoveAttachments
+      }
+
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, data)
     } catch (e) {
       // Blank
     }

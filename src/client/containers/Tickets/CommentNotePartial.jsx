@@ -17,6 +17,9 @@ import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
+import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
+
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import helpers from 'lib/helpers'
 
@@ -32,26 +35,9 @@ const setupLinks = parent => {
 
 class CommentNotePartial extends React.Component {
 
-  @observable ticketId = ''
-  @observable status = null
-  @observable owner = null
-  @observable subject = ''
-  @observable issue = ''
-  @observable attachments = []
-
   constructor(props) {
     super(props)
     makeObservable(this)
-
-    this.ticketId = this.props.ticketId
-    this.status = this.props.status
-    this.owner = this.props.owner
-    this.subject = this.props.subject
-    this.issue = this.props.issue
-    this.attachments = this.props.attachments
-    this.data = this.props.date
-    this.editorWindow = this.props.editorWindow
-    this.socket = this.props.socket
   }
 
   componentDidMount() {
@@ -62,7 +48,6 @@ class CommentNotePartial extends React.Component {
   componentDidUpdate() {
     setupImages(this)
     setupLinks(this)
-
     if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
     if (prevProps.status !== this.props.status) this.status = this.props.status
     if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
@@ -113,16 +98,17 @@ class CommentNotePartial extends React.Component {
         )}
 
         <AttachedСommentFiles
-        ticketId={this.ticketId}
-        status={this.status}
-        owner={this.owner}
-        subject={this.subject}
-        issue={this.issue}
-        date={this.date}
-        dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
+        ticketId={this.props.ticketId}
+        commentId = {this._id}
+        status={this.props.status}
+        owner={this.props.owner}
+        subject={this.props.subject}
+        issue={this.props.issue}
+        date={this.props.date}
+        dateFormat= {this.props.dateFormat}
         attachments={this.attachments}
-        editorWindow={this.editorWindow}
-        socket={this.socket}
+        editorWindow={this.props.editorWindow}
+        socket={this.props.socket}
         />
 
       </div>

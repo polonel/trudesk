@@ -19,7 +19,7 @@ import { makeObservable, observable } from 'mobx'
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
 
-import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE, TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE} from 'serverSocket/socketEventConsts'
 
 import helpers from 'lib/helpers'
 import axios from 'axios'
@@ -54,6 +54,7 @@ class AttachedСommentFiles extends React.Component {
     this.subject = this.props.subject
     this.issue = this.props.issue
     this.attachments = this.props.attachments
+    this.commentId = this.props.commentId
 
     this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
   }
@@ -62,7 +63,7 @@ class AttachedСommentFiles extends React.Component {
     setupImages(this)
     setupLinks(this)
 
-    this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
+    this.props.socket.on(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
   componentDidUpdate (prevProps) {
@@ -75,30 +76,30 @@ class AttachedСommentFiles extends React.Component {
   }
 
   componentWillUnmount () {
-    this.props.socket.off(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
+    this.props.socket.off(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateCommentAttachments)
   }
 
-  onUpdateTicketAttachments (data) {
-    if (this.ticketId === data.ticket._id) {
-      this.attachments = data.ticket.attachments
+  onUpdateCommentAttachments (data) {
+    if (this.commentId === data.comment._id) {
+      this.attachments = data.comment.attachments
     }
   }
 
   onAttachmentInputChange (e) {
     const formData = new FormData()
     const attachmentFile = e.target.files[0]
-    formData.append('ticketId', this.ticketId)
+    formData.append('commentId', this.commentId)
     formData.append('attachment', attachmentFile)
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     axios
-      .post(`/tickets/uploadattachment`, formData, {
+      .post(`/tickets/comments/uploadattachment`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'CSRF-TOKEN': token
         }
       })
       .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { _id: this.commentId })
         helpers.UI.showSnackbar('Attachment Successfully Uploaded')
       })
       .catch(error => {
@@ -112,7 +113,7 @@ class AttachedСommentFiles extends React.Component {
     axios
       .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
       .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
         helpers.UI.showSnackbar('Attachment Removed')
       })
       .catch(error => {
