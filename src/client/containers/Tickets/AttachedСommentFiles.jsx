@@ -58,9 +58,6 @@ class AttachedСommentFiles extends React.Component {
     this.subject = this.props.subject
     this.issue = this.props.issue
     this.commentId = this.props.commentId
-    let comment = this.props.ticket.comments.filter(function (comment) {
-        return comment._id == commentId;
-      });
     this.attachments = comment.attachments
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
@@ -136,6 +133,11 @@ class AttachedСommentFiles extends React.Component {
   }
 
   render () {
+    const commentId = this.commentId
+    const comment = this.props.ticket.comments.filter(function (comment) {
+        return comment._id == commentId ;
+      });
+    this.attachments = comment.attachments 
     console.log('this.attachments')
     console.log(this.attachments)
     return (
