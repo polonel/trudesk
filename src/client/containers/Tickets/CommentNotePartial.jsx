@@ -17,6 +17,9 @@ import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
 import axios from 'axios'
 import Log from '../../logger'
+import { observer } from 'mobx-react'
+import { makeObservable, observable } from 'mobx'
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import helpers from 'lib/helpers'
 
@@ -31,6 +34,26 @@ const setupLinks = parent => {
 }
 
 class CommentNotePartial extends React.Component {
+  @observable ticketId = ''
+  @observable status = null
+  @observable owner = null
+  @observable subject = ''
+  @observable issue = ''
+  @observable attachments = []
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+
+    this.ticketId = this.props.ticketId
+    this.status = this.props.status
+    this.owner = this.props.owner
+    this.subject = this.props.subject
+    this.issue = this.props.issue
+    this.attachments = this.props.attachments
+
+    this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
+  }
+
   componentDidMount () {
     setupImages(this)
     setupLinks(this)
@@ -41,9 +64,21 @@ class CommentNotePartial extends React.Component {
   componentDidUpdate () {
     setupImages(this)
     setupLinks(this)
+    if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
+    if (prevProps.status !== this.props.status) this.status = this.props.status
+    if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
+    if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
+    if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
+    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
   componentWillUnmount () {}
+
+  onUpdateTicketAttachments (data) {
+    if (this.ticketId === data.ticket._id) {
+      this.attachments = data.ticket.attachments
+    }
+  }
 
   onAttachmentInputChange (e) {
     const formData = new FormData()
@@ -108,7 +143,6 @@ class CommentNotePartial extends React.Component {
           </div>
         )}
          {/* Permissions on Fragment for edit */}
-         {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
             <div
               className={'edit-issue'}
@@ -142,7 +176,6 @@ class CommentNotePartial extends React.Component {
               />
             </form>
           </Fragment>
-        )}
       </div>
     )
   }
