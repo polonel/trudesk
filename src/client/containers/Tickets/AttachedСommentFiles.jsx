@@ -57,18 +57,19 @@ class AttachedСommentFiles extends React.Component {
     this.attachments = this.props.attachments
     this.commentId = this.props.commentId
 
-    this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
+    this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
   componentDidMount () {
     setupImages(this)
     setupLinks(this)
 
-    this.props.socket.on(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
+    this.props.socket.on(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateCommentAttachments)
   }
 
   componentDidUpdate (prevProps) {
     if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
+    if (prevProps.commentId !== this.props.commentId) this.commentId = this.props.commentId
     if (prevProps.status !== this.props.status) this.status = this.props.status
     if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
     if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
