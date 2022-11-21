@@ -223,7 +223,7 @@ class SingleTicketContainer extends React.Component {
       : ''
   }
 
- statusToName = status => {
+  statusToName = status => {
     switch (status) {
       case 0:
         return 'New'
@@ -236,7 +236,7 @@ class SingleTicketContainer extends React.Component {
     }
   }
 
-  sendNotificationMail(){
+  sendNotificationMail() {
     axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
       let account;
       account = response.data.user;
@@ -245,14 +245,14 @@ class SingleTicketContainer extends React.Component {
       contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
       contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
       contentMessage = contentMessage.replace('{contactName}', account.fullname);
-      contentMessage = contentMessage.replace('{ticketStatus}',this.statusToName(this.ticket.status));
+      contentMessage = contentMessage.replace('{ticketStatus}', this.statusToName(this.ticket.status));
       const message = {
         "content": contentMessage,
         "message_type": "outgoing",
         "private": false,
         "content_attributes": {}
       }
-    
+
 
     })
       .catch((error) => {
@@ -273,7 +273,7 @@ class SingleTicketContainer extends React.Component {
         contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
         contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
         contentMessage = contentMessage.replace('{contactName}', account.fullname);
-        contentMessage = contentMessage.replace('{ticketStatus}',this.statusToName(this.ticket.status));
+        contentMessage = contentMessage.replace('{ticketStatus}', this.statusToName(this.ticket.status));
         const message = {
           "content": contentMessage,
           "message_type": "outgoing",
@@ -766,23 +766,12 @@ class SingleTicketContainer extends React.Component {
                         <TruTabSection sectionId={0} active={true}>
                           <div className='all-comments'>
                             {this.commentsAndNotes.map(item => (
-                              <CommentNotePartial
+                              (<CommentNotePartial
                                 key={item._id}
                                 ticketStatus={this.ticket.status}
                                 ticketSubject={this.ticket.subject}
                                 comment={item}
                                 isNote={item.isNote}
-
-                                ticketId={this.ticket._id}
-                                status={this.ticket.status}
-                                owner={this.ticket.owner}
-                                subject={this.ticket.subject}
-                                issue={this.ticket.issue}
-                                date={this.ticket.date}
-                                attachments={this.ticket.attachments}
-                                editorWindow={this.editorWindow}
-                                socket={this.props.socket}
-
                                 dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                   'timeFormat'
                                 )}`}
@@ -807,7 +796,22 @@ class SingleTicketContainer extends React.Component {
                                     isNote: item.isNote
                                   })
                                 }}
-                              />
+                              />) && (
+                                <IssuePartial
+                                  ticketId={this.ticket._id}
+                                  status={this.ticket.status}
+                                  owner={this.ticket.owner}
+                                  subject={this.ticket.subject}
+                                  issue={this.ticket.issue}
+                                  date={this.ticket.date}
+                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
+                                  attachments={this.ticket.attachments}
+                                  editorWindow={this.editorWindow}
+                                  socket={this.props.socket}
+                                />
+                              )
+
+
                             ))}
                           </div>
                         </TruTabSection>
