@@ -15,6 +15,8 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
+import axios from 'axios'
+import Log from '../../logger'
 
 import helpers from 'lib/helpers'
 
@@ -32,6 +34,8 @@ class CommentNotePartial extends React.Component {
   componentDidMount () {
     setupImages(this)
     setupLinks(this)
+    
+    this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
   componentDidUpdate () {
@@ -40,6 +44,30 @@ class CommentNotePartial extends React.Component {
   }
 
   componentWillUnmount () {}
+
+  onAttachmentInputChange (e) {
+    const formData = new FormData()
+    const attachmentFile = e.target.files[0]
+    formData.append('ticketId', this.ticketId)
+    formData.append('attachment', attachmentFile)
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    axios
+      .post(`/tickets/uploadattachment`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-TOKEN': token
+        }
+      })
+      .then(() => {
+        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+      })
+      .catch(error => {
+        Log.error(error)
+        if (error.response) Log.error(error.response)
+        helpers.UI.showSnackbar(error, true)
+      })
+  }
 
   render () {
     const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props
@@ -79,6 +107,18 @@ class CommentNotePartial extends React.Component {
             )}
           </div>
         )}
+         <form className='form nomargin' encType='multipart/form-data'>
+              <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
+                <i className='material-icons'>&#xE226;</i>
+              </div>
+
+              <input
+                ref={r => (this.attachmentInput = r)}
+                className='hide'
+                type='file'
+                onChange={e => this.onAttachmentInputChange(e)}
+              />
+            </form>
       </div>
     )
   }
@@ -91,7 +131,8 @@ CommentNotePartial.propTypes = {
   dateFormat: PropTypes.string.isRequired,
   isNote: PropTypes.bool.isRequired,
   onEditClick: PropTypes.func.isRequired,
-  onRemoveClick: PropTypes.func.isRequired
+  onRemoveClick: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired
 }
 
 CommentNotePartial.defaultProps = {

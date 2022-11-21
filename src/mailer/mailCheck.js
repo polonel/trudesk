@@ -20,13 +20,15 @@ const simpleParser = require('mailparser').simpleParser
 const cheerio = require('cheerio')
 const sanitizeHtml = require('sanitize-html')
 const xss = require('xss')
-
+const Blob = require('buffer');
+const fs = require('fs')
 const emitter = require('../emitter')
 const userSchema = require('../models/user')
 const groupSchema = require('../models/group')
 const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
 const settingSchema = require('../models/setting')
+const axios = require('axios')
 
 const mailCheck = {}
 mailCheck.inbox = []
@@ -221,6 +223,12 @@ function bindImapReady() {
                         }
 
                         mailCheck.messages.push(message)
+                        if (mail?.attachments.length !== 0) {
+                          handleMessages(mailCheck.messages, function () {
+                            mailCheck.Imap.destroy()
+                          })
+                        }
+
                       })
                     })
                   })
@@ -338,14 +346,14 @@ function handleMessages(messages, done) {
 
             t.save(function (err, tt) {
               if (err) return winston.warn(err.message)
-              settingSchema.findOne({name:'gen:siteurl'},(err,url)=>{
+              settingSchema.findOne({ name: 'gen:siteurl' }, (err, url) => {
                 if (err) console.log(err);
-                const hostname = url.value.replace('https://','');
+                const hostname = url.value.replace('https://', '');
                 emitter.emit('ticket:comment:added', tt, Comment, hostname)
 
                 return winston.warn({ success: true, error: null, ticket: tt })
               })
-              
+
             })
           })
 
@@ -388,7 +396,7 @@ function handleMessages(messages, done) {
                     emitter.emit('user:created', {
                       socketId: '',
                       user: response.user,
-                      userPassword:response.userPassword
+                      userPassword: response.userPassword
                     })
                     return callback(null, response)
                   })
@@ -506,7 +514,7 @@ function handleMessages(messages, done) {
                     issue: message.body,
                     history: [HistoryItem]
                   },
-                  function (err, ticket) {
+                  async function (err, ticket) {
                     if (err) {
                       winston.warn('Failed to create ticket from email: ' + err)
                       return callback(err)
@@ -517,6 +525,41 @@ function handleMessages(messages, done) {
                       ticket: ticket
                     })
 
+                    if (message.attachments) {
+                      await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${ticket._id}/`, err => {
+                        if (err) throw err; // Не удалось создать папку
+                        console.log('Папка успешно создана');
+                        for (const attachmentFromMessage of message.attachments) {
+                          let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+
+                          fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${ticket._id}/attachment_${sanitizedFilename}`, attachmentFromMessage.content);
+
+                          const attachment = {
+                            owner: message.owner._id,
+                            name: sanitizedFilename,
+                            path: `/uploads/tickets/${ticket._id}/attachment_${sanitizedFilename}`,
+                            type: attachmentFromMessage.contentType
+                          }
+                          ticket.attachments.push(attachment)
+
+                          const historyItem = {
+                            action: 'ticket:added:attachment',
+                            description: 'Attachment ' + sanitizedFilename + ' was added.',
+                            owner: message.owner._id
+                          }
+                          ticket.history.push(historyItem)
+                          ticket.updated = Date.now()
+                        }
+                        ticket.save(function (err, t) {
+                          if (err) {
+                            fs.unlinkSync(attachment.path)
+                            winston.warn(err)
+                            return callback(err)
+                          }
+                        })
+                      });
+
+                    }
                     count++
                     return callback()
                   }
@@ -537,6 +580,197 @@ function handleMessages(messages, done) {
     }
   })
 }
+
+
+function uploadAttachment(req) {
+  const Busboy = require('busboy')
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 10 * 1024 * 1024 // 10mb limit
+    }
+  })
+
+  const object = {
+    ownerId: req.user._id
+  }
+  let error
+
+  const events = []
+
+  busboy.on('field', function (fieldname, val) {
+    if (fieldname === 'ticketId') object.ticketId = val
+    if (fieldname === 'ownerId') object.ownerId = val
+  })
+
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+
+    if (
+      mimetype.indexOf('image/') === -1 &&
+      mimetype.indexOf('text/plain') === -1 &&
+      mimetype.indexOf('audio/mpeg') === -1 &&
+      mimetype.indexOf('audio/mp3') === -1 &&
+      mimetype.indexOf('audio/wav') === -1 &&
+      mimetype.indexOf('application/x-zip-compressed') === -1 &&
+      mimetype.indexOf('application/pdf') === -1 &&
+      //  Office Mime-Types
+      mimetype.indexOf('application/msword') === -1 &&
+      mimetype.indexOf('application/vnd.openxmlformats-officedocument.wordprocessingml.document') === -1 &&
+      mimetype.indexOf('application/vnd.ms-excel') === -1 &&
+      mimetype.indexOf('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') === -1
+    ) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    let filenameDecode = iconv.decode(filename, 'utf-8');
+    const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
+    let sanitizedFilename = filenameDecode.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+
+    const ext = path.extname(sanitizedFilename)
+    const allowedExts = [
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.tif',
+      '.gif',
+      '.doc',
+      '.docx',
+      '.xlsx',
+      '.xls',
+      '.pdf',
+      '.zip',
+      '.rar',
+      '.7z',
+      '.mp3',
+      '.wav',
+      '.txt',
+      '.mp4',
+      '.avi',
+      '.mpeg',
+      '.eps',
+      '.ai',
+      '.psd'
+    ]
+    const badExts = ['.html', '.htm', '.js', '.svg']
+
+    if (!allowedExts.includes(ext)) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
+
+    object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+    object.filename = sanitizedFilename.replace('/', '').replace('..', '')
+    object.mimetype = mimetype
+
+    if (fs.existsSync(object.filePath)) {
+      const Chance = require('chance')
+      const chance = new Chance()
+      sanitizedFilename = chance.hash({ length: 15 }) + '-' + sanitizedFilename
+      object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+      object.filename = sanitizedFilename
+    }
+
+    if (fs.existsSync(object.filePath)) {
+      error = {
+        status: 400,
+        message: 'File already exists'
+      }
+
+      return file.resume()
+    }
+
+    file.on('limit', function () {
+      error = {
+        status: 400,
+        message: 'File too large'
+      }
+
+      // Delete the temp file
+      if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath)
+
+      return file.resume()
+    })
+
+    const fstream = fs.createWriteStream(object.filePath)
+    events.push(function (cb) {
+      fstream.on('finish', cb)
+    })
+
+    file.pipe(fstream)
+  })
+
+  busboy.on('finish', function () {
+    async.series(events, function () {
+      if (error) return res.status(error.status).send(error.message)
+
+      if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
+        fs.unlinkSync(object.filePath)
+        return res.status(400).send('Invalid Form Data')
+      }
+
+      // Everything Checks out lets make sure the file exists and then add it to the attachments array
+      if (!fs.existsSync(object.filePath)) {
+        winston.warn('Unable to save file to disk: ' + object.filePath)
+        return res.status(500).send('File Failed to Save to Disk')
+      }
+
+      ticketSchema.getTicketById(object.ticketId, function (err, ticket) {
+        if (err) {
+          winston.warn(err)
+          return res.status(500).send(err.message)
+        }
+
+        const attachment = {
+          owner: object.ownerId,
+          name: object.filename,
+          path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
+          type: object.mimetype
+        }
+        ticket.attachments.push(attachment)
+
+        const historyItem = {
+          action: 'ticket:added:attachment',
+          description: 'Attachment ' + object.filename + ' was added.',
+          owner: object.ownerId
+        }
+        ticket.history.push(historyItem)
+
+        ticket.updated = Date.now()
+        ticket.save(function (err, t) {
+          if (err) {
+            fs.unlinkSync(object.filePath)
+            winston.warn(err)
+            return res.status(500).send(err.message)
+          }
+
+          const returnData = {
+            ticket: t
+          }
+
+          return res.json(returnData)
+        })
+      })
+    })
+  })
+
+  req.pipe(busboy)
+}
+
+
 
 function openInbox(cb) {
   mailCheck.Imap.openBox('INBOX', cb)
