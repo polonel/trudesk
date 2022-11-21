@@ -15,6 +15,7 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
+import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
 
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
@@ -50,13 +51,16 @@ class AttachedСommentFiles extends React.Component {
     makeObservable(this)
 
     this.ticketId = this.props.ticketId
+    this.ticket = this.props.ticket
     this.status = this.props.status
     this.owner = this.props.owner
     this.subject = this.props.subject
     this.issue = this.props.issue
-    this.attachments = this.props.attachments
     this.commentId = this.props.commentId
-
+    let comment = ticket.comments.filter(function (comment) {
+        return comment._id == commentId;
+      });
+    this.attachments = comment.attachments
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
@@ -64,6 +68,7 @@ class AttachedСommentFiles extends React.Component {
     setupImages(this)
     setupLinks(this)
 
+    
     this.props.socket.on(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateCommentAttachments)
   }
 
