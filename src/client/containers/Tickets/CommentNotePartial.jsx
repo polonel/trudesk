@@ -16,7 +16,8 @@ import PropTypes from 'prop-types'
 import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
 import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
-
+import { observer } from 'mobx-react'
+import { makeObservable, observable } from 'mobx'
 import helpers from 'lib/helpers'
 
 const setupImages = parent => {
@@ -30,14 +31,43 @@ const setupLinks = parent => {
 }
 
 class CommentNotePartial extends React.Component {
+  @observable ticketId = ''
+  @observable status = null
+  @observable owner = null
+  @observable subject = ''
+  @observable issue = ''
+  @observable attachments = []
+
+  constructor (props) {
+    super(props)
+    makeObservable(this)
+
+    this.ticketId = this.props.ticketId
+    this.status = this.props.status
+    this.owner = this.props.owner
+    this.subject = this.props.subject
+    this.issue = this.props.issue
+    this.attachments = this.props.attachments
+    this.date = this.props.date
+    this.editorWindow=this.props.editorWindow
+    this.socket=this.props.socket
+
+  }
   componentDidMount () {
     setupImages(this)
     setupLinks(this)
+
   }
 
   componentDidUpdate () {
     setupImages(this)
     setupLinks(this)
+    if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
+    if (prevProps.status !== this.props.status) this.status = this.props.status
+    if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
+    if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
+    if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
+    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
   componentWillUnmount () {}
@@ -80,7 +110,18 @@ class CommentNotePartial extends React.Component {
             )}
           </div>
         )}
-        <AttachedСommentFiles />
+        <AttachedСommentFiles 
+         ticketId={this.ticketId}
+         status={ this.status}
+         owner={this.owner }
+         subject={this.subject}
+         issue={this.issue}
+         date={this.date}
+         dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
+         attachments={ this.attachments }
+         editorWindow={this.editorWindow}
+         socket={this.socket}
+         />
       </div>
     )
   }

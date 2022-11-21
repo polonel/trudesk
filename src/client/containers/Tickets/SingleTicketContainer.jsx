@@ -772,6 +772,17 @@ class SingleTicketContainer extends React.Component {
                                 ticketSubject={this.ticket.subject}
                                 comment={item}
                                 isNote={item.isNote}
+
+                                ticketId={this.ticket._id}
+                                status={this.ticket.status}
+                                owner={this.ticket.owner}
+                                subject={this.ticket.subject}
+                                issue={this.ticket.issue}
+                                date={this.ticket.date}
+                                attachments={this.ticket.attachments}
+                                editorWindow={this.editorWindow}
+                                socket={this.props.socket}
+
                                 dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                   'timeFormat'
                                 )}`}

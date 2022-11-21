@@ -202,7 +202,7 @@ class AttachedСommentFiles extends React.Component {
   }
 }
 
-IssuePartial.propTypes = {
+AttachedСommentFiles.propTypes = {
   ticketId: PropTypes.string.isRequired,
   status: PropTypes.number.isRequired,
   owner: PropTypes.object.isRequired,
