@@ -79,6 +79,7 @@ class IssuePartial extends React.Component {
   }
 
   onUpdateTicketAttachments (data) {
+    console.log(data)
     if (this.ticketId === data.ticket._id) {
       this.attachments = data.ticket.attachments
     }

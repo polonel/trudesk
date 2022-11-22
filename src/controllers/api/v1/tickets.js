@@ -1872,14 +1872,14 @@ apiTickets.removeCommentAttachment = function (req, res) {
 
     const comment = ticket.comments.filter(function (comment) {
       return comment._id == commentId;
-    });
+    })[0];
 
-    const attachment = comment[0].attachments.filter(function (attachment) {
+    const attachment = comment.attachments.filter(function (attachment) {
       return attachment._id == attachmentId;
-    });
+    })[0];
 
-    const attachmentIndex = comment[0].attachments.findIndex((attachment) => attachment._id === attachmentId)
-    comment[0].attachments.slice(attachmentIndex);
+    const attachmentIndex = comment.attachments.findIndex((attachment) => attachment.id === attachmentId)
+    comment.attachments.splice(attachmentIndex,1);
 
     var fs = require('fs')
     var path = require('path')
