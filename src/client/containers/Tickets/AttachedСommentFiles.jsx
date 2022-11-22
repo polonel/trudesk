@@ -93,10 +93,10 @@ class AttachedСommentFiles extends React.Component {
       if (comment) {
         console.log('comment')
         console.log(comment)
-        this.attachments.length = 0
-        this.attachments.push(...comment.attachments)
-        console.log('this.attachments')
-        console.log(this.attachments)
+        this.props.attachments.length = 0
+        this.props.attachments.push(...comment.attachments)
+        console.log('this.props.attachments')
+        console.log(this.props.attachments)
       }
 
     }
@@ -142,19 +142,19 @@ class AttachedСommentFiles extends React.Component {
   }
 
   render() {
-    const commentId = this.commentId
-    const commentTicket = this.props.ticket.comments.filter(function (comment) {
-      return comment._id == commentId;
-    });
-    this.attachments = commentTicket[0].attachments
+    // const commentId = this.commentId
+    // const commentTicket = this.props.ticket.comments.filter(function (comment) {
+    //   return comment._id == commentId;
+    // });
+    // this.attachments = commentTicket[0].attachments
     return (
       <div className='initial-issue uk-clearfix'>
         {/* Issue */}
         <div className='issue-text'>
           {/* Attachments */}
           <ul className='attachments'>
-            {this.attachments &&
-              this.attachments.map(attachment => (
+            {this.props.attachments &&
+              this.props.attachments.map(attachment => (
                 <li key={attachment._id}>
                   <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
