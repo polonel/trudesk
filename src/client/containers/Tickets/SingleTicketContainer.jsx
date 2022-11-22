@@ -942,8 +942,6 @@ class SingleTicketContainer extends React.Component {
                                 />
                                 <AttachFilesToComment
                                   ticket={this.props.ticket}
-                                  comment={comment}
-                                  attachments={comment.attachments}
                                   status={this.props.status}
                                   owner={this.props.owner}
                                   subject={this.props.subject}
