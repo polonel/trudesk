@@ -154,7 +154,12 @@ class AttachFilesToComment extends React.Component {
         return (
             <div className='ticket-comment'>
                 <div className='issue-text'>
-
+                    <h3></h3>
+                    <a className='comment-email-link' >  
+                    </a>
+                    <br />
+                    <time data-uk-tooltip='{delay: 200}'>
+                    </time>
                     {/* Attachments */}
                     <ul className='attachments'>
                         {this.attachments &&
