@@ -45,12 +45,13 @@ class AttachedСommentFiles extends React.Component {
   @observable owner = null
   @observable subject = ''
   @observable issue = ''
-  @observable attachments[]
+  @observable attachments = []
 
   constructor(props) {
     super(props)
     makeObservable(this)
 
+    this.state.attachments = []
     this.ticketId = this.props.ticketId
     this.ticket = this.props.ticket
     this.status = this.props.status
@@ -89,11 +90,12 @@ class AttachedСommentFiles extends React.Component {
       })[0];
 
       if (comment) {
-        console.log('comment.attachments')
-        console.log(comment.attachments)
-        this.attachments = comment.attachments
-        console.log('this.attachments')
-        console.log(this.attachments)
+        console.log('comment')
+        console.log(comment)
+        this.state.attachments.length = 0
+        this.state.attachments.push(...comment.attachments)
+        console.log(' this.state.attachments')
+        console.log( this.state.attachments)
       }
 
     }
@@ -128,7 +130,7 @@ class AttachedСommentFiles extends React.Component {
     axios
       .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachmentId}`)
       .then(() => {
-        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId  })
         helpers.UI.showSnackbar('Attachment Removed')
       })
       .catch(error => {
@@ -139,19 +141,20 @@ class AttachedСommentFiles extends React.Component {
   }
 
   render() {
+
     const commentId = this.commentId
     const commentTicket = this.props.ticket.comments.filter(function (comment) {
       return comment._id == commentId;
     });
-    this.attachments = commentTicket[0].attachments
+    this.state.attachments = commentTicket[0].attachments
     return (
       <div className='initial-issue uk-clearfix'>
         {/* Issue */}
         <div className='issue-text'>
           {/* Attachments */}
           <ul className='attachments'>
-            {this.attachments &&
-              this.attachments.map(attachment => (
+            { this.state.attachments &&
+               this.state.attachments.map(attachment => (
                 <li key={attachment._id}>
                   <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
