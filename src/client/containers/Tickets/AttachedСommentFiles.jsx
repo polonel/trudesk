@@ -181,25 +181,6 @@ class AttachedСommentFiles extends React.Component {
         {/* Permissions on Fragment for edit */}
         {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
-            <div
-              className={'edit-issue'}
-              onClick={() => {
-                if (this.props.editorWindow)
-                  this.props.editorWindow.openEditorWindow({
-                    subject: this.subject,
-                    text: this.issue,
-                    onPrimaryClick: data => {
-                      this.props.socket.emit(TICKETS_ISSUE_SET, {
-                        _id: this.ticketId,
-                        value: data.text,
-                        subject: data.subjectText
-                      })
-                    }
-                  })
-              }}
-            >
-              <i className='material-icons'>&#xE254;</i>
-            </div>
             <form className='form nomargin' encType='multipart/form-data'>
               <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
                 <i className='material-icons'>&#xE226;</i>
