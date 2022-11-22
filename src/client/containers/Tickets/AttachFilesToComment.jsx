@@ -104,11 +104,13 @@ class AttachFilesToComment extends React.Component {
   }
 
   onAttachmentInputChange(e) {
-    // const formData = new FormData()
-    // const attachmentFile = e.target.files[0]
-    // formData.append('commentId', this.commentId)
-    // formData.append('ticketId', this.ticketId)
-    // formData.append('attachment', attachmentFile)
+    const formData = new FormData()
+    const attachmentFile = e.target.files[0]
+    formData.append('commentId', this.commentId)
+    formData.append('ticketId', this.ticketId)
+    formData.append('attachment', attachmentFile)
+    console.log('formData')
+    console.log(formData)
     // const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     // axios
     //   .post(`/tickets/comments/uploadattachment`, formData, {

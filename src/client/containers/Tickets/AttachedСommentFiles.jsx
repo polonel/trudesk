@@ -93,12 +93,8 @@ class AttachedСommentFiles extends React.Component {
       })[0];
 
       if (comment) {
-        console.log('comment')
-        console.log(comment)
         this.attachments.length = 0
         this.attachments.push(...comment.attachments)
-        console.log('this.attachments')
-        console.log(this.attachments)
       }
 
     }
