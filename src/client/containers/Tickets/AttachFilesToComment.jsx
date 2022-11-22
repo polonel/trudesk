@@ -109,8 +109,9 @@ class AttachFilesToComment extends React.Component {
     formData.append('commentId', this.commentId)
     formData.append('ticketId', this.ticketId)
     formData.append('attachment', attachmentFile)
-    console.log('formData')
-    console.log(formData)
+    this.attachments.push(attachmentFile)
+    console.log('attachmentFile')
+    console.log(attachmentFile)
     // const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     // axios
     //   .post(`/tickets/comments/uploadattachment`, formData, {
@@ -156,16 +157,16 @@ class AttachFilesToComment extends React.Component {
           <ul className='attachments'>
             {this.attachments &&
               this.attachments.map(attachment => (
-                <li key={attachment._id}>
+                <li key={attachment.indexOf()}>
                  
-                  <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
+                  <a  className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
                   </a>
                   {this.status !== 3 && (
                     <a
                       role='button'
                       className={'remove-attachment'}
-                      onClick={e => this.removeAttachment(e, attachment._id)}
+                      onClick={e => this.removeAttachment(e, attachment.indexOf())}
                     >
                       <i className='fa fa-remove' />
                     </a>

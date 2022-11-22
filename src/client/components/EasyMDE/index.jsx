@@ -56,6 +56,8 @@ class EasyMDE extends React.Component {
       if (!this.props.inlineImageUploadUrl) return Log.error('Invalid inlineImageUploadUrl Prop.')
 
       const $el = $(this.element)
+      console.log('$el');
+      console.log($el);
       const self = this
       if (!$el.hasClass('hasInlineUpload')) {
         $el.addClass('hasInlineUpload')
