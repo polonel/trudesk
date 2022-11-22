@@ -150,9 +150,7 @@ class AttachedСommentFiles extends React.Component {
     // });
     // this.attachments = commentTicket[0].attachments
     return (
-      <div className='initial-issue uk-clearfix'>
-        {/* Issue */}
-        <div className='issue-text'>
+      <div >
           {/* Attachments */}
           <ul className='attachments'>
             {this.attachments &&
@@ -177,7 +175,7 @@ class AttachedСommentFiles extends React.Component {
           <div className='issue-body' ref={r => (this.issueBody = r)}>
 
           </div>
-        </div>
+
         {/* Permissions on Fragment for edit */}
         {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
