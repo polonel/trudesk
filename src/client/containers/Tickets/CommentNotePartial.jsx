@@ -60,6 +60,8 @@ class CommentNotePartial extends React.Component {
 
   render() {
     const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props
+    console.log('Данные комментария. Аттачи ')
+    console.log(comment.attachments)
     const dateFormatted = helpers.formatDate(comment.date, dateFormat)
     return (
       <div className='ticket-comment'>
@@ -101,6 +103,7 @@ class CommentNotePartial extends React.Component {
         ticketId={this.props.ticketId}
         ticket = {this.props.ticket}
         commentId = {comment._id}
+        attachments = {comment.attachments}
         status={this.props.status}
         owner={this.props.owner}
         subject={this.props.subject}
