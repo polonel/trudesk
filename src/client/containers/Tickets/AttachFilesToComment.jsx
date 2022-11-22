@@ -37,7 +37,7 @@ const setupLinks = parent => {
 }
 
 @observer
-class AttachedСommentFiles extends React.Component {
+class AttachFilesToComment extends React.Component {
   @observable ticketId = ''
   @observable ticket = ''
   @observable commentId = ''
@@ -198,7 +198,7 @@ class AttachedСommentFiles extends React.Component {
   }
 }
 
-AttachedСommentFiles.propTypes = {
+AttachFilesToComment.propTypes = {
   ticketId: PropTypes.string.isRequired,
   status: PropTypes.number.isRequired,
   owner: PropTypes.object.isRequired,
@@ -211,4 +211,4 @@ AttachedСommentFiles.propTypes = {
   socket: PropTypes.object.isRequired
 }
 
-export default AttachedСommentFiles
+export default AttachFilesToComment

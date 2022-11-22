@@ -48,7 +48,7 @@ import CommentNotePartial from 'containers/Tickets/CommentNotePartial'
 import DatePicker from 'components/DatePicker'
 import EasyMDE from 'components/EasyMDE'
 import IssuePartial from 'containers/Tickets/IssuePartial'
-import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
+import AttachFilesToComment from 'containers/Tickets/AttachFilesToComment'
 import OffCanvasEditor from 'components/OffCanvasEditor'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
 import StatusSelector from 'containers/Tickets/StatusSelector'
@@ -56,7 +56,6 @@ import TruTabSection from 'components/TruTabs/TruTabSection'
 import TruTabSelector from 'components/TruTabs/TruTabSelector'
 import TruTabSelectors from 'components/TruTabs/TruTabSelectors'
 import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
-
 import axios from 'axios'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
@@ -778,7 +777,7 @@ class SingleTicketContainer extends React.Component {
                                   attachments={this.ticket.attachments}
                                   editorWindow={this.editorWindow}
                                   socket={this.props.socket}
-                                  ticket = {this.ticket}
+                                  ticket={this.ticket}
                                   key={item._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
@@ -826,7 +825,7 @@ class SingleTicketContainer extends React.Component {
                                   attachments={this.ticket.attachments}
                                   editorWindow={this.editorWindow}
                                   socket={this.props.socket}
-                                  ticket = {this.ticket}
+                                  ticket={this.ticket}
                                   key={comment._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
@@ -874,7 +873,7 @@ class SingleTicketContainer extends React.Component {
                                   attachments={this.ticket.attachments}
                                   editorWindow={this.editorWindow}
                                   socket={this.props.socket}
-                                  ticket = {this.ticket}
+                                  ticket={this.ticket}
                                   key={note._id}
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
@@ -941,6 +940,19 @@ class SingleTicketContainer extends React.Component {
                                   inlineImageUploadHeaders={{ ticketid: this.ticket._id }}
                                   ref={r => (this.commentMDE = r)}
                                 />
+                                <AttachFilesToComment
+                                  ticket={this.props.ticket}
+                                  comment={comment}
+                                  attachments={comment.attachments}
+                                  status={this.props.status}
+                                  owner={this.props.owner}
+                                  subject={this.props.subject}
+                                  issue={this.props.issue}
+                                  date={this.props.date}
+                                  dateFormat={this.props.dateFormat}
+                                  editorWindow={this.props.editorWindow}
+                                  socket={this.props.socket}
+                                />
                                 <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
                                   <div className='uk-float-right'>
                                     <button
@@ -966,6 +978,7 @@ class SingleTicketContainer extends React.Component {
                                   inlineImageUploadHeaders={{ ticketid: this.ticket._id }}
                                   ref={r => (this.noteMDE = r)}
                                 />
+
                                 <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
                                   <div className='uk-float-right'>
                                     <button
