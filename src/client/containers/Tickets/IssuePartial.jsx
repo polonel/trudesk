@@ -53,6 +53,7 @@ class IssuePartial extends React.Component {
     this.owner = this.props.owner
     this.subject = this.props.subject
     this.issue = this.props.issue
+    this.attachments = this.props.attachments
     
 
     this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
