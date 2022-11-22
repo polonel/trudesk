@@ -74,20 +74,20 @@ class CommentNotePartial extends React.Component {
             {helpers.calendarDate(comment.date)}
           </time>
           <AttachedСommentFiles
-        ticketId={this.props.ticketId}
-        ticket = {this.props.ticket}
-        commentId = {comment._id}
-        comment = {comment}
-        attachments = {comment.attachments}
-        status={this.props.status}
-        owner={this.props.owner}
-        subject={this.props.subject}
-        issue={this.props.issue}
-        date={this.props.date}
-        dateFormat= {this.props.dateFormat}
-        editorWindow={this.props.editorWindow}
-        socket={this.props.socket}
-        />
+            ticketId={this.props.ticketId}
+            ticket={this.props.ticket}
+            commentId={comment._id}
+            comment={comment}
+            attachments={comment.attachments}
+            status={this.props.status}
+            owner={this.props.owner}
+            subject={this.props.subject}
+            issue={this.props.issue}
+            date={this.props.date}
+            dateFormat={this.props.dateFormat}
+            editorWindow={this.props.editorWindow}
+            socket={this.props.socket}
+          />
           <br />
           {isNote && <span className='uk-badge uk-badge-small nomargin-left-right text-white'>NOTE</span>}
 
@@ -111,7 +111,7 @@ class CommentNotePartial extends React.Component {
           </div>
         )}
 
-       
+
 
       </div>
     )
