@@ -85,7 +85,7 @@ class AttachedСommentFiles extends React.Component {
 
   onUpdateCommentAttachments(data) {
     if (this.ticketId === data.ticket._id) {
-      const comment = ticket.comments.filter(function (comment) {
+      const comment =data.ticket.comments.filter(function (comment) {
         return comment._id == this.commentId;
       })[0];
       if (comment) {
