@@ -187,7 +187,7 @@ class AttachFilesToComment extends React.Component {
                     <Fragment>
                         <form className='form nomargin' encType='multipart/form-data'>
                             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                                <i className='material-icons' style={{  paddingTop: 50 }}>&#xE226;</i>
+                                <i className='material-icons' style={{  paddingTop: 50, marginTop: -10, marginRight:-25 }}>&#xE226;</i>
                             </div>
 
                             <input
