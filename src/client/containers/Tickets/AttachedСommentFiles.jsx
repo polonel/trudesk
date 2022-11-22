@@ -181,7 +181,7 @@ class AttachedСommentFiles extends React.Component {
           <Fragment>
             <form className='form nomargin' encType='multipart/form-data'>
               <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons'>&#xE226;</i>
+                <i className='material-icons' style = {{paddingRight: 15}}>&#xE226;</i>
               </div>
 
               <input
