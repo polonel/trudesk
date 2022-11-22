@@ -153,15 +153,10 @@ class AttachFilesToComment extends React.Component {
         // this.attachments = commentTicket[0].attachments
         return (
             <div className='ticket-comment'>
-                <div className='issue-text'>
-                    <h3></h3>
-                    <a className='comment-email-link' >  
-                    </a>
-                    <br />
-                    <time data-uk-tooltip='{delay: 200}'>
-                    </time>
+                <div>
+                   
                     {/* Attachments */}
-                    <ul className='attachments'>
+                    <ul className='attachments nomargin-left-right'>
                         {this.attachments &&
                             this.attachments.map(attachment => (
                                 <li key={attachment.name}>
@@ -190,7 +185,7 @@ class AttachFilesToComment extends React.Component {
                     <Fragment>
                         <form className='form nomargin' encType='multipart/form-data'>
                             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                                <i className='material-icons' style={{ paddingRight: 40 }}>&#xE226;</i>
+                                <i className='material-icons' style={{ paddingRight: 40, paddingTop: 50 }}>&#xE226;</i>
                             </div>
 
                             <input
