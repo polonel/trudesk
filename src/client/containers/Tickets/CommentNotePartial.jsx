@@ -107,7 +107,6 @@ class CommentNotePartial extends React.Component {
         issue={this.props.issue}
         date={this.props.date}
         dateFormat= {this.props.dateFormat}
-        attachments={this.attachments}
         editorWindow={this.props.editorWindow}
         socket={this.props.socket}
         />

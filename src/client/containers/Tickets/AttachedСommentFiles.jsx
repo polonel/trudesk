@@ -45,7 +45,7 @@ class AttachedСommentFiles extends React.Component {
   @observable owner = null
   @observable subject = ''
   @observable issue = ''
-  @observable attachments = []
+  @observable attachments[]
 
   constructor(props) {
     super(props)
@@ -76,7 +76,6 @@ class AttachedСommentFiles extends React.Component {
     if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
     if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
     if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
   componentWillUnmount() {
@@ -85,18 +84,22 @@ class AttachedСommentFiles extends React.Component {
 
   onUpdateCommentAttachments(data) {
     if (this.ticketId === data.ticket._id) {
-      const comment =data.ticket.comments.filter(function (comment) {
+      const comment = data.ticket.comments.filter(function (comment) {
         return comment._id == data.commentId;
       })[0];
+
       if (comment) {
+        console.log('comment.attachments')
+        console.log(comment.attachments)
         this.attachments = comment.attachments
+        console.log('this.attachments')
+        console.log(this.attachments)
       }
+
     }
   }
 
   onAttachmentInputChange(e) {
-    console.log('this.commentId')
-    console.log(this.commentId)
     const formData = new FormData()
     const attachmentFile = e.target.files[0]
     formData.append('commentId', this.commentId)
