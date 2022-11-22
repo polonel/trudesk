@@ -20,7 +20,7 @@ import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated }
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
 
-import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE, TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE} from 'serverSocket/socketEventConsts'
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE, TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import helpers from 'lib/helpers'
 import axios from 'axios'
@@ -47,7 +47,7 @@ class AttachedСommentFiles extends React.Component {
   @observable issue = ''
   @observable attachments = []
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
 
@@ -61,15 +61,15 @@ class AttachedСommentFiles extends React.Component {
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     setupImages(this)
     setupLinks(this)
 
-    
+
     this.props.socket.on(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateCommentAttachments)
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
     // if (prevProps.commentId !== this.props.commentId) this.commentId = this.props.commentId
     if (prevProps.status !== this.props.status) this.status = this.props.status
@@ -79,20 +79,22 @@ class AttachedСommentFiles extends React.Component {
     if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.socket.off(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, this.onUpdateCommentAttachments)
   }
 
-  onUpdateCommentAttachments (data) {
-    console.log('onUpdateCommentAttachments')
-    console.log('data.comment._id')
-    console.log(data.comment._id)
-    if (this.commentId === data.comment._id) {
-      this.attachments = data.comment.attachments
+  onUpdateCommentAttachments(data) {
+    if (this.ticketId === data.ticket._id) {
+      const comment = ticket.comments.filter(function (comment) {
+        return comment._id == this.commentId;
+      })[0];
+      if (comment) {
+        this.attachments = comment.attachments
+      }
     }
   }
 
-  onAttachmentInputChange (e) {
+  onAttachmentInputChange(e) {
     const formData = new FormData()
     const attachmentFile = e.target.files[0]
     formData.append('commentId', this.commentId)
@@ -117,7 +119,7 @@ class AttachedСommentFiles extends React.Component {
       })
   }
 
-  removeAttachment (e, attachmentId) {
+  removeAttachment(e, attachmentId) {
     axios
       .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachmentId}`)
       .then(() => {
@@ -131,12 +133,12 @@ class AttachedСommentFiles extends React.Component {
       })
   }
 
-  render () {
+  render() {
     const commentId = this.commentId
     const commentTicket = this.props.ticket.comments.filter(function (comment) {
-        return comment._id == commentId ;
-      });
-    this.attachments = commentTicket[0].attachments 
+      return comment._id == commentId;
+    });
+    this.attachments = commentTicket[0].attachments
     console.log('this.attachments')
     console.log(this.attachments)
     return (
@@ -164,7 +166,7 @@ class AttachedСommentFiles extends React.Component {
               ))}
           </ul>
           <div className='issue-body' ref={r => (this.issueBody = r)}>
-         
+
           </div>
         </div>
         {/* Permissions on Fragment for edit */}
