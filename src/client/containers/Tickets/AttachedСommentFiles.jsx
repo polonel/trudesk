@@ -45,14 +45,15 @@ class AttachedСommentFiles extends React.Component {
   @observable owner = null
   @observable subject = ''
   @observable issue = ''
+  @observable text = ''
   @observable attachments = []
-  @observable comment = []
 
   constructor(props) {
     super(props)
     makeObservable(this)
 
     this.ticketId = this.props.ticketId
+    this.text = this.props.ticketId
     this.ticket = this.props.ticket
     this.status = this.props.status
     this.owner = this.props.owner
@@ -60,7 +61,6 @@ class AttachedСommentFiles extends React.Component {
     this.issue = this.props.issue
     this.commentId = this.props.commentId
     this.attachments = this.props.attachments
-    this.comment = this.props.comment
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
@@ -95,10 +95,10 @@ class AttachedСommentFiles extends React.Component {
       if (comment) {
         console.log('comment')
         console.log(comment)
-        this.comment.attachments.length = 0
-        this.comment.attachments.push(...comment.attachments)
-        console.log('this.comment.attachments')
-        console.log(this.comment.attachments)
+        this.attachments.length = 0
+        this.attachments.push(...comment.attachments)
+        console.log('this.attachments')
+        console.log(this.attachments)
       }
 
     }
@@ -149,17 +149,16 @@ class AttachedСommentFiles extends React.Component {
     //   return comment._id == commentId;
     // });
     // this.attachments = commentTicket[0].attachments
-    console.log('this.comment')
-    console.log(this.comment)
     return (
       <div className='initial-issue uk-clearfix'>
         {/* Issue */}
         <div className='issue-text'>
           {/* Attachments */}
           <ul className='attachments'>
-            {this.comment.attachments &&
-              this.comment.attachments.map(attachment => (
+            {this.attachments &&
+              this.attachments.map(attachment => (
                 <li key={attachment._id}>
+                 
                   <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
                   </a>

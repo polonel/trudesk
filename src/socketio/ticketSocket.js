@@ -521,7 +521,7 @@ events.onAttachmentsUIUpdate = socket => {
         canRemoveAttachments
       }
 
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, data)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, data)
     } catch (e) {
       // Blank
     }
