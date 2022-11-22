@@ -86,7 +86,7 @@ class AttachedСommentFiles extends React.Component {
   onUpdateCommentAttachments(data) {
     if (this.ticketId === data.ticket._id) {
       const comment =data.ticket.comments.filter(function (comment) {
-        return comment._id == this.commentId;
+        return comment._id == data.commentId;
       })[0];
       if (comment) {
         this.attachments = comment.attachments
@@ -95,6 +95,8 @@ class AttachedСommentFiles extends React.Component {
   }
 
   onAttachmentInputChange(e) {
+    console.log('this.commentId')
+    console.log(this.commentId)
     const formData = new FormData()
     const attachmentFile = e.target.files[0]
     formData.append('commentId', this.commentId)
@@ -139,8 +141,6 @@ class AttachedСommentFiles extends React.Component {
       return comment._id == commentId;
     });
     this.attachments = commentTicket[0].attachments
-    console.log('this.attachments')
-    console.log(this.attachments)
     return (
       <div className='initial-issue uk-clearfix'>
         {/* Issue */}

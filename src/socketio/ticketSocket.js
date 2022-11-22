@@ -517,6 +517,7 @@ events.onAttachmentsUIUpdate = socket => {
 
       const data = {
         ticket,
+        commentId,
         canRemoveAttachments
       }
 
