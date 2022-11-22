@@ -58,7 +58,6 @@ class AttachedСommentFiles extends React.Component {
     this.subject = this.props.subject
     this.issue = this.props.issue
     this.commentId = this.props.commentId
-    this.attachments = comment.attachments
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
@@ -120,7 +119,7 @@ class AttachedСommentFiles extends React.Component {
 
   removeAttachment (e, attachmentId) {
     axios
-      .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
+      .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachmentId}`)
       .then(() => {
         this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
         helpers.UI.showSnackbar('Attachment Removed')
@@ -134,10 +133,10 @@ class AttachedСommentFiles extends React.Component {
 
   render () {
     const commentId = this.commentId
-    const comment = this.props.ticket.comments.filter(function (comment) {
+    const commentTicket = this.props.ticket.comments.filter(function (comment) {
         return comment._id == commentId ;
       });
-    this.attachments = comment.attachments 
+    this.attachments = commentTicket[0].attachments 
     console.log('this.attachments')
     console.log(this.attachments)
     return (

@@ -1851,6 +1851,49 @@ apiTickets.removeAttachment = function (req, res) {
   })
 }
 
+apiTickets.removeCommentAttachment = function (req, res) {
+  var ticketId = req.params.tid
+  var commentId = req.params.cid
+  var attachmentId = req.params.aid
+  if (_.isUndefined(ticketId) || _.isUndefined(attachmentId))
+    return res.status(400).json({ error: 'Invalid Attachment' })
+
+  // Check user perm
+  var user = req.user
+  if (_.isUndefined(user)) return res.status(400).json({ error: 'Invalid User Auth.' })
+
+  var permissions = require('../../../permissions')
+  if (!permissions.canThis(user.role, 'tickets:removeAttachment'))
+    return res.status(401).json({ error: 'Invalid Permissions' })
+
+  var ticketModel = require('../../../models/ticket')
+  ticketModel.getTicketById(ticketId, function (err, ticket) {
+    if (err) return res.status(400).send('Invalid Ticket Id')
+
+    const comment = ticket.comments.filter(function (comment) {
+      return comment._id == commentId;
+    });
+
+    const attachment = comment[0].attachments.filter(function (attachment) {
+      return attachment._id == attachmentId;
+    });
+
+    const attachmentIndex = comment[0].attachments.findIndex((attachment) => attachment._id === attachmentId)
+    comment[0].attachments.slice(attachmentIndex);
+
+    var fs = require('fs')
+    var path = require('path')
+    var dir = path.join(__dirname, '../../../../public', attachment.path)
+    if (fs.existsSync(dir)) fs.unlinkSync(dir)
+
+    ticket.save(function (err, t) {
+      if (err) return res.status(400).json({ error: 'Invalid Request.' })
+      res.json({ success: true, ticket: t })
+    })
+   
+  })
+}
+
 /**
  * @api {put} /api/v1/tickets/:id/subscribe Subscribe/Unsubscribe
  * @apiName subscribeTicket

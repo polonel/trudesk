@@ -90,6 +90,12 @@ module.exports = function (middleware, router, controllers) {
     apiv1,
     apiCtrl.tickets.removeAttachment
   )
+  router.delete(
+    '/api/v1/tickets/:tid/comments/:cid/attachments/remove/:aid',
+    canUser('tickets:update'),
+    apiv1,
+    apiCtrl.tickets.removeCommentAttachment
+  )
 
   // Tags
   router.get('/api/v1/count/tags', middleware.api, function (req, res) {
