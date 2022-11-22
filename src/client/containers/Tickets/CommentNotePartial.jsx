@@ -103,6 +103,7 @@ class CommentNotePartial extends React.Component {
         ticketId={this.props.ticketId}
         ticket = {this.props.ticket}
         commentId = {comment._id}
+        comment = {comment}
         attachments = {comment.attachments}
         status={this.props.status}
         owner={this.props.owner}

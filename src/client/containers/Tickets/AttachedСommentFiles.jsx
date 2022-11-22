@@ -46,6 +46,7 @@ class AttachedСommentFiles extends React.Component {
   @observable subject = ''
   @observable issue = ''
   @observable attachments = []
+  @observable comment = []
 
   constructor(props) {
     super(props)
@@ -59,6 +60,7 @@ class AttachedСommentFiles extends React.Component {
     this.issue = this.props.issue
     this.commentId = this.props.commentId
     this.attachments = this.props.attachments
+    this.comment = this.props.comment
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
@@ -93,10 +95,10 @@ class AttachedСommentFiles extends React.Component {
       if (comment) {
         console.log('comment')
         console.log(comment)
-        this.props.attachments.length = 0
-        this.props.attachments.push(...comment.attachments)
-        console.log('this.props.attachments')
-        console.log(this.props.attachments)
+        this.comment.attachments.length = 0
+        this.comment.attachments.push(...comment.attachments)
+        console.log('this.comment.attachments')
+        console.log(this.comment.attachments)
       }
 
     }
@@ -147,14 +149,16 @@ class AttachedСommentFiles extends React.Component {
     //   return comment._id == commentId;
     // });
     // this.attachments = commentTicket[0].attachments
+    console.log('this.comment')
+    console.log(this.comment)
     return (
       <div className='initial-issue uk-clearfix'>
         {/* Issue */}
         <div className='issue-text'>
           {/* Attachments */}
           <ul className='attachments'>
-            {this.props.attachments &&
-              this.props.attachments.map(attachment => (
+            {this.comment.attachments &&
+              this.comment.attachments.map(attachment => (
                 <li key={attachment._id}>
                   <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
