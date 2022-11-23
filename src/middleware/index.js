@@ -52,8 +52,8 @@ module.exports = function (app, db, callback) {
   // Required to access handlebars in mail templates
   global.Handlebars = hbs.handlebars
 
-  app.use(bodyParser.urlencoded({ limit: '2mb', extended: false }))
-  app.use(bodyParser.json({ limit: '2mb' }))
+  app.use(bodyParser.urlencoded({ limit: '500mb', extended: false }))
+  app.use(bodyParser.json({ limit: '500mb' }))
   app.use(cookieParser())
 
   if (global.env === 'production') {
