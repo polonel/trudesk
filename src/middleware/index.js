@@ -51,10 +51,15 @@ module.exports = function (app, db, callback) {
   hbsHelpers.register(hbs.handlebars)
   // Required to access handlebars in mail templates
   global.Handlebars = hbs.handlebars
-  
-  app.use(bodyParser.json({ limit: '50mb', parameterLimit:50000 }))
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: false, parameterLimit:50000 }))
-  
+
+  // app.use(bodyParser.json({ limit: '500mb'}))
+  // app.use(bodyParser.urlencoded({ limit: '500mb', extended: true, parameterLimit:100000 }))
+  app.use(bodyParser.json({ limit: '200mb', extended: true }));
+  app.use(bodyParser.urlencoded({
+    limit: '50mb',
+    parameterLimit: 100000,
+    extended: true
+  }));
   // app.use(express.json({ limit: '50mb' }));
   // app.use(express.urlencoded({ limit: '50mb' }));
   app.use(cookieParser())

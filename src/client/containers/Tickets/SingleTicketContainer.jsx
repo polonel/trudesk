@@ -18,7 +18,6 @@ import { observable, computed, makeObservable } from 'mobx'
 import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
-import express from 'express'
 import { fetchSettings } from 'actions/settings'
 import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
@@ -236,17 +235,15 @@ class SingleTicketContainer extends React.Component {
 
   AttachingFileToComment(commentId) {
 
-    
-
+    for (const attachmentFile of this.commentAttachedFiles) {
       const formData = new FormData()
       formData.append('commentId', commentId)
       formData.append('ticketId', this.ticket._id)
-      for (const attachmentFile of this.commentAttachedFiles) {
-      formData.append('attachment[]', attachmentFile)
-    }
+      formData.append('attachment', attachmentFile)
+
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       axios
-        .post(`/tickets/comments/uploadattachment`,express.bodyParser({limit: '50mb'}), formData, {
+        .post(`/tickets/comments/uploadattachment`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'CSRF-TOKEN': token
@@ -261,9 +258,7 @@ class SingleTicketContainer extends React.Component {
           if (error.response) Log.error(error.response)
           helpers.UI.showSnackbar(error, true)
         })
-
-   
-
+      }
   }
 
   getSetting(stateName) {
