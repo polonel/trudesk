@@ -256,7 +256,7 @@ class SingleTicketContainer extends React.Component {
           }
         })
         .then(() => {
-          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
+          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
           helpers.UI.showSnackbar('Attachment Successfully Uploaded')
         })
         .catch(error => {
@@ -836,6 +836,7 @@ class SingleTicketContainer extends React.Component {
                                   comment={item}
                                   newCommentId = {this.newCommentId}
                                   newCommentAttachments = {this.commentAttachedFiles}
+                                  recordNewCommentId = {this.recordNewCommentId}
                                   isNote={item.isNote}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
@@ -886,6 +887,7 @@ class SingleTicketContainer extends React.Component {
                                   comment={comment}
                                   newCommentId = {this.newCommentId}
                                   newCommentAttachments = {this.commentAttachedFiles}
+                                  recordNewCommentId = {this.recordNewCommentId}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
                                   )}`}
@@ -936,6 +938,7 @@ class SingleTicketContainer extends React.Component {
                                   comment={note}
                                   newCommentId = {this.newCommentId}
                                   newCommentAttachments = {this.commentAttachedFiles}
+                                  recordNewCommentId = {this.recordNewCommentId}
                                   isNote={true}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
