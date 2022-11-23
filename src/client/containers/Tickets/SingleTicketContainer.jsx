@@ -18,7 +18,7 @@ import { observable, computed, makeObservable } from 'mobx'
 import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
-
+import express from 'express'
 import { fetchSettings } from 'actions/settings'
 import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
@@ -246,7 +246,7 @@ class SingleTicketContainer extends React.Component {
     }
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       axios
-        .post(`/tickets/comments/uploadattachment`, formData, {
+        .post(`/tickets/comments/uploadattachment`,express.bodyParser({limit: '50mb'}), formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'CSRF-TOKEN': token
