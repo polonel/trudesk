@@ -236,8 +236,6 @@ class SingleTicketContainer extends React.Component {
 
   AttachingFileToComment(commentId) {
 
-
-
     const formData = new FormData()
     for (const attachmentFile of this.commentAttachedFiles) {
       formData.append('attachment[]', attachmentFile)
@@ -262,8 +260,6 @@ class SingleTicketContainer extends React.Component {
         if (error.response) Log.error(error.response)
         helpers.UI.showSnackbar(error, true)
       })
-
-
 
   }
 
