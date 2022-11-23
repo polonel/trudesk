@@ -47,8 +47,6 @@ class AttachedСommentFiles extends React.Component {
   @observable issue = ''
   @observable text = ''
   @observable attachments = []
-  @observable newCommentId
-  @observable newCommentAttachments
 
   constructor(props) {
     super(props)
@@ -64,11 +62,6 @@ class AttachedСommentFiles extends React.Component {
     this.commentId = this.props.commentId
     this.attachments = this.props.attachments
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
-    this.newCommentId = this.props.newCommentId
-    this.newCommentAttachments = this.props.newCommentAttachments
-    if(this.commentId == this.newCommentId){
-      this.attachments = this.newCommentAttachments
-    }
   }
 
   componentDidMount() {

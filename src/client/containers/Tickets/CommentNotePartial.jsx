@@ -74,7 +74,6 @@ class CommentNotePartial extends React.Component {
             ticketId={this.props.ticketId}
             ticket={this.props.ticket}
             commentId={comment._id}
-            newCommentId = {this.props.newCommentId}
             comment={comment}
             attachments={comment.attachments}
             status={this.props.status}

@@ -98,7 +98,6 @@ class SingleTicketContainer extends React.Component {
   @observable isSubscribed = false
   @observable siteURL = ''
   @observable commentAttachedFiles = []
-  @observable newCommentId
   assigneeDropdownPartial = createRef()
 
   constructor(props) {
@@ -152,10 +151,6 @@ class SingleTicketContainer extends React.Component {
     if (this.ticket._id === data._id) {
       this.ticket = data
     }
-  }
-
-  recordNewCommentId(commentId){
-    this.newCommentId = commentId
   }
 
   onSocketUpdateComments(data) {
@@ -834,9 +829,6 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={item}
-                                  newCommentId = {this.newCommentId}
-                                  newCommentAttachments = {this.commentAttachedFiles}
-                                  recordNewCommentId = {this.recordNewCommentId}
                                   isNote={item.isNote}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
@@ -885,9 +877,6 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={comment}
-                                  newCommentId = {this.newCommentId}
-                                  newCommentAttachments = {this.commentAttachedFiles}
-                                  recordNewCommentId = {this.recordNewCommentId}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
                                   )}`}
@@ -936,9 +925,6 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={note}
-                                  newCommentId = {this.newCommentId}
-                                  newCommentAttachments = {this.commentAttachedFiles}
-                                  recordNewCommentId = {this.recordNewCommentId}
                                   isNote={true}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
