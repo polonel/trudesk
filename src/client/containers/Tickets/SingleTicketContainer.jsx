@@ -96,9 +96,7 @@ class SingleTicketContainer extends React.Component {
   @observable isSubscribed = false
   @observable siteURL = ''
   assigneeDropdownPartial = createRef()
-  state = {
-    attachedFiles: []
-  }
+  
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -111,6 +109,9 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketGroup = this.onUpdateTicketGroup.bind(this)
     this.onUpdateTicketDueDate = this.onUpdateTicketDueDate.bind(this)
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
+    this.state = {
+      commentAttachedFiles: []
+    }
   }
 
   componentDidMount() {
@@ -144,7 +145,7 @@ class SingleTicketContainer extends React.Component {
     this.props.unloadGroups()
   }
   updateData(value){
-    this.setState({ attachedFiles: value })
+    this.setState({ commentAttachedFiles: value })
     console.log(this.state.attachedFiles)
  }
   onUpdateTicket(data) {
