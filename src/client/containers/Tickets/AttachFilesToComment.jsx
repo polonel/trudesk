@@ -112,6 +112,8 @@ class AttachFilesToComment extends React.Component {
         this.attachments.push(attachmentFile)
         console.log('attachmentFile')
         console.log(attachmentFile)
+        console.log('this.attachments')
+        console.log(this.attachments)
         // const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         // axios
         //   .post(`/tickets/comments/uploadattachment`, formData, {
@@ -131,18 +133,11 @@ class AttachFilesToComment extends React.Component {
         //   })
     }
 
-    removeAttachment(e, attachmentId) {
-        // axios
-        //   .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachmentId}`)
-        //   .then(() => {
-        //     this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId  })
-        //     helpers.UI.showSnackbar('Attachment Removed')
-        //   })
-        //   .catch(error => {
-        //     Log.error(error)
-        //     if (error.response) Log.error(error.response)
-        //     helpers.UI.showSnackbar(error, true)
-        //   })
+    removeAttachment(e, removeAttachment) {
+        const removeFile = this.attachments.filter(function (attachment) {
+            return attachment.name == removeAttachment.name;
+        })[0];
+        this.attachments.splice(removeFile.indexOf(),1)
     }
 
     render() {
@@ -170,7 +165,7 @@ class AttachFilesToComment extends React.Component {
                                         <a
                                             role='button'
                                             className={'remove-attachment'}
-                                            onClick={e => this.removeAttachment(e, attachment.name)}
+                                            onClick={e => this.removeAttachment(e, attachment)}
                                         >
                                             <i className='fa fa-remove' />
                                         </a>
@@ -187,7 +182,7 @@ class AttachFilesToComment extends React.Component {
                     <Fragment>
                         <form className='form nomargin' encType='multipart/form-data'>
                             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                                <i className='material-icons' style={{ marginTop: -10, marginRight:-25 }}>&#xE226;</i>
+                                <i className='material-icons' style={{ marginTop: -8, marginRight:-25 }}>&#xE226;</i>
                             </div>
 
                             <input
