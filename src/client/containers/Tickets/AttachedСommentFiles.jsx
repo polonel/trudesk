@@ -125,6 +125,7 @@ class AttachedСommentFiles extends React.Component {
       })
   }
 
+
   removeAttachment(e, attachmentId) {
     axios
       .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachmentId}`)

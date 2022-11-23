@@ -95,8 +95,9 @@ class SingleTicketContainer extends React.Component {
   @observable ticket = null
   @observable isSubscribed = false
   @observable siteURL = ''
+  @observable commentAttachedFiles = []
   assigneeDropdownPartial = createRef()
-  
+
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -109,9 +110,6 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketGroup = this.onUpdateTicketGroup.bind(this)
     this.onUpdateTicketDueDate = this.onUpdateTicketDueDate.bind(this)
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
-    this.state = {
-      commentAttachedFiles: []
-    }
   }
 
   componentDidMount() {
@@ -144,10 +142,11 @@ class SingleTicketContainer extends React.Component {
 
     this.props.unloadGroups()
   }
-  updateData(value){
-    this.setState({ commentAttachedFiles: value })
-    console.log(this.state.attachedFiles)
- }
+  updateData = (attachment) => {
+    console.log(this.commentAttachedFiles)
+    this.commentAttachedFiles = attachment
+    console.log(this.commentAttachedFiles)
+  }
   onUpdateTicket(data) {
     if (this.ticket._id === data._id) {
       this.ticket = data
@@ -193,11 +192,12 @@ class SingleTicketContainer extends React.Component {
   onCommentNoteSubmit(e, type) {
     e.preventDefault()
     const isNote = type === 'note'
+    let newComment
     axios
       .post(`/api/v1/tickets/add${isNote ? 'note' : 'comment'}`, {
         _id: !isNote && this.ticket._id,
         comment: !isNote && this.commentMDE.getEditorText(),
-
+        attachments: this.commentAttachedFiles,
         ticketid: isNote && this.ticket._id,
         note: isNote && this.noteMDE.getEditorText()
       })
@@ -209,6 +209,7 @@ class SingleTicketContainer extends React.Component {
           } else {
             this.ticket.comments = res.data.ticket.comments
             this.commentMDE.setEditorText('')
+            newComment = res.data.comment
           }
 
           helpers.scrollToBottom('.page-content-right', true)
@@ -220,6 +221,46 @@ class SingleTicketContainer extends React.Component {
         if (error.response) Log.error(error.response)
         helpers.UI.showSnackbar(error, true)
       })
+      if (newComment){
+        commentId = this.ticket.comments.filter(comment => {
+          return comment.owner == newComment.owner
+            &&
+            comment.date == newComment.date
+            &&
+            comment.comment == newComment.comment
+        })[0]._id
+        AttachingFileToComment(commentId)
+      }
+  }
+
+  AttachingFileToComment(commentId){
+
+    for (const attachmentFile of this.commentAttachedFiles){
+
+      const formData = new FormData()
+      formData.append('commentId', commentId)
+      formData.append('ticketId', this.ticket._id)
+      formData.append('attachment', attachmentFile)
+      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      axios
+        .post(`/tickets/comments/uploadattachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'CSRF-TOKEN': token
+          }
+        })
+        .then(() => {
+          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
+          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+        })
+        .catch(error => {
+          Log.error(error)
+          if (error.response) Log.error(error.response)
+          helpers.UI.showSnackbar(error, true)
+        })
+
+    }
+    
   }
 
   getSetting(stateName) {
