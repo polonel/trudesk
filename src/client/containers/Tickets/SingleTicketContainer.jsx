@@ -39,7 +39,8 @@ import {
   TICKETS_DUEDATE_SET,
   TICKETS_UI_TAGS_UPDATE,
   TICKETS_COMMENT_NOTE_REMOVE,
-  TICKETS_COMMENT_NOTE_SET
+  TICKETS_COMMENT_NOTE_SET,
+  TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE
 } from 'serverSocket/socketEventConsts'
 
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial'
@@ -62,6 +63,7 @@ import Log from '../../logger'
 import UIkit from 'uikit'
 import moment from 'moment'
 import SpinLoader from 'components/SpinLoader'
+import { timesSeries } from 'async'
 
 const fetchTicket = parent => {
   axios
@@ -96,6 +98,7 @@ class SingleTicketContainer extends React.Component {
   @observable isSubscribed = false
   @observable siteURL = ''
   @observable commentAttachedFiles = []
+  @observable newCommentId
   assigneeDropdownPartial = createRef()
 
   constructor(props) {
@@ -143,14 +146,16 @@ class SingleTicketContainer extends React.Component {
     this.props.unloadGroups()
   }
   updateData = (attachment) => {
-    console.log(this.commentAttachedFiles)
     this.commentAttachedFiles = attachment
-    console.log(this.commentAttachedFiles)
   }
   onUpdateTicket(data) {
     if (this.ticket._id === data._id) {
       this.ticket = data
     }
+  }
+
+  recordNewCommentId(commentId){
+    this.newCommentId = commentId
   }
 
   onSocketUpdateComments(data) {
@@ -214,6 +219,16 @@ class SingleTicketContainer extends React.Component {
 
           helpers.scrollToBottom('.page-content-right', true)
           this.ticket.history = res.data.ticket.history
+          if (newComment) {
+            const commentId = this.ticket.comments.filter(comment => {
+              return comment.owner._id == newComment.owner
+                &&
+                comment.date == newComment.date
+                &&
+                comment.comment == newComment.comment
+            })[0]._id
+            this.AttachingFileToComment(commentId)
+          }
         }
       })
       .catch(error => {
@@ -221,21 +236,12 @@ class SingleTicketContainer extends React.Component {
         if (error.response) Log.error(error.response)
         helpers.UI.showSnackbar(error, true)
       })
-      if (newComment){
-        commentId = this.ticket.comments.filter(comment => {
-          return comment.owner == newComment.owner
-            &&
-            comment.date == newComment.date
-            &&
-            comment.comment == newComment.comment
-        })[0]._id
-        AttachingFileToComment(commentId)
-      }
+
   }
 
-  AttachingFileToComment(commentId){
+  AttachingFileToComment(commentId) {
 
-    for (const attachmentFile of this.commentAttachedFiles){
+    for (const attachmentFile of this.commentAttachedFiles) {
 
       const formData = new FormData()
       formData.append('commentId', commentId)
@@ -260,7 +266,7 @@ class SingleTicketContainer extends React.Component {
         })
 
     }
-    
+
   }
 
   getSetting(stateName) {
@@ -828,6 +834,8 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={item}
+                                  newCommentId = {this.newCommentId}
+                                  newCommentAttachments = {this.commentAttachedFiles}
                                   isNote={item.isNote}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
@@ -876,6 +884,8 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={comment}
+                                  newCommentId = {this.newCommentId}
+                                  newCommentAttachments = {this.commentAttachedFiles}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'
                                   )}`}
@@ -924,6 +934,8 @@ class SingleTicketContainer extends React.Component {
                                   ticketStatus={this.ticket.status}
                                   ticketSubject={this.ticket.subject}
                                   comment={note}
+                                  newCommentId = {this.newCommentId}
+                                  newCommentAttachments = {this.commentAttachedFiles}
                                   isNote={true}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                                     'timeFormat'

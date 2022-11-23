@@ -15,11 +15,8 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'components/Avatar/Avatar'
-import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
-
-import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import helpers from 'lib/helpers'
 
@@ -77,6 +74,7 @@ class CommentNotePartial extends React.Component {
             ticketId={this.props.ticketId}
             ticket={this.props.ticket}
             commentId={comment._id}
+            newCommentId = {this.props.newCommentId}
             comment={comment}
             attachments={comment.attachments}
             status={this.props.status}
