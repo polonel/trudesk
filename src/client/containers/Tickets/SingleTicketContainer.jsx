@@ -96,11 +96,12 @@ class SingleTicketContainer extends React.Component {
   @observable isSubscribed = false
   @observable siteURL = ''
   assigneeDropdownPartial = createRef()
-
+  state = {
+    attachedFiles: []
+  }
   constructor(props) {
     super(props)
     makeObservable(this)
-
     this.onUpdateTicket = this.onUpdateTicket.bind(this)
     this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this)
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this)
@@ -142,7 +143,10 @@ class SingleTicketContainer extends React.Component {
 
     this.props.unloadGroups()
   }
-
+  updateData(value){
+    this.setState({ attachedFiles: value })
+    console.log(this.state.attachedFiles)
+ }
   onUpdateTicket(data) {
     if (this.ticket._id === data._id) {
       this.ticket = data
@@ -950,6 +954,7 @@ class SingleTicketContainer extends React.Component {
                                   dateFormat={this.props.dateFormat}
                                   editorWindow={this.props.editorWindow}
                                   socket={this.props.socket}
+                                  updateData={this.updateData}
                                 />
                                 <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
                                   <div className='uk-float-right'>

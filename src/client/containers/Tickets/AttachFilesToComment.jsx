@@ -47,7 +47,6 @@ class AttachFilesToComment extends React.Component {
     @observable issue = ''
     @observable text = ''
     @observable attachments = []
-
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -110,42 +109,14 @@ class AttachFilesToComment extends React.Component {
         formData.append('ticketId', this.ticketId)
         formData.append('attachment', attachmentFile)
         this.attachments.push(attachmentFile)
-        console.log('attachmentFile')
-        console.log(attachmentFile)
-        console.log('this.attachments')
-        console.log(this.attachments)
-        // const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        // axios
-        //   .post(`/tickets/comments/uploadattachment`, formData, {
-        //     headers: {
-        //       'Content-Type': 'multipart/form-data',
-        //       'CSRF-TOKEN': token
-        //     }
-        //   })
-        //   .then(() => {
-        //     this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
-        //     helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-        //   })
-        //   .catch(error => {
-        //     Log.error(error)
-        //     if (error.response) Log.error(error.response)
-        //     helpers.UI.showSnackbar(error, true)
-        //   })
+        this.props.updateData(this.attachments)
     }
 
-    removeAttachment(e, removeAttachment) {
-        const removeFile = this.attachments.filter(function (attachment) {
-            return attachment.name == removeAttachment.name;
-        })[0];
-        this.attachments.splice(removeFile.indexOf(),1)
+    removeAttachment(e, attachment) {
+        this.attachments.splice(this.attachments.indexOf(attachment),1)
     }
 
     render() {
-        // const commentId = this.commentId
-        // const commentTicket = this.props.ticket.comments.filter(function (comment) {
-        //   return comment._id == commentId;
-        // });
-        // this.attachments = commentTicket[0].attachments
         return (
             <div className='ticket-comment'>
                 <div >
