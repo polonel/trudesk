@@ -850,7 +850,6 @@ ticketsController.uploadCommentAttachment = function (req, res) {
   const busboy = Busboy({
     headers: req.headers,
     limits: {
-      files: 1,
       fileSize: 10 * 1024 * 1024 // 10mb limit
     }
   })
