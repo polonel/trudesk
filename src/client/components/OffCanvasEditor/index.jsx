@@ -17,7 +17,7 @@ import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
-
+import AttachFilesToComment from 'components/AttachFilesToComment'
 import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
@@ -108,6 +108,20 @@ class OffCanvasEditor extends React.Component {
               </div>
             </div>
           </div>
+
+          <AttachFilesToComment
+                                  ticket={this.props.ticket}
+                                  status={this.props.status}
+                                  owner={this.props.owner}
+                                  subject={this.props.subject}
+                                  issue={this.props.issue}
+                                  date={this.props.date}
+                                  dateFormat={this.props.dateFormat}
+                                  editorWindow={this.props.editorWindow}
+                                  socket={this.props.socket}
+                                  updateData={this.updateData}
+                                  commentAttachedFiles = {this.commentAttachedFiles}
+                                />
 
           <div className='action-panel'>
             <div className='left-buttons'>

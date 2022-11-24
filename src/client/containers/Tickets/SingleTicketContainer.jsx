@@ -236,29 +236,29 @@ class SingleTicketContainer extends React.Component {
   AttachingFileToComment(commentId) {
 
     for (const attachmentFile of this.commentAttachedFiles) {
-    const formData = new FormData()
-    formData.append('commentId', commentId)
-    formData.append('ticketId', this.ticket._id)
-    formData.append('attachment', attachmentFile)
-    
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    axios
-      .post(`/tickets/comments/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        }
-      })
-      .then(() => {
-        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
-        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-        this.commentAttachedFiles = []
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
+      const formData = new FormData()
+      formData.append('commentId', commentId)
+      formData.append('ticketId', this.ticket._id)
+      formData.append('attachment', attachmentFile)
+
+      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      axios
+        .post(`/tickets/comments/uploadattachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'CSRF-TOKEN': token
+          }
+        })
+        .then(() => {
+          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
+          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+          this.commentAttachedFiles = []
+        })
+        .catch(error => {
+          Log.error(error)
+          if (error.response) Log.error(error.response)
+          helpers.UI.showSnackbar(error, true)
+        })
     }
   }
 
@@ -996,7 +996,7 @@ class SingleTicketContainer extends React.Component {
                                   editorWindow={this.props.editorWindow}
                                   socket={this.props.socket}
                                   updateData={this.updateData}
-                                  commentAttachedFiles = {this.commentAttachedFiles}
+                                  commentAttachedFiles={this.commentAttachedFiles}
                                 />
                                 <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
                                   <div className='uk-float-right'>
@@ -1044,7 +1044,20 @@ class SingleTicketContainer extends React.Component {
                 </div>
               </div>
             </div>
-            <OffCanvasEditor primaryLabel={'Save Edit'} ref={r => (this.editorWindow = r)} />
+            <OffCanvasEditor
+              primaryLabel={'Save Edit'}
+              ref={r => (this.editorWindow = r)}
+              ticket={this.props.ticket}
+              status={this.props.status}
+              owner={this.props.owner}
+              subject={this.props.subject}
+              issue={this.props.issue}
+              date={this.props.date}
+              dateFormat={this.props.dateFormat}
+              editorWindow={this.props.editorWindow}
+              socket={this.props.socket}
+              updateData={this.updateData}
+              commentAttachedFiles={this.commentAttachedFiles} />
           </Fragment>
         )}
       </div>
