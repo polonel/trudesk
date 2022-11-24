@@ -52,7 +52,7 @@ class AttachedСommentFiles extends React.Component {
     super(props)
     makeObservable(this)
 
-    this.ticketId = this.props.ticketId
+    this.ticketId = this.props.ticket._id
     this.text = this.props.ticketId
     this.ticket = this.props.ticket
     this.status = this.props.status

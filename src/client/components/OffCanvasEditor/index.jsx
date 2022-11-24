@@ -63,6 +63,8 @@ class OffCanvasEditor extends React.Component {
     this.editor.setEditorText(this.mdeText)
     this.showSubject = data.showSubject !== undefined ? data.showSubject : true
     this.comment = data.comment
+    console.log('data.comment')
+    console.log(data.comment)
     this.onPrimaryClick = data.onPrimaryClick || null
 
     $(this.editorWindow)
