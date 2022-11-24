@@ -171,7 +171,6 @@ class CreateTicketModal extends React.Component {
 
   onAttachmentInputChange(ticketId) {
     for (const attachmentFile of this.attachments) {
-      console.log('Проходит цикл this.attachments')
       const formData = new FormData()
       formData.append('ticketId', ticketId)
       formData.append('attachment', attachmentFile)

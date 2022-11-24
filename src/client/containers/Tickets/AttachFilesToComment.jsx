@@ -115,7 +115,7 @@ class AttachFilesToComment extends React.Component {
                     </a>
 
                     {/* Attachments */}
-                    <ul className='attachments '>
+                    <ul className='attachments'>
                         {this.attachments &&
                             this.attachments.map(attachment => (
                                 <li key={attachment.name}>
