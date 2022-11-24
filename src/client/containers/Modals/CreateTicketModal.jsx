@@ -43,12 +43,12 @@ class CreateTicketModal extends React.Component {
   @observable selectedPriority = ''
   issueText = ''
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.fetchTicketTypes()
     this.props.getTagsWithPage({ limit: -1 })
     this.props.fetchGroups()
@@ -64,13 +64,13 @@ class CreateTicketModal extends React.Component {
     )
   }
 
-  componentDidUpdate () {}
+  componentDidUpdate() { }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
   }
 
-  onTicketTypeSelectChange (e) {
+  onTicketTypeSelectChange(e) {
     this.priorityWrapper.classList.add('hide')
     this.priorityLoader.classList.remove('hide')
     axios
@@ -96,11 +96,11 @@ class CreateTicketModal extends React.Component {
       })
   }
 
-  onPriorityRadioChange (e) {
+  onPriorityRadioChange(e) {
     this.selectedPriority = e.target.value
   }
 
-  onFormSubmit (e) {
+  onFormSubmit(e) {
     e.preventDefault()
     const $form = $(e.target)
 
@@ -144,7 +144,7 @@ class CreateTicketModal extends React.Component {
     this.props.createTicket(data)
   }
 
-  onGroupSelectChange (e) {
+  onGroupSelectChange(e) {
     // this.groupAccounts = this.props.groups
     //   .filter(grp => grp.get('_id') === e.target.value)
     //   .first()
@@ -155,7 +155,7 @@ class CreateTicketModal extends React.Component {
     //   .toArray()
   }
 
-  render () {
+  render() {
     const { shared, viewdata } = this.props
     const allowAgentUserTickets =
       viewdata.get('ticketSettings').get('allowAgentUserTickets') &&
@@ -299,6 +299,10 @@ class CreateTicketModal extends React.Component {
                 allowImageUpload={true}
                 inlineImageUploadUrl={'/tickets/uploadmdeimage'}
                 inlineImageUploadHeaders={{ ticketid: 'uploads' }}
+              />
+              <AttachFilesToTicket
+                owner={this.props.owner}
+                socket={this.props.socket}
               />
             </div>
             <span style={{ marginTop: '6px', display: 'inline-block', fontSize: '11px' }} className={'uk-text-muted'}>
