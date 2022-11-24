@@ -848,7 +848,6 @@ ticketsController.uploadAttachment = function (req, res) {
 ticketsController.uploadCommentAttachment = function (req, res) {
   const Busboy = require('busboy')
   const busboy = Busboy({
-    file: 1,
     headers: req.headers,
     limits: {
       fileSize: 500 * 1024 * 1024 // 10mb limit
@@ -861,6 +860,9 @@ ticketsController.uploadCommentAttachment = function (req, res) {
   let error
 
   const events = []
+  const ticketObjectArray = []
+  let eventsCount = 0
+
 
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'commentId') object.commentId = val
@@ -979,7 +981,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
   })
 
   busboy.on('finish', function () {
-    async.series(events, function () {
+    async.each(events, function () {
       if (error) return res.status(error.status).send(error.message)
 
       if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
@@ -1019,6 +1021,11 @@ ticketsController.uploadCommentAttachment = function (req, res) {
         ticket.history.push(historyItem)
 
         ticket.updated = Date.now()
+        ticketObject = {
+          comments: {_id:ticket. comment[0]._id}
+        }
+        ticketObjectArray.push(ticket)
+
         ticket.save(function (err, t) {
           if (err) {
             fs.unlinkSync(object.filePath)
@@ -1029,14 +1036,18 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           const returnData = {
             ticket: t
           }
-
-          return res.json(returnData)
+          
+          eventsCount++
+          if (eventsCount == events.length){
+            return res.json(returnData)
+          }
+          
         })
       })
     })
   })
-
   req.pipe(busboy)
+ 
 }
 
 function handleError(res, err) {

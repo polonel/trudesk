@@ -53,8 +53,7 @@ module.exports = function (app, db, callback) {
   global.Handlebars = hbs.handlebars
 
   // app.use(bodyParser.json({ limit: '500mb'}))
-  // app.use(bodyParser.urlencoded({ limit: '500mb', extended: true, parameterLimit:100000 }))
-  app.use(bodyParser.json({ limit: '200mb', extended: true }));
+  app.use(bodyParser.json({ limit: '50mb'}));
   app.use(bodyParser.urlencoded({
     limit: '50mb',
     parameterLimit: 100000,

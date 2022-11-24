@@ -236,29 +236,29 @@ class SingleTicketContainer extends React.Component {
   AttachingFileToComment(commentId) {
 
     for (const attachmentFile of this.commentAttachedFiles) {
-      const formData = new FormData()
-      formData.append('commentId', commentId)
-      formData.append('ticketId', this.ticket._id)
-      formData.append('attachment', attachmentFile)
-
-      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      axios
-        .post(`/tickets/comments/uploadattachment`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'CSRF-TOKEN': token
-          }
-        })
-        .then(() => {
-          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
-          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-        })
-        .catch(error => {
-          Log.error(error)
-          if (error.response) Log.error(error.response)
-          helpers.UI.showSnackbar(error, true)
-        })
-      }
+    const formData = new FormData()
+    formData.append('commentId', commentId)
+    formData.append('ticketId', this.ticket._id)
+    formData.append('attachment', attachmentFile)
+    
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    axios
+      .post(`/tickets/comments/uploadattachment`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-TOKEN': token
+        }
+      })
+      .then(() => {
+        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
+        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+      })
+      .catch(error => {
+        Log.error(error)
+        if (error.response) Log.error(error.response)
+        helpers.UI.showSnackbar(error, true)
+      })
+    }
   }
 
   getSetting(stateName) {
