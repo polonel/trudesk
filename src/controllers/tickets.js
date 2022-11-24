@@ -747,7 +747,7 @@ ticketsController.uploadAttachment = function (req, res) {
 
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
-    object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+    object.filePath = path.join(savePath, sanitizedFilename)
     object.filename = sanitizedFilename.replace('/', '').replace('..', '')
     object.mimetype = mimetype
 
@@ -755,7 +755,7 @@ ticketsController.uploadAttachment = function (req, res) {
       const Chance = require('chance')
       const chance = new Chance()
       sanitizedFilename = chance.hash({ length: 15 }) + '-' + sanitizedFilename
-      object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+      object.filePath = path.join(savePath, sanitizedFilename)
       object.filename = sanitizedFilename
     }
 
