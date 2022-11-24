@@ -233,8 +233,10 @@ class SingleTicketContainer extends React.Component {
 
   }
 
-  AttachingFileToComment(commentId) {
-
+  attachingFileToComment(commentId) {
+    console.log('attachingFileToComment')
+    console.log(commentId)
+    console.log(commentId)
     for (const attachmentFile of this.commentAttachedFiles) {
       const formData = new FormData()
       formData.append('commentId', commentId)
@@ -1061,8 +1063,8 @@ class SingleTicketContainer extends React.Component {
               ticket={this.ticket}
               ticketStatus={this.ticket.status}
               ticketSubject={this.ticket.subject}
-              AttachingFileToComment = {this.AttachingFileToComment}
-              updateData = {this.updateData}
+              attachingFileToComment={this.attachingFileToComment}
+              updateData={this.updateData}
               dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                 'timeFormat'
               )}`} />

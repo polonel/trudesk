@@ -23,6 +23,7 @@ import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
+import { TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 @observer
 class OffCanvasEditor extends React.Component {
@@ -59,7 +60,7 @@ class OffCanvasEditor extends React.Component {
     if (this.onPrimaryClick) this.onPrimaryClick(data)
     this.removeAttachments()
     this.props.updateData(this.attachmentToSave)
-    this.props.AttachingFileToComment(this.comment._id)
+    this.props.attachingFileToComment(this.comment._id)
    
 
     this.closeEditorWindow()
