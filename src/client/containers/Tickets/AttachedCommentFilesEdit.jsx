@@ -125,7 +125,7 @@ class AttachedCommentFilesEdit extends React.Component {
     // });
     // this.attachments = commentTicket[0].attachments
     return (
-      <div >
+      <div className = 'tru-card ticket-details uk-clearfix' >
         {/* Attachments */}
         <ul className='attachments'>
           {this.attachmentsFiles &&
