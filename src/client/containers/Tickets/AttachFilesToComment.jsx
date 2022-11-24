@@ -77,7 +77,7 @@ class AttachFilesToComment extends React.Component {
         if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
         if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
         if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-        if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
+        if (prevProps.attachments !== this.props.commentAttachedFiles) this.attachments = this.props.commentAttachedFiles
     }
 
     componentWillUnmount() {
