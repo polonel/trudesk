@@ -103,11 +103,7 @@ class AttachFilesToComment extends React.Component {
     }
 
     onAttachmentInputChange(e) {
-        const formData = new FormData()
         const attachmentFile = e.target.files[0]
-        formData.append('commentId', this.commentId)
-        formData.append('ticketId', this.ticketId)
-        formData.append('attachment', attachmentFile)
         this.attachments.push(attachmentFile)
         this.props.updateData(this.attachments)
     }

@@ -105,12 +105,12 @@ class OffCanvasEditor extends React.Component {
                   allowImageUpload={this.props.allowUploads}
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
-                {this.comment &&(
+                
                 <AttachedСommentFiles
                   ticket={this.props.ticket}
-                  commentId={this.comment._id}
+                  commentId={this.comment?._id}
                   comment={this.comment}
-                  attachments={this.comment.attachments}
+                  attachments={this.comment?.attachments}
                   status={this.props.status}
                   owner={this.props.owner}
                   subject={this.props.subject}
@@ -119,8 +119,7 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
-                />)
-                }
+                />
               </div>
             </div>
           </div>
