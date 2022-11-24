@@ -17,7 +17,7 @@ import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
-import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
+import AttachedСommentFilesEdit from 'containers/Tickets/AttachedСommentFilesEdit'
 import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
@@ -29,8 +29,8 @@ class OffCanvasEditor extends React.Component {
   @observable showSubject = true
   @observable onPrimaryClick = null
   @observable comment
-  @observable attachmentToRemove = []
-  @observable attachmentToSave = []
+  @observable attachmentsToRemove = []
+  @observable attachmentsToSave = []
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -64,7 +64,7 @@ class OffCanvasEditor extends React.Component {
 
   removeAttachments() {
 
-    for (const attachment of this.attachmentToRemove) {
+    for (const attachment of this.attachmentsToRemove) {
       axios
         .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.props.comment?._id}/attachments/remove/${attachment._id}`)
         .then(() => {
@@ -86,12 +86,9 @@ class OffCanvasEditor extends React.Component {
     this.editor.setEditorText(this.mdeText)
     this.showSubject = data.showSubject !== undefined ? data.showSubject : true
     this.comment = data.comment
-    console.log('data.comment')
-    console.log(data.comment)
-    console.log('data.text')
-    console.log(data.text)
     this.onPrimaryClick = data.onPrimaryClick || null
-
+    console.log( 'this.attachmentsToRemove')
+    console.log( this.attachmentsToRemove)
     $(this.editorWindow)
       .removeClass('closed')
       .addClass('open')
@@ -105,12 +102,16 @@ class OffCanvasEditor extends React.Component {
       .addClass('closed')
   }
 
-  pushAttachmentToRemove(attachment) {
-    this.attachmentToRemove.push(attachment)
+  pushAttachmentToRemove = (attachment) => {
+    console.log('this.attachmentsToRemove')
+    console.log(this.attachmentsToRemove)
+    this.attachmentsToRemove.push(attachment)
   }
 
-  pushAttachmentToSave(attachment) {
-    this.attachmentToSave.push(attachment)
+  pushAttachmentToSave = (attachment) => {
+    console.log('this.attachmentsToSave')
+    console.log(attachmentsToSave)
+    this.attachmentsToSave.push(attachment)
   }
 
   render() {
@@ -141,7 +142,7 @@ class OffCanvasEditor extends React.Component {
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
 
-                <AttachedСommentFiles
+                <AttachedСommentFilesEdit
                   ticket={this.props.ticket}
                   commentId={this.comment?._id}
                   comment={this.comment}
