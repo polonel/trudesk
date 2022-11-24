@@ -23,6 +23,7 @@ import Log from '../../logger'
 import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
+import AttachFilesToTicket from 'containers/Tickets/AttachFilesToTicket'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
