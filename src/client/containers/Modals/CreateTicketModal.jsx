@@ -407,5 +407,6 @@ export default connect(mapStateToProps, {
   getTagsWithPage,
   fetchGroups,
   fetchAccountsCreateTicket,
-  fetchSettings
+  fetchSettings,
+  hideModal
 })(CreateTicketModal)
