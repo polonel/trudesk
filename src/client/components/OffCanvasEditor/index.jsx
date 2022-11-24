@@ -17,7 +17,7 @@ import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
-import AttachFilesToComment from 'containers/Tickets/AttachFilesToComment'
+import AttachedСommentFiles from 'containers/Tickets/AttachedСommentFiles'
 import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
@@ -79,6 +79,8 @@ class OffCanvasEditor extends React.Component {
   }
 
   render() {
+    const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props
+    const dateFormatted = helpers.formatDate(comment.date, dateFormat)
     return (
       <div className='off-canvas-bottom closed' ref={r => (this.editorWindow = r)}>
         <div className='edit-window-wrapper'>
@@ -105,8 +107,12 @@ class OffCanvasEditor extends React.Component {
                   allowImageUpload={this.props.allowUploads}
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
-                <AttachFilesToComment
+                <AttachedСommentFiles
+                  ticketId={this.props.ticketId}
                   ticket={this.props.ticket}
+                  commentId={comment._id}
+                  comment={comment}
+                  attachments={comment.attachments}
                   status={this.props.status}
                   owner={this.props.owner}
                   subject={this.props.subject}
@@ -115,8 +121,6 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
-                  updateData={this.updateData}
-                  commentAttachedFiles={this.commentAttachedFiles}
                 />
               </div>
             </div>
