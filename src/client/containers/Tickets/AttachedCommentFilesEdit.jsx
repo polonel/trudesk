@@ -46,7 +46,7 @@ class AttachedCommentFilesEdit extends React.Component {
   @observable subject = ''
   @observable issue = ''
   @observable text = ''
-  @observable attachments = []
+  @observable attachmentsFiles = []
 
   constructor(props) {
     super(props)
@@ -61,9 +61,9 @@ class AttachedCommentFilesEdit extends React.Component {
     this.issue = this.props.issue
     this.commentId = this.props.commentId
     if (this.props.attachments) {
-      this.attachments = this.props.attachments
+      this.attachmentsFiles = this.props.attachments
     } else {
-      this.attachments = []
+      this.attachmentsFiles = []
     }
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
@@ -83,7 +83,7 @@ class AttachedCommentFilesEdit extends React.Component {
     if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
     if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
     if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
+    if (prevProps.attachments !== this.props.attachments) this.attachmentsFiles = this.props.attachments
   }
 
   componentWillUnmount() {
@@ -97,8 +97,8 @@ class AttachedCommentFilesEdit extends React.Component {
       })[0];
 
       if (comment) {
-        this.attachments.length = 0
-        this.attachments.push(...comment.attachments)
+        this.attachmentsFiles.length = 0
+        this.attachmentsFiles.push(...comment.attachments)
       }
 
     }
@@ -106,14 +106,14 @@ class AttachedCommentFilesEdit extends React.Component {
 
   onAttachmentInputChange(e) {
     const attachmentFile = e.target.files[0]
-    this.attachments.push(attachmentFile)
+    this.attachmentsFiles.push(attachmentFile)
     this.props.pushAttachmentToSave(attachmentFile)
     // this.props.updateData(this.attachments)
   }
 
 
   removeAttachment(e, attachment) {
-    this.attachments.splice(this.attachments.indexOf(attachment), 1)
+    this.attachmentsFiles.splice(this.attachmentsFiles.indexOf(attachment), 1)
     this.props.pushAttachmentToRemove(attachment)
     
   }
@@ -128,8 +128,8 @@ class AttachedCommentFilesEdit extends React.Component {
       <div >
         {/* Attachments */}
         <ul className='attachments'>
-          {this.attachments &&
-            this.attachments.map(attachment => (
+          {this.attachmentsFiles &&
+            this.attachmentsFiles.map(attachment => (
               <li key={attachment._id}>
 
                 <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
