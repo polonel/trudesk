@@ -882,6 +882,7 @@ class SingleTicketContainer extends React.Component {
                                     this.editorWindow.openEditorWindow({
                                       showSubject: false,
                                       text: comment.comment,
+                                      comment: comment,
                                       onPrimaryClick: data => {
                                         this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
                                           _id: this.ticket._id,
@@ -1057,17 +1058,14 @@ class SingleTicketContainer extends React.Component {
               editorWindow={this.editorWindow}
               socket={this.props.socket}
               ticket={this.ticket}
-              key={note._id}
               ticketStatus={this.ticket.status}
               ticketSubject={this.ticket.subject}
-              comment={note}
-              isNote={true}
               dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                 'timeFormat'
-              )}`}/>
+              )}`} />
 
 
-           
+
 
 
 

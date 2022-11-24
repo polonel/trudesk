@@ -79,7 +79,7 @@ class OffCanvasEditor extends React.Component {
   }
 
   render() {
-    const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props
+    const {comment} = this.props
     return (
       <div className='off-canvas-bottom closed' ref={r => (this.editorWindow = r)}>
         <div className='edit-window-wrapper'>
