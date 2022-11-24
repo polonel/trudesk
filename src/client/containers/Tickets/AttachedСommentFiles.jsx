@@ -135,7 +135,7 @@ class AttachedСommentFiles extends React.Component {
                 <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                   {attachment.name}
                 </a>
-                {this.status !== 3 && (
+                {/* {this.status !== 3 && (
                   <a
                     role='button'
                     className={'remove-attachment'}
@@ -143,7 +143,7 @@ class AttachedСommentFiles extends React.Component {
                   >
                     <i className='fa fa-remove' />
                   </a>
-                )}
+                )} */}
               </li>
             ))}
         </ul>
@@ -152,7 +152,7 @@ class AttachedСommentFiles extends React.Component {
         </div>
 
         {/* Permissions on Fragment for edit */}
-        {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
+        {/* {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
             <form className='form nomargin' encType='multipart/form-data'>
               <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
@@ -167,7 +167,7 @@ class AttachedСommentFiles extends React.Component {
               />
             </form>
           </Fragment>
-        )}
+        )} */}
       </div>
     )
   }
