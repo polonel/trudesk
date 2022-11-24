@@ -28,7 +28,7 @@ class OffCanvasEditor extends React.Component {
   @observable subjectText = ''
   @observable showSubject = true
   @observable onPrimaryClick = null
-
+  @observable comment
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -79,7 +79,6 @@ class OffCanvasEditor extends React.Component {
   }
 
   render() {
-    const {comment} =  this.comment
     return (
       <div className='off-canvas-bottom closed' ref={r => (this.editorWindow = r)}>
         <div className='edit-window-wrapper'>
@@ -106,11 +105,12 @@ class OffCanvasEditor extends React.Component {
                   allowImageUpload={this.props.allowUploads}
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
+                {this.comment &&(
                 <AttachedСommentFiles
                   ticket={this.props.ticket}
-                  commentId={comment._id}
-                  comment={comment}
-                  attachments={comment.attachments}
+                  commentId={this.comment._id}
+                  comment={this.comment}
+                  attachments={this.comment.attachments}
                   status={this.props.status}
                   owner={this.props.owner}
                   subject={this.props.subject}
@@ -119,7 +119,8 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
-                />
+                />)
+                }
               </div>
             </div>
           </div>
