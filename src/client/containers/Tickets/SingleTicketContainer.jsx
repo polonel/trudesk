@@ -1047,17 +1047,31 @@ class SingleTicketContainer extends React.Component {
             <OffCanvasEditor
               primaryLabel={'Save Edit'}
               ref={r => (this.editorWindow = r)}
-              ticket={this.props.ticket}
-              status={this.props.status}
-              owner={this.props.owner}
-              subject={this.props.subject}
-              issue={this.props.issue}
-              date={this.props.date}
-              dateFormat={this.props.dateFormat}
-              editorWindow={this.props.editorWindow}
+              ticketId={this.ticket._id}
+              status={this.ticket.status}
+              owner={this.ticket.owner}
+              subject={this.ticket.subject}
+              issue={this.ticket.issue}
+              date={this.ticket.date}
+              attachments={this.ticket.attachments}
+              editorWindow={this.editorWindow}
               socket={this.props.socket}
-              updateData={this.updateData}
-              commentAttachedFiles={this.commentAttachedFiles} />
+              ticket={this.ticket}
+              key={note._id}
+              ticketStatus={this.ticket.status}
+              ticketSubject={this.ticket.subject}
+              comment={note}
+              isNote={true}
+              dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
+                'timeFormat'
+              )}`}/>
+
+
+           
+
+
+
+
           </Fragment>
         )}
       </div>

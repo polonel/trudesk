@@ -80,7 +80,6 @@ class OffCanvasEditor extends React.Component {
 
   render() {
     const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props
-    const dateFormatted = helpers.formatDate(comment.date, dateFormat)
     return (
       <div className='off-canvas-bottom closed' ref={r => (this.editorWindow = r)}>
         <div className='edit-window-wrapper'>
@@ -108,7 +107,6 @@ class OffCanvasEditor extends React.Component {
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
                 <AttachedСommentFiles
-                  ticketId={this.props.ticketId}
                   ticket={this.props.ticket}
                   commentId={comment._id}
                   comment={comment}
