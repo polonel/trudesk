@@ -62,7 +62,7 @@ class OffCanvasEditor extends React.Component {
     this.mdeText = data.text || ''
     this.editor.setEditorText(this.mdeText)
     this.showSubject = data.showSubject !== undefined ? data.showSubject : true
-
+    this.comment = data.comment
     this.onPrimaryClick = data.onPrimaryClick || null
 
     $(this.editorWindow)
@@ -79,7 +79,7 @@ class OffCanvasEditor extends React.Component {
   }
 
   render() {
-    const {comment} = this.props
+    const {comment} =  this.comment
     return (
       <div className='off-canvas-bottom closed' ref={r => (this.editorWindow = r)}>
         <div className='edit-window-wrapper'>
