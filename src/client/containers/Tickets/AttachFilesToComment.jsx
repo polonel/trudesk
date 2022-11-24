@@ -58,7 +58,7 @@ class AttachFilesToComment extends React.Component {
         this.owner = this.props.owner
         this.subject = this.props.subject
         this.issue = this.props.issue
-        this.attachments = []
+        this.attachments = this.props.commentAttachedFiles
         this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
     }
 
