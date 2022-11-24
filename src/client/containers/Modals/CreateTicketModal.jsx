@@ -24,6 +24,7 @@ import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets
 import { fetchGroups } from 'actions/groups'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
 import AttachFilesToTicket from 'containers/Tickets/AttachFilesToTicket'
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -146,9 +147,40 @@ class CreateTicketModal extends React.Component {
     data.priority = this.selectedPriority
     data.issue = this.issueMde.easymde.value()
     data.socketid = this.props.socket.io.engine.id
-    data.attachments = this.attachments
 
-    this.props.createTicket(data)
+    axios.post('/api/v1/tickets/create', data).then(res => {
+      let ticketUID = res.data.ticket.uid
+
+      this.onAttachmentInputChange(ticket._id)
+
+      location.href = `${siteURL}/tickets/${ticketUID}`
+    })
+    // this.props.createTicket(data)
+  }
+
+  onAttachmentInputChange(ticketId) {
+    for (const attachmentFile of this.attachments) {
+    const formData = new FormData()
+    formData.append('ticketId', ticketId)
+    formData.append('attachment', attachmentFile)
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    axios
+      .post(`/tickets/uploadattachment`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-TOKEN': token
+        }
+      })
+      .then(() => {
+        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
+        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+      })
+      .catch(error => {
+        Log.error(error)
+        if (error.response) Log.error(error.response)
+        helpers.UI.showSnackbar(error, true)
+      })
+    }
   }
 
   onGroupSelectChange(e) {
@@ -310,7 +342,7 @@ class CreateTicketModal extends React.Component {
               <AttachFilesToTicket
                 owner={this.props.owner}
                 socket={this.props.socket}
-                updateData = {this.updateData}
+                updateData={this.updateData}
               />
             </div>
             <span style={{ marginTop: '6px', display: 'inline-block', fontSize: '11px' }} className={'uk-text-muted'}>
