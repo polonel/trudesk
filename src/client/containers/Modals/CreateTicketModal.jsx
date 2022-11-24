@@ -22,6 +22,7 @@ import axios from 'axios'
 import Log from '../../logger'
 import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
+import { fetchSettings } from 'actions/settings'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
 import AttachFilesToTicket from 'containers/Tickets/AttachFilesToTicket'
 import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
@@ -56,6 +57,7 @@ class CreateTicketModal extends React.Component {
     this.props.getTagsWithPage({ limit: -1 })
     this.props.fetchGroups()
     this.props.fetchAccountsCreateTicket({ type: 'all', limit: 1000 })
+    this.props.fetchSettings()
     helpers.UI.inputs()
     helpers.formvalidator()
     this.defaultTicketTypeWatcher = when(
@@ -72,6 +74,12 @@ class CreateTicketModal extends React.Component {
   componentWillUnmount() {
     if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
   }
+
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+        ? this.props.settings.getIn(['settings', stateName, 'value'])
+        : ''
+}
 
   onTicketTypeSelectChange(e) {
     this.priorityWrapper.classList.add('hide')
@@ -147,7 +155,7 @@ class CreateTicketModal extends React.Component {
     data.priority = this.selectedPriority
     data.issue = this.issueMde.easymde.value()
     data.socketid = this.props.socket.io.engine.id
-
+    const siteURL = this.getSetting('siteUrl')
     axios.post('/api/v1/tickets/create', data).then(res => {
       const ticket = res.data.ticket
       const ticketUID = res.data.ticket.uid
@@ -386,7 +394,8 @@ const mapStateToProps = state => ({
   priorities: state.ticketsState.priorities,
   ticketTags: state.tagsSettings.tags,
   groups: state.groupsState.groups,
-  accounts: state.accountsState.accountsCreateTicket
+  accounts: state.accountsState.accountsCreateTicket,
+  settings: state.settings.settings
 })
 
 export default connect(mapStateToProps, {
@@ -394,5 +403,6 @@ export default connect(mapStateToProps, {
   fetchTicketTypes,
   getTagsWithPage,
   fetchGroups,
-  fetchAccountsCreateTicket
+  fetchAccountsCreateTicket,
+  fetchSettings
 })(CreateTicketModal)
