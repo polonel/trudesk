@@ -149,13 +149,14 @@ class CreateTicketModal extends React.Component {
     data.socketid = this.props.socket.io.engine.id
 
     axios.post('/api/v1/tickets/create', data).then(res => {
-      let ticketUID = res.data.ticket.uid
+      const ticket = res.data.ticket
+      const ticketUID = res.data.ticket.uid
 
       this.onAttachmentInputChange(ticket._id)
 
       location.href = `${siteURL}/tickets/${ticketUID}`
     })
-    // this.props.createTicket(data)
+  //  this.props.createTicket(data)
   }
 
   onAttachmentInputChange(ticketId) {
