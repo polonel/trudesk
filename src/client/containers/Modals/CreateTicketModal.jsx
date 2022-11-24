@@ -42,6 +42,7 @@ class CreateTicketModal extends React.Component {
   @observable allAccounts = this.props.accounts || []
   @observable groupAccounts = []
   @observable selectedPriority = ''
+  @observable attachments = []
   issueText = ''
 
   constructor(props) {
@@ -101,6 +102,10 @@ class CreateTicketModal extends React.Component {
     this.selectedPriority = e.target.value
   }
 
+  updateData = (attachment) => {
+    this.attachments.push(attachment)
+  }
+
   onFormSubmit(e) {
     e.preventDefault()
     const $form = $(e.target)
@@ -141,6 +146,7 @@ class CreateTicketModal extends React.Component {
     data.priority = this.selectedPriority
     data.issue = this.issueMde.easymde.value()
     data.socketid = this.props.socket.io.engine.id
+    data.attachments = this.attachments
 
     this.props.createTicket(data)
   }
@@ -304,6 +310,7 @@ class CreateTicketModal extends React.Component {
               <AttachFilesToTicket
                 owner={this.props.owner}
                 socket={this.props.socket}
+                updateData = {this.updateData}
               />
             </div>
             <span style={{ marginTop: '6px', display: 'inline-block', fontSize: '11px' }} className={'uk-text-muted'}>
