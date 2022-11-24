@@ -55,9 +55,10 @@ class OffCanvasEditor extends React.Component {
     }
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
-
-    this.props.AttachingFileToComment(this.attachmentToSave)
     removeAttachments()
+    this.props.updateData(this.attachmentToSave)
+    this.props.AttachingFileToComment(this.comment._id)
+   
 
     this.closeEditorWindow()
   }
@@ -65,6 +66,8 @@ class OffCanvasEditor extends React.Component {
   removeAttachments() {
 
     for (const attachment of this.attachmentsToRemove) {
+      console.log('Remove attachment')
+      console.log(attachment)
       axios
         .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.props.comment?._id}/attachments/remove/${attachment._id}`)
         .then(() => {
@@ -103,14 +106,10 @@ class OffCanvasEditor extends React.Component {
   }
 
   pushAttachmentToRemove = (attachment) => {
-    console.log('this.attachmentsToRemove')
-    console.log(this.attachmentsToRemove)
     this.attachmentsToRemove.push(attachment)
   }
 
   pushAttachmentToSave = (attachment) => {
-    console.log('this.attachmentsToSave')
-    console.log(attachmentsToSave)
     this.attachmentsToSave.push(attachment)
   }
 

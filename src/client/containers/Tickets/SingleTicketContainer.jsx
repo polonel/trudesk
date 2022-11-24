@@ -1062,6 +1062,7 @@ class SingleTicketContainer extends React.Component {
               ticketStatus={this.ticket.status}
               ticketSubject={this.ticket.subject}
               AttachingFileToComment = {this.AttachingFileToComment}
+              updateData = {this.updateData}
               dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                 'timeFormat'
               )}`} />
