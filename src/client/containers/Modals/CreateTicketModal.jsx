@@ -24,6 +24,7 @@ import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets
 import { fetchGroups } from 'actions/groups'
 import { fetchSettings } from 'actions/settings'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
+import { hideModal } from 'actions/common'
 import AttachFilesToTicket from 'containers/Tickets/AttachFilesToTicket'
 import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
@@ -77,9 +78,9 @@ class CreateTicketModal extends React.Component {
 
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
-        ? this.props.settings.getIn(['settings', stateName, 'value'])
-        : ''
-}
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
 
   onTicketTypeSelectChange(e) {
     this.priorityWrapper.classList.add('hide')
@@ -162,33 +163,35 @@ class CreateTicketModal extends React.Component {
 
       this.onAttachmentInputChange(ticket._id)
 
-      location.href = `${siteURL}/tickets/${ticketUID}`
+      // location.href = `${siteURL}/tickets/${ticketUID}`
     })
-  //  this.props.createTicket(data)
+    this.props.hideModal()
+    //  this.props.createTicket(data)
   }
 
   onAttachmentInputChange(ticketId) {
     for (const attachmentFile of this.attachments) {
-    const formData = new FormData()
-    formData.append('ticketId', ticketId)
-    formData.append('attachment', attachmentFile)
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    axios
-      .post(`/tickets/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        }
-      })
-      .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
-        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
+      console.log('Проходит цикл this.attachments')
+      const formData = new FormData()
+      formData.append('ticketId', ticketId)
+      formData.append('attachment', attachmentFile)
+      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      axios
+        .post(`/tickets/uploadattachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'CSRF-TOKEN': token
+          }
+        })
+        .then(() => {
+          this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
+          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+        })
+        .catch(error => {
+          Log.error(error)
+          if (error.response) Log.error(error.response)
+          helpers.UI.showSnackbar(error, true)
+        })
     }
   }
 
