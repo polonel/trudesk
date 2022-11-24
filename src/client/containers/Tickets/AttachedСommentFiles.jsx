@@ -107,23 +107,15 @@ class AttachedСommentFiles extends React.Component {
   onAttachmentInputChange(e) {
     const attachmentFile = e.target.files[0]
     this.attachments.push(attachmentFile)
+    this.props.pushAttachmentToSave(attachmentFile)
     // this.props.updateData(this.attachments)
   }
 
 
   removeAttachment(e, attachment) {
     this.attachments.splice(this.attachments.indexOf(attachment), 1)
-    axios
-      .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachment._id}`)
-      .then(() => {
-        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
-        helpers.UI.showSnackbar('Attachment Removed')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
+    this.props.pushAttachmentToRemove(attachment)
+    
   }
 
   render() {

@@ -834,6 +834,7 @@ class SingleTicketContainer extends React.Component {
                                   onEditClick={() => {
                                     this.editorWindow.openEditorWindow({
                                       showSubject: false,
+                                      comment: item,
                                       text: !item.isNote ? item.comment : item.note,
                                       onPrimaryClick: data => {
                                         this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
@@ -1060,6 +1061,7 @@ class SingleTicketContainer extends React.Component {
               ticket={this.ticket}
               ticketStatus={this.ticket.status}
               ticketSubject={this.ticket.subject}
+              AttachingFileToComment = {this.AttachingFileToComment}
               dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                 'timeFormat'
               )}`} />

@@ -29,6 +29,8 @@ class OffCanvasEditor extends React.Component {
   @observable showSubject = true
   @observable onPrimaryClick = null
   @observable comment
+  @observable attachmentToRemove = []
+  @observable attachmentToSave = []
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -54,7 +56,28 @@ class OffCanvasEditor extends React.Component {
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
 
+    this.props.AttachingFileToComment(this.attachmentToSave)
+    removeAttachments()
+
     this.closeEditorWindow()
+  }
+
+  removeAttachments() {
+
+    for (const attachment of this.attachmentToRemove) {
+      axios
+        .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.props.comment?._id}/attachments/remove/${attachment._id}`)
+        .then(() => {
+          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
+          helpers.UI.showSnackbar('Attachment Removed')
+        })
+        .catch(error => {
+          Log.error(error)
+          if (error.response) Log.error(error.response)
+          helpers.UI.showSnackbar(error, true)
+        })
+    }
+
   }
 
   openEditorWindow(data) {
@@ -65,6 +88,8 @@ class OffCanvasEditor extends React.Component {
     this.comment = data.comment
     console.log('data.comment')
     console.log(data.comment)
+    console.log('data.text')
+    console.log(data.text)
     this.onPrimaryClick = data.onPrimaryClick || null
 
     $(this.editorWindow)
@@ -78,6 +103,14 @@ class OffCanvasEditor extends React.Component {
     $(this.editorWindow)
       .removeClass('open')
       .addClass('closed')
+  }
+
+  pushAttachmentToRemove(attachment) {
+    this.attachmentToRemove.push(attachment)
+  }
+
+  pushAttachmentToSave(attachment) {
+    this.attachmentToSave.push(attachment)
   }
 
   render() {
@@ -107,7 +140,7 @@ class OffCanvasEditor extends React.Component {
                   allowImageUpload={this.props.allowUploads}
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
-                
+
                 <AttachedСommentFiles
                   ticket={this.props.ticket}
                   commentId={this.comment?._id}
@@ -121,6 +154,8 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
+                  pushAttachmentToSave={this.pushAttachmentToSave}
+                  pushAttachmentToRemove={this.pushAttachmentToRemove}
                 />
               </div>
             </div>
