@@ -17,7 +17,7 @@ import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
-import AttachFilesToComment from 'components/AttachFilesToComment'
+import AttachFilesToComment from 'containers/Tickets/AttachFilesToComment'
 import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
@@ -29,24 +29,24 @@ class OffCanvasEditor extends React.Component {
   @observable showSubject = true
   @observable onPrimaryClick = null
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
 
     this.primaryClick = this.primaryClick.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     helpers.UI.inputs()
     $('.off-canvas-bottom').DivResizer({})
     this.showSubject = this.props.showSubject
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     helpers.UI.reRenderInputs()
   }
 
-  primaryClick () {
+  primaryClick() {
     const data = {
       subjectText: this.subjectText,
       text: this.mdeText
@@ -57,7 +57,7 @@ class OffCanvasEditor extends React.Component {
     this.closeEditorWindow()
   }
 
-  openEditorWindow (data) {
+  openEditorWindow(data) {
     this.subjectText = data.subject || ''
     this.mdeText = data.text || ''
     this.editor.setEditorText(this.mdeText)
@@ -70,7 +70,7 @@ class OffCanvasEditor extends React.Component {
       .addClass('open')
   }
 
-  closeEditorWindow (e) {
+  closeEditorWindow(e) {
     if (e) e.preventDefault()
 
     $(this.editorWindow)
@@ -78,7 +78,7 @@ class OffCanvasEditor extends React.Component {
       .addClass('closed')
   }
 
-  render () {
+  render() {
     return (
       <div className='off-canvas-bottom closed' ref={r => (this.editorWindow = r)}>
         <div className='edit-window-wrapper'>
@@ -105,23 +105,22 @@ class OffCanvasEditor extends React.Component {
                   allowImageUpload={this.props.allowUploads}
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
+                <AttachFilesToComment
+                  ticket={this.props.ticket}
+                  status={this.props.status}
+                  owner={this.props.owner}
+                  subject={this.props.subject}
+                  issue={this.props.issue}
+                  date={this.props.date}
+                  dateFormat={this.props.dateFormat}
+                  editorWindow={this.props.editorWindow}
+                  socket={this.props.socket}
+                  updateData={this.updateData}
+                  commentAttachedFiles={this.commentAttachedFiles}
+                />
               </div>
             </div>
           </div>
-
-          <AttachFilesToComment
-                                  ticket={this.props.ticket}
-                                  status={this.props.status}
-                                  owner={this.props.owner}
-                                  subject={this.props.subject}
-                                  issue={this.props.issue}
-                                  date={this.props.date}
-                                  dateFormat={this.props.dateFormat}
-                                  editorWindow={this.props.editorWindow}
-                                  socket={this.props.socket}
-                                  updateData={this.updateData}
-                                  commentAttachedFiles = {this.commentAttachedFiles}
-                                />
 
           <div className='action-panel'>
             <div className='left-buttons'>
