@@ -15,12 +15,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
+import axios from 'axios'
 
 import EasyMDE from 'components/EasyMDE'
 import AttachedCommentFilesEdit from 'containers/Tickets/AttachedCommentFilesEdit'
 import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
+import Log from '../../logger'
 
 @observer
 class OffCanvasEditor extends React.Component {
@@ -55,7 +57,7 @@ class OffCanvasEditor extends React.Component {
     }
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
-    removeAttachments()
+    this.removeAttachments()
     this.props.updateData(this.attachmentToSave)
     this.props.AttachingFileToComment(this.comment._id)
    
@@ -69,9 +71,9 @@ class OffCanvasEditor extends React.Component {
       console.log('Remove attachment')
       console.log(attachment)
       axios
-        .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.props.comment?._id}/attachments/remove/${attachment._id}`)
+        .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
         .then(() => {
-          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
+          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
           helpers.UI.showSnackbar('Attachment Removed')
         })
         .catch(error => {
