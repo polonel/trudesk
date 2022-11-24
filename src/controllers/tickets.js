@@ -860,7 +860,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
   let error
 
   const events = []
-  const ticketObjectArray = []
+  // const ticketObjectArray = []
   let eventsCount = 0
 
 
@@ -1021,10 +1021,10 @@ ticketsController.uploadCommentAttachment = function (req, res) {
         ticket.history.push(historyItem)
 
         ticket.updated = Date.now()
-        ticketObject = {
-          comments: {_id:ticket. comment[0]._id}
-        }
-        ticketObjectArray.push(ticket)
+        // ticketObject = {
+        //   comments: {_id:ticket. comment[0]._id}
+        // }
+        // ticketObjectArray.push(ticket)
 
         ticket.save(function (err, t) {
           if (err) {
