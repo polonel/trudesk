@@ -17,7 +17,7 @@ import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
-import AttachedСommentFilesEdit from 'containers/Tickets/AttachedСommentFilesEdit'
+import AttachedCommentFilesEdit from 'containers/Tickets/AttachedCommentFilesEdit'
 import $ from 'jquery'
 import 'jquery_custom'
 import helpers from 'lib/helpers'
@@ -142,7 +142,7 @@ class OffCanvasEditor extends React.Component {
                   inlineImageUploadUrl={this.props.uploadURL}
                 />
 
-                <AttachedСommentFilesEdit
+                <AttachedCommentFilesEdit
                   ticket={this.props.ticket}
                   commentId={this.comment?._id}
                   comment={this.comment}
