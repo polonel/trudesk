@@ -143,8 +143,8 @@ class SingleTicketContainer extends React.Component {
 
     this.props.unloadGroups()
   }
-  updateData = (attachment) => {
-    this.commentAttachedFiles = attachment
+  updateData = (attachments) => {
+    this.commentAttachedFiles = attachments
   }
   onUpdateTicket(data) {
     if (this.ticket._id === data._id) {
@@ -221,7 +221,7 @@ class SingleTicketContainer extends React.Component {
                 &&
                 comment.comment == newComment.comment
             })[0]._id
-            this.AttachingFileToComment(commentId)
+            this.attachingFileToComment(commentId)
           }
         }
       })
