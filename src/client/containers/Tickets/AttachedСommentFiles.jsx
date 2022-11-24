@@ -60,7 +60,11 @@ class AttachedСommentFiles extends React.Component {
     this.subject = this.props.subject
     this.issue = this.props.issue
     this.commentId = this.props.commentId
-    this.attachments = this.props.attachments
+    if (this.props.attachments) {
+      this.attachments = this.props.attachments
+    } else {
+      this.attachments = []
+    }
     this.onUpdateCommentAttachments = this.onUpdateCommentAttachments.bind(this)
   }
 
@@ -103,16 +107,16 @@ class AttachedСommentFiles extends React.Component {
   onAttachmentInputChange(e) {
     const attachmentFile = e.target.files[0]
     this.attachments.push(attachmentFile)
-    this.props.updateData(this.attachments)
+    // this.props.updateData(this.attachments)
   }
 
 
-  removeAttachment(e, attachmentId) {
-    this.attachments.splice(this.attachments.indexOf(attachment),1)
+  removeAttachment(e, attachment) {
+    this.attachments.splice(this.attachments.indexOf(attachment), 1)
     axios
-      .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachmentId}`)
+      .delete(`/api/v1/tickets/${this.ticketId}/comments/${this.commentId}/attachments/remove/${attachment._id}`)
       .then(() => {
-        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId  })
+        this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.commentId, ticketId: this.ticketId })
         helpers.UI.showSnackbar('Attachment Removed')
       })
       .catch(error => {
@@ -130,37 +134,37 @@ class AttachedСommentFiles extends React.Component {
     // this.attachments = commentTicket[0].attachments
     return (
       <div >
-          {/* Attachments */}
-          <ul className='attachments'>
-            {this.attachments &&
-              this.attachments.map(attachment => (
-                <li key={attachment._id}>
-                 
-                  <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
-                    {attachment.name}
-                  </a>
-                  {this.status !== 3 && (
-                    <a
-                      role='button'
-                      className={'remove-attachment'}
-                      onClick={e => this.removeAttachment(e, attachment._id)}
-                    >
-                      <i className='fa fa-remove' />
-                    </a>
-                  )}
-                </li>
-              ))}
-          </ul>
-          <div className='issue-body' ref={r => (this.issueBody = r)}>
+        {/* Attachments */}
+        <ul className='attachments'>
+          {this.attachments &&
+            this.attachments.map(attachment => (
+              <li key={attachment._id}>
 
-          </div>
+                <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
+                  {attachment.name}
+                </a>
+                {this.status !== 3 && (
+                  <a
+                    role='button'
+                    className={'remove-attachment'}
+                    onClick={e => this.removeAttachment(e, attachment)}
+                  >
+                    <i className='fa fa-remove' />
+                  </a>
+                )}
+              </li>
+            ))}
+        </ul>
+        <div className='issue-body' ref={r => (this.issueBody = r)}>
+
+        </div>
 
         {/* Permissions on Fragment for edit */}
         {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
             <form className='form nomargin' encType='multipart/form-data'>
               <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons' style = {{paddingRight: 40}}>&#xE226;</i>
+                <i className='material-icons' style={{ paddingRight: 40 }}>&#xE226;</i>
               </div>
 
               <input
