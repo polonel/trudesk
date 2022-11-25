@@ -126,8 +126,10 @@ class AttachedСommentFiles extends React.Component {
     // this.attachments = commentTicket[0].attachments
     return (
       <div className='comments-wrapper'>
+        <div className = 'initial-issue'>
         {/* Attachments */}
         <ul className='attachments'>
+          
           {this.attachments &&
             this.attachments.map(attachment => (
               <li key={attachment._id}>
@@ -168,6 +170,7 @@ class AttachedСommentFiles extends React.Component {
             </form>
           </Fragment>
         )} */}
+        </div>
       </div>
     )
   }
