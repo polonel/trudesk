@@ -317,7 +317,7 @@ function handleMessages(messages, done) {
 
 
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
-          Ticket.findOne({ uid: ticketUID }, function (err, t) {
+          Ticket.findOne({ uid: ticketUID }, async function (err, t) {
             if (err) return winston.warn('Invalid Post Data')
 
             if (_.isUndefined(comment)) return winston.warn('Invalid Post Data')
@@ -355,6 +355,43 @@ function handleMessages(messages, done) {
               })
 
             })
+            
+            if (message.attachments) {
+              await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/`, err => {
+                if (err) throw err; // Не удалось создать папку
+                console.log('Папка успешно создана');
+                for (const attachmentFromMessage of message.attachments) {
+                  let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+
+                  fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/attachment_${sanitizedFilename}`, attachmentFromMessage.content);
+
+                  const attachment = {
+                    owner: message.owner._id,
+                    name: sanitizedFilename,
+                    path: `/uploads/tickets/${t._id}/attachment_${sanitizedFilename}`,
+                    type: attachmentFromMessage.contentType
+                  }
+                  t.attachments.push(attachment)
+
+                  const historyItem = {
+                    action: 'ticket:added:attachment',
+                    description: 'Attachment ' + sanitizedFilename + ' was added.',
+                    owner: message.owner._id
+                  }
+                  t.history.push(historyItem)
+                  t.updated = Date.now()
+                }
+                t.save(function (err, t) {
+                  if (err) {
+                    fs.unlinkSync(attachment.path)
+                    winston.warn(err)
+                    return callback(err)
+                  }
+                })
+              });
+
+            }
+
           })
 
           return true
