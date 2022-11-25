@@ -126,7 +126,7 @@ class AttachedСommentFiles extends React.Component {
     // this.attachments = commentTicket[0].attachments
     return (
       <div className='comments-wrapper'>
-        <div className = 'initial-issue'>
+      
         {/* Attachments */}
         <ul className='attachments'>
           
@@ -171,7 +171,7 @@ class AttachedСommentFiles extends React.Component {
           </Fragment>
         )} */}
         </div>
-      </div>
+     
     )
   }
 }

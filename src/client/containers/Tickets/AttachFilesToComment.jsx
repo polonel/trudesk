@@ -110,17 +110,14 @@ class AttachFilesToComment extends React.Component {
     render() {
         return (
             <div className='ticket-comment'>
-               <div className='comments-wrapper'>
-                <div className = 'initial-issue'>
+               <div className='comments-wrapper'>    
                     <a className='comment-email-link' >  
                     </a>
-
                     {/* Attachments */}
                     <ul className='attachments'>
                         {this.attachments &&
                             this.attachments.map(attachment => (
                                 <li key={attachment.name}>
-
                                     <a className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                                         {attachment.name}
                                     </a>
@@ -159,7 +156,7 @@ class AttachFilesToComment extends React.Component {
                     {/* )} */}
                     </div>
                 </div>
-            </div>
+         
         )
     }
 }

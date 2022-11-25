@@ -125,7 +125,8 @@ class AttachedCommentFilesEdit extends React.Component {
     // });
     // this.attachments = commentTicket[0].attachments
     return (
-      <div>
+      <div className='comments-wrapper'>
+      <div className = 'initial-issue'>
         {/* Attachments */}
         <ul className='attachments'>
           {this.attachmentsFiles &&
@@ -168,6 +169,7 @@ class AttachedCommentFilesEdit extends React.Component {
             </form>
           </Fragment>
         )}
+        </div>
       </div>
     )
   }

@@ -85,10 +85,9 @@ class CommentNotePartial extends React.Component {
             editorWindow={this.props.editorWindow}
             socket={this.props.socket}
           />
-          <br />
           {isNote && <span className='uk-badge uk-badge-small nomargin-left-right text-white'>NOTE</span>}
 
-          <div className='comment-body' style={{ marginTop: 10 }} ref={r => (this.body = r)}>
+          <div className='comment-body' ref={r => (this.body = r)}>
             {isNote && <Fragment>{ReactHtmlParser(comment.note)}</Fragment>}
             {!isNote && <Fragment>{ReactHtmlParser(comment.comment)}</Fragment>}
           </div>

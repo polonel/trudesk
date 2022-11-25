@@ -102,7 +102,7 @@ class OffCanvasEditor extends React.Component {
 
   closeEditorWindow(e) {
     if (e) e.preventDefault()
-
+    this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
     $(this.editorWindow)
       .removeClass('open')
       .addClass('closed')
