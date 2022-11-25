@@ -70,18 +70,26 @@ class AttachFilesToTicket extends React.Component {
     }
 
     removeAttachment(e, attachment) {
-        this.attachments.splice(this.attachments.indexOf(attachment),1)
+        this.attachments.splice(this.attachments.indexOf(attachment), 1)
     }
 
     render() {
         return (
             <div className='ticket-comment'>
                 <div >
-                    <a className='comment-email-link' >  
+                    <a className='comment-email-link' >
                     </a>
 
                     {/* Attachments */}
-                    <ul className='attachments'>
+
+                    <ul className='attachments' style={{
+                        margin: '0 0 25',
+                        paddingLeft: 3,
+                        fontSize: 12,
+                        fontFamily: $fontFamily,
+                        color: '#76797e',
+                        listStyle: none
+                    }}>
                         {this.attachments &&
                             this.attachments.map(attachment => (
                                 <li key={attachment.name}>
@@ -110,7 +118,7 @@ class AttachFilesToTicket extends React.Component {
                     <Fragment>
                         <form className='form nomargin' encType='multipart/form-data'>
                             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                                <i className='material-icons' style={{ marginTop: -8, marginRight:-25 }}>&#xE226;</i>
+                                <i className='material-icons' style={{ marginTop: -8, marginRight: -25 }}>&#xE226;</i>
                             </div>
 
                             <input
