@@ -125,7 +125,7 @@ class AttachedСommentFiles extends React.Component {
     // });
     // this.attachments = commentTicket[0].attachments
     return (
-      <div >
+      <div className='comments-wrapper'>
         {/* Attachments */}
         <ul className='attachments'>
           {this.attachments &&

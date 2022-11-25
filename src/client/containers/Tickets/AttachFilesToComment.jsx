@@ -110,7 +110,7 @@ class AttachFilesToComment extends React.Component {
     render() {
         return (
             <div className='ticket-comment'>
-                <div >
+               <div className='comments-wrapper'>
                     <a className='comment-email-link' >  
                     </a>
 

@@ -76,20 +76,13 @@ class AttachFilesToTicket extends React.Component {
     render() {
         return (
             <div className='ticket-comment'>
-                <div >
+               <div className='comments-wrapper'>
                     <a className='comment-email-link' >
                     </a>
 
                     {/* Attachments */}
 
-                    <ul className='attachments' style={{
-                        margin: '0 0 25',
-                        paddingLeft: 3,
-                        fontSize: 12,
-                        fontFamily: $fontFamily,
-                        color: '#76797e',
-                        listStyle: none
-                    }}>
+                    <ul className='attachments'>
                         {this.attachments &&
                             this.attachments.map(attachment => (
                                 <li key={attachment.name}>
