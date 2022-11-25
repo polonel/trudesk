@@ -111,6 +111,7 @@ class AttachFilesToComment extends React.Component {
         return (
             <div className='ticket-comment'>
                <div className='comments-wrapper'>
+                <div className = 'initial-issue'>
                     <a className='comment-email-link' >  
                     </a>
 
@@ -156,6 +157,7 @@ class AttachFilesToComment extends React.Component {
                         </form>
                     </Fragment>
                     {/* )} */}
+                    </div>
                 </div>
             </div>
         )

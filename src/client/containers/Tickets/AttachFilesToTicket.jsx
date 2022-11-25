@@ -76,53 +76,55 @@ class AttachFilesToTicket extends React.Component {
     render() {
         return (
             <div className='ticket-comment'>
-               <div className='comments-wrapper'>
-                    <a className='comment-email-link' >
-                    </a>
+                <div className='comments-wrapper'>
+                    <div className='initial-issue'>
+                        <a className='comment-email-link' >
+                        </a>
 
-                    {/* Attachments */}
+                        {/* Attachments */}
 
-                    <ul className='attachments'>
-                        {this.attachments &&
-                            this.attachments.map(attachment => (
-                                <li key={attachment.name}>
+                        <ul className='attachments'>
+                            {this.attachments &&
+                                this.attachments.map(attachment => (
+                                    <li key={attachment.name}>
 
-                                    <a className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
-                                        {attachment.name}
-                                    </a>
-                                    {this.status !== 3 && (
-                                        <a
-                                            role='button'
-                                            className={'remove-attachment'}
-                                            onClick={e => this.removeAttachment(e, attachment)}
-                                        >
-                                            <i className='fa fa-remove' />
+                                        <a className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
+                                            {attachment.name}
                                         </a>
-                                    )}
-                                </li>
-                            ))}
-                    </ul>
-                    <div className='issue-body' ref={r => (this.issueBody = r)}>
+                                        {this.status !== 3 && (
+                                            <a
+                                                role='button'
+                                                className={'remove-attachment'}
+                                                onClick={e => this.removeAttachment(e, attachment)}
+                                            >
+                                                <i className='fa fa-remove' />
+                                            </a>
+                                        )}
+                                    </li>
+                                ))}
+                        </ul>
+                        <div className='issue-body' ref={r => (this.issueBody = r)}>
 
+                        </div>
+
+                        {/* Permissions on Fragment for edit */}
+                        {/* {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && ( */}
+                        <Fragment>
+                            <form className='form nomargin' encType='multipart/form-data'>
+                                <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
+                                    <i className='material-icons' style={{ marginTop: -8, marginRight: -25 }}>&#xE226;</i>
+                                </div>
+
+                                <input
+                                    ref={r => (this.attachmentInput = r)}
+                                    className='hide'
+                                    type='file'
+                                    onChange={e => this.onAttachmentInputChange(e)}
+                                />
+                            </form>
+                        </Fragment>
+                        {/* )} */}
                     </div>
-
-                    {/* Permissions on Fragment for edit */}
-                    {/* {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && ( */}
-                    <Fragment>
-                        <form className='form nomargin' encType='multipart/form-data'>
-                            <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                                <i className='material-icons' style={{ marginTop: -8, marginRight: -25 }}>&#xE226;</i>
-                            </div>
-
-                            <input
-                                ref={r => (this.attachmentInput = r)}
-                                className='hide'
-                                type='file'
-                                onChange={e => this.onAttachmentInputChange(e)}
-                            />
-                        </form>
-                    </Fragment>
-                    {/* )} */}
                 </div>
             </div>
         )
