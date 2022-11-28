@@ -119,7 +119,7 @@ class OffCanvasEditor extends React.Component {
     this.attachmentsForSave.push(attachment)
   }
 
-  removeAttachmentForSave(e, attachment) {
+  removeAttachmentForSave = (e, attachment) => {
     this.attachmentsForSave.splice(this.attachmentsForSave.indexOf(attachment), 1)
   }
 
