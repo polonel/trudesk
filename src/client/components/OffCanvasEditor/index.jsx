@@ -156,7 +156,7 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
-                  updateData={this.props.updateData}
+                  updateAttachments={this.props.updateAttachments}
                 />
               </div>
             </div>
