@@ -234,6 +234,9 @@ class SingleTicketContainer extends React.Component {
   }
 
   attachingFileToComment = (commentId) => {
+    console.log('this.commentAttachedFiles')
+    console.log(this.commentAttachedFiles)
+
     for (const attachmentFile of this.commentAttachedFiles) {
       const formData = new FormData()
       formData.append('commentId', commentId)
