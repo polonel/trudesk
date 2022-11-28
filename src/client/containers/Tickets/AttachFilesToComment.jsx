@@ -105,6 +105,7 @@ class AttachFilesToComment extends React.Component {
 
     removeAttachment(e, attachment) {
         this.attachments.splice(this.attachments.indexOf(attachment),1)
+        this.props.updateData(this.attachments)
     }
 
     render() {
