@@ -59,8 +59,9 @@ class OffCanvasEditor extends React.Component {
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
     this.removeAttachments()
-    // this.props.updateData(this.attachmentsToSave)
-    this.props.attachingFileToComment(this.comment._id)
+    console.log('this.props.updateData')
+    this.props.updateData(this.attachmentsToSave)
+    this.props.attachingFileToComment(this.comment._id, this.attachmentsToSave)
 
 
     this.closeEditorWindow()
@@ -69,7 +70,6 @@ class OffCanvasEditor extends React.Component {
   removeAttachments() {
     console.log('this.attachmentsToRemove')
     console.log(this.attachmentsToRemove)
-    let countAttachment = 0
     for (const attachment of this.attachmentsToRemove) {
       console.log('Remove attachment')
       console.log(attachment)
@@ -84,10 +84,6 @@ class OffCanvasEditor extends React.Component {
           if (error.response) Log.error(error.response)
           helpers.UI.showSnackbar(error, true)
         })
-      countAttachment++
-      if (countAttachment == this.attachmentsToRemove.length) {
-        this.props.updateData(this.attachmentsToSave)
-      }
     }
 
   }

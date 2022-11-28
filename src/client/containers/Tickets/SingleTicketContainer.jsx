@@ -233,7 +233,9 @@ class SingleTicketContainer extends React.Component {
 
   }
 
-  attachingFileToComment = (commentId) => {
+  attachingFileToComment = (commentId, attachmentsToSave) => {
+    this.commentAttachedFiles = attachmentsToSave
+    
     console.log('this.commentAttachedFiles')
     console.log(this.commentAttachedFiles)
 
