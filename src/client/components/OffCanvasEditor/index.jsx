@@ -32,9 +32,8 @@ class OffCanvasEditor extends React.Component {
   @observable showSubject = true
   @observable onPrimaryClick = null
   @observable comment
-  @observable attachmentsToRemove
-  @observable attachmentsToSave
-  @observable attachmentsForSave = []
+  @observable attachmentsToRemove = []
+  @observable attachmentsToSave = []
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -60,14 +59,11 @@ class OffCanvasEditor extends React.Component {
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
     this.removeAttachments()
-    console.log('this.attachmentsForSave')
-    console.log(this.attachmentsForSave)
     if (this.attachmentsToSave.length !== 0){
       this.props.updateData(this.attachmentsToSave)
     }
     this.props.attachingFileToComment(this.comment._id)
     this.closeEditorWindow()
-    this.attachmentsForSave = []
   }
 
   async removeAttachments() {
