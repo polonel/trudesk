@@ -201,7 +201,7 @@ function bindImapReady() {
                           message.subject = message.from
                         }
 
-                        if (mail?.inReplyTo) {
+                        if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
                           message.responseToComment = mail.text
                         }
                         // else {
@@ -213,6 +213,14 @@ function bindImapReady() {
                         // } else {
                         //   message.subject = message.from
                         // }
+
+                        if (_.isUndefined(mail.text) && (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))) {
+                          var $ = cheerio.load(mail.html)
+                          var $body = $('body')
+                          message.responseToComment = $body.length > 0 ? $body.html() : mail.html
+                        } else {
+                          message.responseToComment = mail.text
+                        }
 
                         if (_.isUndefined(mail.textAsHtml)) {
                           var $ = cheerio.load(mail.html)
@@ -289,7 +297,7 @@ function handleMessages(messages, done) {
 
           var comment = message.responseToComment
           var owner = user._id
-
+          comment = sanitizeHtml(comment).trim()
           var resultTicketUID = comment.toLowerCase().match(/#\d+/);
           if (resultTicketUID) {
             resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
@@ -297,24 +305,25 @@ function handleMessages(messages, done) {
             return winston.warn('Нет номера заявки')
           }
           var ticketUID = resultTicketUID;
-
-          comment = comment.match(/(.*?)Ответ-комментарий размещайте выше этой строки/gs);
-          if (comment) {
-            comment = comment[0].replace(/Ответ-комментарий размещайте выше этой строки/gi, '');
-          } else {
-            comment = undefined;
+          try {
+            comment = comment.match(/(.*?)ОТВЕТ-КОММЕНТАРИЙ РАЗМЕЩАЙТЕ ВЫШЕ ЭТОЙ СТРОКИ/gs) || comment.match(/(.*?)Ответ-комментарий размещайте выше этой строки/gs);
+            if (comment) {
+              comment = comment[0].replace(/ОТВЕТ-КОММЕНТАРИЙ РАЗМЕЩАЙТЕ ВЫШЕ ЭТОЙ СТРОКИ/gi, '') || comment.match(/(.*?)Ответ-комментарий размещайте выше этой строки/gs);
+            } else {
+              comment = undefined;
+            }
+            if (comment.match(/\n.*\n$/)) {
+              comment = comment.replace(comment.match(/\n.*\n$/)[0], '')
+            }
+            if (comment.match(/\n.*\n>$/)) {
+              comment = comment.replace(comment.match(/\n.*\n>$/)[0], '')
+            }
+            if (comment.match(/\n.*\n> $/)) {
+              comment = comment.replace(comment.match(/\n.*\n*> $/)[0], '')
+            }
+          } catch (err) {
+            return winston.warn(err)
           }
-          if (comment.match(/\n.*\n$/)) {
-            comment = comment.replace(comment.match(/\n.*\n$/)[0], '')
-          }
-          if (comment.match(/\n.*\n>$/)) {
-            comment = comment.replace(comment.match(/\n.*\n>$/)[0], '')
-          }
-          if (comment.match(/\n.*\n> $/)) {
-            comment = comment.replace(comment.match(/\n.*\n*> $/)[0], '')
-          }
-
-
 
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, async function (err, t) {
@@ -344,54 +353,103 @@ function handleMessages(messages, done) {
             }
             t.history.push(HistoryItem)
 
-            t.save(function (err, tt) {
-              if (err) return winston.warn(err.message)
-              settingSchema.findOne({ name: 'gen:siteurl' }, (err, url) => {
-                if (err) console.log(err);
-                const hostname = url.value.replace('https://', '');
-                emitter.emit('ticket:comment:added', tt, Comment, hostname)
-
-                return winston.warn({ success: true, error: null, ticket: tt })
-              })
-
-            })
-            
             if (message.attachments) {
-              await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/`, err => {
-                if (err) throw err; // Не удалось создать папку
-                console.log('Папка успешно создана');
-                for (const attachmentFromMessage of message.attachments) {
-                  let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
-                  fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/attachment_${sanitizedFilename}`, attachmentFromMessage.content);
+              const commentId = t.comments.filter(comment => {
+                return comment.owner._id == Comment.owner
+                  &&
+                  comment.date == Comment.date
+                  &&
+                  comment.comment == Comment.comment
+              })[0]._id
 
-                  const attachment = {
-                    owner: message.owner._id,
-                    name: sanitizedFilename,
-                    path: `/uploads/tickets/${t._id}/attachment_${sanitizedFilename}`,
-                    type: attachmentFromMessage.contentType
-                  }
-                  t.attachments.push(attachment)
+              const pathUploadTicket = `/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}`;
+              const pathUploadComments = `/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments`;
+              const pathUploadCommentId = `/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}`;
+              let pathExist = false
 
-                  const historyItem = {
-                    action: 'ticket:added:attachment',
-                    description: 'Attachment ' + sanitizedFilename + ' was added.',
-                    owner: message.owner._id
-                  }
-                  t.history.push(historyItem)
-                  t.updated = Date.now()
+              try {
+                if (!fs.existsSync(pathUploadTicket)) {
+                  fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}`, function (err) {
+                    if (err) return callback(err)
+                    console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
+                    return true
+                  })
                 }
-                t.save(function (err, t) {
-                  if (err) {
-                    fs.unlinkSync(attachment.path)
-                    winston.warn(err)
-                    return callback(err)
-                  }
+
+                if (!fs.existsSync(pathUploadComments)) {
+                  fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments`, function (err) {
+                    if (err) return callback(err)
+                    console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
+                    return true
+                  })
+                }
+
+                if (!fs.existsSync(pathUploadCommentId)) {
+                  fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}`, function (err) {
+                    if (err) return callback(err)
+                    console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
+                    return true
+                  })
+                }
+
+              } catch (err) {
+                return callback(err)
+              }
+
+              console.log('Папка успешно создана');
+              let countAttachments = 0
+              for (const attachmentFromMessage of message.attachments) {
+                let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+
+                fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`, attachmentFromMessage.content);
+
+                const attachment = {
+                  owner: Comment.owner,
+                  name: sanitizedFilename,
+                  path: `/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`,
+                  type: attachmentFromMessage.contentType
+                }
+                t.attachments.push(attachment)
+
+                let commentForAttachFile = t.comments.filter(function (comment) {
+                  return comment._id == commentId;
+                })[0];
+                commentForAttachFile.attachments.push(attachment)
+
+                const historyItem = {
+                  action: 'ticket:added:attachment',
+                  description: 'Attachment ' + sanitizedFilename + ' was added.',
+                  owner: Comment.owner
+                }
+                t.history.push(historyItem)
+                countAttachments++
+              }
+              t.updated = Date.now()
+              if (countAttachments = message.attachments.length) {
+                t.save(function (err, tt) {
+                  if (err) return winston.warn(err.message)
+                  settingSchema.findOne({ name: 'gen:siteurl' }, (err, url) => {
+                    if (err) console.log(err);
+                    const hostname = url.value.replace('https://', '');
+                    emitter.emit('ticket:comment:added', tt, Comment, hostname)
+                    return winston.warn({ success: true, error: null, ticket: tt })
+                  })
+
                 })
-              });
+              }
+            } else {
+              t.save(function (err, tt) {
+                if (err) return winston.warn(err.message)
+                settingSchema.findOne({ name: 'gen:siteurl' }, (err, url) => {
+                  if (err) console.log(err);
+                  const hostname = url.value.replace('https://', '');
+                  emitter.emit('ticket:comment:added', tt, Comment, hostname)
+                  return winston.warn({ success: true, error: null, ticket: tt })
+                })
 
+              })
             }
-
           })
 
           return true
@@ -569,12 +627,12 @@ function handleMessages(messages, done) {
                         for (const attachmentFromMessage of message.attachments) {
                           let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
-                          fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${ticket._id}/attachment_${sanitizedFilename}`, attachmentFromMessage.content);
+                          fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
 
                           const attachment = {
                             owner: message.owner._id,
                             name: sanitizedFilename,
-                            path: `/uploads/tickets/${ticket._id}/attachment_${sanitizedFilename}`,
+                            path: `/uploads/tickets/${ticket._id}/${sanitizedFilename}`,
                             type: attachmentFromMessage.contentType
                           }
                           ticket.attachments.push(attachment)

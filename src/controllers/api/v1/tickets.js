@@ -452,7 +452,7 @@ apiTickets.create = function (req, res) {
           var HistoryItemComment = {
             action: 'ticket:comment:added',
             description: 'Comment was added',
-            owner:  req.body.owner
+            owner: req.body.owner
           }
 
           let Comment = {
@@ -463,14 +463,14 @@ apiTickets.create = function (req, res) {
           ticket.comments = [Comment]
         }
 
-        if (req.body.chatwootAccountID){
+        if (req.body.chatwootAccountID) {
           ticket.chatwootAccountID = req.body.chatwootAccountID;
         }
 
-        if (req.body.chatwootConversationID){
+        if (req.body.chatwootConversationID) {
           ticket.chatwootConversationID = req.body.chatwootConversationID;
         }
-        
+
 
         var marked = require('marked')
         var tIssue = ticket.issue
@@ -484,7 +484,7 @@ apiTickets.create = function (req, res) {
           ticket.history = [HistoryItem]
         }
         ticket.subscribers = [user._id]
-        if (req.body.owner.email || req.body.owner.email !==''){
+        if (req.body.owner.email || req.body.owner.email !== '') {
           ticket.subscribers.push(req.body.owner)
         }
 
@@ -1006,10 +1006,10 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
-      
+
       emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
 
-      return res.json({ success: true, error: null, ticket: tt, comment: Comment})
+      return res.json({ success: true, error: null, ticket: tt, comment: Comment })
     })
   })
 }
@@ -1878,19 +1878,22 @@ apiTickets.removeCommentAttachment = function (req, res) {
       return attachment._id == attachmentId;
     })[0];
 
-    const attachmentIndex = comment.attachments.findIndex((attachment) => attachment.id === attachmentId)
-    comment.attachments.splice(attachmentIndex,1);
+    if (attachment) {
+      const attachmentIndex = comment.attachments.findIndex((attachment) => attachment.id === attachmentId)
+      var fs = require('fs')
+      var path = require('path')
+      var dir = path.join(__dirname, '../../../../public', attachment.path)
+      if (fs.existsSync(dir)) fs.unlinkSync(dir)
+      comment.attachments.splice(attachmentIndex, 1);
+    }
 
-    var fs = require('fs')
-    var path = require('path')
-    var dir = path.join(__dirname, '../../../../public', attachment.path)
-    if (fs.existsSync(dir)) fs.unlinkSync(dir)
+
 
     ticket.save(function (err, t) {
       if (err) return res.status(400).json({ error: 'Invalid Request.' })
       res.json({ success: true, ticket: t })
     })
-   
+
   })
 }
 

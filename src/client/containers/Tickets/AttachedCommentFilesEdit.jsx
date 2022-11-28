@@ -113,8 +113,8 @@ class AttachedCommentFilesEdit extends React.Component {
 
 
   removeAttachment(e, attachment) {
-    this.attachmentsFiles.splice(this.attachmentsFiles.indexOf(attachment), 1)
-    this.props.pushAttachmentToRemove(attachment)
+    this.attachmentsFiles.splice(this.attachmentsFiles.indexOf(attachment), 1) 
+    this.props.pushAttachmentToRemove(attachment) 
     
   }
 

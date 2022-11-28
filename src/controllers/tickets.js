@@ -812,7 +812,7 @@ ticketsController.uploadAttachment = function (req, res) {
         const attachment = {
           owner: object.ownerId,
           name: object.filename,
-          path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
+          path: '/uploads/tickets/' + object.ticketId + '/' + object.filename,
           type: object.mimetype
         }
         ticket.attachments.push(attachment)
@@ -939,7 +939,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
 
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
-    object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+    object.filePath = path.join(savePath,sanitizedFilename)
     object.filename = sanitizedFilename.replace('/', '').replace('..', '')
     object.mimetype = mimetype
 
@@ -947,7 +947,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
       const Chance = require('chance')
       const chance = new Chance()
       sanitizedFilename = chance.hash({ length: 15 }) + '-' + sanitizedFilename
-      object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+      object.filePath = path.join(savePath,sanitizedFilename)
       object.filename = sanitizedFilename
     }
 
@@ -1004,7 +1004,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
         const attachment = {
           owner: object.ownerId,
           name: object.filename,
-          path: '/uploads/tickets/' + object.ticketId + '/comments/' + object.commentId + '/attachment_' + object.filename,
+          path: '/uploads/tickets/' + object.ticketId + '/comments/' + object.commentId + '/' + object.filename,
           type: object.mimetype
         }
 
