@@ -71,10 +71,10 @@ class OffCanvasEditor extends React.Component {
     for (const attachment of this.comment.attachments) {
       const attachmentsForRemove = this.attachmentsForSave.filter(function (attachmentForSave) {
         return attachmentForSave == attachment;
-      })[0];
+      });
       console.log(attachmentsForRemove)
       console.log('attachmentsForRemove')
-      if (!attachmentsForRemove) {
+      if (attachmentsForRemove.length == 0) {
         console.log('Remove attachment')
         console.log(attachment)
         axios
