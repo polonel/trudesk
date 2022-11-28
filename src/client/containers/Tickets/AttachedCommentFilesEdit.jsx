@@ -107,15 +107,13 @@ class AttachedCommentFilesEdit extends React.Component {
   onAttachmentInputChange(e) {
     const attachmentFile = e.target.files[0]
     this.attachmentsFiles.push(attachmentFile)
-    this.props.pushAttachmentToSave(attachmentFile)
-    // this.props.updateData(this.attachments)
+    this.props.updateAttachments(this.attachmentsFiles)
   }
 
 
   removeAttachment(e, attachment) {
-    this.attachmentsFiles.splice(this.attachmentsFiles.indexOf(attachment), 1) 
-    this.props.pushAttachmentToRemove(attachment) 
-    
+    this.attachmentsFiles.splice(this.attachmentsFiles.indexOf(attachment), 1)
+    this.props.updateAttachments(this.attachmentsFiles)
   }
 
   render() {
@@ -126,49 +124,49 @@ class AttachedCommentFilesEdit extends React.Component {
     // this.attachments = commentTicket[0].attachments
     return (
       <div className='comments-wrapper'>
-      <div className = 'initial-issue'>
-        {/* Attachments */}
-        <ul className='attachments'>
-          {this.attachmentsFiles &&
-            this.attachmentsFiles.map(attachment => (
-              <li key={attachment._id}>
+        <div className='initial-issue'>
+          {/* Attachments */}
+          <ul className='attachments'>
+            {this.attachmentsFiles &&
+              this.attachmentsFiles.map(attachment => (
+                <li key={attachment._id}>
 
-                <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
-                  {attachment.name}
-                </a>
-                {this.status !== 3 && (
-                  <a
-                    role='button'
-                    className={'remove-attachment'}
-                    onClick={e => this.removeAttachment(e, attachment)}
-                  >
-                    <i className='fa fa-remove' />
+                  <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
+                    {attachment.name}
                   </a>
-                )}
-              </li>
-            ))}
-        </ul>
-        <div className='issue-body' ref={r => (this.issueBody = r)}>
+                  {this.status !== 3 && (
+                    <a
+                      role='button'
+                      className={'remove-attachment'}
+                      onClick={e => this.removeAttachment(e, attachment)}
+                    >
+                      <i className='fa fa-remove' />
+                    </a>
+                  )}
+                </li>
+              ))}
+          </ul>
+          <div className='issue-body' ref={r => (this.issueBody = r)}>
 
-        </div>
+          </div>
 
-        {/* Permissions on Fragment for edit */}
-        {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
-          <Fragment>
-            <form className='form nomargin' encType='multipart/form-data'>
-              <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons' style={{ paddingRight: 40 }}>&#xE226;</i>
-              </div>
+          {/* Permissions on Fragment for edit */}
+          {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
+            <Fragment>
+              <form className='form nomargin' encType='multipart/form-data'>
+                <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
+                  <i className='material-icons' style={{ paddingRight: 40 }}>&#xE226;</i>
+                </div>
 
-              <input
-                ref={r => (this.attachmentInput = r)}
-                className='hide'
-                type='file'
-                onChange={e => this.onAttachmentInputChange(e)}
-              />
-            </form>
-          </Fragment>
-        )}
+                <input
+                  ref={r => (this.attachmentInput = r)}
+                  className='hide'
+                  type='file'
+                  onChange={e => this.onAttachmentInputChange(e)}
+                />
+              </form>
+            </Fragment>
+          )}
         </div>
       </div>
     )

@@ -34,6 +34,7 @@ class OffCanvasEditor extends React.Component {
   @observable comment
   @observable attachmentsToRemove = []
   @observable attachmentsToSave = []
+  @observable attachmentsForSave = []
   constructor(props) {
     super(props)
     makeObservable(this)
@@ -61,7 +62,7 @@ class OffCanvasEditor extends React.Component {
     this.removeAttachments()
     this.props.updateData(this.attachmentsToSave)
     this.props.attachingFileToComment(this.comment._id)
-   
+
 
     this.closeEditorWindow()
   }
@@ -93,8 +94,8 @@ class OffCanvasEditor extends React.Component {
     this.showSubject = data.showSubject !== undefined ? data.showSubject : true
     this.comment = data.comment
     this.onPrimaryClick = data.onPrimaryClick || null
-    console.log( 'this.attachmentsToRemove')
-    console.log( this.attachmentsToRemove)
+    console.log('this.attachmentsToRemove')
+    console.log(this.attachmentsToRemove)
     $(this.editorWindow)
       .removeClass('closed')
       .addClass('open')
@@ -108,13 +109,11 @@ class OffCanvasEditor extends React.Component {
       .addClass('closed')
   }
 
-  pushAttachmentToRemove = (attachment) => {
-    this.attachmentsToRemove.push(attachment)
+
+  updateAttachments = (attachments) => {
+    this.attachmentsForSave = attachments
   }
 
-  pushAttachmentToSave = (attachment) => {
-    this.attachmentsToSave.push(attachment)
-  }
 
   render() {
     return (
@@ -157,8 +156,7 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
-                  pushAttachmentToSave={this.pushAttachmentToSave}
-                  pushAttachmentToRemove={this.pushAttachmentToRemove}
+                  updateData={this.props.updateData}
                 />
               </div>
             </div>
