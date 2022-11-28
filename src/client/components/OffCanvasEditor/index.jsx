@@ -59,6 +59,7 @@ class OffCanvasEditor extends React.Component {
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
     this.removeAttachments()
+    console.log(this.attachmentsToSave)
     if (this.attachmentsToSave.length !== 0){
       this.props.updateData(this.attachmentsToSave)
     }
@@ -113,10 +114,13 @@ class OffCanvasEditor extends React.Component {
     
   }
 
-
   pushAttachmentToSave = (attachment) => {
     this.attachmentsToSave.push(attachment)
     if (this.attachmentsToRemove.length !==0){
+    console.log('this.attachmentsToRemove')
+    console.log(this.attachmentsToRemove)
+    console.log('this.attachmentsToRemove.indexOf(attachment)')
+    console.log(this.attachmentsToRemove.indexOf(attachment))
     this.attachmentsToRemove.splice(this.attachmentsToRemove.indexOf(attachment), 1)
     }
   }
