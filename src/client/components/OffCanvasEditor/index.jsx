@@ -57,8 +57,6 @@ class OffCanvasEditor extends React.Component {
     }
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
-    console.log('this.attachmentsToSave')
-    console.log('this.attachmentsToSave')
     this.removeAttachments()
     this.props.updateData(this.attachmentsForSave)
     this.props.attachingFileToComment(this.comment._id)
@@ -66,8 +64,6 @@ class OffCanvasEditor extends React.Component {
   }
 
   async removeAttachments() {
-    console.log('this.attachmentsToRemove')
-    console.log(this.attachmentsToRemove)
     for (const attachment of this.comment.attachments) {
 
       const attachmentForRemove = this.attachmentsForSave.filter(attachmentFilter => {
@@ -75,8 +71,6 @@ class OffCanvasEditor extends React.Component {
       })
 
       if (attachmentForRemove.length == 0) {
-        console.log('Remove attachment')
-        console.log(attachment)
         await axios
           .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
           .then(() => {
@@ -101,8 +95,6 @@ class OffCanvasEditor extends React.Component {
     this.showSubject = data.showSubject !== undefined ? data.showSubject : true
     this.comment = data.comment
     this.onPrimaryClick = data.onPrimaryClick || null
-    console.log('this.attachmentsToRemove')
-    console.log(this.attachmentsToRemove)
     $(this.editorWindow)
       .removeClass('closed')
       .addClass('open')
