@@ -109,6 +109,13 @@ class OffCanvasEditor extends React.Component {
       .addClass('closed')
   }
 
+  pushAttachmentForSave(e, attachment) {
+    this.attachmentsForSave.splice(this.attachmentsForSave.indexOf(attachment), 1)
+  }
+
+  removeAttachmentForSave(e, attachment) {
+    this.attachmentsForSave.splice(this.attachmentsForSave.indexOf(attachment), 1)
+  }
 
   updateAttachments = (attachments) => {
     this.attachmentsForSave = attachments
@@ -157,6 +164,8 @@ class OffCanvasEditor extends React.Component {
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
                   updateAttachments={this.updateAttachments}
+                  removeAttachmentForSave = {this.removeAttachmentForSave}
+                  pushAttachmentForSave = {this.pushAttachmentForSave}
                 />
               </div>
             </div>
