@@ -192,6 +192,7 @@ class SingleTicketContainer extends React.Component {
     e.preventDefault()
     const isNote = type === 'note'
     let newComment
+    let attachmentsBoolean = false
     if (this.commentAttachedFiles?.length !== 0) {
       attachmentsBoolean = true
     } else {
