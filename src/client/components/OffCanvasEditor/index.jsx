@@ -67,13 +67,13 @@ class OffCanvasEditor extends React.Component {
     this.closeEditorWindow()
   }
 
-  removeAttachments() {
+  async removeAttachments() {
     console.log('this.attachmentsToRemove')
     console.log(this.attachmentsToRemove)
     for (const attachment of this.attachmentsToRemove) {
       console.log('Remove attachment')
       console.log(attachment)
-      axios
+      await axios
         .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
         .then(() => {
           this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })

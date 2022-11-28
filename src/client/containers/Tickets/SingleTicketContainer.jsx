@@ -233,18 +233,14 @@ class SingleTicketContainer extends React.Component {
 
   }
 
-  attachingFileToComment = (commentId, attachmentsToSave) => {
-    
-    console.log('attachmentsToSave')
-    console.log(attachmentsToSave)
-
-    for (const attachmentFile of attachmentsToSave) {
+  attachingFileToComment = async (commentId) => {
+    for (const attachmentFile of this.commentAttachedFiles) {
       const formData = new FormData()
       formData.append('commentId', commentId)
       formData.append('ticketId', this.ticket._id)
       formData.append('attachment', attachmentFile)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      axios
+      await axios
         .post(`/tickets/comments/uploadattachment`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
