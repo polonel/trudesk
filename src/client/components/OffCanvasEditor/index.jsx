@@ -58,13 +58,11 @@ class OffCanvasEditor extends React.Component {
     }
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
+    console.log('this.attachmentsToSave')
+    console.log('this.attachmentsToSave')
     this.removeAttachments()
-    console.log('this.attachmentsToSave')
-    console.log('this.attachmentsToSave')
     this.props.updateData(this.attachmentsToSave)
     this.props.attachingFileToComment(this.comment._id, this.attachmentsToSave)
-
-
     this.closeEditorWindow()
   }
 
@@ -72,6 +70,7 @@ class OffCanvasEditor extends React.Component {
     console.log('this.attachmentsToRemove')
     console.log(this.attachmentsToRemove)
     for (const attachment of this.attachmentsToRemove) {
+
       console.log('Remove attachment')
       console.log(attachment)
       await axios
@@ -112,13 +111,28 @@ class OffCanvasEditor extends React.Component {
   }
 
   pushAttachmentToRemove = (attachment) => {
-    if  (this.attachmentsToSave.length !== 0){
+
+    const attachmentForRemove = this.attachmentsToSave.filter(function (attachmentFilter) {
+      return attachmentFilter == attachment;
+    });
+
+    if (attachmentForRemove.length == 0) {
       this.attachmentsToSave.splice(this.attachmentsToSave.indexOf(attachment), 1)
     }
+
     this.attachmentsToRemove.push(attachment)
   }
 
   pushAttachmentToSave = (attachment) => {
+
+    const attachmentForSave = this.attachmentsToRemove.filter(function (attachmentFilter) {
+      return attachmentFilter == attachment;
+    });
+
+    if (attachmentForSave.length == 0) {
+      this.attachmentsToRemove.splice(this.attachmentsToRemove.indexOf(attachment), 1)
+    }
+
     this.attachmentsToSave.push(attachment)
   }
 
