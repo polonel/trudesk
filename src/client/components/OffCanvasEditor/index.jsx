@@ -162,8 +162,8 @@ class OffCanvasEditor extends React.Component {
                   dateFormat={this.props.dateFormat}
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
-                  attachmentToSave={this.attachmentToSave}
-                  attachmentToRemove={this.attachmentToRemove}
+                  pushAttachmentToRemove={this.pushAttachmentToRemove}
+                  pushAttachmentToSave={this.pushAttachmentToSave}
                 />
               </div>
             </div>
