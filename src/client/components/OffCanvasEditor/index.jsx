@@ -32,8 +32,6 @@ class OffCanvasEditor extends React.Component {
   @observable showSubject = true
   @observable onPrimaryClick = null
   @observable comment
-  @observable attachmentsToRemove = []
-  @observable attachmentsToSave = []
   @observable attachmentsForSave = []
   constructor(props) {
     super(props)
@@ -59,7 +57,7 @@ class OffCanvasEditor extends React.Component {
     }
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
-    
+
     this.props.updateData(this.attachmentsForSave)
     this.props.attachingFileToComment(this.comment._id)
 
@@ -69,20 +67,28 @@ class OffCanvasEditor extends React.Component {
 
   removeAttachments() {
 
-    for (const attachment of this.attachmentsToRemove) {
-      console.log('Remove attachment')
-      console.log(attachment)
-      axios
-        .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
-        .then(() => {
-          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
-          helpers.UI.showSnackbar('Attachment Removed')
-        })
-        .catch(error => {
-          Log.error(error)
-          if (error.response) Log.error(error.response)
-          helpers.UI.showSnackbar(error, true)
-        })
+    for (const attachment of this.comment.attachments) {
+      
+      const attachmentsForRemove = this.attachmentsForSave.filter(function (attachmentForSave) {
+        return attachmentForSave == attachment;
+      })[0];
+
+      if (!attachmentsForRemove) {
+        console.log('Remove attachment')
+        console.log(attachment)
+        axios
+          .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
+          .then(() => {
+            this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
+            helpers.UI.showSnackbar('Attachment Removed')
+          })
+          .catch(error => {
+            Log.error(error)
+            if (error.response) Log.error(error.response)
+            helpers.UI.showSnackbar(error, true)
+          })
+      }
+
     }
 
   }
@@ -94,8 +100,6 @@ class OffCanvasEditor extends React.Component {
     this.showSubject = data.showSubject !== undefined ? data.showSubject : true
     this.comment = data.comment
     this.onPrimaryClick = data.onPrimaryClick || null
-    console.log('this.attachmentsToRemove')
-    console.log(this.attachmentsToRemove)
     $(this.editorWindow)
       .removeClass('closed')
       .addClass('open')
@@ -164,8 +168,8 @@ class OffCanvasEditor extends React.Component {
                   editorWindow={this.props.editorWindow}
                   socket={this.props.socket}
                   updateAttachments={this.updateAttachments}
-                  removeAttachmentForSave = {this.removeAttachmentForSave}
-                  pushAttachmentForSave = {this.pushAttachmentForSave}
+                  removeAttachmentForSave={this.removeAttachmentForSave}
+                  pushAttachmentForSave={this.pushAttachmentForSave}
                 />
               </div>
             </div>
