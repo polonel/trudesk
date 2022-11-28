@@ -72,7 +72,7 @@ class OffCanvasEditor extends React.Component {
         return attachmentFilter == attachment
       })
 
-      if (attachmentForRemove.length == 0) {
+      if (attachmentForRemove.length == 0 && this.attachmentsForSave.length !== 0) {
         await axios
           .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
           .then(() => {
