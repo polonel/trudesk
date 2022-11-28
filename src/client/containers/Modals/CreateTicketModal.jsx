@@ -169,13 +169,13 @@ class CreateTicketModal extends React.Component {
     //  this.props.createTicket(data)
   }
 
-  onAttachmentInputChange(ticketId) {
+  async onAttachmentInputChange(ticketId) {
     for (const attachmentFile of this.attachments) {
       const formData = new FormData()
       formData.append('ticketId', ticketId)
       formData.append('attachment', attachmentFile)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      axios
+      await axios
         .post(`/tickets/uploadattachment`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
