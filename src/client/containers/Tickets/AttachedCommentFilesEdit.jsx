@@ -107,15 +107,14 @@ class AttachedCommentFilesEdit extends React.Component {
   onAttachmentInputChange(e) {
     const attachmentFile = e.target.files[0]
     this.attachmentsFiles.push(attachmentFile)
-    this.props.pushAttachmentToSave(attachmentFile)
+    this.props.attachmentToSave(attachmentFile)
     // this.props.updateData(this.attachments)
   }
 
 
   removeAttachment(e, attachment) {
     this.attachmentsFiles.splice(this.attachmentsFiles.indexOf(attachment), 1)
-    this.props.pushAttachmentToRemove(attachment)
-    
+    this.props.attachmentToRemove(attachment)  
   }
 
   render() {
