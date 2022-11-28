@@ -192,11 +192,16 @@ class SingleTicketContainer extends React.Component {
     e.preventDefault()
     const isNote = type === 'note'
     let newComment
+    if (this.commentAttachedFiles?.length !== 0) {
+      attachmentsBoolean = true
+    } else {
+      attachmentsBoolean = false
+    }
     axios
       .post(`/api/v1/tickets/add${isNote ? 'note' : 'comment'}`, {
         _id: !isNote && this.ticket._id,
         comment: !isNote && this.commentMDE.getEditorText(),
-        attachments: this.commentAttachedFiles,
+        attachments: attachmentsBoolean,
         ticketid: isNote && this.ticket._id,
         note: isNote && this.noteMDE.getEditorText()
       })
@@ -234,8 +239,17 @@ class SingleTicketContainer extends React.Component {
   }
 
   attachingFileToComment = async (commentId) => {
+    let countAttachments = 0
     for (const attachmentFile of this.commentAttachedFiles) {
+      countAttachments++
       const formData = new FormData()
+
+      if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !==0) {
+        formData.append('sendMail', true)
+      } else {
+        formData.append('sendMail', false)
+      }
+
       formData.append('commentId', commentId)
       formData.append('ticketId', this.ticket._id)
       formData.append('attachment', attachmentFile)

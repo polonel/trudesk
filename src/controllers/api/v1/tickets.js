@@ -987,7 +987,8 @@ apiTickets.postComment = function (req, res) {
     var Comment = {
       owner: owner,
       date: new Date(),
-      comment: xss(marked.parse(comment))
+      comment: xss(marked.parse(comment)),
+      attachments: true
     }
 
     t.updated = Date.now()
@@ -995,7 +996,7 @@ apiTickets.postComment = function (req, res) {
     var HistoryItem = {
       action: 'ticket:comment:added',
       description: 'Comment was added',
-      owner: owner
+      owner: owner,
     }
     t.history.push(HistoryItem)
 
@@ -1006,8 +1007,9 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
-
-      emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
+      if (!attachments) {
+        emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
+      }
 
       return res.json({ success: true, error: null, ticket: tt, comment: Comment })
     })

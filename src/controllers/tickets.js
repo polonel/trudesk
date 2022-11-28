@@ -20,6 +20,7 @@ const permissions = require('../permissions')
 const xss = require('xss')
 const fs = require('fs-extra')
 const iconv = require('iconv-lite')
+const emitter = require('../emitter')
 /**
  * @since 1.0
  * @author Chris Brame <polonel@gmail.com>
@@ -867,6 +868,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'commentId') object.commentId = val
     if (fieldname === 'ticketId') object.ticketId = val
+    if (fieldname === 'sendMail') object.sendMail = val
     if (fieldname === 'ownerId') object.ownerId = val
   })
 
@@ -1039,6 +1041,9 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           
           eventsCount++
           if (eventsCount == events.length){
+            if (object.sendMail){
+              emitter.emit('ticket:comment:added', t, comment, req.headers.host)
+            }
             return res.json(returnData)
           }
           

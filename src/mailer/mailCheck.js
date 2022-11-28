@@ -220,6 +220,7 @@ function bindImapReady() {
                           message.responseToComment = $body.length > 0 ? $body.html() : mail.html
                         } else {
                           message.responseToComment = mail.text
+                          message.mailText = true
                         }
 
                         if (_.isUndefined(mail.textAsHtml)) {
@@ -297,7 +298,9 @@ function handleMessages(messages, done) {
 
           var comment = message.responseToComment
           var owner = user._id
-          comment = sanitizeHtml(comment).trim()
+          if (!message.mailText){
+            comment = sanitizeHtml(comment).trim()
+          }        
           var resultTicketUID = comment.toLowerCase().match(/#\d+/);
           if (resultTicketUID) {
             resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
@@ -320,6 +323,9 @@ function handleMessages(messages, done) {
             }
             if (comment.match(/\n.*\n> $/)) {
               comment = comment.replace(comment.match(/\n.*\n*> $/)[0], '')
+            }
+            if (comment.match(/<blockquote>.*/)) {
+              comment = comment.replace(comment.match(/<blockquote>.*/)[0], '')
             }
           } catch (err) {
             return winston.warn(err)

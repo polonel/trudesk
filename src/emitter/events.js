@@ -286,8 +286,8 @@ const eventUserCreated = require('./events/event_user_created')
                     }
                     
                     const comment ={
-                      text:  ticketJSON.comments.splice(-1)[0].comment.replace(/(<([^>]+)>)/gi, ""),
-                      owner: ticketJSON.comments.splice(-1)[0].owner.fullname
+                      text:  ticketJSON.comments.slice(-1)[0].comment.replace(/(<([^>]+)>)/gi, ""),
+                      owner: ticketJSON.comments.slice(-1)[0].owner.fullname
                     }
                     const context = { base_url: baseUrl, ticket: ticketJSON, comment: comment }
 
@@ -299,8 +299,11 @@ const eventUserCreated = require('./events/event_user_created')
                       html,
                       generateTextFromHTML: true
                     }
-                
-                    await mailer.sendMail(mailOptions)
+                    
+                    if (comment.attachments !== true ){
+                      await mailer.sendMail(mailOptions)
+                    }
+                   
                 
                     logger.debug(`Sent [${emails.length}] emails.`)
                   }
