@@ -58,6 +58,8 @@ class OffCanvasEditor extends React.Component {
 
     if (this.onPrimaryClick) this.onPrimaryClick(data)
     this.removeAttachments()
+    console.log('this.attachmentsForSave')
+    console.log(this.attachmentsForSave)
     this.props.updateData(this.attachmentsForSave)
     this.props.attachingFileToComment(this.comment._id)
     this.closeEditorWindow()
