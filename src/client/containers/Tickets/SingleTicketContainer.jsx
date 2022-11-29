@@ -268,7 +268,9 @@ class SingleTicketContainer extends React.Component {
         .then(() => {
           this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
           helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+          if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !==0) {
           this.commentAttachedFiles = []
+          }
           filesCount++
         })
         .catch(error => {
