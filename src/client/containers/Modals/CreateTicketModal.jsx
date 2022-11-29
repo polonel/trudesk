@@ -149,12 +149,13 @@ class CreateTicketModal extends React.Component {
 
     if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
+    let attachmentsBoolean = false
     if (this.attachments?.length !== 0) {
       attachmentsBoolean = true
     } else {
       attachmentsBoolean = false
     }
-    
+
     data.subject = e.target.subject.value
     data.group = this.groupSelect.value
     data.type = this.typeSelect.value
@@ -177,8 +178,19 @@ class CreateTicketModal extends React.Component {
   }
 
   async onAttachmentInputChange(ticketId) {
+
+    let countAttachments = 0
     for (const attachmentFile of this.attachments) {
+      
+      countAttachments++
       const formData = new FormData()
+
+      if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
+        formData.append('sendMail', true)
+      } else {
+        formData.append('sendMail', false)
+      }
+
       formData.append('ticketId', ticketId)
       formData.append('attachment', attachmentFile)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
