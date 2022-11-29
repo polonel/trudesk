@@ -208,16 +208,16 @@ class CreateTicketModal extends React.Component {
 
 
 
-      await axiosPost(`/tickets/uploadattachment`, {
-        method: 'post',
-        url: '/tickets/uploadattachment',
-        timeout: 500000, // Let say you want to wait at least 8 seconds
+      await this.axiosPost(`/tickets/uploadattachment`, {
+        // method: 'post',
+        // url: '/tickets/uploadattachment',
+        // timeout: 500000, // Let say you want to wait at least 8 seconds
         headers: {
           'Content-Type': 'multipart/form-data',
           'CSRF-TOKEN': token
         },
         data: formData
-      })
+      }, 500000)
 
       // await axios({
       //   method: 'post',
@@ -245,12 +245,12 @@ class CreateTicketModal extends React.Component {
 
 
 
-  axiosPost = async (url, options = {}) => {
+  axiosPost = async (url, options = {}, timeout) => {
 
     const abort = axios.CancelToken.source()
     const id = setTimeout(
-      () => abort.cancel(`Timeout of ${options.timeout}ms.`),
-      options.timeout
+      () => abort.cancel(`Timeout of ${timeout}ms.`),
+      timeout
     )
     return await axios
       .post(url, { cancelToken: abort.token, ...options })
