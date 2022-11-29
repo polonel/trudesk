@@ -205,30 +205,72 @@ class CreateTicketModal extends React.Component {
       //       'CSRF-TOKEN': token
       //     }
       //   })
-        axios.defaults.timeout = 500000
-        await axios({
-          method: 'post',
-          url: '/tickets/uploadattachment',
-          timeout: 500000, // Let say you want to wait at least 8 seconds
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'CSRF-TOKEN': token
-          },
-          data: formData
-        })
-        .then(() => {
-          this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
-          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-          filesCount++
-        })
-        .catch(error => {
-          console.log('Ошибка')
-          Log.error(error)
-          if (error.response) Log.error(error.response)
-          helpers.UI.showSnackbar(error, true)
-        })
+
+
+
+      await axiosGet(`/tickets/uploadattachment`, {
+        method: 'post',
+        url: '/tickets/uploadattachment',
+        timeout: 500000, // Let say you want to wait at least 8 seconds
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-TOKEN': token
+        },
+        data: formData
+      })
+
+      // await axios({
+      //   method: 'post',
+      //   url: '/tickets/uploadattachment',
+      //   timeout: 500000, // Let say you want to wait at least 8 seconds
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //     'CSRF-TOKEN': token
+      //   },
+      //   data: formData
+      // })
+      //   .then(() => {
+      //     this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
+      //     helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+      //     filesCount++
+      //   })
+      //   .catch(error => {
+      //     console.log('Ошибка')
+      //     Log.error(error)
+      //     if (error.response) Log.error(error.response)
+      //     helpers.UI.showSnackbar(error, true)
+      //   })
     }
   }
+
+
+
+  axiosPost = async (url, options = {}) => {
+
+    const abort = axios.CancelToken.source()
+    const id = setTimeout(
+      () => abort.cancel(`Timeout of ${options.timeout}ms.`),
+      options.timeout
+    )
+    return await axios
+      .post(url, { cancelToken: abort.token, ...options })
+      .then(() => {
+        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
+        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+        filesCount++
+        clearTimeout(id)
+      })
+      .catch(error => {
+        console.log('Ошибка')
+        Log.error(error)
+        if (error.response) Log.error(error.response)
+        helpers.UI.showSnackbar(error, true)
+      })
+
+  }
+
+  // example usage
+
 
   onGroupSelectChange(e) {
     // this.groupAccounts = this.props.groups
