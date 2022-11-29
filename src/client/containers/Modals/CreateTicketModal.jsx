@@ -190,11 +190,12 @@ class CreateTicketModal extends React.Component {
       } else {
         formData.append('sendMail', false)
       }
-      
+
       formData.append('attachmentsCount', this.attachments.length)
       formData.append('socketId', socketId)
       formData.append('ticketId', ticketId)
       formData.append('attachment', attachmentFile)
+      formData.append('filesCount', filesCount)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       await axios
         .post(`/tickets/uploadattachment`, formData, {
@@ -206,6 +207,7 @@ class CreateTicketModal extends React.Component {
         .then(() => {
           this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
           helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+          filesCount++
         })
         .catch(error => {
           Log.error(error)
