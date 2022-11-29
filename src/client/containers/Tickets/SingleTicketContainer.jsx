@@ -251,6 +251,7 @@ class SingleTicketContainer extends React.Component {
         formData.append('sendMail', false)
       }
 
+      formData.append('attachmentsCount', this.commentAttachedFiles.length)
       formData.append('commentId', commentId)
       formData.append('ticketId', this.ticket._id)
       formData.append('attachment', attachmentFile)

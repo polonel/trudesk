@@ -680,6 +680,7 @@ ticketsController.uploadAttachment = function (req, res) {
     if (fieldname === 'ownerId') object.ownerId = val
     if (fieldname === 'socketId') object.socketId = val
     if (fieldname === 'sendMail') object.sendMail = val
+    if (fieldname === 'attachmentsCount') object.attachmentsCount = val
   })
 
   busboy.on('file', function (name, file, info) {
@@ -840,8 +841,8 @@ ticketsController.uploadAttachment = function (req, res) {
             ticket: t
           }
           eventsCount++
-          if (eventsCount == events.length){
-            if (object.sendMail){
+          if (eventsCount == object.attachmentsCount){
+            if (object.sendMail && object.sendMail !== 'false'){
               emitter.emit('ticket:created', {
                 hostname: req.headers.host,
                 socketId: object.socketId,
@@ -882,6 +883,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
     if (fieldname === 'ticketId') object.ticketId = val
     if (fieldname === 'sendMail') object.sendMail = val
     if (fieldname === 'ownerId') object.ownerId = val
+    if (fieldname === 'attachmentsCount') object.attachmentsCount = val
   })
 
   busboy.on('file', function (name, file, info) {
@@ -1052,8 +1054,8 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           }
           
           eventsCount++
-          if (eventsCount == events.length){
-            if (object.sendMail){
+          if (eventsCount == object.attachmentsCount){
+            if (object.sendMail && object.sendMail !== 'false'){
               emitter.emit('ticket:comment:added', t, comment[0], req.headers.host)
               return res.json(returnData)
             }

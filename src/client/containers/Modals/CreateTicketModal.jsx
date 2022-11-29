@@ -190,6 +190,8 @@ class CreateTicketModal extends React.Component {
       } else {
         formData.append('sendMail', false)
       }
+      
+      formData.append('attachmentsCount', this.attachments.length)
       formData.append('socketId', socketId)
       formData.append('ticketId', ticketId)
       formData.append('attachment', attachmentFile)
