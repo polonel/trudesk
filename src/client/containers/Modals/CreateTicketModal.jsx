@@ -116,6 +116,10 @@ class CreateTicketModal extends React.Component {
     this.attachments.push(attachment)
   }
 
+  removeData = (attachment) => {
+    this.attachments.splice(this.attachments.indexOf(attachment), 1)
+  }
+
   onFormSubmit(e) {
     e.preventDefault()
     const $form = $(e.target)
