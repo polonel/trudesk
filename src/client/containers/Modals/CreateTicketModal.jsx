@@ -247,8 +247,9 @@ class CreateTicketModal extends React.Component {
       () => abort.cancel(`Timeout of ${timeout}ms.`),
       timeout
     )
+    options.cancelToken = abort.token
     return await axios
-      .post(url, { cancelToken: abort.token, data: formdata }, options)
+      .post(url,  formdata, options)
       .then(() => {
         this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
         helpers.UI.showSnackbar('Attachment Successfully Uploaded')
