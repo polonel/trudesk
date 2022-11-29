@@ -845,10 +845,10 @@ ticketsController.uploadAttachment = function (req, res) {
               emitter.emit('ticket:created', {
                 hostname: req.headers.host,
                 socketId: object.socketId,
-                ticket: tt,
+                ticket: t,
               })
+              return res.json(returnData)
             }
-            return res.json(returnData)
           }
         })
       })
@@ -1055,8 +1055,8 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           if (eventsCount == events.length){
             if (object.sendMail){
               emitter.emit('ticket:comment:added', t, comment[0], req.headers.host)
+              return res.json(returnData)
             }
-            return res.json(returnData)
           }
           
         })
