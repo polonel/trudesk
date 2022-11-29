@@ -412,7 +412,7 @@ apiTickets.create = function (req, res) {
 
   var attachments = req.body.attachments
   delete req.body.attachments
-  
+
   var postData = req.body
   if (!_.isObject(postData) || !postData.subject || !postData.issue)
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
@@ -496,13 +496,14 @@ apiTickets.create = function (req, res) {
 
           t.populate('group owner priority', function (err, tt) {
             if (err) return done({ status: 400, error: err })
-            if (!attachments) {    
-            emitter.emit('ticket:created', {
-              hostname: req.headers.host,
-              socketId: socketId,
-              ticket: tt
-            })
-          }
+
+            if (!attachments) {
+              emitter.emit('ticket:created', {
+                hostname: req.headers.host,
+                socketId: socketId,
+                ticket: tt
+              })
+            }
             response.ticket = tt
             res.json(response)
 

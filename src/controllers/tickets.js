@@ -673,10 +673,13 @@ ticketsController.uploadAttachment = function (req, res) {
   let error
 
   const events = []
-
+  let eventsCount = 0
+  
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'ticketId') object.ticketId = val
     if (fieldname === 'ownerId') object.ownerId = val
+    if (fieldname === 'socketId') object.socketId = val
+    if (fieldname === 'sendMail') object.sendMail = val
   })
 
   busboy.on('file', function (name, file, info) {
@@ -836,8 +839,17 @@ ticketsController.uploadAttachment = function (req, res) {
           const returnData = {
             ticket: t
           }
-
-          return res.json(returnData)
+          eventsCount++
+          if (eventsCount == events.length){
+            if (object.sendMail){
+              emitter.emit('ticket:created', {
+                hostname: req.headers.host,
+                socketId: object.socketId,
+                ticket: tt,
+              })
+            }
+            return res.json(returnData)
+          }
         })
       })
     })

@@ -169,7 +169,7 @@ class CreateTicketModal extends React.Component {
       const ticket = res.data.ticket
       const ticketUID = res.data.ticket.uid
 
-      this.onAttachmentInputChange(ticket._id)
+      this.onAttachmentInputChange(ticket._id, data.socketid)
 
       // location.href = `${siteURL}/tickets/${ticketUID}`
     })
@@ -177,11 +177,11 @@ class CreateTicketModal extends React.Component {
     //  this.props.createTicket(data)
   }
 
-  async onAttachmentInputChange(ticketId) {
+  async onAttachmentInputChange(ticketId, socketId) {
 
     let countAttachments = 0
     for (const attachmentFile of this.attachments) {
-      
+
       countAttachments++
       const formData = new FormData()
 
@@ -190,7 +190,7 @@ class CreateTicketModal extends React.Component {
       } else {
         formData.append('sendMail', false)
       }
-
+      formData.append('socketId', socketId)
       formData.append('ticketId', ticketId)
       formData.append('attachment', attachmentFile)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
