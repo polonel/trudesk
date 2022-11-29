@@ -208,7 +208,7 @@ class CreateTicketModal extends React.Component {
 
 
 
-      await this.axiosPost( `/tickets/uploadattachment`,formData,{
+    this.axiosPost( `/tickets/uploadattachment`,formData,{
             headers: {
               'Content-Type': 'multipart/form-data',
               'CSRF-TOKEN': token
@@ -248,7 +248,9 @@ class CreateTicketModal extends React.Component {
       timeout
     )
     options.cancelToken = abort.token
-    return await axios
+    console.log('options')
+    console.log(options)
+    return axios
       .post(url,  formdata, options)
       .then(() => {
         this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
