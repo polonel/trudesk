@@ -842,7 +842,7 @@ ticketsController.uploadAttachment = function (req, res) {
             ticket: t
           }
           eventsCount++
-          if (object.filesCount == Number(object.attachmentsCount)) {
+          if (Number(object.filesCount) == Number(object.attachmentsCount)) {
             if (object.sendMail && object.sendMail !== 'false') {
               emitter.emit('ticket:created', {
                 hostname: req.headers.host,

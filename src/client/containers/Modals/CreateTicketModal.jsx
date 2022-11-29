@@ -180,6 +180,7 @@ class CreateTicketModal extends React.Component {
   async onAttachmentInputChange(ticketId, socketId) {
 
     let countAttachments = 0
+    let filesCount = 1
     for (const attachmentFile of this.attachments) {
 
       countAttachments++
