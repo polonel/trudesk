@@ -205,7 +205,7 @@ class CreateTicketModal extends React.Component {
       //       'CSRF-TOKEN': token
       //     }
       //   })
-
+        axios.defaults.timeout = 500000
         await axios({
           method: 'post',
           url: '/tickets/uploadattachment',
@@ -222,6 +222,7 @@ class CreateTicketModal extends React.Component {
           filesCount++
         })
         .catch(error => {
+          console.log('Ошибка')
           Log.error(error)
           if (error.response) Log.error(error.response)
           helpers.UI.showSnackbar(error, true)
