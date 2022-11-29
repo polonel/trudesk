@@ -208,7 +208,7 @@ class CreateTicketModal extends React.Component {
 
 
 
-      await axiosGet(`/tickets/uploadattachment`, {
+      await axiosPost(`/tickets/uploadattachment`, {
         method: 'post',
         url: '/tickets/uploadattachment',
         timeout: 500000, // Let say you want to wait at least 8 seconds
