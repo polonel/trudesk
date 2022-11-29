@@ -674,13 +674,14 @@ ticketsController.uploadAttachment = function (req, res) {
 
   const events = []
   let eventsCount = 0
-  
+
   busboy.on('field', function (fieldname, val) {
     if (fieldname === 'ticketId') object.ticketId = val
     if (fieldname === 'ownerId') object.ownerId = val
     if (fieldname === 'socketId') object.socketId = val
     if (fieldname === 'sendMail') object.sendMail = val
     if (fieldname === 'attachmentsCount') object.attachmentsCount = val
+    if (fieldname === 'filesCount') object.filesCount = val
   })
 
   busboy.on('file', function (name, file, info) {
@@ -841,16 +842,17 @@ ticketsController.uploadAttachment = function (req, res) {
             ticket: t
           }
           eventsCount++
-          if (eventsCount == object.attachmentsCount){
-            if (object.sendMail && object.sendMail !== 'false'){
+          if (object.filesCount == Number(object.attachmentsCount)) {
+            if (object.sendMail && object.sendMail !== 'false') {
               emitter.emit('ticket:created', {
                 hostname: req.headers.host,
                 socketId: object.socketId,
                 ticket: t,
               })
-              return res.json(returnData)
+              
             }
-          }
+           }
+          return res.json(returnData)
         })
       })
     })
@@ -955,7 +957,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
 
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
 
-    object.filePath = path.join(savePath,sanitizedFilename)
+    object.filePath = path.join(savePath, sanitizedFilename)
     object.filename = sanitizedFilename.replace('/', '').replace('..', '')
     object.mimetype = mimetype
 
@@ -963,7 +965,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
       const Chance = require('chance')
       const chance = new Chance()
       sanitizedFilename = chance.hash({ length: 15 }) + '-' + sanitizedFilename
-      object.filePath = path.join(savePath,sanitizedFilename)
+      object.filePath = path.join(savePath, sanitizedFilename)
       object.filename = sanitizedFilename
     }
 
@@ -1052,21 +1054,21 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           const returnData = {
             ticket: t
           }
-          
+
           eventsCount++
-          if (eventsCount == object.attachmentsCount){
-            if (object.sendMail && object.sendMail !== 'false'){
+          if (eventsCount == Number(object.attachmentsCount)) {
+            if (object.sendMail && object.sendMail !== 'false') {
               emitter.emit('ticket:comment:added', t, comment[0], req.headers.host)
               return res.json(returnData)
             }
           }
-          
+
         })
       })
     })
   })
   req.pipe(busboy)
- 
+
 }
 
 function handleError(res, err) {

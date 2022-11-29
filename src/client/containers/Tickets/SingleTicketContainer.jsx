@@ -241,6 +241,7 @@ class SingleTicketContainer extends React.Component {
 
   attachingFileToComment = async (commentId) => {
     let countAttachments = 0
+    let filesCount = 1
     for (const attachmentFile of this.commentAttachedFiles) {
       countAttachments++
       const formData = new FormData()
@@ -252,6 +253,7 @@ class SingleTicketContainer extends React.Component {
       }
 
       formData.append('attachmentsCount', this.commentAttachedFiles.length)
+      formData.append('filesCount', filesCount)
       formData.append('commentId', commentId)
       formData.append('ticketId', this.ticket._id)
       formData.append('attachment', attachmentFile)
@@ -267,6 +269,7 @@ class SingleTicketContainer extends React.Component {
           this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
           helpers.UI.showSnackbar('Attachment Successfully Uploaded')
           this.commentAttachedFiles = []
+          filesCount++
         })
         .catch(error => {
           Log.error(error)
