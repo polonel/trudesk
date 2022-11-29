@@ -117,7 +117,6 @@ class CreateTicketModal extends React.Component {
   }
 
   removeData = (attachment) => {
-    console.log()
     this.attachments.splice(this.attachments.indexOf(attachment), 1)
   }
 
