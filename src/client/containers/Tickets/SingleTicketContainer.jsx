@@ -258,23 +258,12 @@ class SingleTicketContainer extends React.Component {
       formData.append('ticketId', this.ticket._id)
       formData.append('attachment', attachmentFile)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      // await axios
-      //   .post(`/tickets/comments/uploadattachment`, formData, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data',
-      //       'CSRF-TOKEN': token
-      //     }
-      //   })
-
-       await axios({
-          method: 'post',
-          url: '/tickets/comments/uploadattachment',
-          timeout: 500000, // Let say you want to wait at least 8 seconds
+      await axios
+        .post(`/tickets/comments/uploadattachment`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'CSRF-TOKEN': token
-          },
-          data: formData
+          }
         })
         .then(() => {
           this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })

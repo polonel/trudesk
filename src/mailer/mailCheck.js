@@ -372,7 +372,6 @@ function handleMessages(messages, done) {
               const pathUploadTicket = `/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}`;
               const pathUploadComments = `/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments`;
               const pathUploadCommentId = `/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}`;
-              let pathExist = false
 
               try {
                 if (!fs.existsSync(pathUploadTicket)) {
