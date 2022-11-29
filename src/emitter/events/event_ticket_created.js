@@ -124,6 +124,12 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
   if (template) {
     const ticketJSON = ticket.toJSON()
 
+    const attachmentsForSendMail = []
+    for (const attachment of ticket.attachments) {
+      const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+      attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
+    }
+    
     const context = { base_url: baseUrl, ticket: ticketJSON }
 
     const html = await email.render('new-ticket', context)
@@ -132,7 +138,8 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
       to: emails.join(),
       subject: subjectParsed,
       html,
-      generateTextFromHTML: true
+      generateTextFromHTML: true,
+      attachments: attachmentsForSendMail
     }
 
     await Mailer.sendMail(mailOptions)
