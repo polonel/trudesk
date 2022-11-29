@@ -149,6 +149,12 @@ class CreateTicketModal extends React.Component {
 
     if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
+    if (this.attachments?.length !== 0) {
+      attachmentsBoolean = true
+    } else {
+      attachmentsBoolean = false
+    }
+    
     data.subject = e.target.subject.value
     data.group = this.groupSelect.value
     data.type = this.typeSelect.value
@@ -156,6 +162,7 @@ class CreateTicketModal extends React.Component {
     data.priority = this.selectedPriority
     data.issue = this.issueMde.easymde.value()
     data.socketid = this.props.socket.io.engine.id
+    data.attachments = attachmentsBoolean
     const siteURL = this.getSetting('siteUrl')
     axios.post('/api/v1/tickets/create', data).then(res => {
       const ticket = res.data.ticket

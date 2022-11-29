@@ -1042,7 +1042,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           eventsCount++
           if (eventsCount == events.length){
             if (object.sendMail){
-              emitter.emit('ticket:comment:added', t, comment, req.headers.host)
+              emitter.emit('ticket:comment:added', t, comment[0], req.headers.host)
             }
             return res.json(returnData)
           }

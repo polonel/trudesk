@@ -493,13 +493,13 @@ apiTickets.create = function (req, res) {
 
           t.populate('group owner priority', function (err, tt) {
             if (err) return done({ status: 400, error: err })
-
+            if (!data.attachments) {    
             emitter.emit('ticket:created', {
               hostname: req.headers.host,
               socketId: socketId,
               ticket: tt
             })
-
+          }
             response.ticket = tt
             res.json(response)
 
@@ -988,7 +988,6 @@ apiTickets.postComment = function (req, res) {
       owner: owner,
       date: new Date(),
       comment: xss(marked.parse(comment)),
-      attachments: true
     }
 
     t.updated = Date.now()
@@ -1007,7 +1006,7 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
-      if (!attachments) {
+      if (!commentJson.attachments) {
         emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
       }
 
