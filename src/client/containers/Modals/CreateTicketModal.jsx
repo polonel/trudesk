@@ -117,6 +117,7 @@ class CreateTicketModal extends React.Component {
   }
 
   removeData = (attachment) => {
+    console.log()
     this.attachments.splice(this.attachments.indexOf(attachment), 1)
   }
 
@@ -209,17 +210,17 @@ class CreateTicketModal extends React.Component {
       //       'CSRF-TOKEN': token
       //     }
       //   })
-       
-        await axios({
-          method: 'post',
-          url: '/tickets/uploadattachment',
-          timeout: 500000, // Let say you want to wait at least 8 seconds
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'CSRF-TOKEN': token
-          },
-          data: formData
-        })
+
+      await axios({
+        method: 'post',
+        url: '/tickets/uploadattachment',
+        timeout: 500000, // Let say you want to wait at least 8 seconds
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-TOKEN': token
+        },
+        data: formData
+      })
         .then(() => {
           this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
           helpers.UI.showSnackbar('Attachment Successfully Uploaded')
@@ -394,6 +395,7 @@ class CreateTicketModal extends React.Component {
                 owner={this.props.owner}
                 socket={this.props.socket}
                 updateData={this.updateData}
+                removeData={this.removeData}
               />
             </div>
             <span style={{ marginTop: '6px', display: 'inline-block', fontSize: '11px' }} className={'uk-text-muted'}>

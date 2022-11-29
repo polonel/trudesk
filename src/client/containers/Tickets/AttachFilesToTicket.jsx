@@ -71,6 +71,7 @@ class AttachFilesToTicket extends React.Component {
 
     removeAttachment(e, attachment) {
         this.attachments.splice(this.attachments.indexOf(attachment), 1)
+        this.props.removeData(attachment)
     }
 
     render() {
