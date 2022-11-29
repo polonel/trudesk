@@ -208,16 +208,11 @@ class CreateTicketModal extends React.Component {
 
 
 
-      await this.axiosPost(`/tickets/uploadattachment`, {
-        // method: 'post',
-        // url: '/tickets/uploadattachment',
-        // timeout: 500000, // Let say you want to wait at least 8 seconds
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        },
-        data: formData
-      }, 500000)
+      await this.axiosPost( `/tickets/uploadattachment`,formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'CSRF-TOKEN': token
+            }}, 500000)
 
       // await axios({
       //   method: 'post',
@@ -245,7 +240,7 @@ class CreateTicketModal extends React.Component {
 
 
 
-  axiosPost = async (url, options = {}, timeout) => {
+  axiosPost = async (url, formdata, options = {}, timeout) => {
 
     const abort = axios.CancelToken.source()
     const id = setTimeout(
@@ -253,7 +248,7 @@ class CreateTicketModal extends React.Component {
       timeout
     )
     return await axios
-      .post(url, { cancelToken: abort.token, ...options })
+      .post(url, { cancelToken: abort.token, data: formdata }, options)
       .then(() => {
         this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
         helpers.UI.showSnackbar('Attachment Successfully Uploaded')
