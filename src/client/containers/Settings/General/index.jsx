@@ -115,9 +115,9 @@ class GeneralSettings extends React.Component {
           component={SiteUrl}
         />
         <SettingItem
-          title='Time Zone'
-          subtitle='Set the local timezone for date display'
-          tooltip='Requires Server Restart'
+          title='Server Timezone'
+          subtitle='Set the local server timezone for date display'
+          tooltip='User can override in user profile. Requires Server Restart'
           component={Timezone}
         />
         <SettingItem

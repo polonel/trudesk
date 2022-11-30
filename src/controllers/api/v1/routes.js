@@ -15,7 +15,7 @@
 const packagejson = require('../../../../package')
 
 module.exports = function (middleware, router, controllers) {
-  // Shortenconsts
+  // Shorten consts
   const apiv1 = middleware.api
   const isAdmin = middleware.isAdmin
   const isAgent = middleware.isAgent

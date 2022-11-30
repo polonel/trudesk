@@ -30,9 +30,10 @@ class PageTitle extends React.Component {
             hideBorderBottom ? 'nbb' : 'dt-borderBottom',
             !shadow && 'noshadow'
           )}
+          style={{ display: 'flex', justifyContent: 'space-between' }}
         >
-          <p className={'uk-float-left'}>{title}</p>
-          <div className={'uk-float-right uk-clearfix uk-width-1-2'}>{rightComponent}</div>
+          <p style={{ flexGrow: 1 }}>{title}</p>
+          <div>{rightComponent}</div>
         </div>
       </div>
     )
