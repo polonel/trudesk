@@ -504,33 +504,37 @@ ticketsController.single = function (req, res) {
           })
         },
         function (userGroups, next) {
-          const hasPublic = permissions.canThis(user.role, 'tickets:public')
-          const groupIds = userGroups.map(function (g) {
-            return g._id.toString()
-          })
+          try {
+            const hasPublic = permissions.canThis(user.role, 'tickets:public')
+            const groupIds = userGroups.map(function (g) {
+              return g._id.toString()
+            })
 
-          if (!groupIds.includes(ticket.group._id.toString())) {
-            if (ticket.group.public && hasPublic) {
-              // Blank to bypass
-            } else {
-              winston.warn('User access ticket outside of group - UserId: ' + user._id)
+            if (!groupIds.includes(ticket.group._id.toString())) {
+              if (ticket.group.public && hasPublic) {
+                // Blank to bypass
+              } else {
+                winston.warn('User access ticket outside of group - UserId: ' + user._id)
+                return res.redirect('/tickets')
+              }
+            }
+
+            if (
+              ticket.owner._id.toString() !== req.user._id.toString() &&
+              !permissions.canThis(user.role, 'tickets:viewall')
+            ) {
               return res.redirect('/tickets')
             }
+
+            if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
+
+            if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
+
+            content.data.ticket = ticket
+            content.data.ticket.priorityname = ticket.priority.name
+          } catch (err) {
+            console.log(err)
           }
-
-          if (
-            ticket.owner._id.toString() !== req.user._id.toString() &&
-            !permissions.canThis(user.role, 'tickets:viewall')
-          ) {
-            return res.redirect('/tickets')
-          }
-
-          if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
-
-          if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
-
-          content.data.ticket = ticket
-          content.data.ticket.priorityname = ticket.priority.name
 
           return next()
         }
@@ -847,9 +851,9 @@ ticketsController.uploadAttachment = function (req, res) {
                 socketId: object.socketId,
                 ticket: t,
               })
-              
+
             }
-           }
+          }
           return res.json(returnData)
         })
       })

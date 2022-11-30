@@ -19,7 +19,7 @@ const winston = require('../../logger')
 const piexifjs = require('piexifjs')
 
 const MAX_FIELD_TEXT_LENGTH = 255
-const MAX_SHORT_FIELD_TEXT_LENGTH = 25
+const MAX_SHORT_FIELD_TEXT_LENGTH = 100
 const MAX_EXTREME_TEXT_LENGTH = 2000
 
 module.exports.applyMaxTextLength = function (text) {

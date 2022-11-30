@@ -204,7 +204,8 @@ module.exports = function () {
                           phone: telephoneNumber,
                           fullname: req.name,
                           email: req.userPrincipalName,
-                          role: roleUser._id
+                          role: roleUser._id,
+                          title: req.title
                         }
 
                         User.create(newUser, function (err, user) {

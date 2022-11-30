@@ -73,7 +73,8 @@ accountsApi.create = async function (req, res) {
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
       throw new Error('Password does not meet requirements')
 
-    await User.createUser({
+   // await User.createUser({
+    await User.create({
       username: postData.username,
       email: postData.email,
       phone: postData.phone,

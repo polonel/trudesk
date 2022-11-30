@@ -21,7 +21,7 @@ import { makeObservable, observable } from 'mobx'
 import { createAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
-import { fetchRoles } from 'actions/common'
+import { fetchRoles, hideModal } from 'actions/common'
 import Chance from 'chance'
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
@@ -141,6 +141,7 @@ class CreateAccountModal extends React.Component {
     }
 
     this.props.createAccount(payload)
+    this.props.hideModal()
   }
 
   passGenerate() {
@@ -357,5 +358,6 @@ export default connect(mapStateToProps, {
   unloadGroups,
   fetchTeams,
   unloadTeams,
-  fetchRoles
+  fetchRoles,
+  hideModal
 })(CreateAccountModal)

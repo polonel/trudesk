@@ -29,6 +29,7 @@ const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
 const settingSchema = require('../models/setting')
 const axios = require('axios')
+const { ConstraintViolationError } = require('ldapjs')
 
 const mailCheck = {}
 mailCheck.inbox = []
@@ -168,17 +169,18 @@ function bindImapReady() {
                 var f = mailCheck.Imap.fetch(results, {
                   bodies: ''
                 })
-
+                let mailsCount = 0
+                let messagesCount = 0
                 f.on('message', function (msg) {
                   msg.on('body', function (stream) {
-                    var message = {}
                     var buffer = ''
                     stream.on('data', function (chunk) {
                       buffer += chunk.toString('utf8')
                     })
-
                     stream.once('end', function () {
+                      mailsCount++
                       simpleParser(buffer, function (err, mail) {
+                        messagesCount++
                         if (err) winston.warn(err)
                         let message = {}
                         if (mail.headers.has('from')) {
@@ -227,7 +229,7 @@ function bindImapReady() {
                         }
 
                         mailCheck.messages.push(message)
-                        if (mail?.attachments.length !== 0) {
+                        if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
                           handleMessages(mailCheck.messages, function () {
                             mailCheck.Imap.destroy()
                           })
@@ -239,7 +241,7 @@ function bindImapReady() {
                 })
 
                 f.on('end', function () {
-                  mailCheck.Imap.addFlags(results, flag, function() {
+                  mailCheck.Imap.addFlags(results, flag, function () {
                     mailCheck.Imap.closeBox(true, function () {
                       mailCheck.Imap.end();
                       handleMessages(mailCheck.messages, function () {

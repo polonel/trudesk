@@ -286,24 +286,28 @@ const eventUserCreated = require('./events/event_user_created')
                       }
 
                       const attachmentsForSendMail = []
-                      for (const attachment of comment.attachments) {
-                        const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
-                        attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
+                      if (comment.attachments){
+                        for (const attachment of comment.attachments) {
+                          const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+                          attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
+                        }
                       }
-
+                      
                       const commentObject = {
                         text: ticketJSON.comments.slice(-1)[0].comment.replace(/(<([^>]+)>)/gi, ""),
                         owner: ticketJSON.comments.slice(-1)[0].owner.fullname,
                         attachments: attachmentsForSendMail
                       }
                       const context = { base_url: baseUrl, ticket: ticketJSON, comment: commentObject }
-
+                      siteTitle = await settingSchema.getSettingsByName(['gen:sitetitle'])
                       const html = await email.render(templateName, context)
                       const subjectParsed = global.Handlebars.compile(template.subject)(context)
                       const mailOptions = {
                         to: emails.join(),
                         subject: subjectParsed,
                         html,
+                        fromName: siteTitle[0].value,
+                        from:siteTitle[0].value,
                         generateTextFromHTML: true,
                         attachments: commentObject.attachments
                       }
