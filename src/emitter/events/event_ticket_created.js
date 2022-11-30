@@ -142,9 +142,11 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
       attachments: attachmentsForSendMail
     }
 
-    await Mailer.sendMail(mailOptions)
+    Mailer.sendMail(mailOptions, function (err) {
+      if (err) throw err
 
-    logger.debug(`Sent [${emails.length}] emails.`)
+      logger.debug(`Sent [${emails.length}] emails.`)
+    })
   }
 }
 

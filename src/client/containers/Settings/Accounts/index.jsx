@@ -21,8 +21,10 @@ import { fetchSettings } from 'actions/settings'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
+import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
 import SettingSubItem from 'components/Settings/SettingSubItem'
 import SingleSelect from 'components/SingleSelect'
+import ColorSelector from 'components/ColorSelector'
 import Zone from 'components/ZoneBox/zone'
 import ZoneBox from 'components/ZoneBox'
 

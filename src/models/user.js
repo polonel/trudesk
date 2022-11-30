@@ -81,7 +81,8 @@ var userSchema = mongoose.Schema({
     tourCompleted: { type: Boolean, default: false },
     autoRefreshTicketGrid: { type: Boolean, default: true },
     openChatWindows: [{ type: String, default: [] }],
-    keyboardShortcuts: { type: Boolean, default: true }
+    keyboardShortcuts: { type: Boolean, default: true },
+    timezone: { type: String }
   },
 
   deleted: { type: Boolean, default: false }
@@ -680,6 +681,8 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
           })
         })
       })
+//-- ShaturaPRO LIN 
+
     })
   })
 }

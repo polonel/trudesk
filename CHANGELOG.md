@@ -1,3 +1,12 @@
+## [1.2.6](https://github.com/polonel/trudesk/compare/v1.2.5...v1.2.6) (2022-08-22)
+
+
+### Bug Fixes
+
+* **dashboard:** fails to load if show overdue tickets is disabled [#552](https://github.com/polonel/trudesk/issues/552) ([afd9caf](https://github.com/polonel/trudesk/commit/afd9caf))
+* **messages:** react ui fix ([a0bb151](https://github.com/polonel/trudesk/commit/a0bb151))
+* **ui:** react ui fix for accounts ([7cff1c9](https://github.com/polonel/trudesk/commit/7cff1c9))
+
 ## [1.2.5](https://github.com/polonel/trudesk/compare/v1.2.4...v1.2.5) (2022-07-17)
 
 

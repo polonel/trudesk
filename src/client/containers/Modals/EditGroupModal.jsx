@@ -91,6 +91,16 @@ class EditGroupModal extends React.Component {
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
 
+    if (!this._validatePhone(this.phone)) {
+      helpers.UI.showSnackbar('Invalid Phone Number', true)
+      return
+    }
+
+    if (!this._validateSite(this.site)) {
+      helpers.UI.showSnackbar('Invalid Website', true)
+      return
+    }
+
     const payload = {
       _id: this.props.group._id,
       name: this.name,

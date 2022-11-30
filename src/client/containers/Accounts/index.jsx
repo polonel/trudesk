@@ -237,7 +237,7 @@ class AccountsContainer extends React.Component {
               {/*    <div className='md-input-bar' />*/}
               {/*  </div>*/}
               {/*</div>*/}
-              <div className={'uk-width-1-4 uk-push-3-4 mt-15 pr-20 uk-clearfix'}>
+              <div className={'uk-width-1-4 mt-15 pr-20 uk-clearfix'}>
                 <ButtonGroup classNames={'uk-clearfix uk-float-right'}>
                   <Button
                     text={'Create'}
