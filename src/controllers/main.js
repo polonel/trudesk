@@ -24,6 +24,7 @@ const User = require('../models/user')
 const Group = require('../models/group')
 const Setting = require('../models/setting')
 const emitter = require('../emitter')
+const user = require('../models/user')
 // const action = require('../client/actions/common')
 
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
@@ -95,13 +96,13 @@ mainController.mappingChatwoot = function (req, res) {
 }
 
 mainController.changeMappingOrCreate = function (req, res) {
-
   Setting.findOne({ name: "chatwootSettings:enable" }, function (err, setting) {
     if (err) return res.render('error', {
       layout: false,
       error: err,
       message: err.message
     })
+    if (user.chatwootApiKey){
 
     let chatwootSetting = setting.value;
 
@@ -153,6 +154,9 @@ mainController.changeMappingOrCreate = function (req, res) {
     } else {
       return res.render('integrationIsDisabled', { layout: false })
     }
+  } else {
+    return res.render('chatwootApiKeyIsMissing', { layout: false })
+  }
   })
 }
 
