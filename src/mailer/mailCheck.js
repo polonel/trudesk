@@ -169,7 +169,7 @@ function bindImapReady() {
                   flag = '\\Deleted'
                 }
 
-                var message = {}
+                // var message = {}
 
                 var f = mailCheck.Imap.fetch(results, {
                   bodies: ''
@@ -185,7 +185,7 @@ function bindImapReady() {
                     stream.once('end', function () {
                       simpleParser(buffer, function (err, mail) {
                         if (err) winston.warn(err)
-
+                        let message = {}
                         if (mail.headers.has('from')) {
                           message.from = mail.headers.get('from').value[0].address
                           message.fromName = mail.headers.get('from').value[0].name
