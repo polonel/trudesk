@@ -42,6 +42,7 @@ import.csv
 
 /public/uploads/tickets/
 /public/uploads/users/
+/public/js
 coverage.html
 *.bk
 apidocs
