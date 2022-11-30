@@ -219,7 +219,7 @@ function bindImapReady() {
                           var $body = $('body')
                           message.responseToComment = $body.length > 0 ? $body.html() : mail.html
                         } else {
-                          message.responseToComment = mail.text
+                          if (mail?.inReplyTo ) message.responseToComment = mail.text
                           message.mailText = true
                         }
 
@@ -334,6 +334,7 @@ function handleMessages(messages, done) {
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, async function (err, t) {
             if (err) return winston.warn('Invalid Post Data')
+            if (!t) return winston.warn('Ticket not found')
 
             if (_.isUndefined(comment)) return winston.warn('Invalid Post Data')
 
@@ -350,7 +351,7 @@ function handleMessages(messages, done) {
               comment: xss(marked.parse(comment))
             }
 
-            t.updated = Date.now()
+            //t.updated = Date.now()
             t.comments.push(Comment)
             var HistoryItem = {
               action: 'ticket:comment:added',
@@ -430,7 +431,7 @@ function handleMessages(messages, done) {
                 t.history.push(historyItem)
                 countAttachments++
               }
-              t.updated = Date.now()
+              // t.updated = Date.now()
               if (countAttachments = message.attachments.length) {
                 t.save(function (err, tt) {
                   if (err) return winston.warn(err.message)
