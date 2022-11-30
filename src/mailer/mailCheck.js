@@ -219,7 +219,7 @@ function bindImapReady() {
                           var $body = $('body')
                           message.responseToComment = $body.length > 0 ? $body.html() : mail.html
                         } else {
-                          if (mail?.inReplyTo ) message.responseToComment = mail.text
+                          if (mail?.inReplyTo) message.responseToComment = mail.text
                           message.mailText = true
                         }
 
@@ -298,9 +298,9 @@ function handleMessages(messages, done) {
 
           var comment = message.responseToComment
           var owner = user._id
-          if (!message.mailText){
+          if (!message.mailText) {
             comment = sanitizeHtml(comment).trim()
-          }        
+          }
           var resultTicketUID = comment.toLowerCase().match(/#\d+/);
           if (resultTicketUID) {
             resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
@@ -376,7 +376,7 @@ function handleMessages(messages, done) {
 
               try {
                 if (!fs.existsSync(pathUploadTicket)) {
-                  fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}`, function (err) {
+                  await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
                     return true
@@ -384,7 +384,7 @@ function handleMessages(messages, done) {
                 }
 
                 if (!fs.existsSync(pathUploadComments)) {
-                  fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments`, function (err) {
+                  await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
                     return true
@@ -392,7 +392,7 @@ function handleMessages(messages, done) {
                 }
 
                 if (!fs.existsSync(pathUploadCommentId)) {
-                  fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}`, function (err) {
+                  await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
                     return true
@@ -405,32 +405,37 @@ function handleMessages(messages, done) {
 
               console.log('Папка успешно создана');
               let countAttachments = 0
-              for (const attachmentFromMessage of message.attachments) {
-                let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+              try {
+                for (const attachmentFromMessage of message.attachments) {
+                  let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
-                fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`, attachmentFromMessage.content);
+                  await fs.writeFileSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`, attachmentFromMessage.content);
 
-                const attachment = {
-                  owner: Comment.owner,
-                  name: sanitizedFilename,
-                  path: `/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`,
-                  type: attachmentFromMessage.contentType
+                  const attachment = {
+                    owner: Comment.owner,
+                    name: sanitizedFilename,
+                    path: `/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`,
+                    type: attachmentFromMessage.contentType
+                  }
+                  t.attachments.push(attachment)
+
+                  let commentForAttachFile = t.comments.filter(function (comment) {
+                    return comment._id == commentId;
+                  })[0];
+                  commentForAttachFile.attachments.push(attachment)
+
+                  const historyItem = {
+                    action: 'ticket:added:attachment',
+                    description: 'Attachment ' + sanitizedFilename + ' was added.',
+                    owner: Comment.owner
+                  }
+                  t.history.push(historyItem)
+                  countAttachments++
                 }
-                t.attachments.push(attachment)
-
-                let commentForAttachFile = t.comments.filter(function (comment) {
-                  return comment._id == commentId;
-                })[0];
-                commentForAttachFile.attachments.push(attachment)
-
-                const historyItem = {
-                  action: 'ticket:added:attachment',
-                  description: 'Attachment ' + sanitizedFilename + ' was added.',
-                  owner: Comment.owner
-                }
-                t.history.push(historyItem)
-                countAttachments++
+              } catch (err) {
+                return callback(err)
               }
+
               // t.updated = Date.now()
               if (countAttachments = message.attachments.length) {
                 t.save(function (err, tt) {
