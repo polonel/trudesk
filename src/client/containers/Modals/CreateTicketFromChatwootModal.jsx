@@ -202,7 +202,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         })
     }
 
-    async onAttachmentInputChange(ticketId, socketId) {
+    async onAttachmentInputChange(ticketId, socketId, ticketUID) {
         let countAttachments = 0
         let filesCount = 1
         for (const attachmentFile of this.attachments) {
