@@ -56,8 +56,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable clientName = ''
     @observable agentName = ''
     @observable ActiveUnloadingTheDialog = false
-    @observable siteUrl = ''
     @observable attachments = []
+    siteUrl = ''
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -140,7 +140,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     onFormSubmit(e) {
         e.preventDefault()
         const $form = $(e.target)
-
+        const siteUrl = this.getSetting('siteUrl')
         const data = {}
         if (this.issueText.length < 1) return
         const allowAgentUserTickets = true
@@ -194,17 +194,18 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         axios.post('/api/v1/tickets/create', data).then(res => {
             const ticket = res.data.ticket
             let ticketUID = res.data.ticket.uid
-            let ticketLink = `${this.siteURL}/tickets/${ticketUID}`
+            let ticketLink = `${siteUrl}/tickets/${ticketUID}`
             if (ticketUID) {
                 this.sendNotification(ticketLink, ticketUID);
             }
-            this.onAttachmentInputChange(ticket._id, data.socketid)
+            this.onAttachmentInputChange(ticket._id, data.socketid,ticketUID)
         })
     }
 
     async onAttachmentInputChange(ticketId, socketId, ticketUID) {
         let countAttachments = 0
         let filesCount = 1
+        const siteUrl = this.getSetting('siteUrl')
         for (const attachmentFile of this.attachments) {
 
             countAttachments++
@@ -237,8 +238,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                     helpers.UI.showSnackbar('Attachment Successfully Uploaded')
                     filesCount++
                     if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
-                        formData.append('sendMail', true)
-                        location.href = `${this.siteURL}/tickets/${ticketUID}`
+                        location.href = `${siteUrl}/tickets/${ticketUID}`
                     }
                 })
                 .catch(error => {
@@ -346,7 +346,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     render() {
-        this.siteUrl = this.getSetting('siteUrl')
         const mappedAccounts = this.props.accounts
             .map(a => {
                 return { text: a.get('fullname'), value: a.get('_id') }
