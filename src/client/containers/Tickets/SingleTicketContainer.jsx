@@ -301,10 +301,11 @@ class SingleTicketContainer extends React.Component {
   }
 
   sendNotificationMail() {
+    const siteURL = this.getSetting('siteurl');
     axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
       let account;
       account = response.data.user;
-      let ticketSubject = `${this.siteURL}/tickets/${this.ticket.uid}`;
+      let ticketSubject = `${siteURL}/tickets/${this.ticket.uid}`;
       let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
       contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
       contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
@@ -327,12 +328,13 @@ class SingleTicketContainer extends React.Component {
 
   sendNotification() {
     this.sendNotificationMail();
+    const siteURL = this.getSetting('siteurl');
     if (this.getSetting('chatwootSettings')) {
       axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
         console.log(JSON.stringify(response.data));
         let account;
         account = response.data.user;
-        let ticketSubject = `${this.siteURL}/tickets/${this.ticket.uid}`;
+        let ticketSubject = `${siteURL}/tickets/${this.ticket.uid}`;
         let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
         contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
         contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
@@ -415,9 +417,6 @@ class SingleTicketContainer extends React.Component {
   }
 
   render() {
-    this.siteURL = this.getSetting('siteurl');
-    console.log('this.siteURL')
-    console.log(this.siteURL)
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
         return { text: group.get('name'), value: group.get('_id') }
