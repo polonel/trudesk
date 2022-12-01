@@ -24,6 +24,7 @@ import { createTicket, fetchTicketTypes, getTagsWithPage } from 'actions/tickets
 import { fetchGroups } from 'actions/groups'
 import { fetchAccountsCreateTicket } from 'actions/accounts'
 import { fetchSettings } from 'actions/settings'
+import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -54,6 +55,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable clientName = ''
     @observable agentName = ''
     @observable ActiveUnloadingTheDialog = false
+    @observable attachments = []
     constructor(props) {
         super(props)
         makeObservable(this)
@@ -75,6 +77,14 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             }
         )
 
+    }
+
+    updateData = (attachment) => {
+        this.attachments.push(attachment)
+    }
+
+    removeData = (attachment) => {
+        this.attachments.splice(this.attachments.indexOf(attachment), 1)
     }
 
     componentDidUpdate(prevProps) {
@@ -155,6 +165,12 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         if (allowAgentUserTickets) data.owner = this.ownerSelect.value
 
+        let attachmentsBoolean = false
+        if (this.attachments?.length !== 0) {
+            attachmentsBoolean = true
+        } else {
+            attachmentsBoolean = false
+        }
         data.subject = e.target.subject.value
         data.group = this.groupSelect.value
         data.type = this.typeSelect.value
@@ -163,6 +179,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.issue = this.issueMde.easymde.value()
         data.socketid = this.props.socket.io.engine.id
         data.assignee = this.props.shared.sessionUser._id
+        data.attachments = attachmentsBoolean
         if (this.ActiveUnloadingTheDialog) {
             data.comment = this.comment
         } else {
@@ -175,14 +192,70 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         const siteURL = this.getSetting('siteUrl')
 
         axios.post('/api/v1/tickets/create', data).then(res => {
+            const ticket = res.data.ticket
             let ticketUID = res.data.ticket.uid
             let ticketLink = `${siteURL}/tickets/${ticketUID}`
             if (ticketUID) {
-                this.sendNotification(ticketLink,ticketUID);
+                this.sendNotification(ticketLink, ticketUID);
             }
+            this.onAttachmentInputChange(ticket._id, data.socketid)
             location.href = `${siteURL}/tickets/${ticketUID}`
         })
     }
+
+    async onAttachmentInputChange(ticketId, socketId) {
+
+        let countAttachments = 0
+        let filesCount = 1
+        for (const attachmentFile of this.attachments) {
+    
+          countAttachments++
+          const formData = new FormData()
+    
+          if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
+            formData.append('sendMail', true)
+          } else {
+            formData.append('sendMail', false)
+          }
+    
+          formData.append('attachmentsCount', this.attachments.length)
+          formData.append('socketId', socketId)
+          formData.append('ticketId', ticketId)
+          formData.append('attachment', attachmentFile)
+          formData.append('filesCount', filesCount)
+          const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          // await axios
+          //   .post(`/tickets/uploadattachment`, formData, {
+          //     headers: {
+          //       'Content-Type': 'multipart/form-data',
+          //       'CSRF-TOKEN': token
+          //     }
+          //   })
+    
+          await axios({
+            method: 'post',
+            url: '/tickets/uploadattachment',
+            timeout: 500000, // Let say you want to wait at least 8 seconds
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'CSRF-TOKEN': token
+            },
+            data: formData
+          })
+            .then(() => {
+              this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
+              helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+              filesCount++
+            })
+            .catch(error => {
+              console.log('Ошибка')
+              Log.error(error)
+              if (error.response) Log.error(error.response)
+              helpers.UI.showSnackbar(error, true)
+            })
+        }
+      }
+    
 
     unloadingTheDialog() {
 
@@ -225,36 +298,36 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             });
     }
 
-    sendNotification(ticketLink,ticketUID) {
+    sendNotification(ticketLink, ticketUID) {
         if (this.getSetting('chatwootSettings')) {
-        let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
-        contentMessage = contentMessage.replace('{{phoneNumber}}', this.phoneNumber);
-        contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
-        contentMessage = contentMessage.replace('{{contactName}}', this.contactName);
-        contentMessage = contentMessage.replace('{{ticketUID}}', ticketUID);
-        const message = {
-            "content": contentMessage,
-            "message_type": "outgoing",
-            "private": false,
-            "content_attributes": {}
-        }
-        let config = {
-            method: 'Post',
-            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-            headers: {
-                'api_access_token': this.props.sessionUser.chatwootApiKey,
-                'Content-Type': 'application/json',
-            },
-            data: message
-        };
+            let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
+            contentMessage = contentMessage.replace('{{phoneNumber}}', this.phoneNumber);
+            contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
+            contentMessage = contentMessage.replace('{{contactName}}', this.contactName);
+            contentMessage = contentMessage.replace('{{ticketUID}}', ticketUID);
+            const message = {
+                "content": contentMessage,
+                "message_type": "outgoing",
+                "private": false,
+                "content_attributes": {}
+            }
+            let config = {
+                method: 'Post',
+                url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
+                headers: {
+                    'api_access_token': this.props.sessionUser.chatwootApiKey,
+                    'Content-Type': 'application/json',
+                },
+                data: message
+            };
 
-        axios(config)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            axios(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
     }
 
@@ -434,6 +507,12 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                                 allowImageUpload={true}
                                 inlineImageUploadUrl={'/tickets/uploadmdeimage'}
                                 inlineImageUploadHeaders={{ ticketid: 'uploads' }}
+                            />
+                            <AttachFilesToTicket
+                                owner={this.ownerSelect}
+                                socket={this.props.socket}
+                                updateData={this.updateData}
+                                removeData={this.removeData}
                             />
                         </div>
                         <span style={{ marginTop: '6px', display: 'inline-block', fontSize: '11px' }} className={'uk-text-muted'}>

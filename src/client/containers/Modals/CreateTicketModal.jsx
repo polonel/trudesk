@@ -71,7 +71,7 @@ class CreateTicketModal extends React.Component {
   }
 
   componentDidUpdate() { }
-
+ 
   componentWillUnmount() {
     if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
   }
