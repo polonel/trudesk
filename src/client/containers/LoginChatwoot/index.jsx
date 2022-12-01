@@ -24,6 +24,7 @@ import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
+import { hideModal } from 'actions/common'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import MultiSelect from 'components/MultiSelect'
@@ -199,6 +200,7 @@ class LoginChatwootContainer extends React.Component {
     axios(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
+        this.props.hideModal()
       })
       .catch((error) => {
         console.log(error);
@@ -438,5 +440,6 @@ export default connect(mapStateToProps, {
   fetchTeams,
   unloadTeams,
   fetchRoles,
-  fetchSettings
+  fetchSettings,
+  hideModal
 })(LoginChatwootContainer)

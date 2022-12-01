@@ -301,7 +301,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   sendNotificationMail() {
-    const siteURL = this.getSetting('siteurl');
+    const siteURL = this.getSetting('siteUrl');
     axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
       let account;
       account = response.data.user;
@@ -328,7 +328,7 @@ class SingleTicketContainer extends React.Component {
 
   sendNotification() {
     this.sendNotificationMail();
-    const siteURL = this.getSetting('siteurl');
+    const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
       axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
         console.log(JSON.stringify(response.data));
