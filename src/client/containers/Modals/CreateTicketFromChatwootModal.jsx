@@ -230,9 +230,9 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 timeout: 500000, // Let say you want to wait at least 8 seconds
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'CSRF-TOKEN': token
+                    // 'CSRF-TOKEN': token
                 },
-                // data: formData
+                data: formData
             })
                 .then(() => {
                     this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
