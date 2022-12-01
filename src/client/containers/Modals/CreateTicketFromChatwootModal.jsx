@@ -36,6 +36,7 @@ import SingleSelect from 'components/SingleSelect'
 import SpinLoader from 'components/SpinLoader'
 import Button from 'components/Button'
 import EasyMDE from 'components/EasyMDE'
+import AttachFilesToTicket from 'containers/Tickets/AttachFilesToTicket'
 
 @observer
 class CreateTicketFromChatwootModalContainer extends React.Component {
@@ -199,7 +200,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 this.sendNotification(ticketLink, ticketUID);
             }
             this.onAttachmentInputChange(ticket._id, data.socketid)
-            location.href = `${siteURL}/tickets/${ticketUID}`
         })
     }
 
@@ -208,54 +208,51 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         let countAttachments = 0
         let filesCount = 1
         for (const attachmentFile of this.attachments) {
-    
-          countAttachments++
-          const formData = new FormData()
-    
-          if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
-            formData.append('sendMail', true)
-          } else {
-            formData.append('sendMail', false)
-          }
-    
-          formData.append('attachmentsCount', this.attachments.length)
-          formData.append('socketId', socketId)
-          formData.append('ticketId', ticketId)
-          formData.append('attachment', attachmentFile)
-          formData.append('filesCount', filesCount)
-          const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          // await axios
-          //   .post(`/tickets/uploadattachment`, formData, {
-          //     headers: {
-          //       'Content-Type': 'multipart/form-data',
-          //       'CSRF-TOKEN': token
-          //     }
-          //   })
-    
-          await axios({
-            method: 'post',
-            url: '/tickets/uploadattachment',
-            timeout: 500000, // Let say you want to wait at least 8 seconds
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              'CSRF-TOKEN': token
-            },
-            data: formData
-          })
-            .then(() => {
-              this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
-              helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-              filesCount++
+
+            countAttachments++
+            const formData = new FormData()
+
+            if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
+                formData.append('sendMail', true)
+            } else {
+                formData.append('sendMail', false)
+            }
+
+            formData.append('attachmentsCount', this.attachments.length)
+            formData.append('socketId', socketId)
+            formData.append('ticketId', ticketId)
+            formData.append('attachment', attachmentFile)
+            formData.append('filesCount', filesCount)
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+            await axios({
+                method: 'post',
+                url: '/tickets/uploadattachment',
+                timeout: 500000, // Let say you want to wait at least 8 seconds
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'CSRF-TOKEN': token
+                },
+                data: formData
             })
-            .catch(error => {
-              console.log('Ошибка')
-              Log.error(error)
-              if (error.response) Log.error(error.response)
-              helpers.UI.showSnackbar(error, true)
-            })
+                .then(() => {
+                    this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
+                    helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+                    filesCount++
+                    if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
+                        formData.append('sendMail', true)
+                        location.href = `${siteURL}/tickets/${ticketUID}`
+                    }
+                })
+                .catch(error => {
+                    console.log('Ошибка')
+                    Log.error(error)
+                    if (error.response) Log.error(error.response)
+                    helpers.UI.showSnackbar(error, true)
+                })
         }
-      }
-    
+    }
+
 
     unloadingTheDialog() {
 
