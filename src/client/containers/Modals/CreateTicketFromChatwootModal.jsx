@@ -56,6 +56,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable clientName = ''
     @observable agentName = ''
     @observable ActiveUnloadingTheDialog = false
+    @observable siteUrl = ''
     @observable attachments = []
     constructor(props) {
         super(props)
@@ -190,12 +191,10 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         data.chatwootConversationID = this.conversationID;
         data.chatwootAccountID = this.accountID;
 
-        const siteURL = this.getSetting('siteUrl')
-
         axios.post('/api/v1/tickets/create', data).then(res => {
             const ticket = res.data.ticket
             let ticketUID = res.data.ticket.uid
-            let ticketLink = `${siteURL}/tickets/${ticketUID}`
+            let ticketLink = `${this.siteURL}/tickets/${ticketUID}`
             if (ticketUID) {
                 this.sendNotification(ticketLink, ticketUID);
             }
@@ -204,7 +203,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     async onAttachmentInputChange(ticketId, socketId) {
-
         let countAttachments = 0
         let filesCount = 1
         for (const attachmentFile of this.attachments) {
@@ -240,7 +238,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                     filesCount++
                     if ((countAttachments == this.attachments?.length) && this.attachments?.length !== 0) {
                         formData.append('sendMail', true)
-                        location.href = `${siteURL}/tickets/${ticketUID}`
+                        location.href = `${this.siteURL}/tickets/${ticketUID}`
                     }
                 })
                 .catch(error => {
@@ -348,7 +346,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
     }
 
     render() {
-
+        this.siteUrl = this.getSetting('siteUrl')
         const mappedAccounts = this.props.accounts
             .map(a => {
                 return { text: a.get('fullname'), value: a.get('_id') }
