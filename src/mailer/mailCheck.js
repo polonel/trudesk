@@ -342,7 +342,7 @@ function handleMessages(messages, done) {
               comment: xss(marked.parse(comment))
             }
 
-            //t.updated = Date.now()
+            t.updated = Date.now()
             t.comments.push(Comment)
             var HistoryItem = {
               action: 'ticket:comment:added',

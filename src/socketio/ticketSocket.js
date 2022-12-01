@@ -34,6 +34,7 @@ var path = require('path')
 var templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
 var Email = require('email-templates')
 var Mailer = require('../mailer')
+var fs = require('fs-extra')
 var events = {}
 
 function register(socket) {
@@ -470,6 +471,11 @@ events.onRemoveCommentNote = socket => {
       let ticket = await ticketSchema.getTicketById(ticketId)
       if (!isNote) ticket = await ticket.removeComment(ownerId, itemId)
       else ticket = await ticket.removeNote(ownerId, itemId)
+
+      let savePath = path.join(__dirname, `../../public/uploads/tickets/${ticketId}/comments/${itemId}`)
+      if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
+      if (fs.existsSync(savePath)) fs.emptyDirSync(savePath)
+      if (fs.existsSync(savePath)) fs.rmdirSync(savePath)
 
       ticket = await ticket.save()
 

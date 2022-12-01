@@ -102,61 +102,62 @@ mainController.changeMappingOrCreate = function (req, res) {
       error: err,
       message: err.message
     })
-    if (user.chatwootApiKey){
 
     let chatwootSetting = setting.value;
 
     if (chatwootSetting) {
-      const content = {}
-      content.username = req.query.username;
-      content.phone = req.query.phone.replace(' ', '+');
-      content.email = req.query.email;
-      content.contactID = req.query.contactID;
-      content.accountID = req.query.accountID;
-      content.customAttributes = req.query.customAttributes;
-      content.conversationID = req.query.conversationID;
-      content.contactName = req.query.contactName;
+      if (req.user.chatwootApiKey) {
+        const content = {}
+        content.username = req.query.username;
+        content.phone = req.query.phone.replace(' ', '+');
+        content.email = req.query.email;
+        content.contactID = req.query.contactID;
+        content.accountID = req.query.accountID;
+        content.customAttributes = req.query.customAttributes;
+        content.conversationID = req.query.conversationID;
+        content.contactName = req.query.contactName;
 
-      User.findOne({ phone: content.phone }, function (err, user) {
-        if (err) return res.render('error', {
-          layout: false,
-          error: err,
-          message: err.message
-        })
+        User.findOne({ phone: content.phone }, function (err, user) {
+          if (err) return res.render('error', {
+            layout: false,
+            error: err,
+            message: err.message
+          })
 
-        if (user) {
-          if (user.email !== content.email) {
-            return res.render('changeMappingOrCreate', content)
+          if (user) {
+            if (user.email !== content.email) {
+              return res.render('changeMappingOrCreate', content)
+            }
+            else {
+              const data = {}
+              data.conversationID = content.conversationID;
+              data.accountID = content.accountID
+              data.user = user._id;
+              data.contactName = content.contactName;
+              data.phoneNumber = content.phone;
+              Group.findOne({ members: user._id }, function (err, group) {
+                if (err) return res.render('error', {
+                  layout: false,
+                  error: err,
+                  message: err.message
+                })
+                data.group = group?._id
+                return res.render('createTicketFromChatwoot', data)
+              })
+
+            }
           }
           else {
-            const data = {}
-            data.conversationID = content.conversationID;
-            data.accountID = content.accountID
-            data.user = user._id;
-            data.contactName = content.contactName;
-            data.phoneNumber = content.phone;
-            Group.findOne({ members: user._id }, function (err, group) {
-              if (err) return res.render('error', {
-                layout: false,
-                error: err,
-                message: err.message
-              })
-              data.group = group?._id
-              return res.render('createTicketFromChatwoot', data)
-            })
-
+            return res.render('changeMappingOrCreate', content)
           }
-        }
-        else {
-          return res.render('changeMappingOrCreate', content)
-        }
-      })
+        })
+      } else {
+
+        return res.render('chatwootApiKeyIsMissing', { layout: false })
+      }
     } else {
       return res.render('integrationIsDisabled', { layout: false })
     }
-  } else {
-    return res.render('chatwootApiKeyIsMissing', { layout: false })
-  }
   })
 }
 
@@ -220,9 +221,9 @@ mainController.dashboard = function (req, res) {
 
 mainController.loginPost = async function (req, res, next) {
   let ipAddress = req.ip
-  if (process.env.USE_XFORWARDIP == 'true') 
-    ipAddress= req.headers["x-forwarded-for"]
-  
+  if (process.env.USE_XFORWARDIP == 'true')
+    ipAddress = req.headers["x-forwarded-for"]
+
   if (process.env.USE_USERRATELIMIT == 'true')
     ipAddress = ipAddress + req.body['username']
 
@@ -238,42 +239,43 @@ mainController.loginPost = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-    if( req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1]=='shatura.pro'){
-    passport.authenticate('ldapauth', async function (request, user, err, status) {
-      if (err) {
-        if (err.message != 'Invalid username/password') {
-          winston.error(err)
-          return next(err)
-        }
-      }
-
-      if (!user) {
-        mainController.loginLocal(req, res, next)
-      }
-
-      if (user) {
-        let redirectUrl = '/dashboard'
-        if (req.session.redirectUrl) {
-          redirectUrl = req.session.redirectUrl
-          req.session.redirectUrl = null
-        }
-
-        req.logIn(user, function (err) {
-          if (err) {
-            winston.debug(err)
+    if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
+      passport.authenticate('ldapauth', async function (request, user, err, status) {
+        if (err) {
+          if (err.message != 'Invalid username/password') {
+            winston.error(err)
             return next(err)
           }
+        }
 
-          return res.redirect(redirectUrl)
-        })
+        if (!user) {
+          mainController.loginLocal(req, res, next)
+        }
 
-      }
-    })(req, res, next)
+        if (user) {
+          let redirectUrl = '/dashboard'
+          if (req.session.redirectUrl) {
+            redirectUrl = req.session.redirectUrl
+            req.session.redirectUrl = null
+          }
 
-  } else {
-    mainController.loginLocal(req, res, next);
+          req.logIn(user, function (err) {
+            if (err) {
+              winston.debug(err)
+              return next(err)
+            }
+
+            return res.redirect(redirectUrl)
+          })
+
+        }
+      })(req, res, next)
+
+    } else {
+      mainController.loginLocal(req, res, next);
+    }
   }
-}}
+}
 
 mainController.loginLocal = async function (req, res, next) {
 

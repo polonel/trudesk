@@ -125,13 +125,13 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
     const ticketJSON = ticket.toJSON()
 
     const attachmentsForSendMail = []
-    if (comment.attachments){
-    for (const attachment of ticket?.attachments) {
-      const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
-      attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
+    if (ticket?.attachments) {
+      for (const attachment of ticket?.attachments) {
+        const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+        attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
+      }
     }
-  }
-    
+
     const context = { base_url: baseUrl, ticket: ticketJSON }
 
     const html = await email.render('new-ticket', context)

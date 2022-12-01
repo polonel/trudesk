@@ -18,7 +18,8 @@ const logger = require('../../../logger')
 const apiUtils = require('../apiUtils')
 const Models = require('../../../models')
 const permissions = require('../../../permissions')
-
+const path = require('path')
+const fs = require('fs-extra')
 const ticketsV2 = {}
 
 ticketsV2.create = function (req, res) {
@@ -91,6 +92,7 @@ ticketsV2.get = async (req, res) => {
         break
     }
 
+    // if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
     if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
 
     const tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject)
@@ -200,7 +202,6 @@ ticketsV2.delete = function (req, res) {
   Models.Ticket.softDeleteUid(uid, function (err, success) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
     if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete ticket')
-
     return apiUtils.sendApiSuccess(res, { deleted: true })
   })
 }
@@ -208,14 +209,26 @@ ticketsV2.delete = function (req, res) {
 ticketsV2.permDelete = function (req, res) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+  Models.Ticket.findOne({ _id: id }, function (err, ticket) {
 
-  Models.Ticket.deleteOne({ _id: id }, function (err, success) {
     if (err) return apiUtils.sendApiError(res, 400, err.message)
-    if (!success) return apiUtils.sendApiError(res, 400, 'Unable to delete ticket')
+    const savePath = path.join(__dirname, '../../../../public/uploads/tickets', id)
+    // const sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+    if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
+    if (fs.existsSync(savePath)) fs.emptyDirSync(savePath)
+    if (fs.existsSync(savePath)) fs.rmdirSync(savePath)
 
-    return apiUtils.sendApiSuccess(res, { deleted: true })
+    Models.Ticket.deleteOne({ _id: id }, function (err, success) {
+      if (err) return apiUtils.sendApiError(res, 400, err.message)
+      if (!success) return apiUtils.sendApiError(res, 400, 'Unable to delete ticket')
+
+      return apiUtils.sendApiSuccess(res, { deleted: true })
+    })
   })
 }
+
+
+
 
 ticketsV2.transferToThirdParty = async (req, res) => {
   const uid = req.params.uid

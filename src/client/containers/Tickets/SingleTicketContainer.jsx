@@ -246,7 +246,7 @@ class SingleTicketContainer extends React.Component {
       countAttachments++
       const formData = new FormData()
 
-      if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !==0) {
+      if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !== 0) {
         formData.append('sendMail', true)
       } else {
         formData.append('sendMail', false)
@@ -268,8 +268,8 @@ class SingleTicketContainer extends React.Component {
         .then(() => {
           this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
           helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-          if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !==0) {
-          this.commentAttachedFiles = []
+          if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !== 0) {
+            this.commentAttachedFiles = []
           }
           filesCount++
         })
@@ -416,6 +416,8 @@ class SingleTicketContainer extends React.Component {
 
   render() {
     this.siteURL = this.getSetting('siteurl');
+    console.log('this.siteURL')
+    console.log(this.siteURL)
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
         return { text: group.get('name'), value: group.get('_id') }

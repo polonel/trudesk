@@ -73,7 +73,7 @@ accountsApi.create = async function (req, res) {
     if (passwordComplexityEnabled && !passwordComplexity.validate(postData.password))
       throw new Error('Password does not meet requirements')
 
-   // await User.createUser({
+    // await User.createUser({
     await User.create({
       username: postData.username,
       email: postData.email,
@@ -85,15 +85,21 @@ accountsApi.create = async function (req, res) {
       accessToken: chance.hash()
     }, async (err, userDB) => {
 
+      emitter.emit('user:created', {
+        socketId: '',
+        user: userDB,
+        userPassword: postData.password
+      })
+
       if (!err && userDB && userDB?.insertedIds) {
 
         User.findById(userDB.insertedIds[0], async (err, user) => {
 
-          emitter.emit('user:created', {
-            socketId: '',
-            user: user,
-            userPassword: postData.password
-          })
+          // emitter.emit('user:created', {
+          //   socketId: '',
+          //   user: user,
+          //   userPassword: postData.password
+          // })
 
           savedId = user._id
 
@@ -139,6 +145,8 @@ accountsApi.create = async function (req, res) {
 
         });
 
+      } else if (!err && userDB) {
+        return apiUtil.sendApiSuccess(res, { account: userDB })
       }
     })
   } catch (e) {

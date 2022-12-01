@@ -407,6 +407,7 @@ apiTickets.search = function (req, res) {
  */
 
 apiTickets.create = function (req, res) {
+
   var response = {}
   response.success = true
 
@@ -486,9 +487,16 @@ apiTickets.create = function (req, res) {
         } else {
           ticket.history = [HistoryItem]
         }
-        ticket.subscribers = [user._id]
-        if (req.body.owner.email || req.body.owner.email !== '') {
-          ticket.subscribers.push(req.body.owner)
+        
+        try {
+
+          ticket.subscribers = [user._id]
+          if (req.body.owner.email || req.body.owner.email !== '') {
+            ticket.subscribers.push(req.body.owner)
+          }
+
+        } catch (err) {
+          if (err) return done({ status: 400, error: err })
         }
 
         ticket.save(function (err, t) {
