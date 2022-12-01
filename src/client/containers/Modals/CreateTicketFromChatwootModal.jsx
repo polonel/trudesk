@@ -224,16 +224,15 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             formData.append('attachment', attachmentFile)
             formData.append('filesCount', filesCount)
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-
             await axios({
                 method: 'post',
-                url: '/tickets/uploadattachment',
+                url: '/tickets/uploadattachmentfromchatwoot',
                 timeout: 500000, // Let say you want to wait at least 8 seconds
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'CSRF-TOKEN': token
                 },
-                data: formData
+                // data: formData
             })
                 .then(() => {
                     this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })

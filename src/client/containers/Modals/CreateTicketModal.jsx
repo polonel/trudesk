@@ -71,7 +71,7 @@ class CreateTicketModal extends React.Component {
   }
 
   componentDidUpdate() { }
- 
+
   componentWillUnmount() {
     if (this.defaultTicketTypeWatcher) this.defaultTicketTypeWatcher()
   }
@@ -199,13 +199,6 @@ class CreateTicketModal extends React.Component {
       formData.append('attachment', attachmentFile)
       formData.append('filesCount', filesCount)
       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      // await axios
-      //   .post(`/tickets/uploadattachment`, formData, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data',
-      //       'CSRF-TOKEN': token
-      //     }
-      //   })
 
       await axios({
         method: 'post',

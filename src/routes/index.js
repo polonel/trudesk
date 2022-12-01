@@ -217,6 +217,11 @@
      controllers.tickets.uploadAttachment
    )
    router.post(
+    '/tickets/uploadattachmentfromchatwoot',
+    middleware.redirectToLogin,
+    controllers.tickets.uploadAttachment
+  )
+   router.post(
     '/tickets/comments/uploadattachment',
     middleware.redirectToLogin,
     middleware.csrfCheck,
