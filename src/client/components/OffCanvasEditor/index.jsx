@@ -67,6 +67,7 @@ class OffCanvasEditor extends React.Component {
     if (this.attachmentsToSave.length !== 0) {
       this.props.updateData(this.attachmentsToSave)
     }
+    console.log('Запуск добавления аттача')
     this.props.attachingFileToComment(this.comment._id)
     this.attachmentsToSave = []
     this.attachmentsToRemove = []

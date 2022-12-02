@@ -1880,7 +1880,7 @@ apiTickets.removeCommentAttachment = function (req, res) {
     return res.status(401).json({ error: 'Invalid Permissions' })
 
   var ticketModel = require('../../../models/ticket')
-  ticketModel.getTicketById(ticketId, function (err, ticket) {
+  ticketModel.getTicketById(ticketId, async function (err, ticket) {
     if (err) return res.status(400).send('Invalid Ticket Id')
 
     const comment = ticket.comments.filter(function (comment) {
@@ -1897,17 +1897,25 @@ apiTickets.removeCommentAttachment = function (req, res) {
         var fs = require('fs')
         var path = require('path')
         var dir = path.join(__dirname, '../../../../public', attachment.path)
-        if (fs.existsSync(dir)) fs.unlinkSync(dir)
+        if (fs.existsSync(dir)) {
+          await fs.unlinkSync(dir)
+        }
         comment.attachments.splice(attachmentIndex, 1);
       }
 
+      if(!fs.existsSync(dir)){
+        ticket.save(function (err, t) {
+          if (err) return res.status(400).json({ error: 'Invalid Request.' })
+          res.json({ success: true, ticket: t })
+        })
+      }
+      
+    } catch (err) {
+      console.log(err)
       ticket.save(function (err, t) {
         if (err) return res.status(400).json({ error: 'Invalid Request.' })
         res.json({ success: true, ticket: t })
       })
-      
-    } catch (err) {
-      console.log(err)
     }
 
   })
