@@ -83,27 +83,37 @@ class OffCanvasEditor extends React.Component {
     let removeCount = 0
     for (const attachment of this.attachmentsToRemove) {
       removeCount++
-      if (attachment?._id) {
         await axios
           .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
           .then(() => {
             this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
             helpers.UI.showSnackbar('Attachment Removed')
-
+            console.log('removeCount')
+            console.log(removeCount)
+            console.log('this.attachmentsToRemove.length')
+            console.log(this.attachmentsToRemove.length)
             if (removeCount == this.attachmentsToRemove.length) {
               console.log('Добавление attach')
               this.props.attachingFileToComment(this.comment._id)
               this.attachmentsToSave = []
               this.attachmentsToRemove = []
             }
-
           })
           .catch(error => {
             Log.error(error)
             if (error.response) Log.error(error.response)
             helpers.UI.showSnackbar(error, true)
+            if (removeCount == this.attachmentsToRemove.length) {
+              console.log('removeCount')
+              console.log(removeCount)
+              console.log('this.attachmentsToRemove.length')
+              console.log(this.attachmentsToRemove.length)
+              console.log('Добавление attach')
+              this.props.attachingFileToComment(this.comment._id)
+              this.attachmentsToSave = []
+              this.attachmentsToRemove = []
+            }
           })
-      }
     }
   }
 
