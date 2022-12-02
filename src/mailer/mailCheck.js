@@ -641,6 +641,13 @@ function handleMessages(messages, done) {
                       ticket: ticket
                     })
 
+                    if (!fs.existsSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets`)) {
+                      await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets`, err => {
+                        if(err) console.log(err)
+                        console.log('Папка успешно создана: ' + '/uploads/tickets');
+                      })
+                    }
+
                     if (message.attachments) {
                       await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
