@@ -36,7 +36,7 @@ class ChatwootSettingsController extends React.Component {
 
     this.state = {
       chatwootMessageTemplate: '',
-      chatwootStatusChangeMessageTemplate:''
+      chatwootStatusChangeMessageTemplate: ''
     }
 
   }
@@ -56,7 +56,7 @@ class ChatwootSettingsController extends React.Component {
         this.chatwootEnabled = this.getSetting('chatwootSettings')
       if (this.state.chatwootMessageTemplate !== this.getSetting('chatwootMessageTemplate') && this.getSetting('chatwootMessageTemplate') !== true)
         this.state.chatwootMessageTemplate = this.getSetting('chatwootMessageTemplate')
-        if (this.state.chatwootStatusChangeMessageTemplate !== this.getSetting('chatwootStatusChangeMessageTemplate') && this.getSetting('chatwootStatusChangeMessageTemplate')!== true)
+      if (this.state.chatwootStatusChangeMessageTemplate !== this.getSetting('chatwootStatusChangeMessageTemplate') && this.getSetting('chatwootStatusChangeMessageTemplate') !== true)
         this.state.chatwootStatusChangeMessageTemplate = this.getSetting('chatwootStatusChangeMessageTemplate')
     }
   }
@@ -111,13 +111,16 @@ class ChatwootSettingsController extends React.Component {
               <br><br>
               {{phoneNumber}} - customer phone number 
               <br><br>
-              {{ticketLink}} - link to the ticket 
+              {{ticketLink}} - link to the ticket
+              <br><br>
+              {{ticketUID}} - ticket number
+              <br><br>
+              {{ticketSubject}} - ticket number 
               <br><br>       
               {{ticketStatus}} - ticket status
               <br><br>    
               {{contactName}} - customer name 
               <br><br>
-              {{ticketUID}} - ticket number
               `}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
@@ -128,7 +131,7 @@ class ChatwootSettingsController extends React.Component {
                     name={''}
                     value={this.state.chatwootMessageTemplate}
                     onChange={e => this.onInputValueChanged(e, 'chatwootMessageTemplate')}
-                    style={{ 'height': '200px', 'padding-top':'30px' }}
+                    style={{ 'height': '200px', 'padding-top': '30px' }}
                   // disabled={!this.getSetting('mailerCheckEnabled')}
                   />
                 </div>

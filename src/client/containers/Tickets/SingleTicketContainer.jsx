@@ -300,46 +300,20 @@ class SingleTicketContainer extends React.Component {
     }
   }
 
-  sendNotificationMail() {
-    const siteURL = this.getSetting('siteUrl');
-    axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
-      let account;
-      account = response.data.user;
-      let ticketSubject = `${siteURL}/tickets/${this.ticket.uid}`;
-      let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
-      contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
-      contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
-      contentMessage = contentMessage.replace('{contactName}', account.fullname);
-      contentMessage = contentMessage.replace('{ticketStatus}', this.statusToName(this.ticket.status));
-      const message = {
-        "content": contentMessage,
-        "message_type": "outgoing",
-        "private": false,
-        "content_attributes": {}
-      }
-
-
-    })
-      .catch((error) => {
-        console.log(error);
-      });
-
-  }
-
   sendNotification() {
-    this.sendNotificationMail();
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
       axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
         console.log(JSON.stringify(response.data));
         let account;
         account = response.data.user;
-        let ticketSubject = `${siteURL}/tickets/${this.ticket.uid}`;
+        let ticketLink = `${siteURL}/tickets/${this.ticket.uid}`;
         let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
-        contentMessage = contentMessage.replace('{phoneNumber}', account.phone);
-        contentMessage = contentMessage.replace('{ticketSubject}', ticketSubject);
-        contentMessage = contentMessage.replace('{contactName}', account.fullname);
-        contentMessage = contentMessage.replace('{ticketStatus}', this.statusToName(this.ticket.status));
+        contentMessage = contentMessage.replace('{{phoneNumber}}', account.phone);
+        contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
+        contentMessage = contentMessage.replace('{{ticketSubject}}', this.ticket.subject);
+        contentMessage = contentMessage.replace('{{contactName}}', account.fullname);
+        contentMessage = contentMessage.replace('{{ticketStatus}}', this.statusToName(this.ticket.status));
         const message = {
           "content": contentMessage,
           "message_type": "outgoing",

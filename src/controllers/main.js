@@ -240,59 +240,7 @@ mainController.loginPost = async function (req, res, next) {
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
     if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
-      passport.authenticate('ldapauth', async function (request, user, err, status) {
-        if (err) {
-          if (err.message != 'Invalid username/password') {
-            winston.error(err)
-            return next(err)
-          }
-        }
 
-        if (!user) {
-          mainController.loginLocal(req, res, next)
-        }
-
-        if (user) {
-          let redirectUrl = '/dashboard'
-          if (req.session.redirectUrl) {
-            redirectUrl = req.session.redirectUrl
-            req.session.redirectUrl = null
-          }
-
-          req.logIn(user, function (err) {
-            if (err) {
-              winston.debug(err)
-              return next(err)
-            }
-
-            return res.redirect(redirectUrl)
-          })
-
-        }
-      })(req, res, next)
-
-    } else {
-      mainController.loginLocal(req, res, next);
-    }
-  }
-}
-
-mainController.loginLocal = async function (req, res, next) {
-
-  const ipAddress = req.ip
-  const [resEmailAndIP] = await Promise.all([limiterSlowBruteByIP.get(ipAddress)])
-
-  let retrySecs = 0
-  if (resEmailAndIP !== null && resEmailAndIP.consumedPoints > 2) {
-    retrySecs = Math.round(resEmailAndIP.msBeforeNext / 1000) || 1
-  }
-
-  if (retrySecs > 0) {
-    res.set('Retry-After', retrySecs.toString())
-    // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
-    res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
-  } else {
-    if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
       Setting.findOne({ name: 'ldapSettings:enable' }, (err, setting) => {
 
         if (err) {
@@ -301,40 +249,49 @@ mainController.loginLocal = async function (req, res, next) {
         }
 
         if (setting?.value == true) {
-          passport.authenticate('ldapauth', async function (request, user, err, status) {
-            if (err) {
-              if (err.message != 'Invalid username/password') {
-                winston.error(err)
-                return next(err)
-              }
-            }
-
-            if (!user) {
-              mainController.loginLocal(req, res, next)
-            }
-
-            if (user) {
-              let redirectUrl = '/dashboard'
-              if (req.session.redirectUrl) {
-                redirectUrl = req.session.redirectUrl
-                req.session.redirectUrl = null
-              }
-
-              req.logIn(user, function (err) {
-                if (err) {
-                  winston.debug(err)
+          try {
+            passport.authenticate('ldapauth', async function (request, user, err, status) {
+              if (err) {
+                if (err.message != 'Invalid username/password') {
+                  winston.error(err)
                   return next(err)
                 }
+              }
 
-                return res.redirect(redirectUrl)
-              })
+              if (!user) {
+                mainController.loginLocal(req, res, next)
+              }
 
+              if (user) {
+                let redirectUrl = '/dashboard'
+                if (req.session.redirectUrl) {
+                  redirectUrl = req.session.redirectUrl
+                  req.session.redirectUrl = null
+                }
+
+                req.logIn(user, function (err) {
+                  if (err) {
+                    winston.debug(err)
+                    return next(err)
+                  }
+
+                  return res.redirect(redirectUrl)
+                })
+
+              }
             }
-          })(req, res, next)
-        } else {
+            )(req, res, next)
+
+          } catch (err) {
+            mainController.loginLocal(req, res, next);
+          }
+
+        }
+        else {
           mainController.loginLocal(req, res, next);
         }
       })
+
     } else {
       mainController.loginLocal(req, res, next);
     }

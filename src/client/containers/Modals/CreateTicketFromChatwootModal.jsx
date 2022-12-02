@@ -193,10 +193,11 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
         axios.post('/api/v1/tickets/create', data).then(res => {
             const ticket = res.data.ticket
+            let ticketSubject = res.data.ticket.subject
             let ticketUID = res.data.ticket.uid
             let ticketLink = `${siteUrl}/tickets/${ticketUID}`
             if (ticketUID) {
-                this.sendNotification(ticketLink, ticketUID);
+                this.sendNotification(ticketLink, ticketUID, ticketSubject);
             }
             this.onAttachmentInputChange(ticket._id, data.socketid,ticketUID)
         })
@@ -292,13 +293,14 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             });
     }
 
-    sendNotification(ticketLink, ticketUID) {
+    sendNotification(ticketLink, ticketUID, ticketSubject) {
         if (this.getSetting('chatwootSettings')) {
             let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
             contentMessage = contentMessage.replace('{{phoneNumber}}', this.phoneNumber);
             contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
             contentMessage = contentMessage.replace('{{contactName}}', this.contactName);
             contentMessage = contentMessage.replace('{{ticketUID}}', ticketUID);
+            contentMessage = contentMessage.replace('{{ticketSubject}}', ticketSubject);
             const message = {
                 "content": contentMessage,
                 "message_type": "outgoing",
