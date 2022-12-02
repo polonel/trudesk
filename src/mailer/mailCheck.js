@@ -244,9 +244,17 @@ function bindImapReady() {
                   mailCheck.Imap.addFlags(results, flag, function () {
                     mailCheck.Imap.closeBox(true, function () {
                       mailCheck.Imap.end();
-                      handleMessages(mailCheck.messages, function () {
-                        mailCheck.Imap.destroy()
-                      })
+                      let attachmentsInMessages = false
+                      for (const messagesMails of mailCheck.messages){
+                        if(messagesMails.attachments && messagesMails.attachments.length !== 0){
+                          attachmentsInMessages = true
+                        }
+                      }
+                      if (!attachmentsInMessages){
+                        handleMessages(mailCheck.messages, function () {
+                          mailCheck.Imap.destroy()
+                        })
+                      }
                     })
                   })
                 })
@@ -289,15 +297,23 @@ function handleMessages(messages, done) {
 
           var comment = message.responseToComment
           var owner = user._id
+
           if (!message.mailText) {
             comment = sanitizeHtml(comment).trim()
           }
-          var resultTicketUID = comment.toLowerCase().match(/#\d+/);
+
+          var resultTicketUID = message.subject.toLowerCase().match(/#\d+/);
           if (resultTicketUID) {
             resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
           } else {
-            return winston.warn('Нет номера заявки')
+            resultTicketUID = comment.toLowerCase().match(/#\d+/);
+            if (resultTicketUID) {
+              resultTicketUID = resultTicketUID[0].replace(/[^0-9]/g, "")
+            } else {
+              return winston.warn('Нет номера заявки')
+            }
           }
+
           var ticketUID = resultTicketUID;
           try {
             comment = comment.match(/(.*?)ОТВЕТ-КОММЕНТАРИЙ РАЗМЕЩАЙТЕ ВЫШЕ ЭТОЙ СТРОКИ/gs) || comment.match(/(.*?)Ответ-комментарий размещайте выше этой строки/gs);
@@ -314,6 +330,9 @@ function handleMessages(messages, done) {
             }
             if (comment.match(/\n.*\n> $/)) {
               comment = comment.replace(comment.match(/\n.*\n*> $/)[0], '')
+            }
+            if (comment.match(/\n.*$/)) {
+              comment = comment.replace(comment.match(/\n.*$/)[0], '')
             }
             if (comment.match(/<blockquote>.*/)) {
               comment = comment.replace(comment.match(/<blockquote>.*/)[0], '')

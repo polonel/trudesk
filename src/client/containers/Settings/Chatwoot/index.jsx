@@ -115,7 +115,7 @@ class ChatwootSettingsController extends React.Component {
               <br><br>
               {{ticketUID}} - ticket number
               <br><br>
-              {{ticketSubject}} - ticket number 
+              {{ticketSubject}} - ticket theme
               <br><br>       
               {{ticketStatus}} - ticket status
               <br><br>    
