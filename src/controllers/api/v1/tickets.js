@@ -1900,14 +1900,15 @@ apiTickets.removeCommentAttachment = function (req, res) {
         if (fs.existsSync(dir)) fs.unlinkSync(dir)
         comment.attachments.splice(attachmentIndex, 1);
       }
+
+      ticket.save(function (err, t) {
+        if (err) return res.status(400).json({ error: 'Invalid Request.' })
+        res.json({ success: true, ticket: t })
+      })
+      
     } catch (err) {
       console.log(err)
     }
-
-    ticket.save(function (err, t) {
-      if (err) return res.status(400).json({ error: 'Invalid Request.' })
-      res.json({ success: true, ticket: t })
-    })
 
   })
 }
