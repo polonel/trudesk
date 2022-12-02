@@ -15,7 +15,6 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
-import crypto from'crypto'
 
 import { TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
@@ -88,7 +87,7 @@ class AttachFilesToTicket extends React.Component {
                         <ul className='attachments'>
                             {this.attachments &&
                                 this.attachments.map(attachment => (
-                                    <li key={crypto.randomUUID()}>
+                                    <li key={attachment.name}>
 
                                         <a className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                                             {attachment.name}
