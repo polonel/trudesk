@@ -480,8 +480,8 @@ events.onRemoveCommentNote = socket => {
       ticket = await ticket.save()
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (e) {
-      // Blank
+    } catch (err) {
+      console.log(err)
     }
   })
 }

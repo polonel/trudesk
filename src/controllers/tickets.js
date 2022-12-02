@@ -1026,6 +1026,11 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           type: object.mimetype
         }
 
+        const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+        if (!fs.existsSync(attachmentPath)) {
+          return res.status(500).send(err.message)
+        }
+
         let comment = ticket.comments.filter(function (comment) {
           return comment._id == object.commentId;
         });

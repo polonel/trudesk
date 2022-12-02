@@ -369,7 +369,7 @@ function handleMessages(messages, done) {
                 if (!fs.existsSync(pathUploadTicket)) {
                   await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}`, function (err) {
                     if (err) return callback(err)
-                    console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
+                    console.log(`Папка  успешно создана: ${pathUploadTicket}`)
                     return true
                   })
                 }
@@ -377,7 +377,7 @@ function handleMessages(messages, done) {
                 if (!fs.existsSync(pathUploadComments)) {
                   await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets/${t._id}/comments`, function (err) {
                     if (err) return callback(err)
-                    console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
+                    console.log(`Папка  успешно создана: ${pathUploadComments}`)
                     return true
                   })
                 }
