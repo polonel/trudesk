@@ -67,13 +67,14 @@ class OffCanvasEditor extends React.Component {
     if (this.attachmentsToSave.length !== 0) {
       this.props.updateData(this.attachmentsToSave)
     }
+
     console.log('Запуск добавления аттача')
     if (this.attachmentsToRemove.length == 0) {
       this.props.attachingFileToComment(this.comment._id)
+      this.attachmentsToSave = []
+      this.attachmentsToRemove = []
     }
 
-    this.attachmentsToSave = []
-    this.attachmentsToRemove = []
     this.closeEditorWindow()
 
   }
@@ -88,10 +89,13 @@ class OffCanvasEditor extends React.Component {
           .then(() => {
             this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
             helpers.UI.showSnackbar('Attachment Removed')
-            
-            if(removeCount == this.attachmentsToRemove.length){
+
+            if (removeCount == this.attachmentsToRemove.length) {
               this.props.attachingFileToComment(this.comment._id)
+              this.attachmentsToSave = []
+              this.attachmentsToRemove = []
             }
+
           })
           .catch(error => {
             Log.error(error)
