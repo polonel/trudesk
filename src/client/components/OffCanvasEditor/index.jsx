@@ -91,6 +91,7 @@ class OffCanvasEditor extends React.Component {
             helpers.UI.showSnackbar('Attachment Removed')
 
             if (removeCount == this.attachmentsToRemove.length) {
+              console.log('Добавление attach')
               this.props.attachingFileToComment(this.comment._id)
               this.attachmentsToSave = []
               this.attachmentsToRemove = []
