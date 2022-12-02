@@ -63,7 +63,7 @@ class OffCanvasEditor extends React.Component {
     console.log('this.attachmentsToRemove')
     console.log(this.attachmentsToRemove)
     this.removeAttachments()
-    
+
     if (this.attachmentsToSave.length !== 0) {
       this.props.updateData(this.attachmentsToSave)
     }
@@ -71,26 +71,25 @@ class OffCanvasEditor extends React.Component {
     this.attachmentsToSave = []
     this.attachmentsToRemove = []
     this.closeEditorWindow()
-  
+
   }
 
   async removeAttachments() {
     for (const attachment of this.attachmentsToRemove) {
-
-      await axios
-        .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
-        .then(() => {
-          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
-          helpers.UI.showSnackbar('Attachment Removed')
-        })
-        .catch(error => {
-          Log.error(error)
-          if (error.response) Log.error(error.response)
-          helpers.UI.showSnackbar(error, true)
-        })
-
+      if (attachment?._id) {
+        await axios
+          .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
+          .then(() => {
+            this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
+            helpers.UI.showSnackbar('Attachment Removed')
+          })
+          .catch(error => {
+            Log.error(error)
+            if (error.response) Log.error(error.response)
+            helpers.UI.showSnackbar(error, true)
+          })
+      }
     }
-
   }
 
   openEditorWindow(data) {

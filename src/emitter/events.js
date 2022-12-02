@@ -309,8 +309,11 @@ const eventUserCreated = require('./events/event_user_created')
                         attachments: commentObject.attachments
                       }
 
-                      await mailer.sendMail(mailOptions)
-
+                      try {
+                        await mailer.sendMail(mailOptions)
+                      } catch (err) {
+                        console.log(err)
+                      }
 
                       logger.debug(`Sent [${emails.length}] emails.`)
                     }

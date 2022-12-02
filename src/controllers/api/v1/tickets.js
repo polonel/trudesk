@@ -487,7 +487,7 @@ apiTickets.create = function (req, res) {
         } else {
           ticket.history = [HistoryItem]
         }
-        
+
         try {
 
           ticket.subscribers = [user._id]
@@ -1891,16 +1891,18 @@ apiTickets.removeCommentAttachment = function (req, res) {
       return attachment._id == attachmentId;
     })[0];
 
-    if (attachment) {
-      const attachmentIndex = comment.attachments.findIndex((attachment) => attachment.id === attachmentId)
-      var fs = require('fs')
-      var path = require('path')
-      var dir = path.join(__dirname, '../../../../public', attachment.path)
-      if (fs.existsSync(dir)) fs.unlinkSync(dir)
-      comment.attachments.splice(attachmentIndex, 1);
+    try {
+      if (attachment) {
+        const attachmentIndex = comment.attachments.findIndex((attachment) => attachment.id === attachmentId)
+        var fs = require('fs')
+        var path = require('path')
+        var dir = path.join(__dirname, '../../../../public', attachment.path)
+        if (fs.existsSync(dir)) fs.unlinkSync(dir)
+        comment.attachments.splice(attachmentIndex, 1);
+      }
+    } catch (err) {
+      console.log(err)
     }
-
-
 
     ticket.save(function (err, t) {
       if (err) return res.status(400).json({ error: 'Invalid Request.' })
