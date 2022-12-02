@@ -16,7 +16,7 @@ import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
-
+import crypto from 'crypto'
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
 
@@ -132,7 +132,7 @@ class AttachedСommentFiles extends React.Component {
           
           {this.attachments &&
             this.attachments.map(attachment => (
-              <li key={attachment._id}>
+              <li key={crypto.randomUUID()}>
 
                 <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                   {attachment.name}

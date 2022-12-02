@@ -18,6 +18,7 @@ import { makeObservable, observable } from 'mobx'
 
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
+import crypto from 'crypto'
 
 import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
 
@@ -142,7 +143,7 @@ class IssuePartial extends React.Component {
           <ul className='attachments'>
             {this.attachments &&
               this.attachments.map(attachment => (
-                <li key={attachment._id}>
+                <li key={crypto.randomUUID()}>
                   <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
                   </a>
