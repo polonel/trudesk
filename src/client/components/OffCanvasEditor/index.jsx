@@ -68,7 +68,10 @@ class OffCanvasEditor extends React.Component {
       this.props.updateData(this.attachmentsToSave)
     }
     console.log('Запуск добавления аттача')
-    this.props.attachingFileToComment(this.comment._id)
+    if (this.attachmentsToRemove.length == 0) {
+      this.props.attachingFileToComment(this.comment._id)
+    }
+
     this.attachmentsToSave = []
     this.attachmentsToRemove = []
     this.closeEditorWindow()
@@ -76,13 +79,19 @@ class OffCanvasEditor extends React.Component {
   }
 
   async removeAttachments() {
+    let removeCount = 0
     for (const attachment of this.attachmentsToRemove) {
+      removeCount++
       if (attachment?._id) {
         await axios
           .delete(`/api/v1/tickets/${this.props.ticket._id}/comments/${this.comment?._id}/attachments/remove/${attachment._id}`)
           .then(() => {
             this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: this.comment?._id, ticketId: this.props.ticket._id })
             helpers.UI.showSnackbar('Attachment Removed')
+            
+            if(removeCount == this.attachmentsToRemove.length){
+              this.props.attachingFileToComment(this.comment._id)
+            }
           })
           .catch(error => {
             Log.error(error)
