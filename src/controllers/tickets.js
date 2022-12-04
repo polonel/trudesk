@@ -11,7 +11,6 @@
 
 const ticketSchema = require('../models/ticket')
 const async = require('async')
-const path = require('path')
 const _ = require('lodash')
 const winston = require('../logger')
 const groupSchema = require('../models/group')
@@ -21,6 +20,8 @@ const xss = require('xss')
 const fs = require('fs-extra')
 const iconv = require('iconv-lite')
 const emitter = require('../emitter')
+const path = require('path')
+const pathUpload = path.join(__dirname, `../../public`)
 /**
  * @since 1.0
  * @author Chris Brame <polonel@gmail.com>
@@ -1026,7 +1027,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           type: object.mimetype
         }
         
-        const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+        const attachmentPath = pathUpload + attachment.path
         if (!fs.existsSync(attachmentPath)) {
           return res.status(500).send(err.message)
         }

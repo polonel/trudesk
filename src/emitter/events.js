@@ -14,6 +14,7 @@
 
 const _ = require('lodash')
 const path = require('path')
+const pathUpload = path.join(__dirname, `../../public`)
 const async = require('async')
 const winston = require('../logger')
 const emitter = require('../emitter')
@@ -32,6 +33,7 @@ const logger = require('../logger')
 const eventTicketCreated = require('./events/event_ticket_created')
 const eventUserCreated = require('./events/event_user_created')
 const fs = require('fs-extra')
+
 
   ; (function () {
     notifications.init(emitter)
@@ -288,7 +290,7 @@ const fs = require('fs-extra')
                       const attachmentsForSendMail = []
                       if (comment.attachments) {
                         for (const attachment of comment.attachments) {
-                          const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+                          const attachmentPath = pathUpload + attachment.path
                           if (fs.existsSync(attachmentPath)) {
                             attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
                           }

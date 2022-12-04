@@ -42,7 +42,7 @@ class LoginChatwootContainer extends React.Component {
   @observable fullname = this.props.fullname !== 'null' ? this.props.fullname : '';
   @observable email = this.props.email !== 'null' ? this.props.email : '';
   // @observable phone = this.props.phone.replace(' ','+')
-  @observable phone = this.props.phone !== 'null' ? this.props.phone.replace(' ', '+'): '';
+  @observable phone = this.props.phone !== 'null' ? this.props.phone.replace(' ', '+') : '';
   @observable title = ''
   selectedRole = ''
   @observable isAgentRole = false
@@ -127,9 +127,9 @@ class LoginChatwootContainer extends React.Component {
 
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
-        ? this.props.settings.getIn(['settings', stateName, 'value'])
-        : ''
-}
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
 
   onFormSubmit(e) {
     e.preventDefault()
@@ -139,7 +139,7 @@ class LoginChatwootContainer extends React.Component {
 
     if (!$form.isValid(null, null, false)) isValid = false
 
-    if (!this._validatePhone(this.phone) && this.phone !== '' ) {
+    if (!this._validatePhone(this.phone) && this.phone !== '') {
       helpers.UI.showSnackbar('Invalid Phone', true)
       return
     }
@@ -183,28 +183,29 @@ class LoginChatwootContainer extends React.Component {
 
     this.props.createAccount(payload)
 
-
-    const contact = {
-      "email": this.email,
-      "phone_number": this.phone
+    if (this.getSetting('chatwootSettings')) {
+      const contact = {
+        "email": this.email,
+        "phone_number": this.phone
+      }
+      let config = {
+        method: 'put',
+        url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
+        headers: {
+          'api_access_token': this.props.sessionUser.chatwootApiKey,
+          'Content-Type': 'application/json',
+        },
+        data: contact
+      };
+      axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+          this.props.hideModal()
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
-    let config = {
-      method: 'put',
-      url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
-      headers: {
-        'api_access_token': this.props.sessionUser.chatwootApiKey,
-        'Content-Type': 'application/json',
-      },
-      data: contact
-    };
-    axios(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        this.props.hideModal()
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }
 
   render() {
@@ -218,8 +219,8 @@ class LoginChatwootContainer extends React.Component {
       .toArray();
 
     const roles = [];
-    for (const role of rolesMapToArray){
-      if(role.text !== 'Admin' && role.text !== 'Support'){
+    for (const role of rolesMapToArray) {
+      if (role.text !== 'Admin' && role.text !== 'Support') {
         roles.push(role)
       }
     }

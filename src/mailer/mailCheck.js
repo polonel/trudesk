@@ -28,7 +28,7 @@ const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
 const settingSchema = require('../models/setting')
 const path = require('path')
-const pathUpload = path.join(__dirname, `/../../public/uploads/tickets`)
+const pathUpload = path.join(__dirname, `../../public/uploads/tickets`)
 
 const mailCheck = {}
 mailCheck.inbox = []
@@ -642,7 +642,6 @@ function handleMessages(messages, done) {
                       })
                     }
 
-
                     if (message.attachments) {
                       await fs.mkdir(`${pathUpload}/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
@@ -679,7 +678,7 @@ function handleMessages(messages, done) {
                             socketId: '',
                             ticket: ticket
                           })
-                          
+
                         })
                       });
 
