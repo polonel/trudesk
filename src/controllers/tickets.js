@@ -1025,7 +1025,7 @@ ticketsController.uploadCommentAttachment = function (req, res) {
           path: '/uploads/tickets/' + object.ticketId + '/comments/' + object.commentId + '/' + object.filename,
           type: object.mimetype
         }
-
+        
         const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
         if (!fs.existsSync(attachmentPath)) {
           return res.status(500).send(err.message)

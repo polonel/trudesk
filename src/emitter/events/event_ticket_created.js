@@ -11,8 +11,8 @@
  *  Updated:    4/20/22 2:12 AM
  *  Copyright (c) 2014-2022. All rights reserved.
  */
-
 const path = require('path')
+const pathUpload = path.join(__dirname, `../../../public`)
 const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 const logger = require('../../logger')
 const Ticket = require('../../models/ticket')
@@ -31,6 +31,7 @@ const socketUtils = require('../../helpers/utils')
 const sharedVars = require('../../socketio/index').shared
 const socketEvents = require('../../socketio/socketEventConsts')
 const util = require('../../helpers/utils')
+
 
 const sendSocketUpdateToUser = (user, ticket) => {
   socketUtils.sendToUser(
@@ -127,7 +128,7 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
     const attachmentsForSendMail = []
     if (ticket?.attachments) {
       for (const attachment of ticket?.attachments) {
-        const attachmentPath = '/home/ilobanov/trudesk-dev/public' + attachment.path
+        const attachmentPath = pathUpload + attachment.path
         attachmentsForSendMail.push({ name: attachment.name, path: attachmentPath })
       }
     }
