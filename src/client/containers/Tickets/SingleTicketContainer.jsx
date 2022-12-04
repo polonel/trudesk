@@ -419,8 +419,6 @@ class SingleTicketContainer extends React.Component {
       }
     }
 
-
-
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
         {!this.ticket && <SpinLoader active={true} />}
