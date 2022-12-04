@@ -640,8 +640,8 @@ function handleMessages(messages, done) {
                       socketId: '',
                       ticket: ticket
                     })
-
-                    if (!fs.existsSync(`/home/ilobanov/trudesk-dev/public/uploads/tickets`)) {
+                    const pathDir = `${__dirname}/../../public/uploads/tickets`;
+                    if (!fs.existsSync(`${__dirname}/../../public/uploads/tickets`)) {
                       await fs.mkdir(`/home/ilobanov/trudesk-dev/public/uploads/tickets`, err => {
                         if(err) console.log(err)
                         console.log('Папка успешно создана: ' + '/uploads/tickets');
