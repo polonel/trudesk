@@ -200,9 +200,11 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 this.sendNotification(ticketLink, ticketUID, ticketSubject);
             }
             if (this.attahcments?.length !== 0) {
+                console.log(`onAttachmentInputChange`)
                 this.onAttachmentInputChange(ticket._id, data.socketid, ticketUID)
             } else {
-                location.href = `${siteUrl}/tickets/${ticketUID}`
+                console.log(ticketLink)
+                location.href = ticketLink
             }
         })
     }
