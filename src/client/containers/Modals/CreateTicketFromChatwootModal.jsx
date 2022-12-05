@@ -199,7 +199,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             if (ticketUID) {
                 this.sendNotification(ticketLink, ticketUID, ticketSubject);
             }
-            this.onAttachmentInputChange(ticket._id, data.socketid,ticketUID)
+            this.onAttachmentInputChange(ticket._id, data.socketid, ticketUID)
         })
     }
 
@@ -254,43 +254,40 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
     unloadingTheDialog() {
 
-        let config = {
-            method: 'Get',
-            url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-            headers: {
-                'api_access_token': this.props.sessionUser.chatwootApiKey,
-                'Content-Type': 'application/json',
-            },
-        };
+        const chatwootPayload = {
+            accountID: this.accountID,
+            conversationID: this.conversationID,
+            chatwootApiKey: this.props.sessionUser.chatwootApiKey,
+        }
 
-        axios(config)
-            .then((response) => {
-                this.messages = response.data.payload;
-                this.messages.map(message => {
-                    const date = new Date(message.created_at * 1000);
-                    let senderName;
-                    if (!message.sender) {
-                        senderName = `<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
-                    } else if (message.sender.name == this.clientName || this.clientName == '') {
-                        this.clientName = message.sender.name
-                        senderName = `<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
-                    } else {
-                        this.agentName = message.sender.name;
-                        senderName = `<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
-                    }
+        axios.post('/api/v2/unloadingTheDialog', chatwootPayload).then((messages) => {
+            this.messages = messages
+            this.messages.map(message => {
+                const date = new Date(message.created_at * 1000);
+                let senderName;
+                if (!message.sender) {
+                    senderName = `<p style="color:#E74C3C; font-weight: bold"> Системное сообщение  <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
+                } else if (message.sender.name == this.clientName || this.clientName == '') {
+                    this.clientName = message.sender.name
+                    senderName = `<p style='color:#39f; font-weight: bold'> ${this.clientName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()}</h></p>`;
+                } else {
+                    this.agentName = message.sender.name;
+                    senderName = `<p style='color:#29b955; font-weight: bold'> ${this.agentName} <h style="font-size: 11px; color: #545A63; font-weight: lighter;"> ${date.toUTCString()} </h></p>`;
+                }
 
-                    if (!this.comment) this.comment = '';
-                    this.comment = this.comment + `
-                 ${senderName} 
-                <p>${message.content}</p>
-                <p></p> 
-                <p></p> 
-                `
-                })
+                if (!this.comment) this.comment = '';
+                this.comment = this.comment + `
+             ${senderName} 
+            <p>${message.content}</p>
+            <p></p> 
+            <p></p> 
+            `
             })
+        })
             .catch((error) => {
                 console.log(error);
             });
+
     }
 
     sendNotification(ticketLink, ticketUID, ticketSubject) {

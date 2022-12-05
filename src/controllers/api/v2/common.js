@@ -86,9 +86,9 @@ commonV2.loginLDAP = async (req, res) => {
     //     return false
     //   }
     // }
-    try{
+    try {
       return apiUtils.sendApiSuccess(res)
-    }catch{
+    } catch {
       return true
     }
   }
@@ -111,8 +111,8 @@ commonV2.pushLDAPGroup = async (req, res) => {
         LDAPGroup.insertMany({ name: group }, function (err, ldapGroup) {
           if (err) return console.log(err);
           console.log('Group added: ' + ldapGroup[0].name)
-          if(ldapGroup[0].name == ldapGroups[ldapGroups.length - 1]){
-              return apiUtils.sendApiSuccess(res)
+          if (ldapGroup[0].name == ldapGroups[ldapGroups.length - 1]) {
+            return apiUtils.sendApiSuccess(res)
           }
         })
       }
@@ -154,10 +154,32 @@ commonV2.requestChatwoot = function (req, res) {
 
   axios(config)
     .then((response) => {
-      return apiUtils.sendApiSuccess(res)
+      return apiUtils.sendApiSuccess(response)
     })
     .catch((error) => {
-      return apiUtils.sendApiError(res, 500, e.message)
+      return apiUtils.sendApiError(res, 500, error.message)
+    });
+
+}
+
+commonV2.unloadingTheDialogChatwoot = function (req, res) {
+
+  const config = {
+    method: 'get',
+    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
+    headers: {
+      'api_access_token': req.body.chatwootApiKey,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  axios(config)
+    .then((response) => {
+      messages = response.data.payload;
+      return messages
+    })
+    .catch((error) => {
+      return apiUtils.sendApiError(res, 500, error.message)
     });
 
 }

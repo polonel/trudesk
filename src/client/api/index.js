@@ -289,6 +289,11 @@ api.chatwootData.request = payload => {
     return res.data
   })
 }
+api.chatwootData.unloadingTheDialog = payload => {
+  return axios.post('/api/v2/unloadingTheDialog', payload).then(res => {
+    return res.data
+  })
+}
 
 api.teams = {}
 api.teams.getWithPage = payload => {
