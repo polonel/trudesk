@@ -194,10 +194,11 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         axios.post('/api/v1/tickets/create', data).then(res => {
             const ticket = res.data.ticket
             let ticketSubject = res.data.ticket.subject
+            let ticketStatus = res.data.ticket.status
             let ticketUID = res.data.ticket.uid
             let ticketLink = `${siteUrl}/tickets/${ticketUID}`
             if (ticketUID) {
-                this.sendNotification(ticketLink, ticketUID, ticketSubject);
+                this.sendNotification(ticketLink, ticketUID, ticketSubject, ticketStatus);
             }
             if (attachmentsBoolean) {
                 console.log(`onAttachmentInputChange`)
@@ -296,13 +297,14 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
 
     }
 
-    sendNotification(ticketLink, ticketUID, ticketSubject) {
+    sendNotification(ticketLink, ticketUID, ticketSubject, ticketStatus) {
         if (this.getSetting('chatwootSettings')) {
             let contentMessage = String(this.getSetting('chatwootMessageTemplate'));
             contentMessage = contentMessage.replace('{{phoneNumber}}', this.phoneNumber);
             contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
             contentMessage = contentMessage.replace('{{contactName}}', this.contactName);
             contentMessage = contentMessage.replace('{{ticketUID}}', ticketUID);
+            contentMessage = contentMessage.replace('{{ticketStatus}}', ticketStatus);
             contentMessage = contentMessage.replace('{{ticketSubject}}', ticketSubject);
             const message = {
                 "content": contentMessage,
@@ -314,16 +316,16 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             const chatwootPayload = {
                 accountID: this.accountID,
                 conversationID: this.conversationID,
-                massage: message,
+                message: message,
                 chatwootApiKey: this.props.sessionUser.chatwootApiKey,
             }
 
             axios.post('/api/v2/sendNotificationChatwoot', chatwootPayload).then((response) => {
                 console.log(JSON.stringify(response.data));
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+            })
+                .catch((error) => {
+                    console.log(error);
+                });
 
         }
     }
