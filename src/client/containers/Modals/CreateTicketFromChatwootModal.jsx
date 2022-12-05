@@ -289,8 +289,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             <p></p> 
             `
             })
-            console.log('this.comment')
-            console.log(this.comment)
         })
             .catch((error) => {
                 console.log(error);
@@ -312,23 +310,21 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 "private": false,
                 "content_attributes": {}
             }
-            let config = {
-                method: 'Post',
-                url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/conversations/${this.conversationID}/messages`,
-                headers: {
-                    'api_access_token': this.props.sessionUser.chatwootApiKey,
-                    'Content-Type': 'application/json',
-                },
-                data: message
-            };
 
-            axios(config)
-                .then((response) => {
-                    console.log(JSON.stringify(response.data));
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            const chatwootPayload = {
+                accountID: this.accountID,
+                conversationID: this.conversationID,
+                massage: message,
+                chatwootApiKey: this.props.sessionUser.chatwootApiKey,
+            }
+
+            axios.post('/api/v2/sendNotificationChatwoot', chatwootPayload).then((response) => {
+                console.log(JSON.stringify(response.data));
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+
         }
     }
 

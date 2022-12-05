@@ -185,6 +185,27 @@ commonV2.unloadingTheDialogChatwoot = async function (req, res) {
   return apiUtils.sendApiSuccess(res, { messages: messages })
 }
 
+commonV2.sendNotificationChatwoot = async function (req, res) {
+
+  const config = {
+    method: 'Post',
+    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
+    headers: {
+      'api_access_token': req.body.chatwootApiKey,
+      'Content-Type': 'application/json',
+    },
+    data: req.body.message
+  };
+
+  axios(config)
+    .then((response) => {
+      return apiUtils.sendApiSuccess(response)
+    })
+    .catch((error) => {
+      return apiUtils.sendApiError(res, 500, error.message)
+    });
+}
+
 commonV2.token = async (req, res) => {
   const refreshToken = req.body.refreshToken
   if (!refreshToken) return apiUtils.sendApiError_InvalidPostData(res)
