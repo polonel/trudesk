@@ -42,6 +42,17 @@ function * createChatwootData ({ payload }) {
   }
 }
 
+function * requestChatwootData ({ payload }) {
+  try {
+    const response = yield call(api.chatwootData.request, payload)
+    yield put({ type: REQUEST_CHATWOOTDATA.SUCCESS, payload })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: REQUEST_CHATWOOTDATA.SUCCESS, error })
+    Log.error(errorText, error)
+  }
+}
 
 export default function * watcher () {
   yield takeLatest(FETCH_CHATWOOTDATA.ACTION, fetchChatwootData)

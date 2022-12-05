@@ -95,6 +95,28 @@ mainController.mappingChatwoot = function (req, res) {
   return res.render('mappingChatwoot', content)
 }
 
+mainController.requestChatwoot = function (req, res) {
+
+  const config = {
+    method: 'put',
+    url: `https://cw.shatura.pro/api/v1/accounts/${req.accountID}/contacts/${req.contactID}`,
+    headers: {
+      'api_access_token': req.chatwootApiKey,
+      'Content-Type': 'application/json',
+    },
+    data: req.contact
+  };
+
+  axios(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+}
+
 mainController.changeMappingOrCreate = function (req, res) {
   Setting.findOne({ name: "chatwootSettings:enable" }, function (err, setting) {
     if (err) return res.render('error', {

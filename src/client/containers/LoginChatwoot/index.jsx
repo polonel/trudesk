@@ -19,6 +19,7 @@ import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import { createAccount } from 'actions/accounts'
+import { requestChatwootData } from 'actions/chatwootData'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchRoles } from 'actions/common'
@@ -188,23 +189,32 @@ class LoginChatwootContainer extends React.Component {
         "email": this.email,
         "phone_number": this.phone
       }
-      let config = {
-        method: 'put',
-        url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
-        headers: {
-          'api_access_token': this.props.sessionUser.chatwootApiKey,
-          'Content-Type': 'application/json',
-        },
+      const chatwootPayload = {
+        accountID:this.accountID,
+        contactID: this.contactID,
+        chatwootApiKey: this.props.sessionUser.chatwootApiKey,
         data: contact
-      };
-      axios(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-          this.props.hideModal()
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      }
+
+      // let config = {
+      //   method: 'put',
+      //   url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
+      //   headers: {
+      //     'api_access_token': this.props.sessionUser.chatwootApiKey,
+      //     'Content-Type': 'application/json',
+      //   },
+      //   data: contact
+      // };
+      // axios(config)
+      //   .then((response) => {
+      //     console.log(JSON.stringify(response.data));
+      //     this.props.hideModal()
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+        
+        this.props.requestChatwootData(chatwootPayload)
     }
   }
 
@@ -442,5 +452,6 @@ export default connect(mapStateToProps, {
   unloadTeams,
   fetchRoles,
   fetchSettings,
-  hideModal
+  hideModal,
+  requestChatwootData
 })(LoginChatwootContainer)

@@ -207,11 +207,13 @@ api.accounts.updateUser = payload => {
     return res.data
   })
 }
+
 api.accounts.deleteAccount = ({ username }) => {
   return axios.delete(`/api/v1/users/${username}`).then(res => {
     return res.data
   })
 }
+
 api.accounts.enableAccount = ({ username }) => {
   return axios.get(`/api/v1/users/${username}/enable`).then(res => {
     return res.data
@@ -274,8 +276,15 @@ api.ldapGroups.update = payload => {
     return res.data
   })
 }
+
 api.ldapGroups.delete = ({ _id }) => {
   return axios.delete(`/api/v2/ldapGroups/${_id}`).then(res => {
+    return res.data
+  })
+}
+
+api.chatwootData.request = payload => {
+  return axios.post('/api/v2/requestChatwoot', payload).then(res => {
     return res.data
   })
 }
