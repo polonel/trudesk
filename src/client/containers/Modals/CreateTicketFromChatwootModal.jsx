@@ -38,6 +38,19 @@ import Button from 'components/Button'
 import EasyMDE from 'components/EasyMDE'
 import AttachFilesToTicket from 'containers/Tickets/AttachFilesToTicket'
 
+const statusToName = status => {
+    switch (status) {
+        case 0:
+            return 'New'
+        case 1:
+            return 'Open'
+        case 2:
+            return 'Pending'
+        case 3:
+            return 'Closed'
+    }
+}
+
 @observer
 class CreateTicketFromChatwootModalContainer extends React.Component {
     @observable priorities = []
@@ -194,7 +207,7 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
         axios.post('/api/v1/tickets/create', data).then(res => {
             const ticket = res.data.ticket
             let ticketSubject = res.data.ticket.subject
-            let ticketStatus = res.data.ticket.status
+            let ticketStatus = statusToName(res.data.ticket.status)
             let ticketUID = res.data.ticket.uid
             let ticketLink = `${siteUrl}/tickets/${ticketUID}`
             if (ticketUID) {
