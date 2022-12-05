@@ -31,8 +31,8 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/loginLDAP', controllers.api.v2.common.loginLDAP) //++ ShaturaPro LIN 24.08.2022
   router.post('/api/v2/pushLDAPGroup', controllers.api.v2.common.pushLDAPGroup) //++ ShaturaPro LIN 24.08.2022
 
-  //Chatwoot
-  // router.post('/api/v2/requestChatwoot', apiv2Auth, controllers.api.v2.common.requestChatwoot)
+  // Chatwoot
+  router.post('/api/v2/requestChatwoot', apiv2Auth, controllers.api.v2.common.requestChatwoot)
 
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)

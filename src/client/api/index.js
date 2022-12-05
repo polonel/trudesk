@@ -283,6 +283,7 @@ api.ldapGroups.delete = ({ _id }) => {
   })
 }
 
+api.chatwootData = {}
 api.chatwootData.request = payload => {
   return axios.post('/api/v2/requestChatwoot', payload).then(res => {
     return res.data
