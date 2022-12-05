@@ -283,6 +283,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             <p></p> 
             `
             })
+            console.log('this.comment')
+            console.log(this.comment)
         })
             .catch((error) => {
                 console.log(error);
