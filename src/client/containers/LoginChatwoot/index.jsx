@@ -214,7 +214,7 @@ class LoginChatwootContainer extends React.Component {
       //     console.log(error);
       //   });
         
-        // this.props.requestChatwootData(chatwootPayload)
+      this.props.requestChatwootData(chatwootPayload)
     }
   }
 
