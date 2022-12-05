@@ -13,7 +13,7 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects'
-import { CREATE_CHATWOOTDATA, FETCH_CHATWOOTDATA } from 'actions/types'
+import { CREATE_CHATWOOTDATA, FETCH_CHATWOOTDATA, REQUEST_CHATWOOTDATA } from 'actions/types'
 
 import api from '../../api'
 import Log from '../../logger'
