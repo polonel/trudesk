@@ -646,27 +646,33 @@ function handleMessages(messages, done) {
                       await fs.mkdir(`${pathUpload}/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
                         console.log('Папка успешно создана');
-                        for (const attachmentFromMessage of message.attachments) {
-                          let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+                        try {
+                          for (const attachmentFromMessage of message.attachments) {
+                            let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
-                          fs.writeFileSync(`${pathUpload}/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
+                            fs.writeFileSync(`${pathUpload}/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
 
-                          const attachment = {
-                            owner: message.owner._id,
-                            name: sanitizedFilename,
-                            path: `/uploads/tickets/${ticket._id}/${sanitizedFilename}`,
-                            type: attachmentFromMessage.contentType
+                            const attachment = {
+                              owner: message.owner._id,
+                              name: sanitizedFilename,
+                              path: `/uploads/tickets/${ticket._id}/${sanitizedFilename}`,
+                              type: attachmentFromMessage.contentType
+                            }
+                            ticket.attachments.push(attachment)
+
+                            const historyItem = {
+                              action: 'ticket:added:attachment',
+                              description: 'Attachment ' + sanitizedFilename + ' was added.',
+                              owner: message.owner._id
+                            }
+                            ticket.history.push(historyItem)
+                            ticket.updated = Date.now()
                           }
-                          ticket.attachments.push(attachment)
-
-                          const historyItem = {
-                            action: 'ticket:added:attachment',
-                            description: 'Attachment ' + sanitizedFilename + ' was added.',
-                            owner: message.owner._id
-                          }
-                          ticket.history.push(historyItem)
-                          ticket.updated = Date.now()
+                        } catch (err) {
+                          winston.warn(err)
+                          return callback(err)
                         }
+
                         ticket.save(function (err, t) {
                           if (err) {
                             fs.unlinkSync(attachment.path)

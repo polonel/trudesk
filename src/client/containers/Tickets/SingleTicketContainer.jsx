@@ -300,9 +300,12 @@ class SingleTicketContainer extends React.Component {
     }
   }
 
+
+
   sendNotification() {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
+      let account = response.data.user;
       let ticketLink = `${siteURL}/tickets/${this.ticket.uid}`;
       let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
       contentMessage = contentMessage.replace('{{phoneNumber}}', account.phone);
@@ -310,6 +313,7 @@ class SingleTicketContainer extends React.Component {
       contentMessage = contentMessage.replace('{{ticketSubject}}', this.ticket.subject);
       contentMessage = contentMessage.replace('{{contactName}}', account.fullname);
       contentMessage = contentMessage.replace('{{ticketStatus}}', this.statusToName(this.ticket.status));
+
       const message = {
         "content": contentMessage,
         "message_type": "outgoing",
@@ -318,8 +322,8 @@ class SingleTicketContainer extends React.Component {
       }
 
       const chatwootPayload = {
-        accountID: this.accountID,
-        conversationID: this.conversationID,
+        accountID: this.ticket.chatwootAccountID,
+        conversationID: this.ticket.chatwootConversationID,
         message: message,
         chatwootApiKey: this.props.sessionUser.chatwootApiKey,
       }
