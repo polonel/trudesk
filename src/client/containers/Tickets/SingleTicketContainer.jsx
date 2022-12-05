@@ -1061,13 +1061,6 @@ class SingleTicketContainer extends React.Component {
               dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
                 'timeFormat'
               )}`} />
-
-
-
-
-
-
-
           </Fragment>
         )}
       </div>

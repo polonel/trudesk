@@ -13,7 +13,6 @@
  */
 
 import React from 'react'
-import mongoose from 'mongoose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'

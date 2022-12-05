@@ -16,8 +16,6 @@ import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 
-import { TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
-
 import helpers from 'lib/helpers'
 
 

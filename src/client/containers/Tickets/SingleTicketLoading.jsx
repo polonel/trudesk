@@ -12,17 +12,8 @@
  */
 
 import React, { Fragment } from 'react'
-import PropTypes from 'prop-types'
-import helpers from 'lib/helpers'
-import socket from 'lib/socket'
 import Avatar from 'components/Avatar/Avatar'
-import IssuePartial from 'containers/Tickets/IssuePartial'
-import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
-import TruTabSelectors from 'components/TruTabs/TruTabSelectors'
-import TruTabSelector from 'components/TruTabs/TruTabSelector'
-import TruTabSection from 'components/TruTabs/TruTabSection'
-import CommentNotePartial from 'containers/Tickets/CommentNotePartial'
-import EasyMDE from 'components/EasyMDE'
+
 
 class SingleTicketLoading extends React.Component {
   render () {
