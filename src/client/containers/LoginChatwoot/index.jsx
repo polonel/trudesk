@@ -182,8 +182,6 @@ class LoginChatwootContainer extends React.Component {
     }
 
     this.props.createAccount(payload)
-    console.log("this.getSetting('chatwootSettings')")
-    console.log(this.getSetting('chatwootSettings'))
     if (this.getSetting('chatwootSettings')) {
       const contact = {
         "email": this.email,
