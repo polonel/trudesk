@@ -52,7 +52,7 @@ const COLLECTION = 'accounts'
 var userSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true, lowercase: true, maxLength: 100 },
   password: { type: String, required: true, select: false },
-  fullname: { type: String, required: true, index: true, maxLength: 100 },
+  fullname: { type: String },
   email: { type: String, required: true, unique: true, lowercase: true, maxLength: 100 },
   phone: String,
   role: { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
@@ -681,7 +681,7 @@ userSchema.statics.createUserFromChatwoot = async function (payload, callback) {
           })
         })
       })
-//-- ShaturaPRO LIN 
+      //-- ShaturaPRO LIN 
 
     })
   })

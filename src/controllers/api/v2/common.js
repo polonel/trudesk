@@ -199,11 +199,12 @@ commonV2.sendNotificationChatwoot = async function (req, res) {
 
   axios(config)
     .then((response) => {
-      return apiUtils.sendApiSuccess(response)
+      return response
     })
     .catch((error) => {
       return apiUtils.sendApiError(res, 500, error.message)
     });
+  
 }
 
 commonV2.token = async (req, res) => {
