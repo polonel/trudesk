@@ -300,41 +300,41 @@ class SingleTicketContainer extends React.Component {
     }
   }
 
-
-
   sendNotification() {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
-      let account = response.data.user;
-      let ticketLink = `${siteURL}/tickets/${this.ticket.uid}`;
-      let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
-      contentMessage = contentMessage.replace('{{phoneNumber}}', account.phone);
-      contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
-      contentMessage = contentMessage.replace('{{ticketSubject}}', this.ticket.subject);
-      contentMessage = contentMessage.replace('{{contactName}}', account.fullname);
-      contentMessage = contentMessage.replace('{{ticketStatus}}', this.statusToName(this.ticket.status));
+      axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
+        console.log(JSON.stringify(response.data));
+        let account = response.data.user;
+        let ticketLink = `${siteURL}/tickets/${this.ticket.uid}`;
+        let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
+        contentMessage = contentMessage.replace('{{phoneNumber}}', account.phone);
+        contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
+        contentMessage = contentMessage.replace('{{ticketSubject}}', this.ticket.subject);
+        contentMessage = contentMessage.replace('{{contactName}}', account.fullname);
+        contentMessage = contentMessage.replace('{{ticketStatus}}', this.statusToName(this.ticket.status));
 
-      const message = {
-        "content": contentMessage,
-        "message_type": "outgoing",
-        "private": false,
-        "content_attributes": {}
-      }
+        const message = {
+          "content": contentMessage,
+          "message_type": "outgoing",
+          "private": false,
+          "content_attributes": {}
+        }
 
-      const chatwootPayload = {
-        accountID: this.ticket.chatwootAccountID,
-        conversationID: this.ticket.chatwootConversationID,
-        message: message,
-        chatwootApiKey: this.props.sessionUser.chatwootApiKey,
-      }
+        const chatwootPayload = {
+          accountID: this.ticket.chatwootAccountID,
+          conversationID: this.ticket.chatwootConversationID,
+          message: message,
+          chatwootApiKey: this.props.sessionUser.chatwootApiKey,
+        }
 
-      axios.post('/api/v2/sendNotificationChatwoot', chatwootPayload).then((response) => {
-        console.log('Succes');
+        axios.post('/api/v2/sendNotificationChatwoot', chatwootPayload).then(() => {
+          console.log('Succes');
+        })
+          .catch((error) => {
+            console.log(error);
+          });
       })
-        .catch((error) => {
-          console.log(error);
-        });
-
     }
   }
 
