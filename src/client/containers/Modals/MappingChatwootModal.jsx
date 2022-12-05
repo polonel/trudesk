@@ -203,22 +203,21 @@ class MappingChatwootContainer extends React.Component {
       "email": updateUser.email,
       "phone_number": this.phone
     }
-    let config = {
-      method: 'put',
-      url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
-      headers: {
-        'api_access_token': this.props.sessionUser.chatwootApiKey,
-        'Content-Type': 'application/json',
-      },
+
+    const chatwootPayload = {
+      accountID: this.accountID,
+      contactID: this.contactID,
+      chatwootApiKey: this.props.sessionUser.chatwootApiKey,
       data: contact
-    };
-    axios(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    }
+
+    axios.post('/api/v2/requestChatwoot', chatwootPayload).then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
   }
 
   getSetting(stateName) {

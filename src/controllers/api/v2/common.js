@@ -19,7 +19,7 @@ const passport = require('passport')
 const winston = require('winston')
 const ldapClient = require('../../../ldap')
 const { c } = require('tar')
-
+const axios = require('axios')
 const commonV2 = {}
 
 commonV2.login = async (req, res) => {
@@ -154,7 +154,7 @@ commonV2.requestChatwoot = function (req, res) {
 
   axios(config)
     .then((response) => {
-      return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
+      return apiUtils.sendApiSuccess(res)
     })
     .catch((error) => {
       return apiUtils.sendApiError(res, 500, e.message)
