@@ -176,13 +176,13 @@ commonV2.unloadingTheDialogChatwoot = async function (req, res) {
   let messages
   await axios(config)
     .then((response) => {
-     res = response
+      messages = response.data.payload;
     })
     .catch((error) => {
       return apiUtils.sendApiError(res, 500, error.message)
     });
 
-  return res
+  return apiUtils.sendApiSuccess(res, { messages: messages })
 }
 
 commonV2.token = async (req, res) => {
