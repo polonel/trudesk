@@ -144,12 +144,12 @@ commonV2.requestChatwoot = function (req, res) {
 
   const config = {
     method: 'put',
-    url: `https://cw.shatura.pro/api/v1/accounts/${req.accountID}/contacts/${req.contactID}`,
+    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/contacts/${req.body.contactID}`,
     headers: {
-      'api_access_token': req.chatwootApiKey,
+      'api_access_token': req.body.chatwootApiKey,
       'Content-Type': 'application/json',
     },
-    data: req.contact
+    data: req.body.data
   };
 
   axios(config)

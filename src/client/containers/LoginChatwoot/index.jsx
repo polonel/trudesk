@@ -192,10 +192,15 @@ class LoginChatwootContainer extends React.Component {
         chatwootApiKey: this.props.sessionUser.chatwootApiKey,
         data: contact
       }
-      
-      axios.post('/api/v2/requestChatwoot', payload).then(res => {
+
+      axios.post('/api/v2/requestChatwoot', chatwootPayload).then(res => {
         return res.data
+      }).then((response) => {
+        console.log(JSON.stringify(response.data));
       })
+      .catch((error) => {
+        console.log(error);
+      });
       // this.props.requestChatwootData(chatwootPayload)
     }
     this.props.createAccount(payload)
