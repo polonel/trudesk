@@ -204,7 +204,7 @@ commonV2.sendNotificationChatwoot = async function (req, res) {
     .catch((error) => {
       return apiUtils.sendApiError(res, 500, error.message)
     });
-  
+  return apiUtils.sendApiSuccess(res)
 }
 
 commonV2.postMessageChatwoot = async function (req, res) {
@@ -226,7 +226,7 @@ commonV2.postMessageChatwoot = async function (req, res) {
     .catch((error) => {
       return apiUtils.sendApiError(res, 500, error.message)
     });
-  
+
 }
 
 commonV2.token = async (req, res) => {

@@ -632,7 +632,11 @@ function handleMessages(messages, done) {
                   async function (err, ticket) {
                     if (err) {
                       winston.warn('Failed to create ticket from email: ' + err)
-                      return callback(err)
+                      try{
+                        return callback(err)
+                      }catch{
+                        winston.warn('Callback уже вызван')
+                      }    
                     }
 
                     if (!fs.existsSync(`${pathUpload}`)) {
@@ -670,14 +674,22 @@ function handleMessages(messages, done) {
                           }
                         } catch (err) {
                           winston.warn(err)
-                          return callback(err)
+                          try{
+                            return callback(err)
+                          }catch{
+                            winston.warn('Callback уже вызван')
+                          }
                         }
 
                         ticket.save(function (err, t) {
                           if (err) {
                             fs.unlinkSync(attachment.path)
                             winston.warn(err)
-                            return callback(err)
+                            try{
+                              return callback(err)
+                            }catch{
+                              winston.warn('Callback уже вызван')
+                            }
                           }
 
                           emitter.emit('ticket:created', {
@@ -695,7 +707,11 @@ function handleMessages(messages, done) {
                       })
                     }
                     count++
-                    return callback()
+                    try{
+                      return callback(err)
+                    }catch{
+                      winston.warn('Callback уже вызван')
+                    }
                   }
                 )
               }

@@ -329,7 +329,7 @@ class SingleTicketContainer extends React.Component {
       }
 
       axios.post('/api/v2/sendNotificationChatwoot', chatwootPayload).then((response) => {
-        console.log(JSON.stringify(response.data));
+        console.log('Succes');
       })
         .catch((error) => {
           console.log(error);
