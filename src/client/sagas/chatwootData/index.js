@@ -57,5 +57,6 @@ function * requestChatwootData ({ payload }) {
 export default function * watcher () {
   yield takeLatest(FETCH_CHATWOOTDATA.ACTION, fetchChatwootData)
   yield takeLatest(CREATE_CHATWOOTDATA.ACTION, createChatwootData)
+  yield takeLatest(REQUEST_CHATWOOTDATA.ACTION, requestChatwootData)
 
 }
