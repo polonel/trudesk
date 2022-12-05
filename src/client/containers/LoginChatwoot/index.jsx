@@ -181,39 +181,25 @@ class LoginChatwootContainer extends React.Component {
       passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : this.plainTextPass
     }
 
-    this.props.createAccount(payload)
     if (this.getSetting('chatwootSettings')) {
       const contact = {
         "email": this.email,
         "phone_number": this.phone
       }
       const chatwootPayload = {
-        accountID:this.accountID,
+        accountID: this.accountID,
         contactID: this.contactID,
         chatwootApiKey: this.props.sessionUser.chatwootApiKey,
         data: contact
       }
-
-      // let config = {
-      //   method: 'put',
-      //   url: `https://cw.shatura.pro/api/v1/accounts/${this.accountID}/contacts/${this.contactID}`,
-      //   headers: {
-      //     'api_access_token': this.props.sessionUser.chatwootApiKey,
-      //     'Content-Type': 'application/json',
-      //   },
-      //   data: contact
-      // };
-      // axios(config)
-      //   .then((response) => {
-      //     console.log(JSON.stringify(response.data));
-      //     this.props.hideModal()
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-        
-      this.props.requestChatwootData(chatwootPayload)
+      
+      axios.post('/api/v2/requestChatwoot', payload).then(res => {
+        return res.data
+      })
+      // this.props.requestChatwootData(chatwootPayload)
     }
+    this.props.createAccount(payload)
+
   }
 
   render() {
