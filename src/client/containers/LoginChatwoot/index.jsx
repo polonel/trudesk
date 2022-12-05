@@ -193,9 +193,7 @@ class LoginChatwootContainer extends React.Component {
         data: contact
       }
 
-      axios.post('/api/v2/requestChatwoot', chatwootPayload).then(res => {
-        return res.data
-      }).then((response) => {
+      axios.post('/api/v2/requestChatwoot', chatwootPayload).then((response) => {
         console.log(JSON.stringify(response.data));
       })
       .catch((error) => {

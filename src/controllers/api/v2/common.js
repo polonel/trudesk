@@ -154,10 +154,10 @@ commonV2.requestChatwoot = function (req, res) {
 
   axios(config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
+      return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
     })
     .catch((error) => {
-      console.log(error);
+      return apiUtils.sendApiError(res, 500, e.message)
     });
 
 }
