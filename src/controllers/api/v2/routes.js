@@ -34,6 +34,8 @@ module.exports = function (middleware, router, controllers) {
   // Chatwoot
   router.post('/api/v2/requestChatwoot', controllers.api.v2.common.requestChatwoot)
   router.post('/api/v2/unloadingTheDialog', controllers.api.v2.common.unloadingTheDialogChatwoot)
+  router.post('/api/v2/sendNotificationChatwoot', controllers.api.v2.common.sendNotificationChatwoot)
+  
   // Accounts
   router.get('/api/v2/accounts', apiv2Auth, canUser('accounts:view'), apiv2.accounts.get)
   router.post('/api/v2/accounts', apiv2Auth, canUser('accounts:create'), apiv2.accounts.create)
