@@ -682,6 +682,11 @@ function handleMessages(messages, done) {
                         })
                       });
 
+                    } else {
+                      emitter.emit('ticket:created', {
+                        socketId: '',
+                        ticket: ticket
+                      })
                     }
                     count++
                     return callback()
