@@ -140,6 +140,27 @@ commonV2.pushLDAPGroup = async (req, res) => {
     })
 }
 
+commonV2.requestChatwoot = function (req, res) {
+
+  const config = {
+    method: 'put',
+    url: `https://cw.shatura.pro/api/v1/accounts/${req.accountID}/contacts/${req.contactID}`,
+    headers: {
+      'api_access_token': req.chatwootApiKey,
+      'Content-Type': 'application/json',
+    },
+    data: req.contact
+  };
+
+  axios(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+}
 
 commonV2.token = async (req, res) => {
   const refreshToken = req.body.refreshToken

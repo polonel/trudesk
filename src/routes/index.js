@@ -40,8 +40,6 @@ function mainRoutes(router, middleware, controllers) {
   // router.get('/loginChatwoot', controllers.main.loginChatwoot)   // Chatwoot
   // router.post('/loginChatwoot', controllers.main.index) 
   // router.post('/login', controllers.main.loginPost)
-  //Chatwoot
-  router.post('/requestChatwoot', controllers.main.requestChatwoot)
   router.get('/l2auth', controllers.main.l2authget)
   router.post('/l2auth', controllers.main.l2AuthPost)
   router.get('/logout', controllers.main.logout)
