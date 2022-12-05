@@ -260,8 +260,10 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
             chatwootApiKey: this.props.sessionUser.chatwootApiKey,
         }
 
-        axios.post('/api/v2/unloadingTheDialog', chatwootPayload).then((messages) => {
-            this.messages = messages
+        axios.post('/api/v2/unloadingTheDialog', chatwootPayload).then((response) => {
+            console.log('response')
+            console.log(response)
+            this.messages = response.data.payload
             this.messages.map(message => {
                 const date = new Date(message.created_at * 1000);
                 let senderName;

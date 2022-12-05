@@ -162,7 +162,7 @@ commonV2.requestChatwoot = function (req, res) {
 
 }
 
-commonV2.unloadingTheDialogChatwoot = function (req, res) {
+commonV2.unloadingTheDialogChatwoot = async function (req, res) {
 
   const config = {
     method: 'get',
@@ -173,15 +173,16 @@ commonV2.unloadingTheDialogChatwoot = function (req, res) {
     },
   };
 
-  axios(config)
+  let messages
+  await axios(config)
     .then((response) => {
-      messages = response.data.payload;
-      return messages
+     res = response
     })
     .catch((error) => {
       return apiUtils.sendApiError(res, 500, error.message)
     });
 
+  return res
 }
 
 commonV2.token = async (req, res) => {
