@@ -190,7 +190,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   onCommentNoteSubmit(e, type) {
-    e.preventDefault()
+    // e.preventDefault()
     const isNote = type === 'note'
     let newComment
     let attachmentsBoolean = false
