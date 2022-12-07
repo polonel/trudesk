@@ -96,16 +96,7 @@ class IssuePartialHTML extends React.Component {
 }
 
 IssuePartialHTML.propTypes = {
-  ticketId: PropTypes.string.isRequired,
-  status: PropTypes.number.isRequired,
-  owner: PropTypes.object.isRequired,
-  subject: PropTypes.string.isRequired,
-  issue: PropTypes.string.isRequired,
-  date: PropTypes.string.isRequired,
-  dateFormat: PropTypes.string.isRequired,
-  attachments: PropTypes.array,
-  editorWindow: PropTypes.object,
-  socket: PropTypes.object.isRequired
+  templateId: PropTypes.string.isRequired,
 }
 
 export default IssuePartialHTML
