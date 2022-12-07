@@ -48,13 +48,20 @@ class IssuePartialHTML extends React.Component {
     const textType = /text.*/;
     let fullHTML = ''
     if (templateFile.type.match(textType)) {
-      const reader = new FileReader();
+      console.log('Прошло проверку')
 
-      reader.onload = function (e) {
-        fullHTML = reader.result;
-      }
+      let reader = new FileReader();
 
       reader.readAsText(templateFile);
+
+      reader.onload = function () {
+        fullHTML = reader.result;
+      };
+
+      reader.onerror = function () {
+        console.log(reader.error);
+      };
+
 
       axios
         .put(`/api/v1/settings/mailer/template/${e.target.id.value}/fullHTML`, {
@@ -81,20 +88,20 @@ class IssuePartialHTML extends React.Component {
   render() {
     return (
       <div className='initial-issue uk-clearfix'>
-       <Fragment>
-            <form className='form nomargin' encType='multipart/form-data'>
-              <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons'>&#xE226;</i>
-              </div>
+        <Fragment>
+          <form className='form nomargin' encType='multipart/form-data'>
+            <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
+              <i className='material-icons'>&#xE226;</i>
+            </div>
 
-              <input
-                ref={r => (this.attachmentInput = r)}
-                className='hide'
-                type='file'
-                onChange={e => this.onAttachmentInputChange(e)}
-              />
-            </form>
-          </Fragment>
+            <input
+              ref={r => (this.attachmentInput = r)}
+              className='hide'
+              type='file'
+              onChange={e => this.onAttachmentInputChange(e)}
+            />
+          </form>
+        </Fragment>
       </div>
     )
   }
