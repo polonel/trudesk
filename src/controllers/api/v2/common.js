@@ -13,6 +13,7 @@
  */
 
 const User = require('../../../models/user')
+const Setting = require('../../../models/setting')
 const LDAPGroup = require('../../../models/ldapGroup')
 const apiUtils = require('../apiUtils')
 const passport = require('passport')
@@ -141,92 +142,114 @@ commonV2.pushLDAPGroup = async (req, res) => {
 }
 
 commonV2.requestChatwoot = function (req, res) {
-
-  const config = {
-    method: 'put',
-    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/contacts/${req.body.contactID}`,
-    headers: {
-      'api_access_token': req.body.chatwootApiKey,
-      'Content-Type': 'application/json',
-    },
-    data: req.body.data
-  };
-
-  axios(config)
-    .then((response) => {
-      return apiUtils.sendApiSuccess(response)
-    })
-    .catch((error) => {
+  Setting.findOne({ name: 'chatwootSettings:url' }, (err, setting) => {
+    if (err) {
       return apiUtils.sendApiError(res, 500, error.message)
-    });
+    }
+
+    const config = {
+      method: 'put',
+      url: `${setting.value}/api/v1/accounts/${req.body.accountID}/contacts/${req.body.contactID}`,
+      headers: {
+        'api_access_token': req.body.chatwootApiKey,
+        'Content-Type': 'application/json',
+      },
+      data: req.body.data
+    };
+
+    axios(config)
+      .then((response) => {
+        return apiUtils.sendApiSuccess(response)
+      })
+      .catch((error) => {
+        return apiUtils.sendApiError(res, 500, error.message)
+      });
+  })
 
 }
 
 commonV2.unloadingTheDialogChatwoot = async function (req, res) {
+  Setting.findOne({ name: 'chatwootSettings:url' }, async (err, setting) => {
 
-  const config = {
-    method: 'get',
-    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
-    headers: {
-      'api_access_token': req.body.chatwootApiKey,
-      'Content-Type': 'application/json',
-    },
-  };
-
-  let messages
-  await axios(config)
-    .then((response) => {
-      messages = response.data.payload;
-    })
-    .catch((error) => {
+    if (err) {
       return apiUtils.sendApiError(res, 500, error.message)
-    });
+    }
 
-  return apiUtils.sendApiSuccess(res, { messages: messages })
+    const config = {
+      method: 'get',
+      url: `${setting.value}/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
+      headers: {
+        'api_access_token': req.body.chatwootApiKey,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    let messages
+    await axios(config)
+      .then((response) => {
+        messages = response.data.payload;
+      })
+      .catch((error) => {
+        return apiUtils.sendApiError(res, 500, error.message)
+      });
+
+    return apiUtils.sendApiSuccess(res, { messages: messages })
+  })
 }
 
 commonV2.sendNotificationChatwoot = async function (req, res) {
+  Setting.findOne({ name: 'chatwootSettings:url' }, async (err, setting) => {
 
-  const config = {
-    method: 'Post',
-    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
-    headers: {
-      'api_access_token': req.body.chatwootApiKey,
-      'Content-Type': 'application/json',
-    },
-    data: req.body.message
-  };
-
-  axios(config)
-    .then((response) => {
-      return response
-    })
-    .catch((error) => {
+    if (err) {
       return apiUtils.sendApiError(res, 500, error.message)
-    });
-  return apiUtils.sendApiSuccess(res)
+    }
+
+    const config = {
+      method: 'Post',
+      url: `${setting.value}/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
+      headers: {
+        'api_access_token': req.body.chatwootApiKey,
+        'Content-Type': 'application/json',
+      },
+      data: req.body.message
+    };
+
+    axios(config)
+      .then((response) => {
+        return response
+      })
+      .catch((error) => {
+        return apiUtils.sendApiError(res, 500, error.message)
+      });
+    return apiUtils.sendApiSuccess(res)
+  })
 }
 
 commonV2.postMessageChatwoot = async function (req, res) {
+  Setting.findOne({ name: 'chatwootSettings:url' }, async (err, setting) => {
 
-  const config = {
-    method: 'Post',
-    url: `https://cw.shatura.pro/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
-    headers: {
-      'api_access_token': req.body.chatwootApiKey,
-      'Content-Type': 'application/json',
-    },
-    data: req.body.message
-  };
-
-  axios(config)
-    .then((response) => {
-      return response
-    })
-    .catch((error) => {
+    if (err) {
       return apiUtils.sendApiError(res, 500, error.message)
-    });
+    }
 
+    const config = {
+      method: 'Post',
+      url: `${setting.value}/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
+      headers: {
+        'api_access_token': req.body.chatwootApiKey,
+        'Content-Type': 'application/json',
+      },
+      data: req.body.message
+    };
+
+    axios(config)
+      .then((response) => {
+        return response
+      })
+      .catch((error) => {
+        return apiUtils.sendApiError(res, 500, error.message)
+      });
+  })
 }
 
 commonV2.token = async (req, res) => {
