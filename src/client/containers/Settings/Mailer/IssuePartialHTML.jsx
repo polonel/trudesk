@@ -20,16 +20,6 @@ import helpers from 'lib/helpers'
 import axios from 'axios'
 import Log from '../../../logger'
 
-const setupImages = parent => {
-  const imagesEl = parent.issueBody.querySelectorAll('img:not(.hasLinked)')
-  imagesEl.forEach(i => helpers.setupImageLink(i))
-}
-
-const setupLinks = parent => {
-  const linksEl = parent.issueBody.querySelectorAll('a')
-  linksEl.forEach(i => helpers.setupLinkWarning(i))
-}
-
 @observer
 class IssuePartialHTML extends React.Component {
   @observable templateId = ''
@@ -42,8 +32,6 @@ class IssuePartialHTML extends React.Component {
   }
 
   componentDidMount() {
-    setupImages(this)
-    setupLinks(this)
 
   }
 
