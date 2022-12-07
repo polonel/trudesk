@@ -159,11 +159,12 @@ commonV2.requestChatwoot = function (req, res) {
 
     axios(config)
       .then((response) => {
-        return apiUtils.sendApiSuccess(response)
+        return response
       })
       .catch((error) => {
         return apiUtils.sendApiError(res, 500, error.message)
       });
+    return apiUtils.sendApiSuccess(res)
   })
 
 }
