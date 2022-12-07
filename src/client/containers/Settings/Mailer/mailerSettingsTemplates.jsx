@@ -49,7 +49,7 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
           <Button type={'submit'} text={'Save'} small={true} />
         </span>
       </div>
-      <IssuePartial
+      <IssuePartialHTML
         templateId={template._id}
       />
     </form>

@@ -16,14 +16,9 @@ import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 
-import Avatar from 'components/Avatar/Avatar'
-import ReactHtmlParser from 'react-html-parser'
-
-import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts'
-
 import helpers from 'lib/helpers'
 import axios from 'axios'
-import Log from '../../logger'
+import Log from '../../../logger'
 
 const setupImages = parent => {
   const imagesEl = parent.issueBody.querySelectorAll('img:not(.hasLinked)')
