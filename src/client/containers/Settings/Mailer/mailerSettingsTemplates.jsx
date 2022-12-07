@@ -86,16 +86,16 @@ class MailerSettingsTemplates extends React.Component {
   @observable betaEnabled = false
   @observable templates = []
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     helpers.UI.inputs()
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     helpers.UI.reRenderInputs()
     if (prevProps.settings !== this.props.settings) {
       if (this.betaEnabled !== this.getSetting('emailBeta')) this.betaEnabled = this.getSetting('emailBeta')
@@ -105,13 +105,13 @@ class MailerSettingsTemplates extends React.Component {
     }
   }
 
-  getSetting (name) {
+  getSetting(name) {
     return this.props.settings.getIn(['settings', name, 'value']) !== undefined
       ? this.props.settings.getIn(['settings', name, 'value'])
       : ''
   }
 
-  onEmailBetaChange (e) {
+  onEmailBetaChange(e) {
     const self = this
     const val = e.target.checked
     this.props.updateSetting({ name: 'beta:email', value: val, stateName: 'betaEmail', noSnackbar: true }).then(() => {
@@ -119,7 +119,7 @@ class MailerSettingsTemplates extends React.Component {
     })
   }
 
-  onSaveSubject (e) {
+  onSaveSubject(e) {
     e.preventDefault()
     const subject = e.target.subject
     if (!subject) return
@@ -137,13 +137,13 @@ class MailerSettingsTemplates extends React.Component {
       })
   }
 
-  static onOpenEditor (e, name) {
+  static onOpenEditor(e, name) {
     e.preventDefault()
     const url = `/settings/editor/${name}/`
     History.pushState(null, null, url)
   }
 
-  mapTemplateMenu () {
+  mapTemplateMenu() {
     return this.templates.map((template, idx) => {
       const templateJS = template.toJS()
       return {
@@ -158,7 +158,7 @@ class MailerSettingsTemplates extends React.Component {
     })
   }
 
-  render () {
+  render() {
     const mappedValues = this.mapTemplateMenu()
     return (
       <div>
@@ -191,6 +191,10 @@ class MailerSettingsTemplates extends React.Component {
           rightComponent={<h4 className={'uk-display-block uk-text-danger mt-20 mr-20'}>BETA FEATURE</h4>}
           menuItems={mappedValues}
         />
+        <div>
+          Select a text file:
+          <input type="file" id="fileInput"/>
+        </div>
       </div>
     )
   }

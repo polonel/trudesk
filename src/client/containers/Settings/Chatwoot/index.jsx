@@ -109,7 +109,7 @@ class ChatwootSettingsController extends React.Component {
         <div className={active ? 'active' : 'hide'}>
           <div>
             <SettingItem
-              title={'Notification message template'}
+              title={'Notification "Ticket Created" message template'}
               tooltip={`
               Template Parameters: 
               <br><br>
@@ -129,6 +129,17 @@ class ChatwootSettingsController extends React.Component {
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
                 <div className='uk-margin-medium-bottom'>
+                  <label>Chatwoot URL</label>
+                  <input
+                    type='text'
+                    className={'md-input md-input-width-medium'}
+                    name={'chatwootUrl'}
+                    value={this.state.chatwootUrl}
+                    onChange={e => this.onInputValueChanged(e, 'chatwootUrl')}
+                    disabled={!this.getSetting('chatwootSettings')}
+                  />
+                </div>
+                <div className='uk-margin-medium-bottom'>
                   <textarea
                     type='text'
                     className={'md-input md-input-width-medium'}
@@ -136,17 +147,6 @@ class ChatwootSettingsController extends React.Component {
                     value={this.state.chatwootMessageTemplate}
                     onChange={e => this.onInputValueChanged(e, 'chatwootMessageTemplate')}
                     style={{ 'height': '200px', 'padding-top': '30px' }}
-                    disabled={!this.getSetting('chatwootSettings')}
-                  />
-                </div>
-                <div className='uk-margin-medium-bottom'>
-                  <label>Chatwoot Url</label>
-                  <input
-                    type='text'
-                    className={'md-input md-input-width-medium'}
-                    name={'chatwootUrl'}
-                    value={this.state.chatwootUrl}
-                    onChange={e => this.onInputValueChanged(e, 'chatwootUrl')}
                     disabled={!this.getSetting('chatwootSettings')}
                   />
                 </div>
