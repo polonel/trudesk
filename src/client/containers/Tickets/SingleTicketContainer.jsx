@@ -289,6 +289,8 @@ class SingleTicketContainer extends React.Component {
   }
 
   keydownHandler(e){
+    console.log('Нажаты Enter + ctrl')
+    console.log(e.keyCode + ' ' + e.ctrlKey)
     if(e.keyCode===13 && e.ctrlKey) this.onCommentNoteSubmit(e, 'comment')
   }
 

@@ -170,6 +170,7 @@ function bindImapReady() {
                 })
                 let mailsCount = 0
                 let messagesCount = 0
+                let attachmentsInMail = false
                 f.on('message', function (msg) {
                   msg.on('body', function (stream) {
                     var buffer = ''
@@ -189,6 +190,7 @@ function bindImapReady() {
 
                         if (mail?.attachments.length !== 0) {
                           message.attachments = mail.attachments
+                          attachmentsInMail = true
                         }
 
                         if (mail.subject) {
@@ -243,13 +245,7 @@ function bindImapReady() {
                   mailCheck.Imap.addFlags(results, flag, function () {
                     mailCheck.Imap.closeBox(true, function () {
                       mailCheck.Imap.end();
-                      let attachmentsInMessages = false
-                      for (const messagesMails of mailCheck.messages) {
-                        if (messagesMails.attachments && messagesMails.attachments.length !== 0) {
-                          attachmentsInMessages = true
-                        }
-                      }
-                      if (!attachmentsInMessages) {
+                      if (!attachmentsInMail &&  mailsCount == messagesCount) {
                         handleMessages(mailCheck.messages, function () {
                           mailCheck.Imap.destroy()
                         })
@@ -632,11 +628,11 @@ function handleMessages(messages, done) {
                   async function (err, ticket) {
                     if (err) {
                       winston.warn('Failed to create ticket from email: ' + err)
-                      try{
+                      try {
                         return callback(err)
-                      }catch{
+                      } catch {
                         winston.warn('Callback уже вызван')
-                      }    
+                      }
                     }
 
                     if (!fs.existsSync(`${pathUpload}`)) {
@@ -646,7 +642,13 @@ function handleMessages(messages, done) {
                       })
                     }
 
+                    emitter.emit('ticket:created', {
+                      socketId: '',
+                      ticket: ticket
+                    })
+
                     if (message.attachments) {
+
                       await fs.mkdir(`${pathUpload}/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
                         console.log('Папка успешно создана');
@@ -674,9 +676,9 @@ function handleMessages(messages, done) {
                           }
                         } catch (err) {
                           winston.warn(err)
-                          try{
+                          try {
                             return callback(err)
-                          }catch{
+                          } catch {
                             winston.warn('Callback уже вызван')
                           }
                         }
@@ -685,31 +687,21 @@ function handleMessages(messages, done) {
                           if (err) {
                             fs.unlinkSync(attachment.path)
                             winston.warn(err)
-                            try{
+                            try {
                               return callback(err)
-                            }catch{
+                            } catch {
                               winston.warn('Callback уже вызван')
                             }
                           }
 
-                          emitter.emit('ticket:created', {
-                            socketId: '',
-                            ticket: ticket
-                          })
-
                         })
                       });
-
-                    } else {
-                      emitter.emit('ticket:created', {
-                        socketId: '',
-                        ticket: ticket
-                      })
                     }
+
                     count++
-                    try{
+                    try {
                       return callback(err)
-                    }catch{
+                    } catch {
                       winston.warn('Callback уже вызван')
                     }
                   }
@@ -725,8 +717,6 @@ function handleMessages(messages, done) {
         )
 
       }
-
-
     }
   })
 }
