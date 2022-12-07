@@ -256,6 +256,11 @@ events.onSetAssignee = function (socket) {
                 hostname: socket.handshake.headers.host
               })
 
+              emitter.emit('ticket:assignee:changed', {
+                ticket: ticket,
+                hostname: socket.handshake.headers.host
+              })
+
               // emitter.emit('ticket:updated', ticket)
               utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, ticket)
             })

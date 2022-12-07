@@ -32,6 +32,7 @@ const templateSchema = require('../models/template')
 const logger = require('../logger')
 const eventTicketCreated = require('./events/event_ticket_created')
 const eventUserCreated = require('./events/event_user_created')
+const eventTicketAssigneChanged = require('./events/event_ticket_assignee_changed')
 const fs = require('fs-extra')
 
 
@@ -41,6 +42,11 @@ const fs = require('fs-extra')
     emitter.on('ticket:created', async function (data) {
       await eventTicketCreated(data)
     })
+
+    emitter.on('ticket:assignee:changed', async function (data) {
+      await eventTicketAssigneChanged(data)
+    })
+
     emitter.on('user:created', async function (data) {
       await eventUserCreated(data)
     })

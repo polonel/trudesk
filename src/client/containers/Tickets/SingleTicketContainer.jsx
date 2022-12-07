@@ -190,7 +190,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   onCommentNoteSubmit(e, type) {
-    // e.preventDefault()
+    e.preventDefault()
     const isNote = type === 'note'
     let newComment
     let attachmentsBoolean = false
@@ -288,9 +288,7 @@ class SingleTicketContainer extends React.Component {
       : ''
   }
 
-  keydownHandler(e){
-    console.log('Нажаты Enter + ctrl')
-    console.log(e.keyCode + ' ' + e.ctrlKey)
+  keydownHandler = (e)=>{
     if(e.keyCode===13 && e.ctrlKey) this.onCommentNoteSubmit(e, 'comment')
   }
 
