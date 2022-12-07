@@ -125,6 +125,7 @@ class SingleTicketContainer extends React.Component {
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
+    document.addEventListener('keydown',this.keydownHandler);
   }
 
   componentDidUpdate() {
@@ -140,7 +141,7 @@ class SingleTicketContainer extends React.Component {
     this.props.socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
     this.props.socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
     this.props.socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
-
+    document.removeEventListener('keydown',this.keydownHandler);
     this.props.unloadGroups()
   }
   updateData = (attachments) => {
@@ -285,6 +286,10 @@ class SingleTicketContainer extends React.Component {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
       : ''
+  }
+
+  keydownHandler(e){
+    if(e.keyCode===13 && e.ctrlKey) this.onCommentNoteSubmit(e, 'comment')
   }
 
   statusToName = status => {
