@@ -225,33 +225,6 @@ commonV2.sendNotificationChatwoot = async function (req, res) {
   })
 }
 
-commonV2.postMessageChatwoot = async function (req, res) {
-  Setting.findOne({ name: 'chatwootSettings:url' }, async (err, setting) => {
-
-    if (err) {
-      return apiUtils.sendApiError(res, 500, error.message)
-    }
-
-    const config = {
-      method: 'Post',
-      url: `${setting.value}/api/v1/accounts/${req.body.accountID}/conversations/${req.body.conversationID}/messages`,
-      headers: {
-        'api_access_token': req.body.chatwootApiKey,
-        'Content-Type': 'application/json',
-      },
-      data: req.body.message
-    };
-
-    axios(config)
-      .then((response) => {
-        return response
-      })
-      .catch((error) => {
-        return apiUtils.sendApiError(res, 500, error.message)
-      });
-  })
-}
-
 commonV2.token = async (req, res) => {
   const refreshToken = req.body.refreshToken
   if (!refreshToken) return apiUtils.sendApiError_InvalidPostData(res)
