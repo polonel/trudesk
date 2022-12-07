@@ -234,7 +234,7 @@ class Mailer_MailerCheck extends React.Component {
               <label>Mail Server</label>
               <input
                 type='text'
-                className={'md-input md-input-width-medium'}
+                className={'md-input md-input-width-medium'} 
                 name={'mailerCheckHost'}
                 value={this.state.mailerCheckHost}
                 onChange={e => this.onInputValueChanged(e, 'mailerCheckHost')}

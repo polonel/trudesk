@@ -133,6 +133,7 @@ util.getSettings = async callback => {
         s.ldapPassword = parseSetting(settings, 'ldapSettings:password', '')
 
         s.chatwootSettings = parseSetting(settings, 'chatwootSettings:enable', false)
+        s.chatwootUrl = parseSetting(settings, 'chatwootSettings:url', '')
         s.chatwootMessageTemplate = parseSetting(settings, 'chatwootSettings:messageTemplate', '')
         s.chatwootStatusChangeMessageTemplate = parseSetting(settings, 'chatwootSettings:statusChangeMessageTemplate', '')
         //-- ShaturaPro LIN 22.08.2022

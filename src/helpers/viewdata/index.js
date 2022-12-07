@@ -395,7 +395,7 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.chatwootSettings= res.data.settings.chatwootSettings.value
+          viewdata.chatwootSettings = res.data.settings.chatwootSettings.value
 
           return callback()
         })
@@ -404,7 +404,7 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.chatwootMessageTemplate= res.data.settings.chatwootMessageTemplate.value
+          viewdata.chatwootMessageTemplate = res.data.settings.chatwootMessageTemplate.value
 
           return callback()
         })
@@ -413,7 +413,16 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.chatwootStatusChangeMessageTemplate= res.data.settings.chatwootStatusChangeMessageTemplate.value
+          viewdata.chatwootUrl = res.data.settings.chatwootUrl.value
+
+          return callback()
+        })
+      },
+      function (callback) {
+        settingsUtil.getSettings(function (err, res) {
+          if (err) return callback(err)
+
+          viewdata.chatwootStatusChangeMessageTemplate = res.data.settings.chatwootStatusChangeMessageTemplate.value
 
           return callback()
         })
@@ -449,17 +458,17 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.ldapBindDN= res.data.settings.ldapBindDN.value
+          viewdata.ldapBindDN = res.data.settings.ldapBindDN.value
 
           return callback()
         })
       },
-     
+
       function (callback) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.ldapPassword= res.data.settings.ldapPassword.value
+          viewdata.ldapPassword = res.data.settings.ldapPassword.value
 
           return callback()
         })
@@ -468,7 +477,7 @@ viewController.getData = function (request, cb) {
         settingsUtil.getSettings(function (err, res) {
           if (err) return callback(err)
 
-          viewdata.ldapUsername= res.data.settings.ldapUsername.value
+          viewdata.ldapUsername = res.data.settings.ldapUsername.value
 
           return callback()
         })
@@ -548,9 +557,9 @@ viewController.getConversations = function (request, callback) {
 
         const userMeta =
           convo.userMeta[
-            _.findIndex(convo.userMeta, function (item) {
-              return item.userId.toString() === request.user._id.toString()
-            })
+          _.findIndex(convo.userMeta, function (item) {
+            return item.userId.toString() === request.user._id.toString()
+          })
           ]
         if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
           return done()

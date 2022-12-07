@@ -23,7 +23,7 @@ const Mailer = require('../../mailer')
 const Email = require('email-templates')
 const templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
 
-const sendMail = async (user, assignee, emails, baseUrl, betaEnabled) => {
+const sendMail = async (assignee, emails, baseUrl, betaEnabled) => {
     let email = null
 
     if (betaEnabled) {
@@ -59,9 +59,7 @@ const sendMail = async (user, assignee, emails, baseUrl, betaEnabled) => {
     const template = await Template.findOne({ name: 'assignee-changed' })
     if (template) {
 
-        const userJSON = user.toJSON()
-
-        const context = { base_url: baseUrl, user: userJSON, assignee: assignee }
+        const context = { base_url: baseUrl, assignee: assignee }
 
         const html = await email.render('assignee-changed', context)
         const subjectParsed = global.Handlebars.compile(template.subject)(context)
@@ -79,9 +77,9 @@ const sendMail = async (user, assignee, emails, baseUrl, betaEnabled) => {
 }
 
 module.exports = async data => {
-    const assignee = ticket.assignee.name;
+    const assignee = data.ticket.assignee.fullname;
+    const ownerEmail = data.ticket.owner.email;
     try {
-        const user = data.user;
         const settings = await Setting.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
         const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
         let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
@@ -91,11 +89,11 @@ module.exports = async data => {
 
         //++ ShaturaPro LIN 14.10.2022
         const emails = []
-        if (user.email && user.email !== '') {
-            emails.push(user.email)
+        if (ownerEmail && ownerEmail !== '') {
+            emails.push(ownerEmail)
         }
 
-        if (mailerEnabled) await sendMail(user, assignee, emails, baseUrl, betaEnabled)
+        if (mailerEnabled) await sendMail(assignee, emails, baseUrl, betaEnabled)
 
     } catch (e) {
         logger.warn(`[trudesk:events:ticket:assignee:changed] - Error: ${e}`)

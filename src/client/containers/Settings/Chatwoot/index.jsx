@@ -36,7 +36,8 @@ class ChatwootSettingsController extends React.Component {
 
     this.state = {
       chatwootMessageTemplate: '',
-      chatwootStatusChangeMessageTemplate: ''
+      chatwootStatusChangeMessageTemplate: '',
+      chatwootUrl: ''
     }
 
   }
@@ -58,6 +59,8 @@ class ChatwootSettingsController extends React.Component {
         this.state.chatwootMessageTemplate = this.getSetting('chatwootMessageTemplate')
       if (this.state.chatwootStatusChangeMessageTemplate !== this.getSetting('chatwootStatusChangeMessageTemplate') && this.getSetting('chatwootStatusChangeMessageTemplate') !== true)
         this.state.chatwootStatusChangeMessageTemplate = this.getSetting('chatwootStatusChangeMessageTemplate')
+      if (this.state.chatwootUrl !== this.getSetting('chatwootUrl') && this.getSetting('chatwootUrl') !== true)
+        this.state.chatwootUrl = this.getSetting('chatwootUrl')
     }
   }
 
@@ -77,7 +80,8 @@ class ChatwootSettingsController extends React.Component {
     e.preventDefault()
     const chatwootSettings = [
       { name: 'chatwootSettings:messageTemplate', value: this.state.chatwootMessageTemplate },
-      { name: 'chatwootSettings:statusChangeMessageTemplate', value: this.state.chatwootStatusChangeMessageTemplate }
+      { name: 'chatwootSettings:statusChangeMessageTemplate', value: this.state.chatwootStatusChangeMessageTemplate },
+      { name: 'chatwootSettings:url', value: this.state.chatwootUrl },
     ]
     this.props.updateMultipleSettings(chatwootSettings);
 
@@ -132,7 +136,18 @@ class ChatwootSettingsController extends React.Component {
                     value={this.state.chatwootMessageTemplate}
                     onChange={e => this.onInputValueChanged(e, 'chatwootMessageTemplate')}
                     style={{ 'height': '200px', 'padding-top': '30px' }}
-                  // disabled={!this.getSetting('mailerCheckEnabled')}
+                    disabled={!this.getSetting('chatwootSettings')}
+                  />
+                </div>
+                <div className='uk-margin-medium-bottom'>
+                  <label>Chatwoot Url</label>
+                  <input
+                    type='text'
+                    className={'md-input md-input-width-medium'}
+                    name={'chatwootUrl'}
+                    value={this.state.chatwootUrl}
+                    onChange={e => this.onInputValueChanged(e, 'chatwootUrl')}
+                    disabled={!this.getSetting('chatwootSettings')}
                   />
                 </div>
                 <Button
