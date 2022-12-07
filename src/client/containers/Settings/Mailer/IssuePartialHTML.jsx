@@ -49,8 +49,6 @@ class IssuePartialHTML extends React.Component {
     let fullHTML = ''
     if (templateFile.type.match(textType)) {
       console.log('Прошло проверку')
-      console.log('this.templateId')
-      console.log(this.templateId)
       let reader = new FileReader();
 
       reader.readAsText(templateFile);
@@ -58,8 +56,9 @@ class IssuePartialHTML extends React.Component {
       reader.onload = function () {
         fullHTML = reader.result;
         axios
-          .put(`/api/v1/settings/mailer/template//fullHTML/${this.templateId}`, {
-            fullHTML: fullHTML
+          .put(`/api/v1/settings/mailer/template/fullHTML`, {
+            fullHTML: fullHTML,
+            templateId: this.templateId
           })
           .then(res => {
             if (res.data && res.data.success) helpers.UI.showSnackbar('Template fullHTML saved successfully')
