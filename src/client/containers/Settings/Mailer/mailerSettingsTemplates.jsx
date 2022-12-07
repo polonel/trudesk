@@ -49,9 +49,10 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
           <Button type={'submit'} text={'Save'} small={true} />
         </span>
       </div>
-      <IssuePartialHTML
-        templateId={template._id}
-      />
+      <div>
+        <IssuePartialHTML
+          templateId={template._id} />
+      </div>
     </form>
 
     <Zone extraClass={'uk-margin-medium-top'}>
@@ -195,10 +196,6 @@ class MailerSettingsTemplates extends React.Component {
           rightComponent={<h4 className={'uk-display-block uk-text-danger mt-20 mr-20'}>BETA FEATURE</h4>}
           menuItems={mappedValues}
         />
-        <div>
-          Select a text file:
-          <input type="file" id="fileInput" />
-        </div>
       </div>
     )
   }

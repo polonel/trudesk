@@ -81,15 +81,24 @@ class IssuePartialHTML extends React.Component {
   render() {
     return (
       <div className='initial-issue uk-clearfix'>
-        <Fragment>
-          <form className='form nomargin' encType='multipart/form-data'>
-            <input
-              className='hide'
-              type='file'
-              onChange={e => this.onAttachmentInputChange(e)}
-            />
-          </form>
-        </Fragment>
+       <Fragment>
+            <div
+              className={'edit-issue'}
+            >
+              <i className='material-icons'>&#xE254;</i>
+            </div>
+            <form className='form nomargin' encType='multipart/form-data'>
+              <div className='add-attachment'>
+                <i className='material-icons'>&#xE226;</i>
+              </div>
+
+              <input
+                className='hide'
+                type='file'
+                onChange={e => this.onAttachmentInputChange(e)}
+              />
+            </form>
+          </Fragment>
       </div>
     )
   }
