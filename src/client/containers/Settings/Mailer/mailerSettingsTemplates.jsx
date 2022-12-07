@@ -25,6 +25,7 @@ import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
 import EnableSwitch from 'components/Settings/EnableSwitch'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
+import IssuePartialHTML from 'containers/Settings/Mailer/IssuePartialHTML'
 
 import helpers from 'lib/helpers'
 import Zone from 'components/ZoneBox/zone'
@@ -48,6 +49,9 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
           <Button type={'submit'} text={'Save'} small={true} />
         </span>
       </div>
+      <IssuePartial
+        templateId={template._id}
+      />
     </form>
 
     <Zone extraClass={'uk-margin-medium-top'}>
@@ -193,7 +197,7 @@ class MailerSettingsTemplates extends React.Component {
         />
         <div>
           Select a text file:
-          <input type="file" id="fileInput"/>
+          <input type="file" id="fileInput" />
         </div>
       </div>
     )

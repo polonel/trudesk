@@ -37,167 +37,81 @@ const setupLinks = parent => {
 
 @observer
 class IssuePartialHTML extends React.Component {
-  @observable ticketId = ''
-  @observable status = null
-  @observable owner = null
-  @observable subject = ''
-  @observable issue = ''
-  @observable attachments = []
+  @observable templateId = ''
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
 
-    this.ticketId = this.props.ticketId
-    this.status = this.props.status
-    this.owner = this.props.owner
-    this.subject = this.props.subject
-    this.issue = this.props.issue
-    this.attachments = this.props.attachments
-    
-
-    this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
+    this.templateId = this.props.templateId
   }
 
-  componentDidMount () {
+  componentDidMount() {
     setupImages(this)
     setupLinks(this)
 
-    this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
-    if (prevProps.status !== this.props.status) this.status = this.props.status
-    if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
-    if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
-    if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
+  componentDidUpdate(prevProps) {
+    if (prevProps.templateId !== this.props.templateId) this.templateId = this.props.templateId
   }
 
-  componentWillUnmount () {
-    this.props.socket.off(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
+  componentWillUnmount() {
+
   }
 
-  onUpdateTicketAttachments (data) {
-    if (this.ticketId === data.ticket._id) {
-      this.attachments = data.ticket.attachments
+  onAttachmentInputChange(e) {
+    const templateFile = e.target.files[0]
+    const textType = /text.*/;
+    let fullHTML = ''
+    if (templateFile.type.match(textType)) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        fullHTML = reader.result;
+      }
+
+      reader.readAsText(templateFile);
+
+      axios
+        .put(`/api/v1/settings/mailer/template/${e.target.id.value}/fullHTML`, {
+          fullHTML: fullHTML
+        })
+        .then(res => {
+          if (res.data && res.data.success) helpers.UI.showSnackbar('Template fullHTML saved successfully')
+        })
+        .catch(error => {
+          const errorText = error.response ? error.response.error : error
+          helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+          Log.error(errorText, error)
+        })
+
+    } else {
+      helpers.UI.showSnackbar(`Error: неверный формат файла`, true)
     }
   }
 
-  onAttachmentInputChange (e) {
-    const formData = new FormData()
-    const attachmentFile = e.target.files[0]
-    formData.append('ticketId', this.ticketId)
-    formData.append('attachment', attachmentFile)
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    axios
-      .post(`/tickets/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        }
-      })
-      .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
-        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
+  removeAttachment(e, attachmentId) {
+
   }
 
-  removeAttachment (e, attachmentId) {
-    axios
-      .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
-      .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
-        helpers.UI.showSnackbar('Attachment Removed')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
-  }
-
-  render () {
+  render() {
     return (
       <div className='initial-issue uk-clearfix'>
-        <Avatar image={this.owner.image} userId={this.owner._id} />
-        {/* Issue */}
-        <div className='issue-text'>
-          <h3 className='subject-text'>{this.subject}</h3>
-          <a href={`mailto:${this.owner.email}`}>
-            {this.owner.fullname} &lt;{this.owner.email}&gt;
-          </a>
-          <br />
-          <time dateTime={helpers.formatDate(this.props.date, 'YYYY-MM-DD HH:mm')}>
-            {helpers.formatDate(this.props.date, this.props.dateFormat)}
-          </time>
-          <br />
-          {/* Attachments */}
-          <ul className='attachments'>
-            {this.attachments &&
-              this.attachments.map(attachment => (
-                <li key={attachment._id}>
-                  <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
-                    {attachment.name}
-                  </a>
-                  {this.status !== 3 && (
-                    <a
-                      role='button'
-                      className={'remove-attachment'}
-                      onClick={e => this.removeAttachment(e, attachment._id)}
-                    >
-                      <i className='fa fa-remove' />
-                    </a>
-                  )}
-                </li>
-              ))}
-          </ul>
-          <div className='issue-body' ref={r => (this.issueBody = r)}>
-            {ReactHtmlParser(this.issue)}
-          </div>
-        </div>
-        {/* Permissions on Fragment for edit */}
-        {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
-          <Fragment>
-            <div
-              className={'edit-issue'}
-              onClick={() => {
-                if (this.props.editorWindow)
-                  this.props.editorWindow.openEditorWindow({
-                    subject: this.subject,
-                    text: this.issue,
-                    onPrimaryClick: data => {
-                      this.props.socket.emit(TICKETS_ISSUE_SET, {
-                        _id: this.ticketId,
-                        value: data.text,
-                        subject: data.subjectText
-                      })
-                    }
-                  })
-              }}
-            >
-              <i className='material-icons'>&#xE254;</i>
+        <Fragment>
+          <form className='form nomargin' encType='multipart/form-data'>
+            <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
+              <i className='material-icons'>&#xE226;</i>
             </div>
-            <form className='form nomargin' encType='multipart/form-data'>
-              <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons'>&#xE226;</i>
-              </div>
 
-              <input
-                ref={r => (this.attachmentInput = r)}
-                className='hide'
-                type='file'
-                onChange={e => this.onAttachmentInputChange(e)}
-              />
-            </form>
-          </Fragment>
-        )}
+            <input
+              ref={r => (this.attachmentInput = r)}
+              className='hide'
+              type='file'
+              onChange={e => this.onAttachmentInputChange(e)}
+            />
+          </form>
+        </Fragment>
       </div>
     )
   }

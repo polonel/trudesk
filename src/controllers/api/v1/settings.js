@@ -177,6 +177,25 @@ apiSettings.updateTemplateSubject = function (req, res) {
   })
 }
 
+apiSettings.updateTemplateFullHTML = function (req, res) {
+  var templateSchema = require('../../../models/template')
+  var id = req.params.id
+  var fullHTML = req.body.fullHTML
+  if (!fullHTML) return res.status(400).json({ sucess: false, error: 'Invalid PUT data' })
+  fullHTML = fullHTML.trim()
+
+  templateSchema.findOne({ _id: id }, function (err, template) {
+    if (err) return defaultApiResponse(err, res)
+    if (!template) return res.status(404).json({ success: false, error: 'No Template Found' })
+
+    template.fullHTML = fullHTML
+
+    template.save(function (err) {
+      return defaultApiResponse(err, res)
+    })
+  })
+}
+
 apiSettings.buildsass = function (req, res) {
   var buildsass = require('../../../sass/buildsass')
   buildsass.build(function (err) {
