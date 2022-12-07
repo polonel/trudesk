@@ -56,6 +56,18 @@ class IssuePartialHTML extends React.Component {
 
       reader.onload = function () {
         fullHTML = reader.result;
+        axios
+          .put(`/api/v1/settings/mailer/template/${this.templateId}/fullHTML`, {
+            fullHTML: fullHTML
+          })
+          .then(res => {
+            if (res.data && res.data.success) helpers.UI.showSnackbar('Template fullHTML saved successfully')
+          })
+          .catch(error => {
+            const errorText = error.response ? error.response.error : error
+            helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+            Log.error(errorText, error)
+          })
       };
 
       reader.onerror = function () {
@@ -63,18 +75,6 @@ class IssuePartialHTML extends React.Component {
       };
 
 
-      axios
-        .put(`/api/v1/settings/mailer/template/${e.target.id.value}/fullHTML`, {
-          fullHTML: fullHTML
-        })
-        .then(res => {
-          if (res.data && res.data.success) helpers.UI.showSnackbar('Template fullHTML saved successfully')
-        })
-        .catch(error => {
-          const errorText = error.response ? error.response.error : error
-          helpers.UI.showSnackbar(`Error: ${errorText}`, true)
-          Log.error(errorText, error)
-        })
 
     } else {
       helpers.UI.showSnackbar(`Error: неверный формат файла`, true)
