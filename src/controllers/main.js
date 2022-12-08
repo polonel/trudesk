@@ -103,7 +103,10 @@ mainController.changeMappingOrCreate = function (req, res) {
       message: err.message
     })
 
-    let chatwootSetting = setting.value;
+    let chatwootSetting
+    if (setting) {
+      chatwootSetting = setting.value;
+    }
 
     if (chatwootSetting) {
       if (req.user.chatwootApiKey) {
