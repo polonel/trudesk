@@ -23,6 +23,7 @@ import axios from 'axios'
 import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
 import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
+import { fetchSettings } from 'actions/settings'
 
 import PageTitle from 'components/PageTitle'
 import Table from 'components/Table'
@@ -60,7 +61,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
-
+    this.props.fetchSettings()
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
@@ -489,7 +490,8 @@ const mapStateToProps = state => ({
   nextPage: state.ticketsState.nextPage,
   loading: state.ticketsState.loading,
   common: state.common,
-  socket: state.shared.socket
+  socket: state.shared.socket,
+  settings: state.settings.settings
 })
 
 export default connect(mapStateToProps, {
@@ -499,5 +501,6 @@ export default connect(mapStateToProps, {
   unloadTickets,
   ticketUpdated,
   fetchSearchResults,
-  showModal
+  showModal,
+  fetchSettings,
 })(TicketsContainer)
