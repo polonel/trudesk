@@ -562,6 +562,7 @@ function mailTemplates(callback) {
   var passwordReset = require('./json/mailer-password-reset')
   var statusChanged = require('./json/mailer-status-changed')
   var commentAdded = require('./json/mailer-comment-added')
+  var assigneeChanged = require('./json/mailer-assignee-changed')
   var userCreated = require('./json/mailer-user-created')
   var newPassword = require('./json/mailer-new-password.json')
   var templateSchema = require('../models/template')
@@ -628,6 +629,16 @@ function mailTemplates(callback) {
         })
       }
     ],
+    function (done) {
+      templateSchema.findOne({ name: assigneeChanged.name }, function (err, templates) {
+        if (err) return done(err)
+        if (!templates || templates.length < 1) {
+          return templateSchema.create(assigneeChanged, done)
+        }
+
+        return done()
+      })
+    },
     callback
   )
 }

@@ -23,7 +23,7 @@ const socketEventConsts = require('../../../socketio/socketEventConsts')
 
 var apiSettings = {}
 
-function defaultApiResponse (err, res) {
+function defaultApiResponse(err, res) {
   if (err) return res.status(400).json({ success: false, error: err })
 
   return res.json({ success: true })
@@ -184,14 +184,22 @@ apiSettings.updateTemplateFullHTML = function (req, res) {
   if (!fullHTML) return res.status(400).json({ sucess: false, error: 'Invalid PUT data' })
   fullHTML = fullHTML.trim()
 
+
   templateSchema.findOne({ _id: id }, function (err, template) {
     if (err) return defaultApiResponse(err, res)
     if (!template) return res.status(404).json({ success: false, error: 'No Template Found' })
 
-    template.data['gjs-fullHTML'] = fullHTML
-
-    template.save(function (err) {
-      return defaultApiResponse(err, res)
+    template.data['gjs-fullHtml'] = fullHTML
+    const updateTemplate = {
+      name: template.name,
+      displayName: template.displayName,
+      description: template.description,
+      subject: template.subject,
+      data: template.data
+    }
+    templateSchema.deleteOne({ _id: id }, function (err) {
+      if (err) return defaultApiResponse(err, res)
+      return templateSchema.create(updateTemplate)
     })
   })
 }

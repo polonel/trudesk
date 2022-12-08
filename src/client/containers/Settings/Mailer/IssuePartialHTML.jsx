@@ -91,7 +91,7 @@ class IssuePartialHTML extends React.Component {
     
             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
               {/* <i className='material-icons'>&#xE226;</i> */}
-              <Button text={'Download template'} small={true}/>
+              <Button text={'Upload'} small={true}/>
             </div>
             <input
               ref={r => (this.attachmentInput = r)}
