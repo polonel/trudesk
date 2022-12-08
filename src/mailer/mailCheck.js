@@ -28,7 +28,8 @@ const ticketTypeSchema = require('../models/tickettype')
 const Ticket = require('../models/ticket')
 const settingSchema = require('../models/setting')
 const path = require('path')
-const pathUpload = path.join(__dirname, `../../public/uploads/tickets`)
+const pathUploads = path.join(__dirname, `../../public/uploads`)
+const pathUploadsTickets = path.join(__dirname, `../../public/uploads/tickets`)
 
 const mailCheck = {}
 mailCheck.inbox = []
@@ -375,13 +376,13 @@ function handleMessages(messages, done) {
                   comment.comment == Comment.comment
               })[0]._id
 
-              const pathUploadTicket = `${pathUpload}/${t._id}`;
-              const pathUploadComments = `${pathUpload}/${t._id}/comments`;
-              const pathUploadCommentId = `${pathUpload}/${t._id}/comments/${commentId}`;
+              const pathUploadTicket = `${pathUploadsTickets}/${t._id}`;
+              const pathUploadComments = `${pathUploadsTickets}/${t._id}/comments`;
+              const pathUploadCommentId = `${pathUploadsTickets}/${t._id}/comments/${commentId}`;
 
               try {
                 if (!fs.existsSync(pathUploadTicket)) {
-                  await fs.mkdir(`${pathUpload}/${t._id}`, function (err) {
+                  await fs.mkdir(`${pathUploadsTickets}/${t._id}`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadTicket}`)
                     return true
@@ -389,7 +390,7 @@ function handleMessages(messages, done) {
                 }
 
                 if (!fs.existsSync(pathUploadComments)) {
-                  await fs.mkdir(`${pathUpload}/${t._id}/comments`, function (err) {
+                  await fs.mkdir(`${pathUploadsTickets}/${t._id}/comments`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadComments}`)
                     return true
@@ -397,7 +398,7 @@ function handleMessages(messages, done) {
                 }
 
                 if (!fs.existsSync(pathUploadCommentId)) {
-                  await fs.mkdir(`${pathUpload}/${t._id}/comments/${commentId}`, function (err) {
+                  await fs.mkdir(`${pathUploadsTickets}/${t._id}/comments/${commentId}`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
                     return true
@@ -414,7 +415,7 @@ function handleMessages(messages, done) {
                 for (const attachmentFromMessage of message.attachments) {
                   let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
-                  await fs.writeFileSync(`${pathUpload}/${t._id}/comments/${commentId}/${sanitizedFilename}`, attachmentFromMessage.content);
+                  await fs.writeFileSync(`${pathUploadsTickets}/${t._id}/comments/${commentId}/${sanitizedFilename}`, attachmentFromMessage.content);
 
                   const attachment = {
                     owner: Comment.owner,
@@ -635,8 +636,15 @@ function handleMessages(messages, done) {
                       }
                     }
 
-                    if (!fs.existsSync(`${pathUpload}`)) {
-                      await fs.mkdir(`${pathUpload}`, err => {
+                    if (!fs.existsSync(`${pathUploads}`)) {
+                      await fs.mkdir(`${pathUploads}`, err => {
+                        if (err) console.log(err)
+                        console.log('Папка успешно создана: ' + '/uploads');
+                      })
+                    }
+
+                    if (!fs.existsSync(`${pathUploadsTickets}`)) {
+                      await fs.mkdir(`${pathUploadsTickets}`, err => {
                         if (err) console.log(err)
                         console.log('Папка успешно создана: ' + '/uploads/tickets');
                       })
@@ -649,14 +657,14 @@ function handleMessages(messages, done) {
 
                     if (message.attachments) {
 
-                      await fs.mkdir(`${pathUpload}/${ticket._id}/`, err => {
+                      await fs.mkdir(`${pathUploadsTickets}/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
                         console.log('Папка успешно создана');
                         try {
                           for (const attachmentFromMessage of message.attachments) {
                             let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
-                            fs.writeFileSync(`${pathUpload}/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
+                            fs.writeFileSync(`${pathUploadsTickets}/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
 
                             const attachment = {
                               owner: message.owner._id,
