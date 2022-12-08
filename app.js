@@ -60,7 +60,7 @@ checkForOldConfig()
 
 const configExists = fs.existsSync(configFile)
 
-function launchInstallServer () {
+function launchInstallServer() {
   // Load the defaults for the install server
   nconf.defaults({
     tokens: {
@@ -78,7 +78,7 @@ if (nconf.get('install') || (!configExists && !isDocker)) {
   launchInstallServer()
 }
 
-function loadConfig () {
+function loadConfig() {
   nconf.file({
     file: configFile,
     format: require('nconf-yaml')
@@ -94,7 +94,7 @@ function loadConfig () {
   })
 }
 
-function checkForOldConfig () {
+function checkForOldConfig() {
   const oldConfigFile = path.join(__dirname, '/config.json')
   if (fs.existsSync(oldConfigFile)) {
     // Convert config to yaml.
@@ -109,7 +109,7 @@ function checkForOldConfig () {
   }
 }
 
-function start () {
+function start() {
   if (!isDocker) loadConfig()
   if (isDocker) {
     // Load some defaults for JWT token that is missing when using docker
@@ -137,7 +137,7 @@ function start () {
   })
 }
 
-function launchServer (db) {
+function launchServer(db) {
   const ws = require('./src/webserver')
   ws.init(db, function (err) {
     if (err) {
@@ -154,12 +154,22 @@ function launchServer (db) {
           require('./src/permissions').register(next)
         },
         function (next) {
-          require('./src/elasticsearch').init(function (err) {
+          const settingSchema = require('./src/models/setting')
+          settingSchema.getSetting('es:enable', function (err, EsEnabled) {
             if (err) {
-              winston.error(err)
+              winston.warn(err)
+              return next(err)
             }
-
-            return next()
+            if (EsEnabled && EsEnabled.value) {
+              require('./src/elasticsearch').init(function (err) {
+                if (err) {
+                  winston.error(err)
+                }
+                return next()
+              })
+            } else {
+              return next()
+            }
           })
         },
         function (next) {
@@ -236,7 +246,7 @@ function launchServer (db) {
   })
 }
 
-function dbCallback (err, db) {
+function dbCallback(err, db) {
   if (err || !db) {
     return start()
   }
