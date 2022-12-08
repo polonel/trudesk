@@ -163,6 +163,12 @@ class TicketsContainer extends React.Component {
     this._clearChecked()
   }
 
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : ''
+  }
+
   onSearchTermChanged (e) {
     this.searchTerm = e.target.value
     if (this.searchTerm.length > 3) {
@@ -297,6 +303,7 @@ class TicketsContainer extends React.Component {
                     )}
                   </Dropdown>
                 </DropdownTrigger>
+                {this.getSetting('es:enable') && (
                 <div className={'uk-float-right'}>
                   <div
                     id={'ticket-search-box'}
@@ -313,7 +320,8 @@ class TicketsContainer extends React.Component {
                       onFocus={e => this._onSearchFocus(e)}
                     />
                   </div>
-                </div>
+                </div>)}
+
               </div>
               <SearchResults target={'#ticket-search-box'} ref={r => (this.searchContainer = r)} />
             </div>
