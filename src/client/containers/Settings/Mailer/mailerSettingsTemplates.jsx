@@ -49,30 +49,31 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
           <Button type={'submit'} text={'Save'} small={true} />
         </span>
       </div>
-      <div>
-        <IssuePartialHTML
-          templateId={template._id} />
-      </div>
+
     </form>
 
     <Zone extraClass={'uk-margin-medium-top'}>
       <ZoneBox>
         <div className={'uk-float-left'}>
-          <h6 style={{ margin: 0, fontSize: '16px', lineHeight: '14px' }}>Edit Template (Disabled)</h6>
+          <h6 style={{ margin: 0, fontSize: '16px', lineHeight: '14px' }}>Edit Template</h6>
           <h5 className={'uk-text-muted'} style={{ margin: '2px 0 0 0', fontSize: '12px' }}>
             Customize template - Currently disabled
           </h5>
         </div>
         <div className='uk-float-right uk-width-1-3 uk-clearfix'>
           <div className='uk-width-1-1 uk-float-right' style={{ textAlign: 'right' }}>
-            <button
+            {/* <button
               className={'md-btn md-btn-small right disabled'}
               style={{ textTransform: 'none' }}
               onClick={handleOpenEditor}
               disabled={false}
-            >
-              Open Editor
-            </button>
+            > */}
+            <div>
+              <IssuePartialHTML
+                templateId={template._id} />
+            </div>
+            {/* Open Editor */}
+            {/* </button> */}
           </div>
         </div>
       </ZoneBox>
