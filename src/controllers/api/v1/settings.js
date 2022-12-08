@@ -180,7 +180,7 @@ apiSettings.updateTemplateSubject = function (req, res) {
 apiSettings.updateTemplateFullHTML = function (req, res) {
   var templateSchema = require('../../../models/template')
   var id = req.params.id
-  
+
   var fullHTML = req.body.fullHTML
   if (!fullHTML) return res.status(400).json({ sucess: false, error: 'Invalid PUT data' })
   fullHTML = fullHTML.trim()
@@ -202,6 +202,7 @@ apiSettings.updateTemplateFullHTML = function (req, res) {
       if (err) return defaultApiResponse(err, res)
       return templateSchema.create(updateTemplate)
     })
+    return res.json({ success: true})
   })
 }
 

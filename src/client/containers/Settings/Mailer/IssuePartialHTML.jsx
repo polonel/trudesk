@@ -63,6 +63,7 @@ class IssuePartialHTML extends React.Component {
           })
           .then(res => {
             if (res.data && res.data.success) helpers.UI.showSnackbar('Template fullHTML saved successfully')
+            window.location.reload()
           })
           .catch(error => {
             const errorText = error.response ? error.response.error : error
