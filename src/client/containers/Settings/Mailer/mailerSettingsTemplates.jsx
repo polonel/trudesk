@@ -57,7 +57,7 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
         <div className={'uk-float-left'}>
           <h6 style={{ margin: 0, fontSize: '16px', lineHeight: '14px' }}>Edit Template</h6>
           <h5 className={'uk-text-muted'} style={{ margin: '2px 0 0 0', fontSize: '12px' }}>
-            Customize template - Currently disabled
+            Customize template
           </h5>
         </div>
         <div className='uk-float-right uk-width-1-3 uk-clearfix'>
