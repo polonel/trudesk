@@ -16,6 +16,7 @@ import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 
+import Button from 'components/Button'
 import helpers from 'lib/helpers'
 import axios from 'axios'
 import Log from '../../../logger'
@@ -47,6 +48,7 @@ class IssuePartialHTML extends React.Component {
     const templateFile = e.target.files[0]
     const textType = /text.*/;
     let fullHTML = ''
+    const templateId = this.templateId
     if (templateFile.type.match(textType)) {
       console.log('Прошло проверку')
       let reader = new FileReader();
@@ -56,9 +58,8 @@ class IssuePartialHTML extends React.Component {
       reader.onload = function () {
         fullHTML = reader.result;
         axios
-          .put(`/api/v1/settings/mailer/template/fullHTML`, {
-            fullHTML: fullHTML,
-            templateId: this.templateId
+          .put(`/api/v1/settings/mailer/template/${templateId}/fullHTML`, {
+            fullHTML: fullHTML
           })
           .then(res => {
             if (res.data && res.data.success) helpers.UI.showSnackbar('Template fullHTML saved successfully')
@@ -73,8 +74,6 @@ class IssuePartialHTML extends React.Component {
       reader.onerror = function () {
         console.log(reader.error);
       };
-
-
 
     } else {
       helpers.UI.showSnackbar(`Error: неверный формат файла`, true)
@@ -91,15 +90,17 @@ class IssuePartialHTML extends React.Component {
         <Fragment>
           <form className='form nomargin' encType='multipart/form-data'>
             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-              <i className='material-icons'>&#xE226;</i>
+              {/* <i className='material-icons'>&#xE226;</i> */}
             </div>
-
+            <Button type={'submit'} text={'Save'} small={true}>
             <input
               ref={r => (this.attachmentInput = r)}
               className='hide'
               type='file'
               onChange={e => this.onAttachmentInputChange(e)}
             />
+            </Button>
+          
           </form>
         </Fragment>
       </div>
