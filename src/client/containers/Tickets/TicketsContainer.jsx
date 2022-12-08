@@ -304,7 +304,7 @@ class TicketsContainer extends React.Component {
                     )}
                   </Dropdown>
                 </DropdownTrigger>
-                {this.getSetting('es:enable') && (
+                {this.getSetting('elasticSearchEnabled') && (
                 <div className={'uk-float-right'}>
                   <div
                     id={'ticket-search-box'}
