@@ -53,7 +53,7 @@ module.exports = function (app, db, callback) {
   global.Handlebars = hbs.handlebars
 
   // app.use(bodyParser.json({ limit: '500mb'}))
-  app.use(bodyParser.json({ limit: '50mb'}));
+  app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({
     limit: '50mb',
     parameterLimit: 100000,
@@ -180,6 +180,13 @@ module.exports = function (app, db, callback) {
       callback(middleware, s)
     }
   )
+  app.use((error, req, res, next) => {
+    res.status(error.status || 500)
+    res.json({
+      status: error.status,
+      message: error.message
+    })
+  })
 }
 
 function allowCrossDomain(req, res, next) {
