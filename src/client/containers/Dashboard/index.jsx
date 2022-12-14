@@ -174,7 +174,7 @@ class DashboardContainer extends React.Component {
                       height={250}
                       x_accessor={'date'}
                       y_accessor={'value'}
-                      data={this.props.dashboardState.ticketBreakdownData.toJS() || []}
+                      data={this.props.dashboardState?.ticketBreakdownData?.toJS() || []}
                     />
                   </div>
                 }
@@ -192,7 +192,7 @@ class DashboardContainer extends React.Component {
                 }
                 content={
                   <div>
-                    <D3Pie data={this.props.dashboardState.topGroups.toJS() || []} />
+                    <D3Pie data={this.props.dashboardState?.topGroups?.toJS() || []} />
                   </div>
                 }
               />
@@ -210,7 +210,7 @@ class DashboardContainer extends React.Component {
                 }
                 content={
                   <div>
-                    <D3Pie type={'donut'} data={this.props.dashboardState.topTags.toJS() || []} />
+                    <D3Pie type={'donut'} data={this.props.dashboardState?.topTags?.toJS() || []} />
                   </div>
                 }
               />

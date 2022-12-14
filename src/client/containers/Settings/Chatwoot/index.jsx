@@ -106,6 +106,21 @@ class ChatwootSettingsController extends React.Component {
           }
         >
         </SettingItem>
+        <SettingItem
+          title={'Chatwoot URL'}
+        >
+          <div className='uk-margin-medium-bottom'>
+            <input
+              type='text'
+              className={'md-input md-input-width-medium'}
+              name={'chatwootUrl'}
+              value={this.state.chatwootUrl}
+              onChange={e => this.onInputValueChanged(e, 'chatwootUrl')}
+              disabled={!this.getSetting('chatwootSettings')}
+            />
+          </div>
+        </SettingItem>
+
         <div className={active ? 'active' : 'hide'}>
           <div>
             <SettingItem
@@ -128,17 +143,6 @@ class ChatwootSettingsController extends React.Component {
               `}
             >
               <form onSubmit={e => this.onFormSubmit(e)}>
-                <div className='uk-margin-medium-bottom'>
-                  <label>Chatwoot URL</label>
-                  <input
-                    type='text'
-                    className={'md-input md-input-width-medium'}
-                    name={'chatwootUrl'}
-                    value={this.state.chatwootUrl}
-                    onChange={e => this.onInputValueChanged(e, 'chatwootUrl')}
-                    disabled={!this.getSetting('chatwootSettings')}
-                  />
-                </div>
                 <div className='uk-margin-medium-bottom'>
                   <textarea
                     type='text'
