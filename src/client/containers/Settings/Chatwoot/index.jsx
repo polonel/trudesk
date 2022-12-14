@@ -109,7 +109,6 @@ class ChatwootSettingsController extends React.Component {
         <SettingItem
           title={'Chatwoot URL'}
         >
-          <div className='uk-margin-medium-bottom'>
             <input
               type='text'
               className={'md-input md-input-width-medium'}
@@ -118,7 +117,6 @@ class ChatwootSettingsController extends React.Component {
               onChange={e => this.onInputValueChanged(e, 'chatwootUrl')}
               disabled={!this.getSetting('chatwootSettings')}
             />
-          </div>
         </SettingItem>
 
         <div className={active ? 'active' : 'hide'}>
