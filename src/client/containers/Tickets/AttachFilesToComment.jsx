@@ -99,20 +99,24 @@ class AttachFilesToComment extends React.Component {
 
     onAttachmentInputChange(e) {
         const attachmentFile = e.target.files[0]
-        this.attachments.push(attachmentFile)
-        this.props.updateData(this.attachments)
+        if (attachmentFile) {
+            this.attachments.push(attachmentFile)
+            this.props.updateData(this.attachments)
+        }
     }
 
     removeAttachment(e, attachment) {
-        this.attachments.splice(this.attachments.indexOf(attachment),1)
-        this.props.updateData(this.attachments)
+        if (attachment) {
+            this.attachments.splice(this.attachments.indexOf(attachment), 1)
+            this.props.updateData(this.attachments)
+        }
     }
 
     render() {
         return (
             <div className='ticket-comment'>
-               <div className='comments-wrapper'>    
-                    <a className='comment-email-link' >  
+                <div className='comments-wrapper'>
+                    <a className='comment-email-link' >
                     </a>
                     {/* Attachments */}
                     <ul className='attachments'>
@@ -143,7 +147,7 @@ class AttachFilesToComment extends React.Component {
                     <Fragment>
                         <form className='form nomargin' encType='multipart/form-data'>
                             <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                                <i className='material-icons' style={{ marginTop: -8, marginRight:-25 }}>&#xE226;</i>
+                                <i className='material-icons' style={{ marginTop: -8, marginRight: -25 }}>&#xE226;</i>
                             </div>
 
                             <input
@@ -155,9 +159,9 @@ class AttachFilesToComment extends React.Component {
                         </form>
                     </Fragment>
                     {/* )} */}
-                    </div>
                 </div>
-         
+            </div>
+
         )
     }
 }

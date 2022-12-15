@@ -44,7 +44,7 @@ class IssuePartial extends React.Component {
   @observable issue = ''
   @observable attachments = []
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     makeObservable(this)
 
@@ -54,19 +54,19 @@ class IssuePartial extends React.Component {
     this.subject = this.props.subject
     this.issue = this.props.issue
     this.attachments = this.props.attachments
-    
+
 
     this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     setupImages(this)
     setupLinks(this)
 
     this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
     if (prevProps.status !== this.props.status) this.status = this.props.status
     if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
@@ -75,41 +75,45 @@ class IssuePartial extends React.Component {
     if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.socket.off(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
   }
 
-  onUpdateTicketAttachments (data) {
+  onUpdateTicketAttachments(data) {
     if (this.ticketId === data.ticket._id) {
       this.attachments = data.ticket.attachments
     }
   }
 
-  onAttachmentInputChange (e) {
-    const formData = new FormData()
+  onAttachmentInputChange(e) {
+
     const attachmentFile = e.target.files[0]
-    formData.append('ticketId', this.ticketId)
-    formData.append('attachment', attachmentFile)
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    axios
-      .post(`/tickets/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        }
-      })
-      .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
-        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
+    if (attachmentFile) {
+      const formData = new FormData()
+      formData.append('ticketId', this.ticketId)
+      formData.append('attachment', attachmentFile)
+      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      axios
+        .post(`/tickets/uploadattachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'CSRF-TOKEN': token
+          }
+        })
+        .then(() => {
+          this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+        })
+        .catch(error => {
+          Log.error(error)
+          if (error.response) Log.error(error.response)
+          helpers.UI.showSnackbar(error, true)
+        })
+    }
+
   }
 
-  removeAttachment (e, attachmentId) {
+  removeAttachment(e, attachmentId) {
     axios
       .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
       .then(() => {
@@ -123,7 +127,7 @@ class IssuePartial extends React.Component {
       })
   }
 
-  render () {
+  render() {
     return (
       <div className='initial-issue uk-clearfix'>
         <Avatar image={this.owner.image} userId={this.owner._id} />

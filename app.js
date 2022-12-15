@@ -29,7 +29,8 @@ global.forks = []
 
 nconf.argv().env()
 
-global.env = process.env.NODE_ENV || 'development'
+// global.env = process.env.NODE_ENV || 'development'
+global.env = process.env.NODE_ENV || 'production'
 
 if (!process.env.FORK) {
   winston.info('    .                              .o8                     oooo')

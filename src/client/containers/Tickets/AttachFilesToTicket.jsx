@@ -63,13 +63,17 @@ class AttachFilesToTicket extends React.Component {
 
     onAttachmentInputChange(e) {
         const attachmentFile = e.target.files[0]
-        this.attachments.push(attachmentFile)
-        this.props.updateData(attachmentFile)
+        if (attachmentFile) {
+            this.attachments.push(attachmentFile)
+            this.props.updateData(attachmentFile)
+        }
     }
 
     removeAttachment(e, attachment) {
-        this.attachments.splice(this.attachments.indexOf(attachment), 1)
-        this.props.removeData(attachment)
+        if (attachment) {
+            this.attachments.splice(this.attachments.indexOf(attachment), 1)
+            this.props.removeData(attachment)
+        }
     }
 
     render() {

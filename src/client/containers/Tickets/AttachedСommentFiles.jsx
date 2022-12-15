@@ -100,16 +100,19 @@ class AttachedСommentFiles extends React.Component {
 
   onAttachmentInputChange(e) {
     const attachmentFile = e.target.files[0]
-    this.attachments.push(attachmentFile)
-    this.props.pushAttachmentToSave(attachmentFile)
-    // this.props.updateData(this.attachments)
+    if (attachmentFile) {
+      this.attachments.push(attachmentFile)
+      this.props.pushAttachmentToSave(attachmentFile)
+      // this.props.updateData(this.attachments)
+    }
   }
 
 
   removeAttachment(e, attachment) {
-    this.attachments.splice(this.attachments.indexOf(attachment), 1)
-    this.props.pushAttachmentToRemove(attachment)
-    
+    if (attachment) {
+      this.attachments.splice(this.attachments.indexOf(attachment), 1)
+      this.props.pushAttachmentToRemove(attachment)
+    }
   }
 
   render() {
@@ -120,10 +123,10 @@ class AttachedСommentFiles extends React.Component {
     // this.attachments = commentTicket[0].attachments
     return (
       <div className='comments-wrapper'>
-      
+
         {/* Attachments */}
         <ul className='attachments'>
-          
+
           {this.attachments &&
             this.attachments.map(attachment => (
               <li key={attachment._id}>
@@ -164,8 +167,8 @@ class AttachedСommentFiles extends React.Component {
             </form>
           </Fragment>
         )} */}
-        </div>
-     
+      </div>
+
     )
   }
 }

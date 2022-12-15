@@ -124,19 +124,23 @@ class OffCanvasEditor extends React.Component {
   }
 
   pushAttachmentToRemove = (attachment) => {
-    this.attachmentsToRemove.push(attachment)
-    if (this.attachmentsToSave.length !== 0) {
-      if (this.attachmentsToSave.indexOf(attachment) !== -1) {
-        this.attachmentsToSave.splice(this.attachmentsToSave.indexOf(attachment), 1)
+    if (attachment) {
+      this.attachmentsToRemove.push(attachment)
+      if (this.attachmentsToSave.length !== 0) {
+        if (this.attachmentsToSave.indexOf(attachment) !== -1) {
+          this.attachmentsToSave.splice(this.attachmentsToSave.indexOf(attachment), 1)
+        }
       }
     }
   }
 
   pushAttachmentToSave = (attachment) => {
-    this.attachmentsToSave.push(attachment)
-    if (this.attachmentsToRemove.length !== 0) {
-      if (this.attachmentsToRemove.indexOf(attachment) !== -1) {
-        this.attachmentsToRemove.splice(this.attachmentsToRemove.indexOf(attachment), 1)
+    if (attachment) {
+      this.attachmentsToSave.push(attachment)
+      if (this.attachmentsToRemove.length !== 0) {
+        if (this.attachmentsToRemove.indexOf(attachment) !== -1) {
+          this.attachmentsToRemove.splice(this.attachmentsToRemove.indexOf(attachment), 1)
+        }
       }
     }
   }
