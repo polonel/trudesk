@@ -21,10 +21,8 @@ import { fetchSettings } from 'actions/settings'
 
 import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
-import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
 import SettingSubItem from 'components/Settings/SettingSubItem'
 import SingleSelect from 'components/SingleSelect'
-import ColorSelector from 'components/ColorSelector'
 import Zone from 'components/ZoneBox/zone'
 import ZoneBox from 'components/ZoneBox'
 
@@ -195,12 +193,17 @@ class AccountsSettingsContainer extends React.Component {
       })
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-        window.location.href = `/settings/accounts`;
+        // window.location.href = `/settings/accounts`;
+        const root = ReactDOM.createRoot(
+          document.getElementById('root')
+        );
+        root.render();
       })
       .catch(function (err) {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
-        window.location.href = `/settings/accounts`;
+        // window.location.href = `/settings/accounts`;
+        root.render();
       })
 
     // window.location.reload(true)
@@ -220,7 +223,8 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
-    window.location.href = `/settings/accounts`;
+    // window.location.href = `/settings/accounts`;
+    root.render()
   }
 
 
@@ -317,7 +321,7 @@ class AccountsSettingsContainer extends React.Component {
             />
           }
         >
-          <div>
+          <div id='LDAPSettings'>
             <form onSubmit={e => this.onFormSubmit(e)}>
               <div className='uk-margin-medium-bottom'>
                 <label>LDAP Server</label>
