@@ -25,6 +25,7 @@ import SettingSubItem from 'components/Settings/SettingSubItem'
 import SingleSelect from 'components/SingleSelect'
 import Zone from 'components/ZoneBox/zone'
 import ZoneBox from 'components/ZoneBox'
+import ReactDOM from 'react-dom';
 
 import helpers from 'lib/helpers'
 import axios from 'axios'
@@ -55,7 +56,8 @@ class AccountsSettingsContainer extends React.Component {
       ldapUsername: '',
       mapping: [],
       rolesArray: [],
-      ldapEnabled: false
+      ldapEnabled: false,
+      ldapGArray: []
     }
 
     this.restartServer = this.restartServer.bind(this)
@@ -194,10 +196,9 @@ class AccountsSettingsContainer extends React.Component {
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
         // window.location.href = `/settings/accounts`;
-        const root = ReactDOM.createRoot(
-          document.getElementById('root')
-        );
-        root.render();
+       this.setState ({
+        ldapGArray: this.getLDAPGroups()
+       })
       })
       .catch(function (err) {
         Log.error(err)
@@ -230,7 +231,7 @@ class AccountsSettingsContainer extends React.Component {
 
   render() {
     this.siteURL = this.getSetting('siteurl');
-    const ldapGArray = this.getLDAPGroups();
+    this.state.ldapGArray = this.getLDAPGroups();
     const rolesName = this.getRoles();
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
@@ -256,7 +257,7 @@ class AccountsSettingsContainer extends React.Component {
             <SingleSelect
               width='60%'
               showTextbox={false}
-              items={ldapGArray}
+              items={this.state.ldapGArray}
               defaultValue={roleGroup.ldapGroupID}
               disabled={this.state.ldapEnabled}
               onSelectChange={(e) => {
