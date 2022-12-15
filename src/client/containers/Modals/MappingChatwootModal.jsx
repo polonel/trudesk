@@ -18,13 +18,11 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { each, without, uniq } from 'lodash'
-import { fromJS, List } from 'immutable'
+import { without, uniq } from 'lodash'
 
 import Table from 'components/Table'
 import TableHeader from 'components/Table/TableHeader'
 import TableRow from 'components/Table/TableRow'
-import TitlePagination from 'components/TitlePagination'
 import PageContent from 'components/PageContent'
 import TableCell from 'components/Table/TableCell'
 import {
@@ -171,7 +169,7 @@ class MappingChatwootContainer extends React.Component {
       return
     }
     const users = this.props.accountsState.accounts
-      ?.map(user => {
+      .map(user => {
         return { text: user.get('email'), value: user.get('_id'), username: user.get('username'), phone: user.get('phone') }
       })
       .toArray()
@@ -214,9 +212,9 @@ class MappingChatwootContainer extends React.Component {
     axios.post('/api/v2/requestChatwoot', chatwootPayload).then((response) => {
       console.log(JSON.stringify(response.data));
     })
-    .catch((error) => {
-      console.log(error);
-    });
+      .catch((error) => {
+        console.log(error);
+      });
 
   }
 
@@ -229,24 +227,30 @@ class MappingChatwootContainer extends React.Component {
 
   render() {
     const siteURL = this.getSetting('siteurl');
-    const users = this.props.accountsState.accounts
-      .map(user => {
-        return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
-      })
-      .toArray()
-    for (let user of users) {
-      if (user.text == this.email) {
-        this.defaultUser = user.value;
-      }
-    }
 
-    if (this.defaultUser == undefined || this.defaultUser == '') {
+    if (this.props.accountsState.accounts) {
+      const users = this.props.accountsState.accounts
+        .map(user => {
+          return { text: user.get('email'), value: user.get('_id'), phone: user.get('phone') }
+        })
+        .toArray()
+
       for (let user of users) {
-        if (user.phone == this.phone) {
+        if (user.text == this.email) {
           this.defaultUser = user.value;
         }
       }
+
+      if (this.defaultUser == undefined || this.defaultUser == '') {
+        for (let user of users) {
+          if (user.phone == this.phone) {
+            this.defaultUser = user.value;
+          }
+        }
+      }
+
     }
+
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'} style={{ width: '80%' }}>
@@ -262,7 +266,7 @@ class MappingChatwootContainer extends React.Component {
                 <label className={'uk-form-label'}>Phone number</label>
                 <input
                   type='text'
-                  className={'md-input'} 
+                  className={'md-input'}
                   disabled={true}
                   value={this.phone}
                   onChange={e => this.onInputChanged(e, 'phone')}
@@ -310,7 +314,7 @@ class MappingChatwootContainer extends React.Component {
                   ]}
                 >
                   {
-                    this.props.accountsState.accounts.map(user => {
+                    this.props.accountsState.accounts && this.props.accountsState.accounts.map(user => {
                       let groupUser;
                       this.props.groups.map(group => {
                         let members = group.get('members').toArray();
