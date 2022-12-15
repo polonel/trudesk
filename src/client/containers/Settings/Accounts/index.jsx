@@ -66,6 +66,8 @@ class AccountsSettingsContainer extends React.Component {
   componentDidMount() {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
+    this.state.ldapGArray = this.getLDAPGroups()
+    this.state.rolesArray = this.getRoles()
   }
 
   componentDidUpdate(prevProps) {
@@ -147,13 +149,10 @@ class AccountsSettingsContainer extends React.Component {
       for (let i = 0; i < this.ldapGroupsArray.length; i++) {
         ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
       }
-      console.log('ldapGArray')
-      console.log(ldapGArray)
       this.state.ldapGArray = ldapGArray;
+
     }).catch(err => { console.log(err) })
-
-
-    return ldapGArray;
+    return ldapGArray
   }
 
   onInputValueChanged(e, stateName) {
@@ -239,8 +238,6 @@ class AccountsSettingsContainer extends React.Component {
 
   render() {
     this.siteURL = this.getSetting('siteurl');
-    this.getLDAPGroups();
-    const rolesName = this.getRoles();
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -377,7 +374,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {rolesName.map(el => <ElementArray role={el} />)}
+                {this.state.rolesArray.map(el => <ElementArray role={el} />)}
               </Zone>
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
