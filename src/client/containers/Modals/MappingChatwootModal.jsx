@@ -171,7 +171,7 @@ class MappingChatwootContainer extends React.Component {
       return
     }
     const users = this.props.accountsState.accounts
-      .map(user => {
+      ?.map(user => {
         return { text: user.get('email'), value: user.get('_id'), username: user.get('username'), phone: user.get('phone') }
       })
       .toArray()
