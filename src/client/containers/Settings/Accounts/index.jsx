@@ -138,16 +138,21 @@ class AccountsSettingsContainer extends React.Component {
     }
     return rolesName;
   }
-  getLDAPGroups() {
+
+  async getLDAPGroups() {
 
     let ldapGArray = [];
     axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
+      for (let i = 0; i < this.ldapGroupsArray.length; i++) {
+        ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
+      }
+      console.log('ldapGArray')
+      console.log(ldapGArray)
+      this.state.ldapGArray = ldapGArray;
     }).catch(err => { console.log(err) })
 
-    for (let i = 0; i < this.ldapGroupsArray.length; i++) {
-      ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
-    }
+
     return ldapGArray;
   }
 
@@ -186,9 +191,9 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   updateLDAPGroupArray = () => {
-      console.log('this.getLDAPGroups()')
-      console.log(this.getLDAPGroups())
-      this.state.ldapGArray = this.getLDAPGroups()
+    console.log('this.getLDAPGroups()')
+    console.log(this.getLDAPGroups())
+    this.state.ldapGArray = this.getLDAPGroups()
   }
 
   onCheckNowClicked = (e) => {
@@ -234,7 +239,7 @@ class AccountsSettingsContainer extends React.Component {
 
   render() {
     this.siteURL = this.getSetting('siteurl');
-    this.state.ldapGArray = this.getLDAPGroups();
+    this.getLDAPGroups();
     const rolesName = this.getRoles();
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
