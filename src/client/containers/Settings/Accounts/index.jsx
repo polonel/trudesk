@@ -185,6 +185,12 @@ class AccountsSettingsContainer extends React.Component {
 
   }
 
+  updateLDAPGroupArray = () => {
+    this.setState({
+      ldapGArray: this.getLDAPGroups()
+    })
+  }
+
   onCheckNowClicked(e) {
     axios
       .post(`/api/v2/loginLDAP`, {
@@ -196,9 +202,7 @@ class AccountsSettingsContainer extends React.Component {
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
         // window.location.href = `/settings/accounts`;
-       this.setState ({
-        ldapGArray: this.getLDAPGroups()
-       })
+        updateLDAPGroupArray()
       })
       .catch(function (err) {
         Log.error(err)
