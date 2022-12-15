@@ -149,13 +149,6 @@ module.exports = function (app, db, callback) {
           express.static(path.join(__dirname, '../../backups'))
         )
 
-        app.use((error, req, res, next) => {
-          res.status(error.status || 500)
-          res.json({
-            status: error.status,
-            message: error.message
-          })
-        })
         // Uncomment to enable plugins
         return next(null, store)
         // global.plugins = [];
