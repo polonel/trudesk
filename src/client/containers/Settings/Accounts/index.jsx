@@ -186,12 +186,12 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   updateLDAPGroupArray = () => {
-    this.setState({
-      ldapGArray: this.getLDAPGroups()
-    })
+      console.log('this.getLDAPGroups()')
+      console.log(this.getLDAPGroups())
+      this.state.ldapGArray = this.getLDAPGroups()
   }
 
-  onCheckNowClicked(e) {
+  onCheckNowClicked = (e) => {
     axios
       .post(`/api/v2/loginLDAP`, {
         // 'login-username': this.state.ldapUsername, 
@@ -199,16 +199,15 @@ class AccountsSettingsContainer extends React.Component {
         ldapHost: this.state.ldapHost,
         ldapBindDN: this.state.ldapBindDN,
       })
-      .then(function (res) {
+      .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
         // window.location.href = `/settings/accounts`;
-        updateLDAPGroupArray()
+        this.updateLDAPGroupArray()
       })
-      .catch(function (err) {
+      .catch((err) => {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
         // window.location.href = `/settings/accounts`;
-        root.render();
       })
 
     // window.location.reload(true)
