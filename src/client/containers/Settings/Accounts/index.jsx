@@ -84,6 +84,14 @@ class AccountsSettingsContainer extends React.Component {
         this.state.ldapBindDN = this.getSetting('ldapBindDN')
       if (this.state.ldapPassword !== this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== true)
         this.state.ldapPassword = this.getSetting('ldapPassword')
+      if (this.state.ldapGArray !== this.getLDAPGroups()) {
+        const ldapGArray = this.getLDAPGroups()
+        this.setState({ ldapGArray: ldapGArray })
+      }
+      if (this.state.rolesArray !== this.getRoles()) {
+        const rolesArray = this.getRoles()
+        this.setState({ rolesArray: rolesArray })
+      }
       // if (this.state.ldapUsername !== this.getSetting('ldapUsername') && this.getSetting('ldapUsername') !== true)
       //   this.state.ldapUsername = this.getSetting('ldapUsername')
     }
@@ -138,8 +146,8 @@ class AccountsSettingsContainer extends React.Component {
     }
     return rolesName;
   }
-  getLDAPGroups() {
 
+  getLDAPGroups() {
     let ldapGArray = [];
     axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
@@ -193,15 +201,22 @@ class AccountsSettingsContainer extends React.Component {
         ldapHost: this.state.ldapHost,
         ldapBindDN: this.state.ldapBindDN,
       })
-      .then(function (res) {
+      .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-        // window.location.href = `/settings/accounts`;
-        this.reRender()
+        window.location.href = `/settings/accounts`;
+        // const ldapGArray = this.getLDAPGroups()
+        // const rolesArray = this.getRoles()
+        // this.setState({
+        //   ldapGArray: ldapGArray,
+        //   rolesArray: rolesArray
+        // })
+        // console.log('forceUpdate____________________________________')
+        // this.forceUpdate()
       })
-      .catch(function (err) {
+      .catch((err) => {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
-        // window.location.href = `/settings/accounts`;
+        window.location.href = `/settings/accounts`;
       })
 
     // window.location.reload(true)
@@ -222,17 +237,18 @@ class AccountsSettingsContainer extends React.Component {
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
     // window.location.href = `/settings/accounts`;
-    this.reRender()
   }
 
   reRender = () => {
-    this.forceUpdate();
+    console.log('this.reRender')
+    // this.forceUpdate();
   };
 
   render() {
+    console.log('render')
     this.siteURL = this.getSetting('siteurl');
-    const ldapGArray = this.getLDAPGroups();
-    const rolesName = this.getRoles();
+    this.state.ldapGArray = this.getLDAPGroups();
+    this.state.rolesArray = this.getRoles();
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -257,7 +273,7 @@ class AccountsSettingsContainer extends React.Component {
             <SingleSelect
               width='60%'
               showTextbox={false}
-              items={ldapGArray}
+              items={this.state.ldapGArray}
               defaultValue={roleGroup.ldapGroupID}
               disabled={this.state.ldapEnabled}
               onSelectChange={(e) => {
@@ -369,7 +385,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {rolesName.map(el => <ElementArray role={el} />)}
+                {this.state.rolesArray.map(el => <ElementArray role={el} />)}
               </Zone>
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
