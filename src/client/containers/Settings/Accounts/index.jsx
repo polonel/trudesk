@@ -196,11 +196,7 @@ class AccountsSettingsContainer extends React.Component {
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
         // window.location.href = `/settings/accounts`;
-        const componentUpdate =  this.getRoles().map(el => <ElementArray role={el} />)
-        const root = ReactDOM.render(
-          document.getElementById('LDAPMapping')
-        );
-        root.render(componentUpdate);
+        this.reRender()
       })
       .catch(function (err) {
         Log.error(err)
@@ -226,21 +222,17 @@ class AccountsSettingsContainer extends React.Component {
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
     // window.location.href = `/settings/accounts`;
-    root.render()
+    this.reRender()
   }
 
+  reRender = () => {
+    this.forceUpdate();
+  };
 
   render() {
     this.siteURL = this.getSetting('siteurl');
     const ldapGArray = this.getLDAPGroups();
     const rolesName = this.getRoles();
-
-    const componentUpdate =  rolesName.map(el => <ElementArray role={el} />)
-    const root = ReactDOM.render(
-      document.getElementById('LDAPMapping')
-    );
-    root.render(componentUpdate);
-
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -377,7 +369,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                <div id = 'LDAPMapping'></div>
+                {rolesName.map(el => <ElementArray role={el} />)}
               </Zone>
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
