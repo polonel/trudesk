@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings, fetchRoles } from 'actions/settings'
@@ -42,7 +42,7 @@ class AccountsSettingsContainer extends React.Component {
   @observable siteURL = ''
 
   ldapGroupsArray = []
-  
+
   constructor(props) {
     super(props)
 
@@ -66,10 +66,13 @@ class AccountsSettingsContainer extends React.Component {
   componentDidMount() {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
+    this.getLDAPGroups();
+    // this.getRoles();
   }
 
   componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
+    console.log('Обновление componentDidUpdate')
     if (prevProps.settings !== this.props.settings) {
       if (this.passwordComplexityEnabled !== this.getSetting('accountsPasswordComplexity'))
         this.passwordComplexityEnabled = this.getSetting('accountsPasswordComplexity')
@@ -144,19 +147,24 @@ class AccountsSettingsContainer extends React.Component {
         rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
       }
     }
-    return rolesName;
+    this.setState({rolesArray:rolesName})
+    // return rolesName;
   }
 
   getLDAPGroups() {
     let ldapGArray = [];
     axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
+      console.log('Закончился запрос ldapGArray')
+      for (let i = 0; i < this.ldapGroupsArray.length; i++) {
+        ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
+      }
+      this.setState({ldapGArray:ldapGArray})
+      this. getRoles()
     }).catch(err => { console.log(err) })
 
-    for (let i = 0; i < this.ldapGroupsArray.length; i++) {
-      ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
-    }
-    return ldapGArray;
+
+    // return ldapGArray;
   }
 
   onInputValueChanged(e, stateName) {
@@ -204,18 +212,20 @@ class AccountsSettingsContainer extends React.Component {
       .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
         // window.location.href = `/settings/accounts`;
-        // const ldapGArray = this.getLDAPGroups()
-        // const rolesArray = this.getRoles()
-        if(this.state.ldapGArray !== ldapGArray){
+        const ldapGArray = this.getLDAPGroups()
+        const rolesArray = this.getRoles()
+        if (this.state.ldapGArray !== ldapGArray) {
           console.log('Обновление state')
           this.setState({
             ldapGArray: ldapGArray,
             rolesArray: rolesArray
           })
+          console.log('this.state.ldapGArray в check now')
+          console.log(this.state.ldapGArray)
           this.forceUpdate()
-        } 
+        }
         // console.log('forceUpdate____________________________________')
-        
+
       })
       .catch((err) => {
         Log.error(err)
@@ -251,8 +261,13 @@ class AccountsSettingsContainer extends React.Component {
   render() {
     console.log('render')
     this.siteURL = this.getSetting('siteurl');
-    this.state.ldapGArray = this.getLDAPGroups();
-    this.state.rolesArray = this.getRoles();
+    console.log('render this.state.ldapGArray')
+    console.log(this.state.ldapGArray)
+    console.log('render this.state.rolesArray')
+    console.log(this.state.rolesArray)
+    // this.state.ldapGArray = this.getLDAPGroups();
+    // this.state.rolesArray = this.getRoles();
+
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -389,7 +404,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {this.state.rolesArray.map(el => <ElementArray role={el} />)}
+                {this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
