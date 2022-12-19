@@ -440,7 +440,7 @@ class TicketsContainer extends React.Component {
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                    }} data-toggle={"tooltip"} data-placement={"bottom"} title={"Tooltip on bottom"} >{ticket.get('subject')}</TableCell>
+                    }} data-toggle={"tooltip"} data-placement={"bottom"} title={ticket.get('subject')} >{ticket.get('subject')}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
