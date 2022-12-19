@@ -7620,7 +7620,7 @@ a.uk-thumbnail:focus {
 }
 
 [data-tooltip] {
-  position: relative; /* Относительное позиционирование */ 
+  /* position: relative; Относительное позиционирование  */
  }
  [data-tooltip]::after {
   content: attr(data-tooltip); /* Выводим текст */
@@ -7638,8 +7638,9 @@ a.uk-thumbnail:focus {
  [data-tooltip]:hover::after {
   opacity: 1; /* Показываем подсказку */
   top: 2em; /* Положение подсказки */
+
  }
- 
+
 /*
  * Break strings if their length exceeds the width of their container
  */
