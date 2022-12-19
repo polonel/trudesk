@@ -7611,6 +7611,13 @@ a.uk-thumbnail:focus {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.uk-text-truncate:hover {
+  overflow: inherit;
+  text-overflow: inherit;
+  white-space: inherit;
+  height: auto;
+}
 /*
  * Break strings if their length exceeds the width of their container
  */
