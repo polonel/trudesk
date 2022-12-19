@@ -7620,41 +7620,49 @@ a.uk-thumbnail:focus {
 }
 
 [data-tooltip] {
-  position: relative;
+  position: absolute; /* Относительное позиционирование */ 
+ }
+ 
+ [data-tooltip]::after {
+  content: attr(data-tooltip); /* Выводим текст */
+  position: absolute; /* Абсолютное позиционирование */
+  width: 300px; /* Ширина подсказки */
+  left: 0; top: 0; /* Положение подсказки */
+  background: #3989c9; /* Синий цвет фона */
+  color: #fff; /* Цвет текста */
+  padding: 0.5em; /* Поля вокруг текста */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Параметры тени */
+  pointer-events: none; /* Подсказка */
+  opacity: 0; /* Подсказка невидима */
+  transition: 1s; /* Время появления подсказки */
+ } 
+ [data-tooltip]:hover::after {
+  opacity: 1; /* Показываем подсказку */
+  top: 2em; /* Положение подсказки */
+
+ }
+
+ .CellWithComment{
+  position:relative;
 }
 
-[data-tooltip]:before,
-[data-tooltip]:after {
-  display: none;
-  position: absolute;
-  top: 0;
+.CellComment{
+  display:none;
+  position:absolute; 
+  z-index:100;
+  border:1px;
+  background-color:white;
+  border-style:solid;
+  border-width:1px;
+  border-color:red;
+  padding:3px;
+  color:red; 
+  top:20px; 
+  left:20px;
 }
 
-[data-tooltip]:before {
-  border-bottom: .6em solid black;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  content: "";
-  left: 20px;
-  margin-top: 1em;
-}
-
-[data-tooltip]:after {
-  background-color: black;
-  border: 4px solid #010101;
-  border-radius: 7px;
-  color: #ffffff;
-  content: attr(data-tooltip-message);
-  left: 0;
-  margin-top: 1.5em;
-  padding: 5px 15px;
-  white-space: pre-wrap;
-  max-width: 350px;
-}
-
-[data-tooltip]:hover:after,
-[data-tooltip]:hover:before {
-  display: block;
+.CellWithComment:hover span.CellComment{
+  display:block;
 }
 
 /*

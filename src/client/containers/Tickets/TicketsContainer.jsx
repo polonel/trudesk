@@ -436,11 +436,15 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
-                    <TableCell className={'vam nbb'} style={{
+                    <TableCell className={'vam nbb CellWithComment'} style={{
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }} data-tooltip data-tooltip-message={"this is a long text! the quick brown fox jumps over a lazy dog! lorem ipsum dolor sit amet. Very very long text!"}>{ticket.get('subject')}</TableCell>
+                      textOverflow: 'ellipsis',
+                      position: relative
+                    }} data-tooltip={"Всплывающая подсказка сообщает о чём-то многозначном и полезном..."}>
+                      {ticket.get('subject')}
+                      <span className='CellComment'>{ticket.get('subject')}</span>
+                    </TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
