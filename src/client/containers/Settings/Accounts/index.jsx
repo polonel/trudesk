@@ -147,7 +147,7 @@ class AccountsSettingsContainer extends React.Component {
         rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
       }
     }
-    this.setState({rolesArray:rolesName})
+    this.setState({ rolesArray: rolesName })
     // return rolesName;
   }
 
@@ -159,8 +159,8 @@ class AccountsSettingsContainer extends React.Component {
       for (let i = 0; i < this.ldapGroupsArray.length; i++) {
         ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
       }
-      this.setState({ldapGArray:ldapGArray})
-      this. getRoles()
+      this.setState({ ldapGArray: ldapGArray })
+      this.getRoles()
     }).catch(err => { console.log(err) })
 
 
@@ -186,7 +186,6 @@ class AccountsSettingsContainer extends React.Component {
 
   }
   addToMap(e, role, ldapGroupID) {
-    const roles = this.getRoles();
     let roleExist = false;
     for (let map of this.state.mapping) {
       if (map.roleID == role._id) {
@@ -261,12 +260,6 @@ class AccountsSettingsContainer extends React.Component {
   render() {
     console.log('render')
     this.siteURL = this.getSetting('siteurl');
-    console.log('render this.state.ldapGArray')
-    console.log(this.state.ldapGArray)
-    console.log('render this.state.rolesArray')
-    console.log(this.state.rolesArray)
-    // this.state.ldapGArray = this.getLDAPGroups();
-    // this.state.rolesArray = this.getRoles();
 
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
@@ -406,6 +399,10 @@ class AccountsSettingsContainer extends React.Component {
               <Zone>
                 {this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
+              <div class="loader"></div>
+              <div class="loader" style="--b: 15px;--c:blue;width:120px;--n:8"></div>
+              <div class="loader" style="--b: 5px;--c:green;width:80px;--n:6;--g:20deg"></div>
+              <div class="loader" style="--b: 20px;--c:#000;width:80px;--n:15;--g:7deg"></div>
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
                   text={'Check Now'}
