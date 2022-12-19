@@ -202,6 +202,7 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   onCheckNowClicked(e) {
+    this.loader = 'block';
     axios
       .post(`/api/v2/loginLDAP`, {
         // 'login-username': this.state.ldapUsername, 
