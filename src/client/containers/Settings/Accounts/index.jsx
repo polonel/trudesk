@@ -40,7 +40,7 @@ class AccountsSettingsContainer extends React.Component {
   @observable allowUserRegistrationEnabled = false
   @observable ldapEnabled = false
   @observable siteURL = ''
-  @observable loader = false
+  @observable loader = 'none'
 
   ldapGroupsArray = []
 
@@ -154,7 +154,7 @@ class AccountsSettingsContainer extends React.Component {
 
   getLDAPGroups() {
     let ldapGArray = [];
-    this.loader = true;
+    this.loader = 'block';
     axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
       console.log('Закончился запрос ldapGArray')
@@ -401,12 +401,12 @@ class AccountsSettingsContainer extends React.Component {
               <Zone>
                 {this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
-              {this.loader && (
-                <div style={{ paddingTop: 10, paddingRight: 10, textAlign: 'right' }}>
-                  Loading LDAP groups
-                  <div className="loader-spin uk-float-right" style={{ marginTop: -5, marginLeft: 10 }}></div>
-                </div>
-              )}
+
+              <div style={{ paddingTop: 10, paddingRight: 10, textAlign: 'right', display: this.loader }}>
+                Loading LDAP groups
+                <div className="loader-spin uk-float-right" style={{ marginTop: -5, marginLeft: 10 }}></div>
+              </div>
+
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
                   text={'Check Now'}
