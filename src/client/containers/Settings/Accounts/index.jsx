@@ -399,7 +399,10 @@ class AccountsSettingsContainer extends React.Component {
               <Zone>
                 {this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
-              <div className="loader-spin uk-float-right"></div>
+              <div className = 'uk-float-right' style={{ paddingTop: 10, paddingRight: 10 }}>
+              <div className="loader-spin uk-float-right" style={{marginTop:-5, marginLeft:10}}></div>
+              </div>
+             
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
                   text={'Check Now'}

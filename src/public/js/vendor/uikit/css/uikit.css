@@ -164,11 +164,11 @@ img {
  */
 
  .loader-spin {
-  border: 10px solid #f3f3f3; /* Light grey */
-  border-top: 10px solid #3498db; /* Blue */
+  border: 6px solid #f3f3f3; /* Light grey */
+  border-top: 6px solid rgba(255,127,80,0.9); /* Blue */
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   animation: spin 2s linear infinite;
 }
 
