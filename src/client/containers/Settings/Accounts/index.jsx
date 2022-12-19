@@ -73,7 +73,6 @@ class AccountsSettingsContainer extends React.Component {
 
   componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
-    console.log('Обновление componentDidUpdate')
     if (prevProps.settings !== this.props.settings) {
       if (this.passwordComplexityEnabled !== this.getSetting('accountsPasswordComplexity'))
         this.passwordComplexityEnabled = this.getSetting('accountsPasswordComplexity')
@@ -157,12 +156,12 @@ class AccountsSettingsContainer extends React.Component {
     this.loader = 'block';
     axios.get(`${this.siteURL}/api/v2/ldapGroups`).then(res => {
       this.ldapGroupsArray = res.data.ldapGroups;
-      console.log('Закончился запрос ldapGArray')
       for (let i = 0; i < this.ldapGroupsArray.length; i++) {
         ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
       }
       this.setState({ ldapGArray: ldapGArray })
       this.getRoles()
+      this.loader = 'none'
     }).catch(err => { console.log(err) })
 
 
@@ -216,17 +215,12 @@ class AccountsSettingsContainer extends React.Component {
         const ldapGArray = this.getLDAPGroups()
         const rolesArray = this.getRoles()
         if (this.state.ldapGArray !== ldapGArray) {
-          console.log('Обновление state')
           this.setState({
             ldapGArray: ldapGArray,
             rolesArray: rolesArray
           })
-          console.log('this.state.ldapGArray в check now')
-          console.log(this.state.ldapGArray)
           this.forceUpdate()
         }
-        // console.log('forceUpdate____________________________________')
-
       })
       .catch((err) => {
         Log.error(err)
@@ -253,11 +247,6 @@ class AccountsSettingsContainer extends React.Component {
     this.updateMapping(this.state.mapping);
     // window.location.href = `/settings/accounts`;
   }
-
-  reRender = () => {
-    console.log('this.reRender')
-    // this.forceUpdate();
-  };
 
   render() {
     console.log('render')
