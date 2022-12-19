@@ -341,9 +341,9 @@ class TicketsContainer extends React.Component {
               <TableHeader key={0} width={45} height={50} component={selectAllCheckbox} />,
               <TableHeader key={1} width={60} text={'Status'} />,
               <TableHeader key={2} width={65} text={'#'} />,
-              <TableHeader key={3} width={'23%'} text={'Subject'} />,
+              <TableHeader key={3} width={'12%'} text={'Subject'} />,
               <TableHeader key={4} width={110} text={'Created'} />,
-              <TableHeader key={5} width={125} text={'Requester'} />,
+              <TableHeader key={5} width={170} text={'Requester'} />,
               <TableHeader key={6} width={175} text={'Customer'} />,
               <TableHeader key={7} text={'Assignee'} />,
               <TableHeader key={8} width={110} text={'Due Date'} />,
@@ -440,7 +440,7 @@ class TicketsContainer extends React.Component {
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                    }} data-toggle={"tooltip"} data-placement={"bottom"} title={ticket.get('subject')} >{ticket.get('subject')}</TableCell>
+                    }} data-toggle={"tooltip"} data-placement={"bottom"} title={ticket.get('subject')} delay={0} >{ticket.get('subject')}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
