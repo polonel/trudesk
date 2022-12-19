@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings, fetchRoles } from 'actions/settings'
@@ -42,7 +42,7 @@ class AccountsSettingsContainer extends React.Component {
   @observable siteURL = ''
 
   ldapGroupsArray = []
-
+  
   constructor(props) {
     super(props)
 
@@ -203,15 +203,19 @@ class AccountsSettingsContainer extends React.Component {
       })
       .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-        window.location.href = `/settings/accounts`;
+        // window.location.href = `/settings/accounts`;
         // const ldapGArray = this.getLDAPGroups()
         // const rolesArray = this.getRoles()
-        // this.setState({
-        //   ldapGArray: ldapGArray,
-        //   rolesArray: rolesArray
-        // })
+        if(this.state.ldapGArray !== ldapGArray){
+          console.log('Обновление state')
+          this.setState({
+            ldapGArray: ldapGArray,
+            rolesArray: rolesArray
+          })
+          this.forceUpdate()
+        } 
         // console.log('forceUpdate____________________________________')
-        // this.forceUpdate()
+        
       })
       .catch((err) => {
         Log.error(err)
