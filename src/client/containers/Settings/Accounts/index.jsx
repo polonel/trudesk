@@ -399,10 +399,7 @@ class AccountsSettingsContainer extends React.Component {
               <Zone>
                 {this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
-              <div class="loader"></div>
-              <div class="loader" style="--b: 15px;--c:blue;width:120px;--n:8"></div>
-              <div class="loader" style="--b: 5px;--c:green;width:80px;--n:6;--g:20deg"></div>
-              <div class="loader" style="--b: 20px;--c:#000;width:80px;--n:15;--g:7deg"></div>
+              <div className="loader"></div>
               <div className='uk-clearfix' style={{ paddingTop: '1%' }}>
                 <Button
                   text={'Check Now'}
