@@ -163,7 +163,7 @@ img {
  * Preserve original image dimensions
  */
 
- .loader {
+ .loader-spin {
   border: 10px solid #f3f3f3; /* Light grey */
   border-top: 10px solid #3498db; /* Blue */
   border-radius: 50%;
