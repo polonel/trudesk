@@ -69,7 +69,7 @@ class AccountsSettingsContainer extends React.Component {
     // this.props.fetchLDAPGroups({ type: 'all' })
     this.getRoles();
     // this.getLDAPGroups();
-   
+
   }
 
   componentDidUpdate(prevProps) {
@@ -176,12 +176,12 @@ class AccountsSettingsContainer extends React.Component {
     })
   }
 
-  async updateMapping(mapping,ldapSettings) {
+  async updateMapping(mapping, ldapSettings) {
     await axios
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
       .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-        this.getRoles() 
+        this.getRoles()
         this.props.updateMultipleSettings(ldapSettings);
       })
       .catch((err) => {
@@ -250,17 +250,11 @@ class AccountsSettingsContainer extends React.Component {
       // { name: 'ldapSettings:username', value: this.state.ldapUsername },
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
-    this.updateMapping(this.state.mapping,ldapSettings); 
+    this.updateMapping(this.state.mapping, ldapSettings);
     // window.location.href = `/settings/accounts`;
   }
 
   render() {
-    console.log('render')
-    console.log('rolesArray')
-    console.log(this.state.rolesArray)
-    console.log(this.state.ldapGArray)
-    console.log('this.state.ldapGArray')
-    const rolesArray = this.state.rolesArray ? true : false
     this.siteURL = this.getSetting('siteurl');
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
@@ -398,7 +392,11 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {rolesArray && this.state.rolesArray?.map(el => <ElementArray role={el} />)}
+                {Array.isArray(this.state.rolesArray)
+                  &&
+                  Array.isArray(this.state.ldapGArray)
+                  &&
+                  this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
 
               <div style={{ paddingTop: 10, paddingRight: 10, textAlign: 'right', display: this.loader }}>
