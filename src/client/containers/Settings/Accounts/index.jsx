@@ -68,7 +68,7 @@ class AccountsSettingsContainer extends React.Component {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
     this.getRoles();
-    this.getLDAPGroups();
+    // this.getLDAPGroups();
    
   }
 
@@ -148,6 +148,7 @@ class AccountsSettingsContainer extends React.Component {
         }
       }
       this.setState({ rolesArray: rolesName })
+      this.getLDAPGroups()
       this.forceUpdate()
     }).catch(err => { console.log(err) })
     // return rolesName;
@@ -254,6 +255,12 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   render() {
+    console.log('render')
+    console.log('rolesArray')
+    console.log(this.state.rolesArray)
+    console.log(this.state.ldapGArray)
+    console.log('this.state.ldapGArray')
+    const rolesArray = this.state.rolesArray ? true : false
     this.siteURL = this.getSetting('siteurl');
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
@@ -391,7 +398,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {this.state.rolesArray.length !==0 && this.state.rolesArray?.map(el => <ElementArray role={el} />)}
+                {rolesArray && this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
 
               <div style={{ paddingTop: 10, paddingRight: 10, textAlign: 'right', display: this.loader }}>
