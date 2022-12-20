@@ -181,16 +181,14 @@ class AccountsSettingsContainer extends React.Component {
     })
   }
 
-  updateMapping(mapping) {
-    axios
+  async updateMapping(mapping,ldapSettings) {
+    await axios
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
       .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+        console.log('Mapping succes')
         this.getRoles() 
-        this.setState({
-          rolesArray: rolesArray
-        })
-        this.forceUpdate()
+        this.props.updateMultipleSettings(ldapSettings);
       })
       .catch((err) => {
         Log.error(err)
@@ -257,8 +255,7 @@ class AccountsSettingsContainer extends React.Component {
       // { name: 'ldapSettings:username', value: this.state.ldapUsername },
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
-    this.props.updateMultipleSettings(ldapSettings);
-    this.updateMapping(this.state.mapping);
+    this.updateMapping(this.state.mapping,ldapSettings); 
     // window.location.href = `/settings/accounts`;
   }
 
