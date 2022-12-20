@@ -355,6 +355,41 @@ const fs = require('fs-extra')
                     }
                   }
 
+                  const createNotification = async ticket => {
+                    let members = await getTeamMembers(ticket.group)
+                  
+                    members = concat(members, ticket.group.members)
+                    members = uniqBy(members, i => i._id)
+                  
+                    for (const member of members) {
+                      if (!member) continue
+                      await saveNotification(member, ticket)
+                    }
+                  }
+                  
+                  // const createPublicNotification = async ticket => {
+                  //   let rolesWithPublic = permissions.getRoles('ticket:public')
+                  //   rolesWithPublic = map(rolesWithPublic, 'id')
+                  //   const users = await User.getUsersByRoles(rolesWithPublic)
+                  
+                  //   for (const user of users) {
+                  //     await saveNotification(user, ticket)
+                  //   }
+                  // }
+                  
+                  const saveNotification = async (user, ticket) => {
+                    const notification = new Notification({
+                      owner: user,
+                      title: `Comment added to ticket #${ticket.uid}`,
+                      message: ticket.comments[ticket.comments.length - 1].comment,
+                      type: 0,
+                      data: { ticket },
+                      unread: true
+                    })
+                  
+                    await notification.save()
+                  }
+
                   ticket.populate('comments.owner', function (err, ticket) {
                     if (err) winston.warn(err)
                     if (err) return c()
@@ -362,6 +397,7 @@ const fs = require('fs-extra')
                     ticket = ticket.toJSON()
                     ticket.comments = ticket.comments.splice(-1)
                     configForSendMail(ticket, 'comment-added')
+                    createNotification(ticket)
                   })
                 }
               )
