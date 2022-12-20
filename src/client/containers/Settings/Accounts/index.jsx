@@ -68,7 +68,7 @@ class AccountsSettingsContainer extends React.Component {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
     this.getLDAPGroups();
-    // this.getRoles();
+    this.getRoles();
   }
 
   componentDidUpdate(prevProps) {
@@ -136,18 +136,24 @@ class AccountsSettingsContainer extends React.Component {
     this.props.updateSetting({ stateName, name, value })
   }
 
-  getRoles() {
-    let rolesArray = this.props.roles;
-    rolesArray = this.props.roles.sortBy(role => role.get('name')).toArray();
-    rolesArray = JSON.stringify(rolesArray);
-    rolesArray = JSON.parse(rolesArray);
-    let rolesName = [];
-    for (let i = 0; i < rolesArray.length; i++) {
-      if (rolesArray[i]['name'] !== 'User') {
-        rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
+  async getRoles() {
+    await axios.get('/api/v1/roles').then(res => {
+
+      console.log('res.data.roles')
+      console.log(res.data.roles)
+
+      let rolesArray = res.data.roles.sortBy(role => role.get('name')).toArray();
+      rolesArray = JSON.stringify(rolesArray);
+      rolesArray = JSON.parse(rolesArray);
+      let rolesName = [];
+      for (let i = 0; i < rolesArray.length; i++) {
+        if (rolesArray[i]['name'] !== 'User') {
+          rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
+        }
       }
-    }
-    this.setState({ rolesArray: rolesName })
+      this.setState({ rolesArray: rolesName })
+
+    }).catch(err => { console.log(err) })
     // return rolesName;
   }
 
@@ -160,7 +166,6 @@ class AccountsSettingsContainer extends React.Component {
         ldapGArray.push({ text: this.ldapGroupsArray[i]['name'], value: this.ldapGroupsArray[i]['_id'] });
       }
       this.setState({ ldapGArray: ldapGArray })
-      this.getRoles()
       this.loader = 'none'
     }).catch(err => { console.log(err) })
 
@@ -185,6 +190,7 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
+
   }
 
   addToMap(e, role, ldapGroupID) {
@@ -237,9 +243,13 @@ class AccountsSettingsContainer extends React.Component {
   onFormSubmit(e) {
     e.preventDefault()
     const ldapSettings = [
+      // { name: 'ldapSettings:enable', value: this.state.ldapEnabled * 60000 },
       { name: 'ldapSettings:host', value: this.state.ldapHost },
+      // { name: 'ldapSettings:port', value: this.state.ldapPort },
       { name: 'ldapSettings:bindDN', value: this.state.ldapBindDN },
       { name: 'ldapSettings:password', value: this.state.ldapPassword },
+      // { name: 'ldapSettings:username', value: this.state.ldapUsername },
+      // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
@@ -249,9 +259,8 @@ class AccountsSettingsContainer extends React.Component {
 
   render() {
     console.log('render')
-    console.log('Обновление ролей')
-    this.props.fetchRoles();
     this.siteURL = this.getSetting('siteurl');
+    console.log(this.props.roles);
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -311,7 +320,7 @@ class AccountsSettingsContainer extends React.Component {
             />
           }
         />
-        <SettingItemupdateSetting
+        <SettingItem
           title={'Password Complexity'}
           subtitle={'Require users passwords to meet minimum password complexity'}
           tooltip={'Minimum 8 characters with uppercase and numeric.'}
