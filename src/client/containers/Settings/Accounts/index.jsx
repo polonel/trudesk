@@ -179,6 +179,7 @@ class AccountsSettingsContainer extends React.Component {
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
       .then(function (res) {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+        this.forceUpdate()
       })
       .catch(function (err) {
         Log.error(err)
@@ -186,6 +187,7 @@ class AccountsSettingsContainer extends React.Component {
       })
 
   }
+  
   addToMap(e, role, ldapGroupID) {
     let roleExist = false;
     for (let map of this.state.mapping) {
@@ -270,6 +272,8 @@ class AccountsSettingsContainer extends React.Component {
 
     const ElementArray = ({ role }) => {
       const roleGroup = role;
+      console.log('roleGroup.ldapGroupID')
+      console.log(roleGroup.ldapGroupID)
       return <ZoneBox>
         <SettingSubItem
           title={role.name}
