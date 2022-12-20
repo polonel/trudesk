@@ -547,7 +547,7 @@ angular.module('ionic').controller('$ionInfiniteScrollReverse', [
     // debounce checking infinite scroll events
     self.checkBounds = ionic.Utils.throttle(checkInfiniteBounds, 300)
 
-    function onInfinite () {
+    function onInfinite() {
       ionic.requestAnimationFrame(function () {
         $element[0].classList.add('active')
       })
@@ -555,7 +555,7 @@ angular.module('ionic').controller('$ionInfiniteScrollReverse', [
       $scope.$parent && $scope.$parent.$apply($attrs.onInfinite || '')
     }
 
-    function finishInfiniteScroll () {
+    function finishInfiniteScroll() {
       ionic.requestAnimationFrame(function () {
         $element[0].classList.remove('active')
       })
@@ -577,7 +577,7 @@ angular.module('ionic').controller('$ionInfiniteScrollReverse', [
     }
 
     // check if we've scrolled far enough to trigger an infinite scroll
-    function checkInfiniteBounds () {
+    function checkInfiniteBounds() {
       if (self.isLoading) return
       var maxScroll = {}
 
@@ -638,23 +638,23 @@ angular.module('ionic').controller('$ionInfiniteScrollReverse', [
       return {
         left:
           maxValues.left &&
-          (computedStyle.overflowX === 'scroll' ||
-            computedStyle.overflowX === 'auto' ||
-            self.scrollEl.style['overflow-x'] === 'scroll')
+            (computedStyle.overflowX === 'scroll' ||
+              computedStyle.overflowX === 'auto' ||
+              self.scrollEl.style['overflow-x'] === 'scroll')
             ? calculateMaxValue(maxValues.left)
             : -1,
         top:
           maxValues.top &&
-          (computedStyle.overflowY === 'scroll' ||
-            computedStyle.overflowY === 'auto' ||
-            self.scrollEl.style['overflow-y'] === 'scroll')
+            (computedStyle.overflowY === 'scroll' ||
+              computedStyle.overflowY === 'auto' ||
+              self.scrollEl.style['overflow-y'] === 'scroll')
             ? calculateMaxValue(maxValues.top)
             : -1
       }
     }
 
     // determine pixel refresh distance based on % or value
-    function calculateMaxValue (maximum) {
+    function calculateMaxValue(maximum) {
       var distance = ($attrs.distance || '2.5%').trim()
       var isPercent = distance.indexOf('%') !== -1
       if ($attrs.reverse) {
@@ -883,7 +883,7 @@ angular
               }
             })
             .then(
-              function successCallback (response) {
+              function successCallback(response) {
                 if (response.data.user) {
                   $localStorage.loggedInUser = response.data.user
                   if ($localStorage.loggedInUser.image === undefined)
@@ -893,7 +893,7 @@ angular
                   deferred.reject('Unable to get user')
                 }
               },
-              function errorCallback (response) {
+              function errorCallback(response) {
                 console.log(response)
                 deferred.reject('Error Occured!')
               }
@@ -1198,20 +1198,20 @@ angular
       }
     }
   })
-;(function () {
-  return angular.module('trudesk.controllers', [
-    'trudesk.controllers.login',
-    'trudesk.controllers.dashboard',
-    'trudesk.controllers.tickets',
-    'trudesk.controllers.ticketDetails',
-    'trudesk.controllers.accounts',
-    'trudesk.controllers.messages',
-    'trudesk.controllers.messages.conversation',
+  ; (function () {
+    return angular.module('trudesk.controllers', [
+      'trudesk.controllers.login',
+      'trudesk.controllers.dashboard',
+      'trudesk.controllers.tickets',
+      'trudesk.controllers.ticketDetails',
+      'trudesk.controllers.accounts',
+      'trudesk.controllers.messages',
+      'trudesk.controllers.messages.conversation',
 
-    'trudesk.controllers.imgCrop',
-    'trudesk.controllers.graphs'
-  ])
-})()
+      'trudesk.controllers.imgCrop',
+      'trudesk.controllers.graphs'
+    ])
+  })()
 
 angular
   .module('trudesk.controllers.login', [])
@@ -1239,14 +1239,14 @@ angular
       password: false
     }
 
-    function showError (err) {
+    function showError(err) {
       var alertPopup = $ionicPopup.alert({
         title: 'Error',
         template: err,
         okType: 'button-assertive'
       })
 
-      alertPopup.then(function () {})
+      alertPopup.then(function () { })
     }
 
     $scope.login = function (loginForm) {
@@ -1260,12 +1260,13 @@ angular
         })
         $scope.auth.server = $scope.auth.server.replace(/^https?:\/\//, '')
         $http
-          .post('/api/v1/login', {
+          // .post('/api/v1/login', {
+          .post('/login', {
             username: $scope.auth.username,
             password: $scope.auth.password
           })
           .then(
-            function successCallback (response) {
+            function successCallback(response) {
               if (response.data.success === false) {
                 showError(response.data.error)
               } else if (response.data.accessToken !== undefined) {
@@ -1292,10 +1293,10 @@ angular
                     }
                   })
                   .then(
-                    function successCallback (response) {
+                    function successCallback(response) {
                       $localStorage.roles = response.data
                     },
-                    function errorCallback (response) {
+                    function errorCallback(response) {
                       console.log('Error', response)
                     }
                   )
@@ -1304,7 +1305,7 @@ angular
                   })
               }
             },
-            function errorCallback (response) {
+            function errorCallback(response) {
               console.error(response)
               switch (response.status) {
                 case -1:
@@ -1318,7 +1319,7 @@ angular
               }
             }
           )
-          .then(function finalCallback () {
+          .then(function finalCallback() {
             setTimeout(function () {
               $ionicLoading.hide()
             }, 500)
@@ -1395,7 +1396,7 @@ angular
         buttons: [{ text: 'Take Photo' }, { text: 'Open Photo Library' }],
         titleText: 'Account Picture',
         cancelText: 'Cancel',
-        cancel: function () {},
+        cancel: function () { },
         buttonClicked: function (index) {
           switch (index) {
             case 0:
@@ -1437,7 +1438,7 @@ angular
         .get('/logout/', {
           timeout: 2000
         })
-        .then(function successCallback (response) {}, function errorCallback (response) {})
+        .then(function successCallback(response) { }, function errorCallback(response) { })
         .finally(function () {
           ionic.trigger('$trudesk.clearLoginForm', {})
           $localStorage.server = undefined
@@ -1491,8 +1492,8 @@ angular
     $scope.barChart = [5, 3, 9, 6, 5, 9, 7]
     $scope.lineChart = [5, 3, 9, 6, 5, 9, 7, 3, 5, 2]
 
-    function getStats (timespan) {
-      Tickets.ticketStats(timespan).then(function successCallback (response) {
+    function getStats(timespan) {
+      Tickets.ticketStats(timespan).then(function successCallback(response) {
         $scope.totalTickets = response.data.ticketCount ? response.data.ticketCount : 0
         var closedCount = Number(response.data.closedCount)
         $scope.closedPercent = Math.round((closedCount / $scope.totalTickets) * 100)
@@ -1520,7 +1521,7 @@ angular
 angular.module('trudesk.controllers.graphs', []).controller('GraphCtrl', function ($scope, $http, _, Graphs) {
   $scope.renderGraphs = function () {
     Graphs.topGroups().then(
-      function successCallback (response) {
+      function successCallback(response) {
         var arr = []
         if (_.size(response.data.items) < 1) {
           response.data.items = [{ name: 'No Data', count: 1 }]
@@ -1581,7 +1582,7 @@ angular.module('trudesk.controllers.graphs', []).controller('GraphCtrl', functio
           }
         })
       },
-      function errorCallback (err) {
+      function errorCallback(err) {
         console.error(err)
       }
     )
@@ -1627,10 +1628,10 @@ angular
     $scope.showEvent = 'showCropper'
     $scope.hideEvent = 'hideCropper'
 
-    function showCropper () {
+    function showCropper() {
       $scope.$broadcast($scope.showEvent)
     }
-    function hideCropper () {
+    function hideCropper() {
       $scope.$broadcast($scope.hideEvent)
     }
 
@@ -1737,7 +1738,7 @@ angular
         })
     })
 
-    $scope.$on('$ionicView.enter', function (scopes, states) {})
+    $scope.$on('$ionicView.enter', function (scopes, states) { })
 
     $scope.$on('$stateChangeStart', function (e) {
       ionic.off('$trudesk.conversation.updateusers', onUpdateUsers, window)
@@ -1873,7 +1874,7 @@ angular
       })
     }
 
-    function onUpdateUsers (data) {
+    function onUpdateUsers(data) {
       $timeout(function () {
         $scope.onlineUsers = data.detail
         delete $scope.onlineUsers[$scope.loggedInUser.username]
@@ -1893,7 +1894,7 @@ angular
     }
   })
 
-function ensureLogin ($localStorage, $state) {
+function ensureLogin($localStorage, $state) {
   if ($localStorage.server === undefined || $localStorage.accessToken === undefined) return $state.go('login')
 }
 
@@ -1999,21 +2000,21 @@ angular
       partnerTypingTimer = undefined
     })
 
-    function scrollBottom () {
+    function scrollBottom() {
       $timeout(function () {
         viewScroll.scrollBottom()
       }, 10)
     }
 
-    function onKeyboardShow (e) {
+    function onKeyboardShow(e) {
       scrollBottom()
     }
 
-    function onKeyboardHide (e) {
+    function onKeyboardHide(e) {
       scrollBottom()
     }
 
-    function onPartnerTyping (data) {
+    function onPartnerTyping(data) {
       if ($scope.partnerTyping) {
         clearTimeout(partnerTypingTimer)
         partnerTypingTimer = setTimeout(cancelPartnerTyping, 15000)
@@ -2026,20 +2027,20 @@ angular
       if (partnerTypingTimer == undefined) partnerTypingTimer = setTimeout(cancelPartnerTyping, 15000)
     }
 
-    function onPartnerStopTyping (data) {
+    function onPartnerStopTyping(data) {
       $timeout(function () {
         $scope.partnerTyping = false
       }, 0)
     }
 
-    function cancelPartnerTyping () {
+    function cancelPartnerTyping() {
       $timeout(function () {
         $scope.partnerTyping = false
         partnerTypingTimer = undefined
       }, 0)
     }
 
-    function onChatMessage (data) {
+    function onChatMessage(data) {
       var m = {
         _id: data.detail.messageId,
         createdAt: new Date().toISOString(),
@@ -2054,7 +2055,7 @@ angular
       }, 0)
     }
 
-    function onUpdateUsers (data) {
+    function onUpdateUsers(data) {
       $timeout(function () {
         $scope.onlineUsers = data.detail
       }, 0)
@@ -2165,21 +2166,21 @@ angular
       WebSocket.startTyping($scope.conversation._id, $scope.conversation.partner._id, $localStorage.loggedInUser._id)
     }
 
-    function partnerTyping (data) {
+    function partnerTyping(data) {
       $timeout(function () {
         partnerTyping = true
       }, 0)
     }
 
     // Functions
-    function stopTyping () {
+    function stopTyping() {
       typingTimer = undefined
       isTyping = false
       if ($scope.conversation === undefined) return
       WebSocket.stopTyping($scope.conversation._id, $scope.conversation.partner._id)
     }
     // this keeps the keyboard open on a device only after sending a message, it is non obtrusive
-    function keepKeyboardOpen () {
+    function keepKeyboardOpen() {
       txtInput.one('blur', function () {
         txtInput[0].focus()
       })
@@ -2251,7 +2252,7 @@ angular
     }
   })
 
-function ensureLogin ($localStorage, $state) {
+function ensureLogin($localStorage, $state) {
   if ($localStorage.server === undefined || $localStorage.accessToken === undefined) return $state.go('login')
 }
 
@@ -2341,7 +2342,7 @@ angular
         $scope.setAssigneeModal = modal
       })
 
-    Tickets.get($stateParams.ticketuid).then(function successCallback (response) {
+    Tickets.get($stateParams.ticketuid).then(function successCallback(response) {
       $scope.ticket = response.data.ticket
       if ($scope.ticket.assignee) $scope.selectedAssignee = $scope.ticket.assignee._id
       if ($scope.ticket.owner.image === undefined) $scope.ticket.owner.image = 'defaultProfile.jpg'
@@ -2356,10 +2357,10 @@ angular
     })
 
     Users.getAssignees().then(
-      function successCallback (response) {
+      function successCallback(response) {
         $scope.assignees = response.data.users
       },
-      function errorCallback (response) {
+      function errorCallback(response) {
         console.log(response)
       }
     )
@@ -2388,11 +2389,11 @@ angular
               var reqTicket = { _id: $scope.ticket._id }
               reqTicket.status = 1
               Tickets.update(reqTicket).then(
-                function successCallback (response) {
+                function successCallback(response) {
                   $scope.ticket.status = 1
                   $scope.showSnackbar('Ticket status set to Open')
                 },
-                function errorCallback (response) {
+                function errorCallback(response) {
                   console.log(response)
                 }
               )
@@ -2401,11 +2402,11 @@ angular
               var reqTicket = { _id: $scope.ticket._id }
               reqTicket.status = 2
               Tickets.update(reqTicket).then(
-                function successCallback (response) {
+                function successCallback(response) {
                   $scope.ticket.status = 2
                   $scope.showSnackbar('Ticket status set to Pending')
                 },
-                function errorCallback (response) {
+                function errorCallback(response) {
                   console.log(response)
                 }
               )
@@ -2415,12 +2416,12 @@ angular
               reqTicket.status = 3
               $scope.ticket.status = 3
               Tickets.update(reqTicket).then(
-                function successCallback (response) {
+                function successCallback(response) {
                   ionic.trigger('$trudesk.refreshTickets', {})
                   $scope.popover.hide()
                   $ionicHistory.goBack()
                 },
-                function errorCallback (response) {
+                function errorCallback(response) {
                   console.log(response)
                 }
               )
@@ -2489,12 +2490,12 @@ angular
     $scope.closeTicket = function () {
       $scope.ticket.status = 3
       Tickets.update($scope.ticket).then(
-        function successCallback (response) {
+        function successCallback(response) {
           ionic.trigger('$trudesk.refreshTickets', {})
           $scope.popover.hide()
           $ionicHistory.goBack()
         },
-        function errorCallback (response) {
+        function errorCallback(response) {
           console.log(response)
         }
       )
@@ -2509,17 +2510,17 @@ angular
 
       Tickets.addComment($scope.ticket, comment)
         .then(
-          function successCallback (response) {
+          function successCallback(response) {
             //Comment Added
           },
-          function errorCallback (err) {
+          function errorCallback(err) {
             console.log(err)
             $scope.showSnackbar(err, true)
           }
         )
         .then(function () {
           Tickets.get($stateParams.ticketuid)
-            .then(function successCallback (response) {
+            .then(function successCallback(response) {
               $scope.ticket = response.data.ticket
               //Merge Arrays for Note Displaying
               if ($scope.hasNotes)
@@ -2543,17 +2544,17 @@ angular
 
       Tickets.addNote($scope.ticket, note)
         .then(
-          function successCallback (response) {
+          function successCallback(response) {
             //Note Added
           },
-          function errorCallback (err) {
+          function errorCallback(err) {
             console.log(err)
             $scope.showSnackbar(err, true)
           }
         )
         .then(function () {
           Tickets.get($stateParams.ticketuid)
-            .then(function successCallback (response) {
+            .then(function successCallback(response) {
               $scope.ticket = response.data.ticket
 
               if ($scope.hasNotes)
@@ -2583,7 +2584,7 @@ angular
       $scope.ticket.assignee = $scope.selectedAssignee
 
       Tickets.update($scope.ticket).then(
-        function successCallback (response) {
+        function successCallback(response) {
           $scope.ticket = response.data.ticket
 
           $scope.hasAssignee = 'hide'
@@ -2597,7 +2598,7 @@ angular
 
           $scope.setAssigneeModal.hide()
         },
-        function errorCallback (response) {
+        function errorCallback(response) {
           console.log(response.data)
           $scope.showSnackbar('Error: ' + response.data, true)
         }
@@ -2617,7 +2618,7 @@ angular
     })
   })
 
-function ensureLogin ($localStorage, $state) {
+function ensureLogin($localStorage, $state) {
   if ($localStorage.server === undefined || $localStorage.accessToken === undefined) return $state.go('login')
 }
 
@@ -2724,7 +2725,7 @@ angular
         buttons: buttons,
         titleText: 'Ticket Options',
         cancelText: 'Cancel',
-        cancel: function () {},
+        cancel: function () { },
         buttonClicked: function (index) {
           switch (index) {
             case 0:
@@ -2742,11 +2743,11 @@ angular
               var reqTicket = { _id: t._id }
               reqTicket.status = 1
               Tickets.update(reqTicket).then(
-                function successCallback (response) {
+                function successCallback(response) {
                   t.status = 1
                   $scope.showSnackbar('Ticket status set to Open')
                 },
-                function errorCallback (response) {
+                function errorCallback(response) {
                   console.log(response)
                 }
               )
@@ -2758,11 +2759,11 @@ angular
               var reqTicket = { _id: t._id }
               reqTicket.status = 2
               Tickets.update(reqTicket).then(
-                function successCallback (response) {
+                function successCallback(response) {
                   t.status = 2
                   $scope.showSnackbar('Ticket status set to Pending')
                 },
-                function errorCallback (response) {
+                function errorCallback(response) {
                   console.log(response)
                 }
               )
@@ -2775,12 +2776,12 @@ angular
               reqTicket.status = 3
               Tickets.update(reqTicket)
                 .then(
-                  function successCallback (response) {
+                  function successCallback(response) {
                     var idx = $scope.tickets.indexOf(t)
                     if (idx != -1) $scope.tickets.splice(idx, 1)
                     $scope.showSnackbar('Ticket status set to Closed')
                   },
-                  function errorCallback (response) {
+                  function errorCallback(response) {
                     console.log(response)
                   }
                 )
@@ -2827,7 +2828,7 @@ angular
 
       return Tickets.all($scope.page)
         .then(
-          function successCallback (response) {
+          function successCallback(response) {
             if (_.size(response.data) < 1) {
               $scope.hasMoreTickets = false
               return
@@ -2843,7 +2844,7 @@ angular
                 })
             }
           },
-          function errorCallback (error) {
+          function errorCallback(error) {
             $scope.$broadcast('scroll.infiniteScrollComplete')
             $scope.hasMoreTickets = false
             if (error.status === -1) return $scope.showAlert('Error', 'Connection Refused.')
@@ -2893,7 +2894,7 @@ angular
 
       $q.all([groups, types])
         .then(
-          function successCallback (results) {
+          function successCallback(results) {
             $scope.groups = results[0].data.groups
             $scope.ticketTypes = results[1].data
             if ($scope.ticketTypes[0] && $scope.ticketTypes[0]._id) $scope.selected.ticketType = $scope.ticketTypes[0]
@@ -2903,7 +2904,7 @@ angular
             }
             $scope.selected.group = ''
           },
-          function errorCallback (error) {
+          function errorCallback(error) {
             console.error('Error - ' + error)
           }
         )
@@ -2936,7 +2937,7 @@ angular
         })
 
         return Tickets.search($scope.search.term).then(
-          function successCallback (response) {
+          function successCallback(response) {
             $scope.tickets = response.data.tickets
 
             $timeout(function () {
@@ -2947,7 +2948,7 @@ angular
             $scope.hasMoreTickets = false
             Snackbar.close()
           },
-          function errorCallback (response) {
+          function errorCallback(response) {
             console.log(response)
           }
         )
@@ -3002,10 +3003,10 @@ angular
 
       Tickets.addComment($scope.commentModalForm.ticket, comment)
         .then(
-          function successCallback (response) {
+          function successCallback(response) {
             //Comment Added
           },
-          function errorCallback (err) {
+          function errorCallback(err) {
             console.log(err)
             $scope.showSnackbar(err, true)
           }
@@ -3035,7 +3036,7 @@ angular
 
       Tickets.create(ticket)
         .then(
-          function successCallback (response) {
+          function successCallback(response) {
             ionic.trigger('$trudesk.refreshTickets', {})
             $scope.modalNewTicketForm = {
               subject: '',
@@ -3043,13 +3044,13 @@ angular
             }
             $scope.closeNewTicket()
           },
-          function errorCallback (response) {
+          function errorCallback(response) {
             console.log('Error----')
             console.log(response)
             $scope.showAlert('Error: ' + response.statusText, response.data.error.message)
           }
         )
-        .then(function () {})
+        .then(function () { })
     }
 
     $scope.showAlert = function (title, text, button) {
@@ -3089,6 +3090,6 @@ angular
     })
   })
 
-function ensureLogin ($localStorage, $state) {
+function ensureLogin($localStorage, $state) {
   if ($localStorage.server === undefined || $localStorage.accessToken === undefined) return $state.go('login')
 }
