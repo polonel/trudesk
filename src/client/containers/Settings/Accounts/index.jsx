@@ -141,8 +141,7 @@ class AccountsSettingsContainer extends React.Component {
 
       console.log('res.data.roles')
       console.log(res.data.roles)
-
-      let rolesArray = res.data.roles.sortBy(role => role.get('name')).toArray();
+      let rolesArray = res.data.roles.map(role => role.name).toArray();
       rolesArray = JSON.stringify(rolesArray);
       rolesArray = JSON.parse(rolesArray);
       let rolesName = [];
@@ -151,6 +150,8 @@ class AccountsSettingsContainer extends React.Component {
           rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
         }
       }
+      console.log('rolesName')
+      console.log(rolesName)
       this.setState({ rolesArray: rolesName })
 
     }).catch(err => { console.log(err) })
@@ -260,7 +261,8 @@ class AccountsSettingsContainer extends React.Component {
   render() {
     console.log('render')
     this.siteURL = this.getSetting('siteurl');
-    console.log(this.props.roles);
+    console.log('this.state.rolesArray');
+    console.log(this.state.rolesArray);
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -399,7 +401,7 @@ class AccountsSettingsContainer extends React.Component {
                 />
               </div> */}
               <Zone>
-                {this.state.rolesArray?.map(el => <ElementArray role={el} />)}
+                {this.state.rolesArray.length !==0 && this.state.rolesArray?.map(el => <ElementArray role={el} />)}
               </Zone>
 
               <div style={{ paddingTop: 10, paddingRight: 10, textAlign: 'right', display: this.loader }}>
