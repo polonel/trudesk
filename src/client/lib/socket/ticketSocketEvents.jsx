@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { TICKETS_CREATED } from 'serverSocket/socketEventConsts'
 import helpers from 'lib/helpers'
+import { TICKETS_COMMENT_NOTE_SET } from '../../../socketio/socketEventConsts'
 
 const TicketSocketEvents = () => {
   const socket = useSelector(state => state.shared.socket)
@@ -10,6 +11,7 @@ const TicketSocketEvents = () => {
   useEffect(() => {
     if (socket) {
       ticketCreated()
+      ticketCommentAdded()
     }
 
     return function cleanup () {
@@ -20,6 +22,18 @@ const TicketSocketEvents = () => {
   const ticketCreated = () => {
     socket.removeAllListeners(TICKETS_CREATED)
     socket.on(TICKETS_CREATED, ticket => {
+      if (viewdata) {
+        if (viewdata.get('ticketSettings') && viewdata.get('ticketSettings').get('playNewTicketSound'))
+          helpers.UI.playSound('TICKET_CREATED')
+      } else {
+        helpers.UI.playSound('TICKET_CREATED')
+      }
+    })
+  }
+
+  const ticketCommentAdded = () => {
+    socket.removeAllListeners(TICKETS_COMMENT_NOTE_SET)
+    socket.on(TICKETS_COMMENT_NOTE_SET, ticket => {
       if (viewdata) {
         if (viewdata.get('ticketSettings') && viewdata.get('ticketSettings').get('playNewTicketSound'))
           helpers.UI.playSound('TICKET_CREATED')
