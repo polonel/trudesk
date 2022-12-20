@@ -68,6 +68,7 @@ class AccountsSettingsContainer extends React.Component {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
     this.getLDAPGroups();
+    this.fetchRoles();
     // this.getRoles();
   }
 
@@ -187,7 +188,7 @@ class AccountsSettingsContainer extends React.Component {
       })
 
   }
-  
+
   addToMap(e, role, ldapGroupID) {
     let roleExist = false;
     for (let map of this.state.mapping) {
@@ -255,7 +256,7 @@ class AccountsSettingsContainer extends React.Component {
   render() {
     console.log('render')
     this.siteURL = this.getSetting('siteurl');
-
+    console.log(this.props.roles);
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
