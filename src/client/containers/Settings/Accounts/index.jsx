@@ -68,7 +68,6 @@ class AccountsSettingsContainer extends React.Component {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
     this.getLDAPGroups();
-    this.fetchRoles();
     // this.getRoles();
   }
 
@@ -186,7 +185,6 @@ class AccountsSettingsContainer extends React.Component {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
-
   }
 
   addToMap(e, role, ldapGroupID) {
@@ -239,13 +237,9 @@ class AccountsSettingsContainer extends React.Component {
   onFormSubmit(e) {
     e.preventDefault()
     const ldapSettings = [
-      // { name: 'ldapSettings:enable', value: this.state.ldapEnabled * 60000 },
       { name: 'ldapSettings:host', value: this.state.ldapHost },
-      // { name: 'ldapSettings:port', value: this.state.ldapPort },
       { name: 'ldapSettings:bindDN', value: this.state.ldapBindDN },
       { name: 'ldapSettings:password', value: this.state.ldapPassword },
-      // { name: 'ldapSettings:username', value: this.state.ldapUsername },
-      // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
@@ -255,8 +249,9 @@ class AccountsSettingsContainer extends React.Component {
 
   render() {
     console.log('render')
+    console.log('Обновление ролей')
+    this.props.fetchRoles();
     this.siteURL = this.getSetting('siteurl');
-    console.log(this.props.roles);
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -316,7 +311,7 @@ class AccountsSettingsContainer extends React.Component {
             />
           }
         />
-        <SettingItem
+        <SettingItemupdateSetting
           title={'Password Complexity'}
           subtitle={'Require users passwords to meet minimum password complexity'}
           tooltip={'Minimum 8 characters with uppercase and numeric.'}
