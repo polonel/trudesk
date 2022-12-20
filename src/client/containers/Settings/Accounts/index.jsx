@@ -67,8 +67,9 @@ class AccountsSettingsContainer extends React.Component {
   componentDidMount() {
     // helpers.UI.inputs()fetchLDAPGroup
     // this.props.fetchLDAPGroups({ type: 'all' })
-    this.getLDAPGroups();
     this.getRoles();
+    this.getLDAPGroups();
+   
   }
 
   componentDidUpdate(prevProps) {
@@ -87,14 +88,14 @@ class AccountsSettingsContainer extends React.Component {
         this.state.ldapBindDN = this.getSetting('ldapBindDN')
       if (this.state.ldapPassword !== this.getSetting('ldapPassword') && this.getSetting('ldapPassword') !== true)
         this.state.ldapPassword = this.getSetting('ldapPassword')
-      if (this.state.ldapGArray !== this.getLDAPGroups()) {
-        const ldapGArray = this.getLDAPGroups()
-        this.setState({ ldapGArray: ldapGArray })
-      }
-      if (this.state.rolesArray !== this.getRoles()) {
-        const rolesArray = this.getRoles()
-        this.setState({ rolesArray: rolesArray })
-      }
+      // if (this.state.ldapGArray !== this.getLDAPGroups()) {
+      //   const ldapGArray = this.getLDAPGroups()
+      //   this.setState({ ldapGArray: ldapGArray })
+      // }
+      // if (this.state.rolesArray !== this.getRoles()) {
+      //   const rolesArray = this.getRoles()
+      //   this.setState({ rolesArray: rolesArray })
+      // }
       // if (this.state.ldapUsername !== this.getSetting('ldapUsername') && this.getSetting('ldapUsername') !== true)
       //   this.state.ldapUsername = this.getSetting('ldapUsername')
     }
@@ -141,9 +142,9 @@ class AccountsSettingsContainer extends React.Component {
 
       console.log('res.data.roles')
       console.log(res.data.roles)
-      let rolesArray = res.data.roles.map(role => role.name).toArray();
-      rolesArray = JSON.stringify(rolesArray);
-      rolesArray = JSON.parse(rolesArray);
+      let rolesArray = res.data.roles;
+      console.log('rolesArray')
+      console.log(rolesArray)
       let rolesName = [];
       for (let i = 0; i < rolesArray.length; i++) {
         if (rolesArray[i]['name'] !== 'User') {
@@ -153,7 +154,7 @@ class AccountsSettingsContainer extends React.Component {
       console.log('rolesName')
       console.log(rolesName)
       this.setState({ rolesArray: rolesName })
-
+      this.forceUpdate()
     }).catch(err => { console.log(err) })
     // return rolesName;
   }
@@ -183,11 +184,15 @@ class AccountsSettingsContainer extends React.Component {
   updateMapping(mapping) {
     axios
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
-      .then(function (res) {
+      .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
+        this.getRoles() 
+        this.setState({
+          rolesArray: rolesArray
+        })
         this.forceUpdate()
       })
-      .catch(function (err) {
+      .catch((err) => {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
       })
@@ -254,7 +259,6 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
-    this.forceUpdate()
     // window.location.href = `/settings/accounts`;
   }
 
