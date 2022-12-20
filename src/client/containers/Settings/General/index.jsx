@@ -75,8 +75,6 @@ class GeneralSettings extends React.Component {
 
   render () {
     const { active } = this.props
-    console.log('this.props.groups');
-    console.log(this.props.groups);
     const groups = this.props.groups
             .map(grp => {
                 return { text: grp.get('name'), value: grp.get('_id') }

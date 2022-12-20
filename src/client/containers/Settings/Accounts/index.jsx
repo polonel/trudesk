@@ -246,6 +246,7 @@ class AccountsSettingsContainer extends React.Component {
     ]
     this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping);
+    this.forceUpdate()
     // window.location.href = `/settings/accounts`;
   }
 

@@ -242,7 +242,17 @@ mainController.loginPost = async function (req, res, next) {
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
   } else {
-    if (req.body['login-username'].includes('@') && req.body['login-username'].split('@')[1] == 'shatura.pro') {
+
+    if (
+      (req.body['login-username']?.includes('@') && req.body['login-username']?.split('@')[1] == 'shatura.pro')
+      ||
+      (req.body?.username?.includes('@') && req.body?.username?.split('@')[1] == 'shatura.pro')
+    ) {
+
+      req.body['login-username'] ? true : req.body['login-username'] = req.body.username
+      req.body['login-password'] ? true : req.body['login-password'] = req.body.password
+      delete req.body.username
+      delete req.body.password
 
       Setting.findOne({ name: 'ldapSettings:enable' }, (err, setting) => {
 
