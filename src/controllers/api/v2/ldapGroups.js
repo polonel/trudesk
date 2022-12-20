@@ -46,6 +46,7 @@ ldapGroup.get = function (req, res) {
 
 ldapGroup.updateMapping = function (req, res) {
   var roleSchema = require('../../../models/role')
+  let countMap = 0
   for (let map of req.body) {
     async.parallel(
       [
@@ -57,9 +58,11 @@ ldapGroup.updateMapping = function (req, res) {
         }
       ],
       function (err) {
+        countMap++
         if (err) return res.status(400).json({ success: false, error: err })
-
-        // return res.json({ success: true })
+        if (countMap == req.body.length) {
+          return res.json({ success: true })
+        }
       }
     )
 

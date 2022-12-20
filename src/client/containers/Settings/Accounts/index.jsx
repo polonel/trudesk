@@ -140,19 +140,13 @@ class AccountsSettingsContainer extends React.Component {
   async getRoles() {
     await axios.get('/api/v1/roles').then(res => {
 
-      console.log('res.data.roles')
-      console.log(res.data.roles)
       let rolesArray = res.data.roles;
-      console.log('rolesArray')
-      console.log(rolesArray)
       let rolesName = [];
       for (let i = 0; i < rolesArray.length; i++) {
         if (rolesArray[i]['name'] !== 'User') {
           rolesName.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });
         }
       }
-      console.log('rolesName')
-      console.log(rolesName)
       this.setState({ rolesArray: rolesName })
       this.forceUpdate()
     }).catch(err => { console.log(err) })
@@ -186,7 +180,6 @@ class AccountsSettingsContainer extends React.Component {
       .put(`/api/v2/ldapGroups/updateMapping`, mapping)
       .then((res) => {
         if (res.data && res.data.success) helpers.UI.showSnackbar('Mapping success')
-        console.log('Mapping succes')
         this.getRoles() 
         this.props.updateMultipleSettings(ldapSettings);
       })
@@ -237,7 +230,8 @@ class AccountsSettingsContainer extends React.Component {
       .catch((err) => {
         Log.error(err)
         helpers.UI.showSnackbar(err, true)
-        window.location.href = `/settings/accounts`;
+        this.forceUpdate()
+        // window.location.href = `/settings/accounts`;
       })
 
     // window.location.reload(true)
@@ -260,10 +254,7 @@ class AccountsSettingsContainer extends React.Component {
   }
 
   render() {
-    console.log('render')
     this.siteURL = this.getSetting('siteurl');
-    console.log('this.state.rolesArray');
-    console.log(this.state.rolesArray);
     let checkNowDisabled = true;
     if (this.getSetting('ldapSettings') && this.getSetting('ldapSettings') !== ''
       &&
@@ -280,8 +271,6 @@ class AccountsSettingsContainer extends React.Component {
 
     const ElementArray = ({ role }) => {
       const roleGroup = role;
-      console.log('roleGroup.ldapGroupID')
-      console.log(roleGroup.ldapGroupID)
       return <ZoneBox>
         <SettingSubItem
           title={role.name}
