@@ -181,7 +181,8 @@ function bindImapReady() {
                     stream.once('end', function () {
                       mailsCount++
                       simpleParser(buffer, function (err, mail) {
-
+                        console.log('simpleParser')
+                        winston.warn('simpleParser')
                         messagesCount++
                         if (err) winston.warn(err)
                         let message = {}
@@ -239,7 +240,8 @@ function bindImapReady() {
                         } else {
                           message.body = mail.textAsHtml
                         }
-
+                        console.log('_.isUndefined проверка')
+                        winston.warn('_.isUndefined проверка')
                         mailCheck.messages.push(message)
                         if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
                           handleMessages(mailCheck.messages, function () {
@@ -292,6 +294,8 @@ mailCheck.fetchMail = function () {
 
 function handleMessages(messages, done) {
   var count = 0
+  console.log('Перед условиями')
+  winston.warn('_.isUndefined проверка')
   messages.forEach(function (message) {
     //Если сообщение с почты это ответ то действует следующий код
     if (!_.isUndefined(message?.responseToComment) &&
@@ -487,7 +491,8 @@ function handleMessages(messages, done) {
     }
 
     else {
-
+      console.log('Перед условиями создания тикета')
+      winston.warn('Перед условиями создания тикета')
       if (
         !_.isUndefined(message.from) &&
         !_.isEmpty(message.from) &&
@@ -646,18 +651,25 @@ function handleMessages(messages, done) {
                       }
                     }
 
-                    if (!fs.existsSync(`${pathUploads}`)) {
-                      await fs.mkdir(`${pathUploads}`, err => {
-                        if (err) console.log(err)
-                        console.log('Папка успешно создана: ' + '/uploads');
-                      })
-                    }
+                    try {
 
-                    if (!fs.existsSync(`${pathUploadsTickets}`)) {
-                      await fs.mkdir(`${pathUploadsTickets}`, err => {
-                        if (err) console.log(err)
-                        console.log('Папка успешно создана: ' + '/uploads/tickets');
-                      })
+                      if (!fs.existsSync(`${pathUploads}`)) {
+                        await fs.mkdir(`${pathUploads}`, err => {
+                          if (err) console.log(err)
+                          console.log('Папка успешно создана: ' + '/uploads');
+                          winston.info('Папка успешно создана: ' + '/uploads');
+                        })
+                      }
+
+                      if (!fs.existsSync(`${pathUploadsTickets}`)) {
+                        await fs.mkdir(`${pathUploadsTickets}`, err => {
+                          if (err) console.log(err)
+                          console.log('Папка успешно создана: ' + '/uploads/tickets');
+                          winston.info('Папка успешно создана: ' + '/uploads/tickets');
+                        })
+                      }
+                    } catch (err) {
+                      return callback(err)
                     }
 
                     emitter.emit('ticket:created', {
