@@ -250,6 +250,8 @@ class AccountsSettingsContainer extends React.Component {
       // { name: 'ldapSettings:username', value: this.state.ldapUsername },
       // { name: 'ldapSettings:password', value: this.state.ldapPassword },
     ]
+    
+    this.props.updateMultipleSettings(ldapSettings);
     this.updateMapping(this.state.mapping, ldapSettings);
     // window.location.href = `/settings/accounts`;
   }
