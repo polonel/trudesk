@@ -181,60 +181,63 @@ function bindImapReady() {
                     stream.once('end', function () {
                       mailsCount++
                       simpleParser(buffer, function (err, mail) {
-                        messagesCount++
-                        if (err) winston.warn(err)
-                        let message = {}
-                        if (mail.headers.has('from')) {
-                          message.from = mail.headers.get('from').value[0].address
-                          message.fromName = mail.headers.get('from').value[0].name
-                        }
+                        if (mail.html !== false) {
+                          messagesCount++
+                          if (err) winston.warn(err)
+                          let message = {}
+                          if (mail.headers.has('from')) {
+                            message.from = mail.headers.get('from').value[0].address
+                            message.fromName = mail.headers.get('from').value[0].name
+                          }
 
-                        if (mail?.attachments.length !== 0) {
-                          message.attachments = mail.attachments
-                          attachmentsInMail = true
-                        }
+                          if (mail?.attachments.length !== 0) {
+                            message.attachments = mail.attachments
+                            attachmentsInMail = true
+                          }
 
-                        if (mail.subject) {
-                          message.subject = mail.subject
-                        } else {
-                          message.subject = message.from
-                        }
+                          if (mail.subject) {
+                            message.subject = mail.subject
+                          } else {
+                            message.subject = message.from
+                          }
 
-                        if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
-                          message.responseToComment = mail.text
-                        }
-                        // else {
-                        //   message.responseToComment = message.from
-                        // }
+                          if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
+                            message.responseToComment = mail.text
+                          }
+                          // else {
+                          //   message.responseToComment = message.from
+                          // }
 
-                        // if (mail.subject) {
-                        //   message.subject = mail.subject
-                        // } else {
-                        //   message.subject = message.from
-                        // }
+                          // if (mail.subject) {
+                          //   message.subject = mail.subject
+                          // } else {
+                          //   message.subject = message.from
+                          // }
 
-                        if (_.isUndefined(mail.text) && (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))) {
-                          var $ = cheerio.load(mail.html)
-                          var $body = $('body')
-                          message.responseToComment = $body.length > 0 ? $body.html() : mail.html
-                        } else {
-                          if (mail?.inReplyTo) message.responseToComment = mail.text
-                          message.mailText = true
-                        }
+                          if (_.isUndefined(mail.text) && (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))) {
+                            var $ = cheerio.load(mail.html)
+                            var $body = $('body')
+                            message.responseToComment = $body.length > 0 ? $body.html() : mail.html
+                          } else {
+                            if (mail?.inReplyTo) message.responseToComment = mail.text
+                            message.mailText = true
+                          }
 
-                        if (_.isUndefined(mail.textAsHtml)) {
-                          var $ = cheerio.load(mail.html)
-                          var $body = $('body')
-                          message.body = $body.length > 0 ? $body.html() : mail.html
-                        } else {
-                          message.body = mail.textAsHtml
-                        }
+                          if (_.isUndefined(mail.textAsHtml)) {
+                            var $ = cheerio.load(mail.html)
+                            var $body = $('body')
+                            message.body = $body.length > 0 ? $body.html() : mail.html
+                          } else {
+                            message.body = mail.textAsHtml
+                          }
 
-                        mailCheck.messages.push(message)
-                        if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
-                          handleMessages(mailCheck.messages, function () {
-                            mailCheck.Imap.destroy()
-                          })
+                          mailCheck.messages.push(message)
+                          if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
+                            handleMessages(mailCheck.messages, function () {
+                              mailCheck.Imap.destroy()
+                            })
+                          }
+
                         }
 
                       })
@@ -246,7 +249,7 @@ function bindImapReady() {
                   mailCheck.Imap.addFlags(results, flag, function () {
                     mailCheck.Imap.closeBox(true, function () {
                       mailCheck.Imap.end();
-                      if (!attachmentsInMail &&  mailsCount == messagesCount) {
+                      if (!attachmentsInMail && mailsCount == messagesCount) {
                         handleMessages(mailCheck.messages, function () {
                           mailCheck.Imap.destroy()
                         })
