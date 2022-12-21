@@ -182,23 +182,35 @@ function bindImapReady() {
                       mailsCount++
                       simpleParser(buffer, function (err, mail) {
                         console.log('simpleParser')
-                        winston.warn('simpleParser')
+                        winston.info('info')
                         messagesCount++
                         if (err) winston.warn(err)
                         let message = {}
+
+                        console.log('Проверка условия mail.html')
+                        winston.info('Проверка условия mail.html')
 
                         if (!mail.html) {
                           mail.html = 'Не заполнено'
                         }
 
+                        console.log('Проверка условия mail.subject')
+                        winston.info('Проверка условия mail.subject')
+
                         if (!mail.subject) {
                           mail.subject = 'Не заполнено'
                         }
+
+                        console.log('Проверка условия mail.headers')
+                        winston.info('Проверка условия mail.headers')
 
                         if (mail.headers.has('from')) {
                           message.from = mail.headers.get('from').value[0].address
                           message.fromName = mail.headers.get('from').value[0].name
                         }
+
+                        console.log('Проверка условия mail.attachments')
+                        winston.info('Проверка условия mail.attachmets')
 
                         if (mail?.attachments.length !== 0) {
                           message.attachments = mail.attachments
@@ -210,6 +222,9 @@ function bindImapReady() {
                         } else {
                           message.subject = message.from
                         }
+
+                        console.log('Проверка условия mail.inReplyTo')
+                        winston.info('Проверка условия mail.inReplyTo')
 
                         if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
                           message.responseToComment = mail.text
@@ -223,7 +238,8 @@ function bindImapReady() {
                         // } else {
                         //   message.subject = message.from
                         // }
-
+                        console.log('Проверка условия _.isUndefined(mail.text)')
+                        winston.info('Проверка условия _.isUndefined(mail.text)')
                         if (_.isUndefined(mail.text) && (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))) {
                           var $ = cheerio.load(mail.html)
                           var $body = $('body')
@@ -233,6 +249,8 @@ function bindImapReady() {
                           message.mailText = true
                         }
 
+                        console.log('Проверка условия mail.textAsHtml')
+                        winston.info('Проверка условия mail.textAsHtml')
                         if (_.isUndefined(mail.textAsHtml)) {
                           var $ = cheerio.load(mail.html)
                           var $body = $('body')
@@ -241,7 +259,7 @@ function bindImapReady() {
                           message.body = mail.textAsHtml
                         }
                         console.log('_.isUndefined проверка')
-                        winston.warn('_.isUndefined проверка')
+                        winston.info('_.isUndefined проверка')
                         mailCheck.messages.push(message)
                         if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
                           handleMessages(mailCheck.messages, function () {
@@ -294,13 +312,14 @@ mailCheck.fetchMail = function () {
 
 function handleMessages(messages, done) {
   var count = 0
-  console.log('Перед условиями')
-  winston.warn('_.isUndefined проверка')
+  console.log('Цикл перебора сообщений')
+  winston.info('Цикл перебора сообщений')
   messages.forEach(function (message) {
     //Если сообщение с почты это ответ то действует следующий код
     if (!_.isUndefined(message?.responseToComment) &&
       !_.isEmpty(message?.responseToComment)) {
-
+      console.log('Сработало условие на создание комментария')
+      winston.info('Сработало условие на создание комментария')
       userSchema.getUserByEmail(message.from, function (err, user) {
         if (err) winston.warn(err)
         if (!err && user) {
@@ -350,7 +369,8 @@ function handleMessages(messages, done) {
           } catch (err) {
             return winston.warn(err)
           }
-
+          console.log('Проверено заполнение ответа')
+          winston.info('Проверено заполнение ответа')
           if (_.isUndefined(ticketUID)) return winston.warn('Invalid Post Data')
           Ticket.findOne({ uid: ticketUID }, async function (err, t) {
             if (err) return winston.warn('Invalid Post Data')
@@ -393,7 +413,8 @@ function handleMessages(messages, done) {
               const pathUploadTicket = `${pathUploadsTickets}/${t._id}`;
               const pathUploadComments = `${pathUploadsTickets}/${t._id}/comments`;
               const pathUploadCommentId = `${pathUploadsTickets}/${t._id}/comments/${commentId}`;
-
+              console.log('Начало создания файла из почты')
+              winston.info('Начало создания файла из почты')
               try {
                 if (!fs.existsSync(pathUploadTicket)) {
                   await fs.mkdir(`${pathUploadsTickets}/${t._id}`, function (err) {
@@ -420,10 +441,14 @@ function handleMessages(messages, done) {
                 }
 
               } catch (err) {
+                console.log('Ошибка при создании папок для файла комментария')
+                winston.warn('Ошибка при создании папок для файла комментария')
                 return callback(err)
               }
 
               console.log('Папка успешно создана');
+              console.log('Папки успешно созданы')
+              winston.info('Папки успешно созданы')
               let countAttachments = 0
               try {
                 for (const attachmentFromMessage of message.attachments) {
@@ -455,9 +480,13 @@ function handleMessages(messages, done) {
               } catch (err) {
                 return callback(err)
               }
+              console.log('Файл успешно создан');
+              winston.info('Файл успешно создан');
 
               // t.updated = Date.now()
               if (countAttachments = message.attachments.length) {
+                console.log('Начало сохранения заявки с комментарием attach');
+                winston.info('Начало сохранения заявки с комментарием attach');
                 t.save(function (err, tt) {
                   if (err) return winston.warn(err.message)
                   settingSchema.findOne({ name: 'gen:siteurl' }, (err, url) => {
@@ -466,10 +495,13 @@ function handleMessages(messages, done) {
                     emitter.emit('ticket:comment:added', tt, Comment, hostname)
                     return winston.warn({ success: true, error: null, ticket: tt })
                   })
-
+                  console.log('Заявка с комментарием с файлом сохранена успешно');
+                  winston.info('Заявка с комментарием с файлом сохранена успешно');
                 })
               }
             } else {
+              console.log('Начало сохранения заявки с комментарием');
+              winston.info('Начало сохранения заявки с комментарием');
               t.save(function (err, tt) {
                 if (err) return winston.warn(err.message)
                 settingSchema.findOne({ name: 'gen:siteurl' }, (err, url) => {
@@ -478,7 +510,8 @@ function handleMessages(messages, done) {
                   emitter.emit('ticket:comment:added', tt, Comment, hostname)
                   return winston.warn({ success: true, error: null, ticket: tt })
                 })
-
+                console.log('Заявка с комментарием сохранена успешно');
+                winston.info('Заявка с комментарием сохранена успешно');
               })
             }
           })
@@ -501,6 +534,10 @@ function handleMessages(messages, done) {
         !_.isUndefined(message.body) &&
         !_.isEmpty(message.body)
       ) {
+        console.log('Условия пройдены')
+        winston.info('Условия пройдены')
+        console.log('Создание и заполнение заявки')
+        winston.info('Создание и заполнение заявки')
         async.auto(
           {
             handleUser: function (callback) {
@@ -538,7 +575,8 @@ function handleMessages(messages, done) {
                 if (!_.isUndefined(message.group)) {
                   return callback()
                 }
-
+                console.log('Проверка группы')
+                winston.info('Проверка группы')
                 groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
                   if (err) return callback(err)
                   if (!group || group.length == 0) {
@@ -581,9 +619,14 @@ function handleMessages(messages, done) {
               }
             ],
             handleTicketType: function (callback) {
+              console.log('Проверка mailCheck.fetchMailOptions.defaultTicketType')
+              winston.info('Проверка mailCheck.fetchMailOptions.defaultTicketType')
               if (mailCheck.fetchMailOptions.defaultTicketType === 'Issue') {
                 ticketTypeSchema.getTypeByName('Issue', function (err, type) {
-                  if (err) return callback(err)
+                  if (err) {
+                    winston.warn(err);
+                    return callback(err);
+                  }
 
                   mailCheck.fetchMailOptions.defaultTicketType = type._id
                   message.type = type
@@ -592,7 +635,10 @@ function handleMessages(messages, done) {
                 })
               } else {
                 ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
-                  if (err) return callback(err)
+                  if (err) {
+                    winston.warn(err);
+                    return callback(err)
+                  }
 
                   message.type = type
 
@@ -604,7 +650,8 @@ function handleMessages(messages, done) {
               'handleTicketType',
               function (result, callback) {
                 var type = result.handleTicketType
-
+                console.log('Проверка mailCheck.fetchMailOptions.defaultPriority')
+                winston.info('Проверка mailCheck.fetchMailOptions.defaultPriority')
                 if (mailCheck.fetchMailOptions.defaultPriority !== '') {
                   return callback(null, mailCheck.fetchMailOptions.defaultPriority)
                 }
@@ -613,6 +660,8 @@ function handleMessages(messages, done) {
                 if (!_.isUndefined(firstPriority)) {
                   mailCheck.fetchMailOptions.defaultPriority = firstPriority._id
                 } else {
+                  console.log('Invalid default priority')
+                  winston.warn('Invalid default priority')
                   return callback('Invalid default priority')
                 }
 
@@ -628,7 +677,8 @@ function handleMessages(messages, done) {
                   description: 'Ticket was created.',
                   owner: message.owner._id
                 }
-
+                console.log('Функция создания заявки')
+                winston.info('Функция создания заявки')
                 Ticket.create(
                   {
                     owner: message.owner._id,
@@ -651,6 +701,8 @@ function handleMessages(messages, done) {
                       }
                     }
 
+                    console.log('Начало создания папок');
+                    winston.info('Начало создания папок');
                     try {
 
                       if (!fs.existsSync(`${pathUploads}`)) {
@@ -669,20 +721,30 @@ function handleMessages(messages, done) {
                         })
                       }
                     } catch (err) {
+                      console.log('Ошибка при создании папок для файла тикета')
+                      winston.warn('Ошибка при создании папок для файла тикета')
                       return callback(err)
                     }
+
+                    console.log('Папки успешно созданы')
+                    winston.info('Папки успешно созданы')
 
                     emitter.emit('ticket:created', {
                       socketId: '',
                       ticket: ticket
                     })
 
+                    console.log('Начало создания папки тикета и файла');
+                    winston.info('Начало создания папки тикета и файла');
                     if (message.attachments) {
 
                       await fs.mkdir(`${pathUploadsTickets}/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
-                        console.log('Папка успешно создана');
+                        console.log('Папка успешно создана' + `${pathUploadsTickets}/${ticket._id}/`);
+                        winston.info('Папка успешно созана' + `${pathUploadsTickets}/${ticket._id}/`);
                         try {
+                          console.log('Начало создания файлов');
+                          winston.info('Начало создания файлов');
                           for (const attachmentFromMessage of message.attachments) {
                             let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
 
@@ -706,13 +768,16 @@ function handleMessages(messages, done) {
                           }
                         } catch (err) {
                           winston.warn(err)
+                          console.log('Ошибка при создании файлв для тикета')
+                          winston.warn('Ошибка при создании файлв для тикета')
                           try {
                             return callback(err)
                           } catch {
                             winston.warn('Callback уже вызван')
                           }
                         }
-
+                        console.log('Файлы для тикета успешно созданы');
+                        winston.info('Файлы для тикета успешно созданы')
                         ticket.save(function (err, t) {
                           if (err) {
                             fs.unlinkSync(attachment.path)
@@ -723,11 +788,11 @@ function handleMessages(messages, done) {
                               winston.warn('Callback уже вызван')
                             }
                           }
-
+                          console.log('Заявка сохранена')
+                          winston.info('Заявка сохранена')
                         })
                       });
                     }
-
                     count++
                     try {
                       return callback(err)
@@ -741,6 +806,8 @@ function handleMessages(messages, done) {
           },
           function (err) {
             winston.debug('Created %s tickets from mail', count)
+            console.log('Процедура создания и заполнения заявки закончена успешно')
+            winston.info('Процедура создания и заполнения заявки закончена успешно')
             if (err) winston.warn(err)
             return done(err)
           }
