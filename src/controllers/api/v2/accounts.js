@@ -91,9 +91,9 @@ accountsApi.create = async function (req, res) {
         userPassword: postData.password
       })
 
-      if (!err && userDB && userDB?.insertedIds) {
-
-        User.findById(userDB.insertedIds[0], async (err, user) => {
+      // if (!err && userDB && userDB?.insertedIds) {
+      if (!err && userDB) {
+        User.findById(userDB._id, async (err, user) => {
 
           // emitter.emit('user:created', {
           //   socketId: '',

@@ -139,7 +139,7 @@ class CreateAccountModal extends React.Component {
       password: this.password.length > 3 ? this.password : this.plainTextPass,
       passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : this.plainTextPass
     }
-
+    console.log(payload)
     this.props.createAccount(payload)
     this.props.hideModal()
   }

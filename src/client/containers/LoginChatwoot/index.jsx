@@ -180,7 +180,7 @@ class LoginChatwootContainer extends React.Component {
       password: this.password.length > 3 ? this.password : this.plainTextPass,
       passwordConfirm: this.passwordConfirm.length > 3 ? this.passwordConfirm : this.plainTextPass
     }
-
+    console.log(payload)
     if (this.getSetting('chatwootSettings')) {
       const contact = {
         "email": this.email,
