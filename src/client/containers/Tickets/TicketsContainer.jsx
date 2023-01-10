@@ -53,6 +53,10 @@ class TicketsContainer extends React.Component {
     super(props)
     makeObservable(this)
 
+    this.state = {
+      tickets: []
+    }
+
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
     this.onTicketDeleted = this.onTicketDeleted.bind(this)
@@ -63,7 +67,18 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+    console.log('componentDidMount');
+    this.fetchTickets();
+    //this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+  }
+
+  fetchTickets(){
+
+      axios.get(`/api/v2/tickets?type=${this.props.view}&page=${this.props.page}&limit=${50}${this.props.filter}`).then(res => {
+      this.state.tickets = res.data.tickets;
+      console.log(ticketsArray)
+    }).catch(err => { console.log(err) })
+
   }
 
   componentDidUpdate() {
@@ -222,20 +237,19 @@ class TicketsContainer extends React.Component {
     else this._clearChecked()
   }
  async updateComponent(){
-  console.log('this.props.tickets');
-  console.log(this.props.tickets);
-    await axios.get('/api/v1/tickets').then(res => {
-
-      let ticketsArray = res.data.tickets;
-      //let tickets = [];
-      for (let i = 0; i < ticketsArray.length; i++) {
-        this.props.tickets.push(ticketsArray[i]);
-        //tickets.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });     
-      }
-      //this.setState({ rolesArray: rolesName })
-     // this.getLDAPGroups()
-      this.forceUpdate()
-    }).catch(err => { console.log(err) })
+  console.log('this.state.tickets');
+  console.log(this.state.tickets);
+  // return axios.get(`/api/v2/tickets?type=${this.props.view}&page=${this.props.page}&limit=${50}${this.props.filter}`).then(res => {
+  //     let ticketsArray = res.data.tickets;
+  //     console.log(ticketsArray)
+  //     for (let i = 0; i < ticketsArray.length; i++) {
+  //       this.props.tickets.push(ticketsArray[i]);
+  //       //tickets.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });     
+  //     }
+  //     console.log('this.props.tickets');
+  //     console.log(this.props.tickets);
+  //     this.forceUpdate()
+  //   }).catch(err => { console.log(err) })
   }
   render() {
     console.log('render');
@@ -377,7 +391,8 @@ class TicketsContainer extends React.Component {
               <TableHeader key={9} text={'Updated'} />
             ]}
           >
-            {!this.props.loading && this.props.tickets.size < 1 && (
+            {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
+            {!this.props.loading && this.state.tickets.size < 1 && (
               <TableRow clickable={false}>
                 <TableCell colSpan={10}>
                   <h5 style={{ margin: 10 }}>No Tickets Found</h5>
@@ -386,7 +401,7 @@ class TicketsContainer extends React.Component {
             )}
             {this.props.loading && loadingItems}
             {!this.props.loading &&
-              this.props.tickets.map(ticket => {
+              this.state.tickets.map(ticket => {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:
