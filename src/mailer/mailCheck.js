@@ -390,7 +390,7 @@ function handleMessages(messages, done) {
 
               try {
                 if (!fs.existsSync(pathUploadTicket)) {
-                  await fs.mkdir(`${pathUploadsTickets}/${t._id}`, function (err) {
+                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadTicket}`)
                     return true
@@ -398,7 +398,7 @@ function handleMessages(messages, done) {
                 }
 
                 if (!fs.existsSync(pathUploadComments)) {
-                  await fs.mkdir(`${pathUploadsTickets}/${t._id}/comments`, function (err) {
+                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}/comments`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadComments}`)
                     return true
@@ -406,7 +406,7 @@ function handleMessages(messages, done) {
                 }
 
                 if (!fs.existsSync(pathUploadCommentId)) {
-                  await fs.mkdir(`${pathUploadsTickets}/${t._id}/comments/${commentId}`, function (err) {
+                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}/comments/${commentId}`, function (err) {
                     if (err) return callback(err)
                     console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
                     return true
@@ -647,13 +647,13 @@ function handleMessages(messages, done) {
                     try {
 
                       if (!fs.existsSync(`${pathUploads}`)) {
-                        await fs.mkdir(`${pathUploads}`, err => {
+                        await fs.mkdirSync(`${pathUploads}`, err => {
                           if (err) console.log(err)
                         })
                       }
 
                       if (!fs.existsSync(`${pathUploadsTickets}`)) {
-                        await fs.mkdir(`${pathUploadsTickets}`, err => {
+                        await fs.mkdirSync(`${pathUploadsTickets}`, err => {
                           if (err) console.log(err)
                         })
                       }
@@ -668,7 +668,7 @@ function handleMessages(messages, done) {
 
                     if (message.attachments) {
 
-                      await fs.mkdir(`${pathUploadsTickets}/${ticket._id}/`, err => {
+                      await fs.mkdirSync(`${pathUploadsTickets}/${ticket._id}/`, err => {
                         if (err) throw err; // Не удалось создать папку
                         try {
                           for (const attachmentFromMessage of message.attachments) {

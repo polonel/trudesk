@@ -37,6 +37,7 @@ import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import Dropdown from 'components/Dropdown'
 import DropdownItem from 'components/Dropdown/DropdownItem'
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
+import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
 import anime from 'animejs'
@@ -257,6 +258,16 @@ class TicketsContainer extends React.Component {
 
     return (
       <div>
+       
+                  <Button
+                    text={'Update'}
+                    hasDropdown={false}
+                    flat={false}
+                    small={true}
+                    waves={false}
+                    extraClass={'hover-accent'}
+                    onClick={() => this.render()}
+                  />
         <PageTitle
           title={'Tickets'}
           shadow={false}
