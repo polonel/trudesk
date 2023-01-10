@@ -221,8 +221,24 @@ class TicketsContainer extends React.Component {
     if (e.target.checked) this._selectAll()
     else this._clearChecked()
   }
+ async updateComponent(){
+  console.log('this.props.tickets');
+  console.log(this.props.tickets);
+    await axios.get('/api/v1/tickets').then(res => {
 
+      let ticketsArray = res.data.tickets;
+      //let tickets = [];
+      for (let i = 0; i < ticketsArray.length; i++) {
+        this.props.tickets.push(ticketsArray[i]);
+        //tickets.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });     
+      }
+      //this.setState({ rolesArray: rolesName })
+     // this.getLDAPGroups()
+      this.forceUpdate()
+    }).catch(err => { console.log(err) })
+  }
   render() {
+    console.log('render');
     const loadingItems = []
     for (let i = 0; i < 51; i++) {
       const cells = []
@@ -266,7 +282,7 @@ class TicketsContainer extends React.Component {
                     small={true}
                     waves={false}
                     extraClass={'hover-accent'}
-                    onClick={() => this.render()}
+                    onClick={() => this.updateComponent()}
                   />
         <PageTitle
           title={'Tickets'}
