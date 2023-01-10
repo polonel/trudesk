@@ -76,7 +76,10 @@ class TicketsContainer extends React.Component {
 
       axios.get(`/api/v2/tickets?type=${this.props.view}&page=${this.props.page}&limit=${50}${this.props.filter}`).then(res => {
       this.state.tickets = res.data.tickets;
-      console.log(ticketsArray)
+      for(ticket of res.data.tickets){
+        this.state.tickets.push(new Map(Object.entries(ticket)));
+      }
+      console.log(this.state.tickets)
     }).catch(err => { console.log(err) })
 
   }
@@ -392,7 +395,7 @@ class TicketsContainer extends React.Component {
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
-            {!this.props.loading && this.state.tickets.size < 1 && (
+            {!this.props.loading && this.props.tickets.size < 1 && (
               <TableRow clickable={false}>
                 <TableCell colSpan={10}>
                   <h5 style={{ margin: 10 }}>No Tickets Found</h5>
@@ -401,7 +404,7 @@ class TicketsContainer extends React.Component {
             )}
             {this.props.loading && loadingItems}
             {!this.props.loading &&
-              this.state.tickets.map(ticket => {
+              this.props.tickets.map(ticket => {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:
