@@ -214,6 +214,7 @@ module.exports = async data => {
     else await createNotification(ticket)
 
     util.sendToAllConnectedClients(io, socketEvents.TICKETS_CREATED, ticket)
+    util.sendToAllConnectedClients(io, socketEvents.TICKETS_LIST_UPDATE, ticket)
   } catch (e) {
     logger.warn(`[trudesk:events:ticket:created] - Error: ${e}`)
   }

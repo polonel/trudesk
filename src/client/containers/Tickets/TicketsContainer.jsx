@@ -24,7 +24,7 @@ import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated }
 import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
-import { TICKETS_LIST_UPDATE } from 'serverSocket/socketEventConsts'
+
 import PageTitle from 'components/PageTitle'
 import Table from 'components/Table'
 import TableHeader from 'components/Table/TableHeader'
@@ -65,7 +65,7 @@ class TicketsContainer extends React.Component {
 
   componentDidMount() {
     
-    this.props.socket.on(TICKETS_LIST_UPDATE, this.onTicketsListUpdated)
+    this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
@@ -103,7 +103,7 @@ class TicketsContainer extends React.Component {
     anime.remove('tr.overdue td')
     this.timeline = null
     this.props.unloadTickets()
-    this.props.socket.off(TICKETS_LIST_UPDATE, this.onTicketsListUpdated)
+    this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
