@@ -125,7 +125,6 @@ class SingleTicketContainer extends React.Component {
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
-    this.ticketChecked()
     document.addEventListener('keydown',this.keydownHandler);
   }
 
@@ -395,6 +394,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   render() {
+    this.ticketChecked()
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
         return { text: group.get('name'), value: group.get('_id') }
