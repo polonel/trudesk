@@ -15,9 +15,9 @@
 var _ = require('lodash')
 var async = require('async')
 
-var tcm = {}
+var apiTCM = {}
 
-tcm.get = function (req, res) {
+apiTCM.get = function (req, res) {
   var tcmSchema = require('../../../models/tcm')
 
   var tcms = []
@@ -43,4 +43,4 @@ tcm.get = function (req, res) {
   )
 }
 
-module.exports = tcm
+module.exports = apiTCM

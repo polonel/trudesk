@@ -47,14 +47,14 @@ import SearchResults from 'components/SearchResults'
 @observer
 class TicketsContainer extends React.Component {
   @observable searchTerm = ''
-
+  @observable tcms = []
   selectedTickets = []
   constructor(props) {
     super(props)
     makeObservable(this)
 
   
-    this.commentAdded = false;
+    
     this.onTicketCommentAdded= this.onTicketCommentAdded.bind(this)
     this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
@@ -70,7 +70,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
-    this.fetchTCM()
+    this.fetchTCMs()
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
@@ -139,7 +139,7 @@ class TicketsContainer extends React.Component {
     .then(res => {
       if (res.data.success) {
         this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
-        this.fetchTCM()
+        this.fetchTCMs()
         this._clearChecked()
       } else {
         helpers.UI.showSnackbar('An unknown error occurred.', true)
@@ -152,9 +152,12 @@ class TicketsContainer extends React.Component {
     }) 
   }
 
-  fetchTCM(){
-    axios.get(`/api/v2/tcm/`,{checked, userId}).then(res=>{
-      console.log(res);
+  fetchTCMs(){
+    console.log('fetchTCMs')
+    axios.get(`/api/v2/tcm`).then(res=>{
+     console.log('res.data.tcms')
+     console.log(res.data.tcms)
+     this.tcms = res.data.tcms;
     })
   }
 
@@ -266,6 +269,8 @@ class TicketsContainer extends React.Component {
 
   render() {
     console.log('render');
+    console.log('this.tcms');
+    console.log(this.tcms);
     const loadingItems = []
     for (let i = 0; i < 51; i++) {
       const cells = []
