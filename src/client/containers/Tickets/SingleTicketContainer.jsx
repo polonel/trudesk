@@ -72,7 +72,7 @@ const fetchTicket = parent => {
       parent.ticket = res.data.ticket
       parent.isSubscribed =
         parent.ticket && parent.ticket.subscribers.findIndex(i => i._id === parent.props.shared.sessionUser._id) !== -1
-      // }, 3000)
+      // }, 3000) 
     })
     .catch(error => {
       if (error.response.status === 403) {
@@ -125,6 +125,7 @@ class SingleTicketContainer extends React.Component {
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
+    this.ticketChecked()
     document.addEventListener('keydown',this.keydownHandler);
   }
 
@@ -189,9 +190,9 @@ class SingleTicketContainer extends React.Component {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
   }
 
-  ticketChecked (uid){
+  ticketChecked (){
     const checked = true
-    axios.post(`/api/v2/tickets/checked/${uid}`, {checked}) 
+    axios.post(`/api/v2/tickets/checked/${this.props.ticketUid}`, {checked}) 
   }
 
   onCommentNoteSubmit(e, type) {
@@ -419,7 +420,6 @@ class SingleTicketContainer extends React.Component {
         return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
       }
     }
-    this.ticketChecked(this.ticket.uid)
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
         {!this.ticket && <SpinLoader active={true} />}

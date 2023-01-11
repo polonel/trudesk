@@ -232,6 +232,7 @@ ticketsV2.updateChecked = function (req, res) {
   const checked = req.body.checked
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
   Models.Ticket.updateOne({ uid: uid }, { $set: { checked: checked } })
+  return apiUtils.sendApiSuccess(res)
 }
 
 
