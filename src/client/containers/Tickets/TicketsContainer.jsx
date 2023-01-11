@@ -274,16 +274,6 @@ class TicketsContainer extends React.Component {
 
     return (
       <div>
-       
-                  <Button
-                    text={'Update'}
-                    hasDropdown={false}
-                    flat={false}
-                    small={true}
-                    waves={false}
-                    extraClass={'hover-accent'}
-                    onClick={() => this.updateComponent()}
-                  />
         <PageTitle
           title={'Tickets'}
           shadow={false}
