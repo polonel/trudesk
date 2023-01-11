@@ -125,6 +125,7 @@ class SingleTicketContainer extends React.Component {
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
+    this.ticketChecked()
     document.addEventListener('keydown',this.keydownHandler);
   }
 
@@ -187,6 +188,11 @@ class SingleTicketContainer extends React.Component {
 
   onUpdateTicketTags(data) {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
+  }
+
+  ticketChecked(){
+    const checked = true
+    axios.post(`/api/v2/tickets/checked/${this.ticket._id}`, {checked}) 
   }
 
   onCommentNoteSubmit(e, type) {

@@ -227,7 +227,12 @@ ticketsV2.permDelete = function (req, res) {
   })
 }
 
-
+ticketsV2.updateChecked = function (req, res) {
+  const uid = req.params.uid
+  const checked = req.body.checked
+  if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+  Models.Ticket.updateOne({ uid: uid }, { $set: { checked: checked } })
+}
 
 
 ticketsV2.transferToThirdParty = async (req, res) => {

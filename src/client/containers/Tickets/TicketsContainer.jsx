@@ -53,10 +53,9 @@ class TicketsContainer extends React.Component {
     super(props)
     makeObservable(this)
 
-    this.state = {
-      tickets: []
-    }
-
+  
+    this.commentAdded = false;
+    this.onTicketCommentAdded= this.onTicketCommentAdded.bind(this)
     this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
@@ -65,6 +64,7 @@ class TicketsContainer extends React.Component {
 
   componentDidMount() {
     
+    this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
@@ -103,6 +103,7 @@ class TicketsContainer extends React.Component {
     anime.remove('tr.overdue td')
     this.timeline = null
     this.props.unloadTickets()
+    this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
     this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
@@ -130,6 +131,10 @@ class TicketsContainer extends React.Component {
     this.selectedTickets = uniq(this.selectedTickets)
   }
 
+  onTicketCommentAdded(){
+
+  }
+  
   onSetStatus(status) {
     let statusText = ''
     switch (status) {
@@ -232,11 +237,10 @@ class TicketsContainer extends React.Component {
     else this._clearChecked()
   }
 
- async onTicketsListUpdated(){
-  console.log('onTicketsListUpdated')
+  onTicketsListUpdated(){
   this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
-
   }
+
   render() {
     console.log('render');
     const loadingItems = []
