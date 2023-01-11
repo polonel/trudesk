@@ -26,6 +26,7 @@ exported.ROLES_FLUSH = '$trudesk:roles:flush'
 exported.TICKETS_CREATED = '$trudesk:tickets:created'
 exported.TICKETS_UPDATE = '$trudesk:tickets:update'
 // --- SUB TICKET EVENTS
+exported.TICKETS_LIST_UPDATE = '$trudesk:tickets:list:update'
 exported.TICKETS_UI_STATUS_UPDATE = '$trudesk:tickets:ui:status:update'
 exported.TICKETS_STATUS_SET = '$trudesk:tickets:status:set'
 

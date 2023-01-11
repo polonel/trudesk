@@ -57,31 +57,20 @@ class TicketsContainer extends React.Component {
       tickets: []
     }
 
+    this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
     this.onTicketDeleted = this.onTicketDeleted.bind(this)
   }
 
   componentDidMount() {
+    
+    this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
-    console.log('componentDidMount');
-    this.fetchTickets();
-    //this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
-  }
-
-  fetchTickets(){
-
-      axios.get(`/api/v2/tickets?type=${this.props.view}&page=${this.props.page}&limit=${50}${this.props.filter}`).then(res => {
-     
-      for(const ticket of res.data.tickets){
-        this.state.tickets.push(new Map(Object.entries(ticket)));
-      }
-      console.log(this.state.tickets)
-    }).catch(err => { console.log(err) })
-
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
   componentDidUpdate() {
@@ -114,16 +103,19 @@ class TicketsContainer extends React.Component {
     anime.remove('tr.overdue td')
     this.timeline = null
     this.props.unloadTickets()
+    this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
   }
 
   onTicketCreated(ticket) {
+    console.log('onTicketCreated')
     if (this.props.page === '0') this.props.ticketEvent({ type: 'created', data: ticket })
   }
 
   onTicketUpdated(data) {
+    console.log('onTicketUpdated')
     this.props.ticketUpdated(data)
   }
 
@@ -239,20 +231,11 @@ class TicketsContainer extends React.Component {
     if (e.target.checked) this._selectAll()
     else this._clearChecked()
   }
- async updateComponent(){
-  console.log('this.state.tickets');
-  console.log(this.state.tickets);
-  // return axios.get(`/api/v2/tickets?type=${this.props.view}&page=${this.props.page}&limit=${50}${this.props.filter}`).then(res => {
-  //     let ticketsArray = res.data.tickets;
-  //     console.log(ticketsArray)
-  //     for (let i = 0; i < ticketsArray.length; i++) {
-  //       this.props.tickets.push(ticketsArray[i]);
-  //       //tickets.push({ name: rolesArray[i]['name'], _id: rolesArray[i]['_id'], ldapGroupID: rolesArray[i]['ldapGroupID'] });     
-  //     }
-  //     console.log('this.props.tickets');
-  //     console.log(this.props.tickets);
-  //     this.forceUpdate()
-  //   }).catch(err => { console.log(err) })
+
+ async onTicketsListUpdated(){
+  console.log('onTicketsListUpdated')
+  this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+
   }
   render() {
     console.log('render');
@@ -395,7 +378,7 @@ class TicketsContainer extends React.Component {
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
-            {!this.props.loading && this.state.tickets.size < 1 && (
+            {!this.props.loading && this.props.tickets.size < 1 && (
               <TableRow clickable={false}>
                 <TableCell colSpan={10}>
                   <h5 style={{ margin: 10 }}>No Tickets Found</h5>
@@ -404,7 +387,7 @@ class TicketsContainer extends React.Component {
             )}
             {this.props.loading && loadingItems}
             {!this.props.loading &&
-              this.state.tickets.map(ticket => {
+              this.props.tickets.map(ticket => {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:

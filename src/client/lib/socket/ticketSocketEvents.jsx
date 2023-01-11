@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { TICKETS_CREATED } from 'serverSocket/socketEventConsts'
 import helpers from 'lib/helpers'
 import { TICKETS_COMMENT_NOTE_SET } from '../../../socketio/socketEventConsts'
+import {TICKETS_LIST_UPDATE} from '../../../socketio/socketEventConsts'
 
 const TicketSocketEvents = () => {
   const socket = useSelector(state => state.shared.socket)
@@ -21,6 +22,7 @@ const TicketSocketEvents = () => {
 
   const ticketCreated = () => {
     socket.removeAllListeners(TICKETS_CREATED)
+    socket.emit(TICKETS_LIST_UPDATE)
     socket.on(TICKETS_CREATED, ticket => {
       if (viewdata) {
         if (viewdata.get('ticketSettings') && viewdata.get('ticketSettings').get('playNewTicketSound'))
