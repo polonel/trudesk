@@ -189,9 +189,9 @@ class SingleTicketContainer extends React.Component {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
   }
 
-  ticketChecked(){
+  ticketChecked (uid){
     const checked = true
-    axios.post(`/api/v2/tickets/checked/${this.ticket._id}`, {checked}) 
+    axios.post(`/api/v2/tickets/checked/${uid}`, {checked}) 
   }
 
   onCommentNoteSubmit(e, type) {
@@ -394,7 +394,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   render() {
-    this.ticketChecked()
+    
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
         return { text: group.get('name'), value: group.get('_id') }
@@ -419,7 +419,7 @@ class SingleTicketContainer extends React.Component {
         return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
       }
     }
-
+    this.ticketChecked(this.ticket.uid)
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
         {!this.ticket && <SpinLoader active={true} />}
