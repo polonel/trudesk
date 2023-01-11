@@ -73,6 +73,7 @@ const fetchTicket = parent => {
       parent.isSubscribed =
         parent.ticket && parent.ticket.subscribers.findIndex(i => i._id === parent.props.shared.sessionUser._id) !== -1
       // }, 3000) 
+      ticketChecked(parent)
     })
     .catch(error => {
       if (error.response.status === 403) {
@@ -80,6 +81,13 @@ const fetchTicket = parent => {
       }
       Log.error(error)
     })
+}
+
+const ticketChecked = (parent)=> {
+  const checked = true
+  const userId = parent.props.shared.sessionUser._id
+  console.log(userId);
+  axios.put(`/api/v2/tickets/checked/${parent.props.ticketUid}`, {checked, userId}) 
 }
 
 const showPriorityConfirm = () => {
@@ -125,7 +133,6 @@ class SingleTicketContainer extends React.Component {
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
-    this.ticketChecked()
     document.addEventListener('keydown',this.keydownHandler);
   }
 
@@ -188,11 +195,6 @@ class SingleTicketContainer extends React.Component {
 
   onUpdateTicketTags(data) {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
-  }
-
-  ticketChecked (){
-    const checked = true
-    axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`, {checked}) 
   }
 
   onCommentNoteSubmit(e, type) {

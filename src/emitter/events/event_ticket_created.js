@@ -202,8 +202,10 @@ module.exports = async data => {
       ticketUid: ticket.uid,
       users:[]
     }
-    TCM.insert(tcm)
-    
+    TCM.create(tcm,(err)=>{
+      if (err) throw err
+    })
+
     const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
     let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
     mailerEnabled = !mailerEnabled ? false : mailerEnabled.value

@@ -70,6 +70,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
+    this.fetchTCM()
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
@@ -132,9 +133,31 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketCommentAdded(){
-
+    const checked = false
+    const userId = this.props.shared.sessionUser._id
+    axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`,{checked, userId})
+    .then(res => {
+      if (res.data.success) {
+        this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+        this.fetchTCM()
+        this._clearChecked()
+      } else {
+        helpers.UI.showSnackbar('An unknown error occurred.', true)
+        Log.error(res.data.error)
+      }
+    })
+    .catch(error => {
+      Log.error(error)
+      helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
+    }) 
   }
-  
+
+  fetchTCM(){
+    axios.get(`/api/v2/tcm/`,{checked, userId}).then(res=>{
+      console.log(res);
+    })
+  }
+
   onSetStatus(status) {
     let statusText = ''
     switch (status) {
@@ -518,7 +541,8 @@ const mapStateToProps = state => ({
   loading: state.ticketsState.loading,
   common: state.common,
   socket: state.shared.socket,
-  settings: state.settings.settings
+  settings: state.settings.settings,
+  sessionUser: state.shared.sessionUser
 })
 
 export default connect(mapStateToProps, {

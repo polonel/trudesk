@@ -228,16 +228,24 @@ ticketsV2.permDelete = function (req, res) {
 }
 
 ticketsV2.updateChecked = function (req, res) {
-  // const uid = req.params.uid
-  // const checked = req.body.checked
-  // if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
-  // Models.TCM.updateMany({ uid: uid }, { $set: { checked: checked } }, (err,success)=>{
-  //   if (err) return apiUtils.sendApiError(res, 400, err.message)
-  //   return apiUtils.sendApiSuccess(res)
-  // })
+  const uid = req.params.uid
+  const userId = req.body.userId
+  const checked = req.body.checked
+  if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+  if (checked){
+    Models.TCM.updateMany({ ticketUid: uid }, { $push: { users: userId } }, (err,success)=>{
+      if (err) return apiUtils.sendApiError(res, 400, err.message)
+      return apiUtils.sendApiSuccess(res)
+    })
+  } else {
+    Models.TCM.updateMany({ ticketUid: uid }, { $pull: { users: userId } }, (err,success)=>{
+      if (err) return apiUtils.sendApiError(res, 400, err.message)
+      return apiUtils.sendApiSuccess(res)
+    })
+  }
+  
  
 }
-
 
 ticketsV2.transferToThirdParty = async (req, res) => {
   const uid = req.params.uid

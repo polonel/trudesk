@@ -15,23 +15,22 @@
 var _ = require('lodash')
 var async = require('async')
 
-var ldapGroup = {}
+var tcm = {}
 
-ldapGroup.get = function (req, res) {
-  var ldapGroupSchema = require('../../../models/ldapGroup')
+tcm.get = function (req, res) {
+  var tcmSchema = require('../../../models/tcm')
 
-  var ldapGroups = []
-
+  var tcms = []
 
   async.parallel(
     [
       function (done) {
-        ldapGroupSchema.find({}, function (err, l) {
+        tcmSchema.find({}, function (err, t) {
           if (err) return done(err)
           // for(let ldapGroup of l){
           //     ldapGroups.push(ldapGroup.name);
           // }
-          ldapGroups = l
+          tcms = t
           return done()
         })
       }
@@ -39,35 +38,9 @@ ldapGroup.get = function (req, res) {
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err })
 
-      return res.json({ success: true, ldapGroups: ldapGroups })
+      return res.json({ success: true, tcms: tcms })
     }
   )
 }
 
-ldapGroup.updateMapping = function (req, res) {
-  var roleSchema = require('../../../models/role')
-  let countMap = 0
-  for (let map of req.body) {
-    async.parallel(
-      [
-        function (done) {
-          roleSchema.findOneAndUpdate({ _id: map.roleID }, { ldapGroupID: map.ldapGroupID }, function (err, role) {
-            if (err) return done(err)
-            return done()
-          })
-        }
-      ],
-      function (err) {
-        countMap++
-        if (err) return res.status(400).json({ success: false, error: err })
-        if (countMap == req.body.length) {
-          return res.json({ success: true })
-        }
-      }
-    )
-
-  }
-
-}
-
-module.exports = ldapGroup
+module.exports = tcm
