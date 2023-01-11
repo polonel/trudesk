@@ -192,7 +192,7 @@ class SingleTicketContainer extends React.Component {
 
   ticketChecked (){
     const checked = true
-    axios.post(`/api/v2/tickets/checked/${this.props.ticketUid}`, {checked}) 
+    axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`, {checked}) 
   }
 
   onCommentNoteSubmit(e, type) {

@@ -16,6 +16,7 @@ const pathUpload = path.join(__dirname, `../../../public`)
 const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 const logger = require('../../logger')
 const Ticket = require('../../models/ticket')
+const TCM = require('../../models/tcm')
 const User = require('../../models/user')
 const Setting = require('../../models/setting')
 const Department = require('../../models/department')
@@ -196,6 +197,13 @@ module.exports = async data => {
     const ticket = await Ticket.getTicketById(ticketObject._id)
     const settings = await Setting.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
 
+    const tcm = {
+      ticketId: ticket._id,
+      ticketUid: ticket.uid,
+      users:[]
+    }
+    TCM.insert(tcm)
+    
     const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
     let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
     mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
