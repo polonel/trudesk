@@ -401,7 +401,7 @@ class TicketsContainer extends React.Component {
                 const status = () => {
                   const checked = this.props.tcms.map(tcm => {
                     console.log(tcm.get('users'))
-                    if (tcm.get('ticketId') == ticket._id && tcm.get('users').includes(this.props.shared.sessionUser._id)) {
+                    if (tcm.get('ticketId') == ticket._id && tcm.get('users').includes(this.props.sessionUser._id)) {
                       return true
                     }
                   })
