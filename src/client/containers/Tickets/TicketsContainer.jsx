@@ -397,19 +397,28 @@ class TicketsContainer extends React.Component {
             {!this.props.loading &&
               this.props.tickets.map(ticket => {
                 const status = () => {
-                  const checked = !this.props.tcms.map(tcm => {
-                    return tcm.get('users').map(userId => {
-                      console.log("tcm.get('ticketId'")
-                      console.log(tcm.get('ticketId'))
-                      console.log("tcm.get('userId')")
-                      console.log(tcm.get('userId'))
-                      if (tcm.get('ticketId') == ticket._id && userId == this.props.sessionUser._id) {
-                        return true
+                  switch (ticket.get('status')) {
+                    case 0:             
+                      return 'open'
+                    case 1:               
+                      return 'open'
+                    case 2:    
+                      return 'pending'
+                    case 3:     
+                      return 'closed'
+                  }
+                }
+
+                const statusChecked = () => {
+                  let checked = false
+                  this.props.tcms.map(tcm => {
+                    tcm.get('users').map(userId => {
+                      if (tcm.get('ticketId') == ticket.get('_id') && userId == this.props.sessionUser._id) {
+                        console.log('Проверка пройдена')
+                        checked = true
                       }
-                    }).toArray().length > 0
-                  }).toArray().length > 0
-                  console.log(checked)
-                  console.log('checked')
+                    })
+                  })
                   switch (ticket.get('status')) {
                     case 0:
                       if (!checked)  return 'new'                  
@@ -457,7 +466,7 @@ class TicketsContainer extends React.Component {
                 return (
                   <TableRow
                     key={ticket.get('_id')}
-                    className={`ticket-${status()} ${isOverdue() ? 'overdue' : ''}`}
+                    className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''}`}
                     clickable={true}
                     onClick={e => {
                       const td = e.target.closest('td')
