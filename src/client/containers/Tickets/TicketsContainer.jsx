@@ -53,9 +53,9 @@ class TicketsContainer extends React.Component {
     super(props)
     makeObservable(this)
 
-  
-    
-    this.onTicketCommentAdded= this.onTicketCommentAdded.bind(this)
+
+
+    this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
     this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
@@ -63,7 +63,7 @@ class TicketsContainer extends React.Component {
   }
 
   componentDidMount() {
-    
+
     this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
@@ -130,23 +130,23 @@ class TicketsContainer extends React.Component {
     this.selectedTickets = uniq(this.selectedTickets)
   }
 
-  onTicketCommentAdded(){
+  onTicketCommentAdded() {
     const checked = false
     const userId = this.props.shared.sessionUser._id
-    axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`,{checked, userId})
-    .then(res => {
-      if (res.data.success) {
-        this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
-        this._clearChecked()
-      } else {
-        helpers.UI.showSnackbar('An unknown error occurred.', true)
-        Log.error(res.data.error)
-      }
-    })
-    .catch(error => {
-      Log.error(error)
-      helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
-    }) 
+    axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`, { checked, userId })
+      .then(res => {
+        if (res.data.success) {
+          this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+          this._clearChecked()
+        } else {
+          helpers.UI.showSnackbar('An unknown error occurred.', true)
+          Log.error(res.data.error)
+        }
+      })
+      .catch(error => {
+        Log.error(error)
+        helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
+      })
   }
 
   onSetStatus(status) {
@@ -251,8 +251,8 @@ class TicketsContainer extends React.Component {
     else this._clearChecked()
   }
 
-  onTicketsListUpdated(){
-  this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+  onTicketsListUpdated() {
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
   render() {
@@ -399,6 +399,14 @@ class TicketsContainer extends React.Component {
             {!this.props.loading &&
               this.props.tickets.map(ticket => {
                 const status = () => {
+                  const checked = this.props.tcms.map(tcm => {
+                    console.log(tcm.get('users'))
+                    if (tcm.get('ticketId') == ticket._id && tcm.get('users').includes(this.props.shared.sessionUser._id)) {
+                      return true
+                    }
+                  })
+                  console.log('checked')
+                  console.log(checked)
                   switch (ticket.get('status')) {
                     case 0:
                       return 'new'

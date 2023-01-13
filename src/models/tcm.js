@@ -5,7 +5,7 @@ let mongoose = require('mongoose');
 var userSchema = require('./user')
 let COLLECTION = 'tcm';
 let tcmSchema = mongoose.Schema({
-    tickedId: { type: mongoose.Schema.Types.ObjectId, ref: 'ticket' },
+    ticketId: { type: mongoose.Schema.Types.ObjectId, ref: 'ticket' },
     ticketUid: { type: String},
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }]
     
