@@ -16,5 +16,5 @@ import { createAction } from 'redux-actions'
 import { FETCH_TCMS } from 'actions/types'
 
 // export const fetchLDAPGroups = createAction(FETCH_LDAPGROUPS.ACTION, payload => payload, () => ({ thunk: true }))
-export const fetchTCMs = createAction(FETCH_TCMS)
+export const fetchTCMs = createAction(FETCH_TCMS.ACTION)
 
