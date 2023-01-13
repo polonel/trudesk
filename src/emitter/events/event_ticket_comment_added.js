@@ -29,7 +29,8 @@ function tcmUpdate(ticket, userId){
     tcmSchema.findOne({ ticketId: ticket._id}, (err,tcm)=>{
         if (err) console.log(err);
         tcm.users.length = 0;
-        tcm.users.push(userId);
+        //tcm.users.push(userId);
+        tcm.save();
       })
 
 }

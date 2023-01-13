@@ -235,12 +235,10 @@ ticketsV2.updateChecked = function (req, res) {
   if (checked){
     Models.TCM.findOne({ ticketUid: uid},(err,tcm)=>{
       if (err) return apiUtils.sendApiError(res, 400, err.message)
-      if(!tcm.users.includes(userId)){
-        Models.TCM.updateMany({ ticketUid: uid }, { $push: { users: userId } }, (err,success)=>{
+        Models.TCM.updateMany({ ticketUid: uid }, { $addToSet: { users: userId } }, (err,success)=>{
           if (err) return apiUtils.sendApiError(res, 400, err.message)
           return apiUtils.sendApiSuccess(res)
         })
-      }  
     })
     
   } else {

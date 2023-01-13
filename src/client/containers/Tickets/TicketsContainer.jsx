@@ -399,7 +399,7 @@ class TicketsContainer extends React.Component {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:             
-                      return 'open'
+                      return 'new'
                     case 1:               
                       return 'open'
                     case 2:    
@@ -414,7 +414,6 @@ class TicketsContainer extends React.Component {
                   this.props.tcms.map(tcm => {
                     tcm.get('users').map(userId => {
                       if (tcm.get('ticketId') == ticket.get('_id') && userId == this.props.sessionUser._id) {
-                        console.log('Проверка пройдена')
                         checked = true
                       }
                     })
