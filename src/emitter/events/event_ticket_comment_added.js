@@ -15,6 +15,7 @@ const Department = require('../../models/department')
 const settingsSchema = require('../../models/setting')
 const templateSchema = require('../../models/template')
 const NotificationSchema = require('../../models/notification')
+const tcmSchema = require('../../models/tcm')
 
 const util = require('../../helpers/utils')
 const pathUpload = path.join(__dirname, `../../../public`)
@@ -23,6 +24,15 @@ const { head, filter, flattenDeep, concat, uniqBy } = require('lodash')
 const templateDir = path.resolve(__dirname, '../../', 'mailer', 'templates')
 
 
+function tcmUpdate(ticket, userId){
+
+    tcmSchema.findOne({ _id: ticket._id}, (err,tcms)=>{
+        if (err) console.log(err);
+        tcms.users.length = 0;
+        tcms.users.push(userId);
+      })
+
+}
 
 function sendPushNotification(tpsObj, data) {
     const tpsEnabled = tpsObj.tpsEnabled
@@ -111,7 +121,7 @@ function sendPushNotification(tpsObj, data) {
 }
 
 module.exports = async (ticket, comment, hostname) => {
-
+    tcmUpdate(ticket, comment.owner._id)
     settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey', 'mailer:enable'], function (
         err,
         tpsSettings

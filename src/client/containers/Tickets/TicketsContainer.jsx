@@ -406,15 +406,16 @@ class TicketsContainer extends React.Component {
                   }).toArray().length > 0
                   switch (ticket.get('status')) {
                     case 0:
-                      return 'new'
+                      if (!checked)  return 'new'                  
+                      return 'open'
                     case 1:
-                      if (checked)  return 'new'                  
+                      if (!checked)  return 'new'                  
                       return 'open'
                     case 2:
-                      if (checked)  return 'new'      
+                      if (!checked)  return 'new'      
                       return 'pending'
                     case 3:
-                      if (checked)  return 'new'      
+                      if (!checked)  return 'new'      
                       return 'closed'
                   }
                 }
