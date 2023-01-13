@@ -30,6 +30,7 @@ import departmentsState from './departmentsReducer'
 import noticesState from './noticesReducer'
 import searchState from './searchReducer'
 import messagesState from './messagesReducer'
+import tcmsState from './tcmsReducer'
 
 // const IndexReducer = (state = {}, action) => {
 //   return {
@@ -55,6 +56,7 @@ const IndexReducer = combineReducers({
   sidebar,
   dashboardState,
   ticketsState,
+  tcmsState,
   accountsState,
   groupsState,
   ldapGroupsState,

@@ -24,6 +24,7 @@ import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated }
 import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
+import { fetchTCMs } from 'actions/tcms'
 
 import PageTitle from 'components/PageTitle'
 import Table from 'components/Table'
@@ -139,7 +140,6 @@ class TicketsContainer extends React.Component {
     .then(res => {
       if (res.data.success) {
         this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
-        this.fetchTCMs()
         this._clearChecked()
       } else {
         helpers.UI.showSnackbar('An unknown error occurred.', true)
@@ -150,15 +150,6 @@ class TicketsContainer extends React.Component {
       Log.error(error)
       helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
     }) 
-  }
-
-  fetchTCMs(){
-    console.log('fetchTCMs')
-    axios.get(`/api/v2/tcms`).then(res=>{
-     console.log('res.data.tcms')
-     console.log(res.data.tcms)
-     this.tcms = res.data.tcms;
-    })
   }
 
   onSetStatus(status) {
@@ -540,6 +531,7 @@ TicketsContainer.defaultProps = {
 
 const mapStateToProps = state => ({
   tickets: state.ticketsState.tickets,
+  tcms: state.tcmsState.tcms,
   totalCount: state.ticketsState.totalCount,
   prevPage: state.ticketsState.prevPage,
   nextPage: state.ticketsState.nextPage,
@@ -551,12 +543,13 @@ const mapStateToProps = state => ({
 })
 
 export default connect(mapStateToProps, {
+  fetchTCMs,
   fetchTickets,
+  fetchSettings,
+  fetchSearchResults,
   deleteTicket,
   ticketEvent,
-  unloadTickets,
   ticketUpdated,
-  fetchSearchResults,
+  unloadTickets,
   showModal,
-  fetchSettings,
 })(TicketsContainer)

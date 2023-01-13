@@ -17,7 +17,7 @@ import { handleActions } from 'redux-actions'
 import { FETCH_TCMS } from 'actions/types'
 
 const initialState = {
-  ldapGroups: List([])
+  tcms: List([])
 }
 
 const reducer = handleActions(
