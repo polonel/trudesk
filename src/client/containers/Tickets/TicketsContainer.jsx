@@ -154,7 +154,7 @@ class TicketsContainer extends React.Component {
 
   fetchTCMs(){
     console.log('fetchTCMs')
-    axios.get(`/api/v2/tcm`).then(res=>{
+    axios.get(`/api/v2/tcms`).then(res=>{
      console.log('res.data.tcms')
      console.log(res.data.tcms)
      this.tcms = res.data.tcms;

@@ -31,7 +31,8 @@ import {
   DELETE_TICKET,
   TICKET_EVENT,
   TRANSFER_TO_THIRDPARTY,
-  FETCH_TICKET_TYPES
+  FETCH_TICKET_TYPES,
+  FETCH_TCMS
 } from 'actions/types'
 
 export const fetchTickets = createAction(FETCH_TICKETS.ACTION)
@@ -44,6 +45,7 @@ export const unloadTickets = createAction(
   () => ({ thunk: true })
 )
 export const ticketEvent = createAction(TICKET_EVENT.ACTION)
+export const fetchTCMs = createAction(FETCH_TCMS.ACTION)
 
 export const createTicketType = createAction(CREATE_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const renameTicketType = createAction(RENAME_TICKET_TYPE.ACTION, input => ({ name: input.name }))

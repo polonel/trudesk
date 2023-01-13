@@ -174,6 +174,13 @@ api.tickets.fetchTicketTypes = () => {
   })
 }
 
+api.tcms = {}
+api.tcms.fetchTCMs = ()=>{
+  return axios.get('/api/v2/tcms').then(res => {
+    return res.data
+  })
+}
+
 api.accounts = {}
 
 api.accounts.create = payload => {

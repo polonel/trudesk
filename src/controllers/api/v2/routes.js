@@ -61,7 +61,7 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v2/tickets/deleted/:id', apiv2Auth, isAdmin, apiv2.tickets.permDelete)
   router.put('/api/v2/tickets/checked/:uid', apiv2Auth, canUser('tickets:view'), apiv2.tickets.updateChecked)
   //TCM
-  router.get('/api/v2/tcm', apiv2Auth, canUser('tickets:view'), apiv2.tcm.get)
+  router.get('/api/v2/tcms', apiv2Auth, canUser('tickets:view'), apiv2.tcms.get)
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)
   router.post('/api/v2/groups', apiv2Auth, canUser('groups:create'), apiv2.groups.create)

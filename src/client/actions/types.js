@@ -64,6 +64,9 @@ export const TAGS_UPDATE_CURRENT_PAGE = defineAction('TAGS_UPDATE_CURRENT_PAGE',
 export const CREATE_TAG = defineAction('CREATE_TAG', [SUCCESS, ERROR])
 export const TRANSFER_TO_THIRDPARTY = defineAction('TRANSFER_TO_THIRDPARTY', [SUCCESS, ERROR])
 
+//TCM
+export const FETCH_TCMS = defineAction('FETCH_TCMS', [SUCCESS, PENDING, ERROR])
+
 // Accounts
 export const FETCH_ACCOUNTS = defineAction('FETCH_ACCOUNTS', [PENDING, SUCCESS, ERROR])
 export const FIND_ACCOUNTS = defineAction('FIND_ACCOUNTS', [PENDING, SUCCESS, ERROR])
