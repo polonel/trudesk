@@ -233,10 +233,16 @@ ticketsV2.updateChecked = function (req, res) {
   const checked = req.body.checked
   if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
   if (checked){
-    Models.TCM.updateMany({ ticketUid: uid }, { $push: { users: userId } }, (err,success)=>{
+    Models.TCM.findOne({ ticketUid: uid},(err,tcm)=>{
       if (err) return apiUtils.sendApiError(res, 400, err.message)
-      return apiUtils.sendApiSuccess(res)
+      if(!tcm.users.includes(userId)){
+        Models.TCM.updateMany({ ticketUid: uid }, { $push: { users: userId } }, (err,success)=>{
+          if (err) return apiUtils.sendApiError(res, 400, err.message)
+          return apiUtils.sendApiSuccess(res)
+        })
+      }  
     })
+    
   } else {
     Models.TCM.updateMany({ ticketUid: uid }, { $pull: { users: userId } }, (err,success)=>{
       if (err) return apiUtils.sendApiError(res, 400, err.message)
@@ -244,7 +250,6 @@ ticketsV2.updateChecked = function (req, res) {
     })
   }
   
- 
 }
 
 ticketsV2.transferToThirdParty = async (req, res) => {

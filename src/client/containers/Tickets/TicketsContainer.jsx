@@ -397,13 +397,19 @@ class TicketsContainer extends React.Component {
             {!this.props.loading &&
               this.props.tickets.map(ticket => {
                 const status = () => {
-                  const checked = this.props.tcms.map(tcm => {
+                  const checked = !this.props.tcms.map(tcm => {
                     return tcm.get('users').map(userId => {
+                      console.log("tcm.get('ticketId'")
+                      console.log(tcm.get('ticketId'))
+                      console.log("tcm.get('userId')")
+                      console.log(tcm.get('userId'))
                       if (tcm.get('ticketId') == ticket._id && userId == this.props.sessionUser._id) {
                         return true
                       }
                     }).toArray().length > 0
                   }).toArray().length > 0
+                  console.log(checked)
+                  console.log('checked')
                   switch (ticket.get('status')) {
                     case 0:
                       if (!checked)  return 'new'                  

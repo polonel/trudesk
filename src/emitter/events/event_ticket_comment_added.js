@@ -26,10 +26,10 @@ const templateDir = path.resolve(__dirname, '../../', 'mailer', 'templates')
 
 function tcmUpdate(ticket, userId){
 
-    tcmSchema.findOne({ _id: ticket._id}, (err,tcms)=>{
+    tcmSchema.findOne({ ticketId: ticket._id}, (err,tcm)=>{
         if (err) console.log(err);
-        tcms.users.length = 0;
-        tcms.users.push(userId);
+        tcm.users.length = 0;
+        tcm.users.push(userId);
       })
 
 }
