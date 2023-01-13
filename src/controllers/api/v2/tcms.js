@@ -27,9 +27,6 @@ apiTCM.get = function (req, res) {
       function (done) {
         tcmSchema.find({}, function (err, t) {
           if (err) return done(err)
-          // for(let ldapGroup of l){
-          //     ldapGroups.push(ldapGroup.name);
-          // }
           tcms = t
           return done()
         })

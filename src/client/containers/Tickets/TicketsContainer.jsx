@@ -48,7 +48,6 @@ import SearchResults from 'components/SearchResults'
 @observer
 class TicketsContainer extends React.Component {
   @observable searchTerm = ''
-  @observable tcms = []
   selectedTickets = []
   constructor(props) {
     super(props)
@@ -71,7 +70,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
-    this.fetchTCMs()
+    this.props.fetchTCMs()
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
@@ -113,12 +112,10 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketCreated(ticket) {
-    console.log('onTicketCreated')
     if (this.props.page === '0') this.props.ticketEvent({ type: 'created', data: ticket })
   }
 
   onTicketUpdated(data) {
-    console.log('onTicketUpdated')
     this.props.ticketUpdated(data)
   }
 
@@ -260,8 +257,8 @@ class TicketsContainer extends React.Component {
 
   render() {
     console.log('render');
-    console.log('this.tcms');
-    console.log(this.tcms);
+    console.log('this.props.tcms');
+    console.log(this.props.tcms);
     const loadingItems = []
     for (let i = 0; i < 51; i++) {
       const cells = []
@@ -512,6 +509,7 @@ TicketsContainer.propTypes = {
   totalCount: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   fetchTickets: PropTypes.func.isRequired,
+  fetchTCMs: PropTypes.func.isRequired,
   deleteTicket: PropTypes.func.isRequired,
   ticketEvent: PropTypes.func.isRequired,
   unloadTickets: PropTypes.func.isRequired,

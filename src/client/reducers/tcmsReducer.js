@@ -23,7 +23,6 @@ const initialState = {
 const reducer = handleActions(
   {
     [FETCH_TCMS.SUCCESS]: (state, action) => {
-    //   const ldapGroups = fromJS(action.response.ldapGroups)
       return {
         ...state,
         tcms: fromJS(action.response.tcms)

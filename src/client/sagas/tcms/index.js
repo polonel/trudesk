@@ -30,5 +30,5 @@ function* fetchTCMs({ payload }) {
 }
 
 export default function * watcher () {
-  yield takeLatest(FETCH_FETCH_TCMS.ACTION, fetchTCMs)
+  yield takeLatest(FETCH_TCMS.ACTION, fetchTCMs)
 }
