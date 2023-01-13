@@ -257,8 +257,6 @@ class TicketsContainer extends React.Component {
 
   render() {
     console.log('render');
-    console.log('this.props.tcms');
-    console.log(this.props.tcms);
     const loadingItems = []
     for (let i = 0; i < 51; i++) {
       const cells = []
@@ -400,21 +398,23 @@ class TicketsContainer extends React.Component {
               this.props.tickets.map(ticket => {
                 const status = () => {
                   const checked = this.props.tcms.map(tcm => {
-                    console.log(tcm.get('users'))
-                    if (tcm.get('ticketId') == ticket._id && tcm.get('users').includes(this.props.sessionUser._id)) {
-                      return true
-                    }
-                  })
-                  console.log('checked')
-                  console.log(checked)
+                    return tcm.get('users').map(userId => {
+                      if (tcm.get('ticketId') == ticket._id && userId == this.props.sessionUser._id) {
+                        return true
+                      }
+                    }).toArray().length > 0
+                  }).toArray().length > 0
                   switch (ticket.get('status')) {
                     case 0:
                       return 'new'
                     case 1:
+                      if (checked)  return 'new'                  
                       return 'open'
                     case 2:
+                      if (checked)  return 'new'      
                       return 'pending'
                     case 3:
+                      if (checked)  return 'new'      
                       return 'closed'
                   }
                 }
