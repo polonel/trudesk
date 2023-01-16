@@ -44,9 +44,9 @@ function tcmUpdate(ticket, userId){
                   })
             }
           })
-          
+
         tcmSchema.findOne({ticketId:ticket._id},(err,tcm) => {
-            emitter.emit('ticket:tcm:update', tcm)
+            emitter.emit('ticket:tcm:update', {tcm, ticket})
         })
     }
 
