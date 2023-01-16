@@ -102,15 +102,15 @@ const ticketSchema = mongoose.Schema({
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags', autopopulate: true }],
   subject: { type: String, required: true },
   issue: { type: String, required: true },
-  chatwootAccountID: {type: String},
-  chatwootConversationID: {type: String},
+  chatwootAccountID: { type: String },
+  chatwootConversationID: { type: String },
   closedDate: { type: Date },
   dueDate: { type: Date },
   comments: [commentSchema],
   notes: [noteSchema],
   attachments: [attachmentSchema],
   history: [historySchema],
-  checked: {type: Boolean,  default: false},
+  checked: { type: Boolean, default: false },
   subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 })
 
@@ -176,6 +176,9 @@ ticketSchema.post('save', async function (doc, next) {
         }
       ])
 
+      tcmSchema.findOne({ ticketId: savedTicket._id }, (err, tcm) => {
+        emitter.emit('ticket:tcm:update', tcm)
+      })
       emitter.emit('ticket:updated', savedTicket)
     } catch (err) {
       winston.warn('WARNING: ' + err)
@@ -250,9 +253,9 @@ ticketSchema.methods.setStatus = function (ownerId, status, callback) {
 
     self.closedDate = status === 3 ? new Date() : null
     self.status = status
-    
-    if (self.status == 3){
-      tcmSchema.updateOne({ ticketId: self._id}, {users:[]}, (err)=>{
+
+    if (self.status == 3) {
+      tcmSchema.updateOne({ ticketId: self._id }, { users: [] }, (err) => {
         if (err) console.log(err);
       })
     }
@@ -743,7 +746,7 @@ ticketSchema.statics.getAll = function (callback) {
 ticketSchema.statics.getForCache = function (callback) {
   const self = this
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    ; (async () => {
       try {
         const t365 = moment
           .utc()
@@ -882,7 +885,7 @@ ticketSchema.statics.getTicketsByDepartments = function (departments, object, ca
   }
 }
 
-function buildQueryWithObject (SELF, grpId, object, count) {
+function buildQueryWithObject(SELF, grpId, object, count) {
   const limit = object.limit || 10
   const page = object.page || 0
   let _status = object.status
@@ -974,7 +977,7 @@ function buildQueryWithObject (SELF, grpId, object, count) {
 ticketSchema.statics.getTicketsWithObject = async function (grpId, object, callback) {
   const self = this
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    ; (async () => {
       try {
         if (!grpId || !_.isArray(grpId) || !_.isObject(object))
           throw new Error('Invalid parameter in - TicketSchema.GetTicketsWithObject()')
@@ -998,7 +1001,7 @@ ticketSchema.statics.getTicketsWithObject = async function (grpId, object, callb
 ticketSchema.statics.getCountWithObject = async function (grpId, object, callback) {
   const self = this
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    ; (async () => {
       try {
         if (!grpId || !_.isArray(grpId) || !_.isObject(object))
           throw new Error('Invalid parameter in - TicketSchema.GetCountWithObject()')
@@ -1093,7 +1096,7 @@ ticketSchema.statics.getTicketById = async function (id, callback) {
   const self = this
 
   return new Promise((resolve, reject) => {
-    ;(async () => {
+    ; (async () => {
       if (_.isUndefined(id)) {
         const error = new Error('Invalid Id - TicketSchema.GetTicketById()')
 
@@ -1706,7 +1709,7 @@ ticketSchema.statics.getDeleted = function (callback) {
     .exec(callback)
 }
 
-function statusToString (status) {
+function statusToString(status) {
   let str
   switch (status) {
     case 0:
