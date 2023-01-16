@@ -14,6 +14,7 @@
 
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
+import isUndefined from 'lodash/isUndefined'
 import { FETCH_TCMS, TCM_UPDATED } from 'actions/types'
 
 const initialState = {
@@ -28,6 +29,49 @@ const initialState = {
   nextPage: 1,
   prevPage: 0
 }
+
+// Util function until custom views are finished
+function hasInView (view, status, assignee, userId, userGroupIds, groupId) {
+  let hasView = false
+  let hasGroup = false
+  switch (view) {
+    case 'filter':
+      hasView = true
+      break
+    case 'all':
+      hasView = [0, 1, 2, 3].indexOf(status) !== -1
+      break
+    case 'active':
+      hasView = [0, 1, 2].indexOf(status) !== -1
+      break
+    case 'assigned':
+      hasView = assignee === userId
+      break
+    case 'unassigned':
+      hasView = isUndefined(assignee)
+      break
+    case 'new':
+      hasView = status === 0
+      break
+    case 'open':
+      hasView = status === 1
+      break
+    case 'pending':
+      hasView = status === 2
+      break
+    case 'closed':
+      hasView = status === 3
+      break
+    default:
+      hasView = false
+  }
+
+  if (isUndefined(userGroupIds) || isUndefined(groupId)) hasGroup = false
+  else hasGroup = userGroupIds.indexOf(groupId) !== -1
+
+  return hasGroup && hasView
+}
+
 
 const reducer = handleActions(
   {
