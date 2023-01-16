@@ -17,6 +17,7 @@ import { FETCH_TCMS, TCM_UPDATED } from 'actions/types'
 
 import api from '../../api'
 import helpers from 'lib/helpers'
+import Log from '../../logger'
 
 const getSessionUser = state => state.shared.sessionUser
 
