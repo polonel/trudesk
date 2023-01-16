@@ -56,11 +56,11 @@ class TicketsContainer extends React.Component {
 
 
     this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
-    this.onTCMUpdated = this.onTCMUpdated(this)
     this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
     this.onTicketDeleted = this.onTicketDeleted.bind(this)
+    this.onTCMUpdated = this.onTCMUpdated.bind(this)
   }
 
   componentDidMount() {
