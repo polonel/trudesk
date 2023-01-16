@@ -17,7 +17,16 @@ import { handleActions } from 'redux-actions'
 import { FETCH_TCMS, TCM_UPDATED } from 'actions/types'
 
 const initialState = {
-  tcms: List([])
+  tcms: List([]),
+  tickets: List([]),
+  loadingTicketTypes: false,
+  types: List([]),
+  priorities: List([]),
+  totalCount: '',
+  viewType: 'active',
+  loading: false,
+  nextPage: 1,
+  prevPage: 0
 }
 
 const reducer = handleActions(
