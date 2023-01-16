@@ -143,9 +143,9 @@ const eventTicketCommentAdded = require('./events/event_ticket_comment_added')
       await eventTicketCommentAdded(ticket,comment,hostname)
     })
 
-    emitter.on('ticket:tcm:update', async function (tcm, ticket) {
+    emitter.on('ticket:tcm:update', async function (data) {
       // Goes to client
-      io.sockets.emit('$trudesk:client:tcm:update', {tcm:tcm, ticket:ticket})
+      io.sockets.emit('$trudesk:client:tcm:update', data)
       //await eventTicketCommentAdded(ticket,comment,hostname)
     })
 
