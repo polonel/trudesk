@@ -26,7 +26,7 @@ const utils = require('../helpers/utils')
 const groupSchema = require('./group')
 require('./tickettype')
 const userSchema = require('./user')
-const tcmSchema = tequre('./tcm')
+const tcmSchema = require('./tcm')
 const commentSchema = require('./comment')
 const noteSchema = require('./note')
 const attachmentSchema = require('./attachment')
@@ -250,6 +250,7 @@ ticketSchema.methods.setStatus = function (ownerId, status, callback) {
 
     self.closedDate = status === 3 ? new Date() : null
     self.status = status
+    
     if (self.status == 3){
       tcmSchema.updateOne({ ticketId: self._id}, {users:[]}, (err)=>{
         if (err) console.log(err);
