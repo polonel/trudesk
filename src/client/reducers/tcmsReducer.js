@@ -84,6 +84,7 @@ const reducer = handleActions(
 
     [TCM_UPDATED.SUCCESS]: (state, action) => {
       const ticket = action.payload.ticket
+      const tcm = action.payload.tcm
       const userGroupIds = action.sessionUser.groups
 
       const idx = state.tcms.findIndex(t => {
