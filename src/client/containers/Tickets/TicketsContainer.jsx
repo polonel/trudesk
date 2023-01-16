@@ -66,8 +66,8 @@ class TicketsContainer extends React.Component {
   componentDidMount() {
 
     this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
-    this.props.socket.on('$trudesk:tcm:update', this.onTCMUpdated)
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
+    this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated)
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
@@ -107,9 +107,9 @@ class TicketsContainer extends React.Component {
     this.timeline = null
     this.props.unloadTickets()
     this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
-    this.props.socket.off('$trudesk:tcm:update', this.onTCMUpdated)
     this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
+    this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated)
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
   }
