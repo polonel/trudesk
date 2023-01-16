@@ -26,11 +26,12 @@ const templateDir = path.resolve(__dirname, '../../', 'mailer', 'templates')
 
 function tcmUpdate(ticket, userId){
 
-    tcmSchema.findOne({ ticketId: ticket._id}, (err,tcm)=>{
+    tcmSchema.updateOne({ ticketId: ticket._id},{users:[]}, (err,tcm)=>{
         if (err) console.log(err);
-        tcm.users.length = 0;
-        //tcm.users.push(userId);
-        tcm.save();
+      })
+
+    tcmSchema.updateOne({ ticketId: ticket._id}, {$push:{users:userId}}, (err,tcm)=>{
+        if (err) console.log(err);
       })
 
 }

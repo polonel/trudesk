@@ -428,8 +428,7 @@ class TicketsContainer extends React.Component {
                     case 2:
                       if (!checked)  return 'new'      
                       return 'pending'
-                    case 3:
-                      if (!checked)  return 'new'      
+                    case 3:     
                       return 'closed'
                   }
                 }
