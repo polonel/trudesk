@@ -143,6 +143,12 @@ const eventTicketCommentAdded = require('./events/event_ticket_comment_added')
       await eventTicketCommentAdded(ticket,comment,hostname)
     })
 
+    emitter.on('ticket:tcm:update', async function (tcm) {
+      // Goes to client
+      io.sockets.emit(socketEvents.TCMS_UPDATE, tcm)
+      //await eventTicketCommentAdded(ticket,comment,hostname)
+    })
+
     emitter.on('ticket:note:added', function (ticket) {
       // Goes to client
       io.sockets.emit('updateNotes', ticket)

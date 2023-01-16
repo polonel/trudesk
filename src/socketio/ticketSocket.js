@@ -22,6 +22,7 @@ var logger = require('../logger')
 var socketEvents = require('./socketEventConsts')
 var ticketSchema = require('../models/ticket')
 var commentSchema = require('../models/comment')
+var tcmSchema = require('../models/tcm')
 var prioritySchema = require('../models/ticketpriority')
 var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
@@ -193,6 +194,17 @@ events.onUpdateTicket = function (socket) {
       const ticket = await ticketSchema.getTicketById(data._id)
       configForSendMail(ticket, 'comment-added')
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+    } catch (error) {
+      // Blank
+    }
+  })
+}
+
+events.onUpdateTCM = function (socket) {
+  socket.on(socketEvents.TCMS_UPDATE, async data => {
+    try {
+      const tcm = await tcmSchema.findOne({ticketId:data._id})
+      utils.sendToAllConnectedClients(io, socketEvents.TCMS_UPDATE, tcm)
     } catch (error) {
       // Blank
     }

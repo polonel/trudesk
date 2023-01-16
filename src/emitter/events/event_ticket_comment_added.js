@@ -16,7 +16,7 @@ const settingsSchema = require('../../models/setting')
 const templateSchema = require('../../models/template')
 const NotificationSchema = require('../../models/notification')
 const tcmSchema = require('../../models/tcm')
-
+const emitter = require('../')
 const util = require('../../helpers/utils')
 const pathUpload = path.join(__dirname, `../../../public`)
 const socketEvents = require('../../socketio/socketEventConsts')
@@ -44,8 +44,13 @@ function tcmUpdate(ticket, userId){
                   })
             }
           })
+          
+        tcmSchema.findOne({ticketId:ticket._id},(err,tcm) => {
+            emitter.emit('ticket:tcm:update', tcm)
+        })
     }
-    
+
+   
 
 }
 

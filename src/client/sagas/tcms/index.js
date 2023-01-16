@@ -12,11 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { call, put, takeLatest } from 'redux-saga/effects'
-import { FETCH_TCMS } from 'actions/types'
+import { call, put, takeLatest, takeEvery, select } from 'redux-saga/effects'
+import { FETCH_TCMS, TCM_UPDATED } from 'actions/types'
 
 import api from '../../api'
 import helpers from 'lib/helpers'
+
+const getSessionUser = state => state.shared.sessionUser
 
 function* fetchTCMs({ payload }) {
   try {
@@ -29,6 +31,16 @@ function* fetchTCMs({ payload }) {
   }
 }
 
+function * tcmUpdated ({ payload }) {
+  try {
+    const sessionUser = yield select(getSessionUser)
+    yield put({ type: TCM_UPDATED.SUCCESS, payload, sessionUser })
+  } catch (error) {
+    Log.error(error)
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(FETCH_TCMS.ACTION, fetchTCMs)
+  yield takeEvery(TCM_UPDATED.ACTION, tcmUpdated)
 }

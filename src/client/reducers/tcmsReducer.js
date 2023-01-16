@@ -27,8 +27,37 @@ const reducer = handleActions(
         ...state,
         tcms: fromJS(action.response.tcms)
       }
-    }  
+    }, 
+
+    [TCM_UPDATED.SUCCESS]: (state, action) => {
+      
+      const tcm = action.payload.tcm
+      const idx = state.tcms.findIndex(t => {
+        return t.get('_id') === tcm._id
+      })
+
+      if (idx !== -1) {
+        return {
+          ...state,
+          tickets: state.tcms.delete(idx)
+        }
+      }
+
+      if (idx === -1) {
+        const withTCM = state.tcms.push(fromJS(tcm))
+        return {
+          ...state,
+          tcms: withTCM.sortBy(t => -t.get('uid'))
+        }
+      }
+
+      return {
+        ...state,
+        tcms: state.tcms.set(idx, fromJS(tcm))
+      }
+    }
   },
+  
   initialState
 )
 

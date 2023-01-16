@@ -24,7 +24,7 @@ import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated }
 import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
-import { fetchTCMs } from 'actions/tcms'
+import { fetchTCMs, tcmUpdated } from 'actions/tcms'
 
 import PageTitle from 'components/PageTitle'
 import Table from 'components/Table'
@@ -56,6 +56,7 @@ class TicketsContainer extends React.Component {
 
 
     this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
+    this.onTCMUpdated = this.onTCMUpdated(this)
     this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
@@ -65,6 +66,7 @@ class TicketsContainer extends React.Component {
   componentDidMount() {
 
     this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
+    this.props.socket.on('$trudesk:tcm:update', this.onTCMUpdated)
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
@@ -105,6 +107,7 @@ class TicketsContainer extends React.Component {
     this.timeline = null
     this.props.unloadTickets()
     this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
+    this.props.socket.off('$trudesk:tcm:update', this.onTCMUpdated)
     this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
@@ -117,6 +120,10 @@ class TicketsContainer extends React.Component {
 
   onTicketUpdated(data) {
     this.props.ticketUpdated(data)
+  }
+
+  onTCMUpdated(data) {
+    this.props.tcmUpdated(data)
   }
 
   onTicketDeleted(id) {
@@ -570,6 +577,7 @@ export default connect(mapStateToProps, {
   deleteTicket,
   ticketEvent,
   ticketUpdated,
+  tcmUpdated,
   unloadTickets,
   showModal,
 })(TicketsContainer)

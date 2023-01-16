@@ -216,29 +216,29 @@ class SingleTicketContainer extends React.Component {
         note: isNote && this.noteMDE.getEditorText()
       })
       .then(res => {
-        // if (res && res.data && res.data.success) {
-        //   if (isNote) {
-        //     this.ticket.notes = res.data.ticket.notes
-        //     this.noteMDE.setEditorText('')
-        //   } else {
-        //     this.ticket.comments = res.data.ticket.comments
-        //     this.commentMDE.setEditorText('')
-        //     newComment = res.data.comment
-        //   }
+        if (res && res.data && res.data.success) {
+          if (isNote) {
+            this.ticket.notes = res.data.ticket.notes
+            this.noteMDE.setEditorText('')
+          } else {
+            this.ticket.comments = res.data.ticket.comments
+            this.commentMDE.setEditorText('')
+            newComment = res.data.comment
+          }
 
-        //   helpers.scrollToBottom('.page-content-right', true)
-        //   this.ticket.history = res.data.ticket.history
-        //   if (newComment) {
-        //     const commentId = this.ticket.comments.filter(comment => {
-        //       return comment.owner._id == newComment.owner
-        //         &&
-        //         comment.date == newComment.date
-        //         &&
-        //         comment.comment == newComment.comment
-        //     })[0]._id
-        //     this.attachingFileToComment(commentId)
-        //   }
-        // }
+          helpers.scrollToBottom('.page-content-right', true)
+          this.ticket.history = res.data.ticket.history
+          if (newComment) {
+            const commentId = this.ticket.comments.filter(comment => {
+              return comment.owner._id == newComment.owner
+                &&
+                comment.date == newComment.date
+                &&
+                comment.comment == newComment.comment
+            })[0]._id
+            this.attachingFileToComment(commentId)
+          }
+        }
       })
       .catch(error => {
         Log.error(error)
