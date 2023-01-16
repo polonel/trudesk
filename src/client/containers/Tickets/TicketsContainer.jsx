@@ -105,6 +105,7 @@ class TicketsContainer extends React.Component {
   componentWillUnmount() {
     anime.remove('tr.overdue td')
     this.timeline = null
+    console.log('componentWillUnmount')
     this.props.unloadTickets()
     this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
     this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
