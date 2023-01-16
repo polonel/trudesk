@@ -30,24 +30,36 @@ const reducer = handleActions(
     }, 
 
     [TCM_UPDATED.SUCCESS]: (state, action) => {
+      const ticket = action.payload.ticket
+      const userGroupIds = action.sessionUser.groups
 
-      const tcm = action.payload.tcm
       const idx = state.tcms.findIndex(t => {
-        return t.get('_id') === tcm._id
+        return t.get('ticketId') === ticket._id
       })
 
-      if (idx !== -1) {
+      const inView = hasInView(
+        state.viewType,
+        ticket.status,
+        ticket.assignee ? ticket.assignee._id : undefined,
+        action.sessionUser._id,
+        userGroupIds,
+        ticket.group._id
+      )
+
+      if (!inView && idx !== -1) {
         return {
           ...state,
           tickets: state.tcms.delete(idx)
         }
       }
 
+      if (!inView) return { ...state }
+
       if (idx === -1) {
-        const withTCM = state.tcms.push(fromJS(tcm))
+        const withTCMs = state.tcms.push(fromJS(tcm))
         return {
           ...state,
-          tcms: withTCM.sortBy(t => -t.get('uid'))
+          tcms: withTCMs.sortBy(t => -t.get('ticketUid'))
         }
       }
 

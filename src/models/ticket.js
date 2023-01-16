@@ -176,9 +176,9 @@ ticketSchema.post('save', async function (doc, next) {
         }
       ])
 
-      tcmSchema.findOne({ ticketId: savedTicket._id }, (err, tcm) => {
-        emitter.emit('ticket:tcm:update', tcm)
-      })
+      // tcmSchema.findOne({ ticketId: savedTicket._id }, (err, tcm) => {
+      //   emitter.emit('ticket:tcm:update', tcm)
+      // })
       emitter.emit('ticket:updated', savedTicket)
     } catch (err) {
       winston.warn('WARNING: ' + err)
