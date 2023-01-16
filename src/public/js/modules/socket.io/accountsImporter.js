@@ -87,7 +87,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'modules/helpers', 'hist
       var completedCount = data.completedCount
       var percent = Math.floor((completedCount / totalCount) * 100)
 
-     // onStatusChange(type, item, percent)
+      onStatusChange(type, item, percent)
 
       // See if we are done
       if (completedCount >= totalCount) {
