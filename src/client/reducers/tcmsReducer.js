@@ -14,7 +14,7 @@
 
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
-import { FETCH_TCMS } from 'actions/types'
+import { FETCH_TCMS, TCM_UPDATED } from 'actions/types'
 
 const initialState = {
   tcms: List([])
@@ -30,7 +30,7 @@ const reducer = handleActions(
     }, 
 
     [TCM_UPDATED.SUCCESS]: (state, action) => {
-      
+
       const tcm = action.payload.tcm
       const idx = state.tcms.findIndex(t => {
         return t.get('_id') === tcm._id
