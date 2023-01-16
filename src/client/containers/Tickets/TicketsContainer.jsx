@@ -64,7 +64,7 @@ class TicketsContainer extends React.Component {
   }
 
   componentDidMount() {
-
+    console.log('componentDidMount')
     this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
     this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated)

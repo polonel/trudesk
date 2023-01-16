@@ -91,14 +91,15 @@ const reducer = handleActions(
         return t.get('ticketId') === ticket._id
       })
 
-      const inView = hasInView(
-        state.viewType,
-        ticket.status,
-        ticket.assignee ? ticket.assignee._id : undefined,
-        action.sessionUser._id,
-        userGroupIds,
-        ticket.group._id
-      )
+      // const inView = hasInView(
+      //   state.viewType,
+      //   ticket.status,
+      //   ticket.assignee ? ticket.assignee._id : undefined,
+      //   action.sessionUser._id,
+      //   userGroupIds,
+      //   ticket.group._id
+      // )
+      const inView = true
 
       if (!inView && idx !== -1) {
         return {
@@ -113,7 +114,7 @@ const reducer = handleActions(
         const withTCMs = state.tcms.push(fromJS(tcm))
         return {
           ...state,
-          tcms: withTCMs.sortBy(t => -t.get('ticketUid'))
+          tcms: withTCMs
         }
       }
 
