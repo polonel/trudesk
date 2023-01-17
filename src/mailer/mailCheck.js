@@ -390,31 +390,23 @@ function handleMessages(messages, done) {
 
               try {
                 if (!fs.existsSync(pathUploadTicket)) {
-                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}`, function (err) {
-                    if (err) return callback(err)
-                    console.log(`Папка  успешно создана: ${pathUploadTicket}`)
-                    return true
-                  })
+                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}`)
                 }
 
                 if (!fs.existsSync(pathUploadComments)) {
-                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}/comments`, function (err) {
-                    if (err) return callback(err)
-                    console.log(`Папка  успешно создана: ${pathUploadComments}`)
-                    return true
-                  })
+                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}/comments`)
                 }
 
                 if (!fs.existsSync(pathUploadCommentId)) {
-                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}/comments/${commentId}`, function (err) {
-                    if (err) return callback(err)
-                    console.log(`Папка  успешно создана: ${pathUploadCommentId}`)
-                    return true
-                  })
+                  await fs.mkdirSync(`${pathUploadsTickets}/${t._id}/comments/${commentId}`)
                 }
-
               } catch (err) {
-                return callback(err)
+                winston.warn(err)
+                try {
+                  return callback(err)
+                } catch {
+                  winston.warn('Callback уже вызван')
+                }
               }
 
               let countAttachments = 0
@@ -445,9 +437,13 @@ function handleMessages(messages, done) {
                   countAttachments++
                 }
               } catch (err) {
-                return callback(err)
+                winston.warn(err)
+                try {
+                  return callback(err)
+                } catch {
+                  winston.warn('Callback уже вызван')
+                }
               }
-
               // t.updated = Date.now()
               if (countAttachments = message.attachments.length) {
                 t.save(function (err, tt) {
@@ -646,18 +642,25 @@ function handleMessages(messages, done) {
                     try {
 
                       if (!fs.existsSync(`${pathUploads}`)) {
-                        await fs.mkdirSync(`${pathUploads}`, err => {
-                          if (err) console.log(err)
-                        })
+                        await fs.mkdirSync(`${pathUploads}`)
+                        // , err => {
+                        //   if (err) console.log(err)
+                        // })
                       }
 
                       if (!fs.existsSync(`${pathUploadsTickets}`)) {
-                        await fs.mkdirSync(`${pathUploadsTickets}`, err => {
-                          if (err) console.log(err)
-                        })
+                        await fs.mkdirSync(`${pathUploadsTickets}`)
+                        // , err => {
+                        //   if (err) console.log(err)
+                        // })
                       }
                     } catch (err) {
-                      return callback(err)
+                      winston.warn(err)
+                      try {
+                        return callback(err)
+                      } catch {
+                        winston.warn('Callback уже вызван')
+                      }
                     }
 
                     emitter.emit('ticket:created', {
@@ -667,41 +670,24 @@ function handleMessages(messages, done) {
 
                     if (message.attachments) {
 
-                      await fs.mkdirSync(`${pathUploadsTickets}/${ticket._id}/`, err => {
-                        if (err) throw err; // Не удалось создать папку
+                      try {
+                        await fs.mkdirSync(`${pathUploadsTickets}/${ticket._id}/`)
+                      } catch (err) {
+                        winston.warn(err)
                         try {
-                          for (const attachmentFromMessage of message.attachments) {
-                            let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
-
-                            fs.writeFileSync(`${pathUploadsTickets}/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
-
-                            const attachment = {
-                              owner: message.owner._id,
-                              name: sanitizedFilename,
-                              path: `/uploads/tickets/${ticket._id}/${sanitizedFilename}`,
-                              type: attachmentFromMessage.contentType
-                            }
-                            ticket.attachments.push(attachment)
-
-                            const historyItem = {
-                              action: 'ticket:added:attachment',
-                              description: 'Attachment ' + sanitizedFilename + ' was added.',
-                              owner: message.owner._id
-                            }
-                            ticket.history.push(historyItem)
-                            ticket.updated = Date.now()
-                          }
-                        } catch (err) {
-                          winston.warn(err)
-                          try {
-                            return callback(err)
-                          } catch {
-                            winston.warn('Callback уже вызван')
-                          }
+                          return callback(err)
+                        } catch {
+                          winston.warn('Callback уже вызван')
                         }
-                        ticket.save(function (err, t) {
-                          if (err) {
-                            fs.unlinkSync(attachment.path)
+                      }
+
+                      try {
+                        for (const attachmentFromMessage of message.attachments) {
+                          let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase()
+
+                          try {
+                            await fs.writeFileSync(`${pathUploadsTickets}/${ticket._id}/${sanitizedFilename}`, attachmentFromMessage.content);
+                          } catch (err) {
                             winston.warn(err)
                             try {
                               return callback(err)
@@ -709,8 +695,42 @@ function handleMessages(messages, done) {
                               winston.warn('Callback уже вызван')
                             }
                           }
-                        })
-                      });
+
+                          const attachment = {
+                            owner: message.owner._id,
+                            name: sanitizedFilename,
+                            path: `/uploads/tickets/${ticket._id}/${sanitizedFilename}`,
+                            type: attachmentFromMessage.contentType
+                          }
+                          ticket.attachments.push(attachment)
+
+                          const historyItem = {
+                            action: 'ticket:added:attachment',
+                            description: 'Attachment ' + sanitizedFilename + ' was added.',
+                            owner: message.owner._id
+                          }
+                          ticket.history.push(historyItem)
+                          ticket.updated = Date.now()
+                        }
+                      } catch (err) {
+                        winston.warn(err)
+                        try {
+                          return callback(err)
+                        } catch {
+                          winston.warn('Callback уже вызван')
+                        }
+                      }
+                      ticket.save(function (err, t) {
+                        if (err) {
+                          fs.unlinkSync(attachment.path)
+                          winston.warn(err)
+                          try {
+                            return callback(err)
+                          } catch {
+                            winston.warn('Callback уже вызван')
+                          }
+                        }
+                      })
                     }
                     count++
                     try {
