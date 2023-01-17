@@ -77,6 +77,7 @@ class Avatar extends React.Component {
   }
 
   onMouseOver () {
+    console.log('Мышка двигается')
     if (this.overlayRef.current && this.overlayRef.current.classList.contains('uk-hidden')) {
       this.overlayRef.current.classList.remove('uk-hidden')
     }

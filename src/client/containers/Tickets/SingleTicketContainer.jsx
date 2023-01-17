@@ -197,6 +197,17 @@ class SingleTicketContainer extends React.Component {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
   }
 
+  // onMouseOver () {
+  //   if (this.overlayRef.current && this.overlayRef.current.classList.contains('uk-hidden')) {
+  //     this.overlayRef.current.classList.remove('uk-hidden')
+  //   }
+  // }
+
+  // onMouseOut () {
+  //   if (this.overlayRef.current && !this.overlayRef.current.classList.contains('uk-hidden'))
+  //     this.overlayRef.current.classList.add('uk-hidden')
+  // }
+
   onCommentNoteSubmit(e, type) {
     e.preventDefault()
     const isNote = type === 'note'
@@ -427,7 +438,11 @@ class SingleTicketContainer extends React.Component {
         {!this.ticket && <SpinLoader active={true} />}
         {this.ticket && (
           <Fragment>
-            <div className={'page-content'}>
+            <div 
+            className={'page-content'} 
+            onMouseOver={() => this.onMouseOver()}
+            onMouseOut={() => this.onMouseOut()}
+            >
               <div
                 className='uk-float-left page-title page-title-small noshadow nopadding relative'
                 style={{ width: 360, maxWidth: 360, minWidth: 360 }}

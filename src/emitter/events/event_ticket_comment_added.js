@@ -27,7 +27,7 @@ const templateDir = path.resolve(__dirname, '../../', 'mailer', 'templates')
 function tcmUpdate(ticket, userId) {
     if (ticket.status != 3) {
 
-        tcmSchema.updateOne({ ticketId: ticket._id }, { users: [] }, (err, tcm) => {
+        tcmSchema.updateOne({ ticketId: ticket._id }, { users: [] }, (err) => {
             if (err) console.log(err);
             tcmSchema.updateOne({ ticketId: ticket._id }, { $push: { users: userId } }, (err, tcm) => {
                 if (err) console.log(err);
@@ -44,6 +44,9 @@ function tcmUpdate(ticket, userId) {
                         })
                     })
                 }
+                tcmSchema.findOne({ ticketId: ticket._id }, (err, tcm) => {
+                    emitter.emit('ticket:tcm:update', { tcm, ticket })
+                })
             })
         })
     }
