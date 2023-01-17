@@ -62,7 +62,6 @@ import Log from '../../logger'
 import UIkit from 'uikit'
 import moment from 'moment'
 import SpinLoader from 'components/SpinLoader'
-import { timesSeries } from 'async'
 
 const fetchTicket = parent => {
   axios
@@ -86,7 +85,6 @@ const fetchTicket = parent => {
 const ticketChecked = (parent)=> {
   const checked = true
   const userId = parent.props.shared.sessionUser._id
-  console.log(userId);
   axios.put(`/api/v2/tickets/checked/${parent.props.ticketUid}`, {checked, userId}) 
 }
 
@@ -105,6 +103,7 @@ class SingleTicketContainer extends React.Component {
   @observable isSubscribed = false
   @observable siteURL = ''
   @observable commentAttachedFiles = []
+  @observable thisData = this
   assigneeDropdownPartial = createRef()
 
   constructor(props) {
@@ -119,6 +118,7 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketGroup = this.onUpdateTicketGroup.bind(this)
     this.onUpdateTicketDueDate = this.onUpdateTicketDueDate.bind(this)
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
+    this.onTCMUpdated = this.onTCMUpdated.bind(this)
   }
 
   componentDidMount() {
@@ -129,6 +129,7 @@ class SingleTicketContainer extends React.Component {
     this.props.socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
     this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
     this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
+    this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated)
     this.props.fetchSettings();
     fetchTicket(this)
     this.props.fetchTicketTypes()
@@ -149,6 +150,7 @@ class SingleTicketContainer extends React.Component {
     this.props.socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
     this.props.socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
     this.props.socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
+    this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated)
     document.removeEventListener('keydown',this.keydownHandler);
     this.props.unloadGroups()
   }
@@ -159,6 +161,12 @@ class SingleTicketContainer extends React.Component {
     if (this.ticket._id === data._id) {
       this.ticket = data
     }
+  }
+
+  onTCMUpdated(data) {
+    console.log('this')
+    console.log(this)
+    //ticketChecked(data)
   }
 
   onSocketUpdateComments(data) {
@@ -196,17 +204,6 @@ class SingleTicketContainer extends React.Component {
   onUpdateTicketTags(data) {
     if (this.ticket._id === data._id) this.ticket.tags = data.tags
   }
-
-  // onMouseOver () {
-  //   if (this.overlayRef.current && this.overlayRef.current.classList.contains('uk-hidden')) {
-  //     this.overlayRef.current.classList.remove('uk-hidden')
-  //   }
-  // }
-
-  // onMouseOut () {
-  //   if (this.overlayRef.current && !this.overlayRef.current.classList.contains('uk-hidden'))
-  //     this.overlayRef.current.classList.add('uk-hidden')
-  // }
 
   onCommentNoteSubmit(e, type) {
     e.preventDefault()
@@ -329,35 +326,6 @@ class SingleTicketContainer extends React.Component {
     if (this.getSetting('chatwootSettings')) {
       axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
         console.log(JSON.stringify(response.data));
-        // let account = response.data.user;
-        // let ticketLink = `${siteURL}/tickets/${this.ticket.uid}`;
-        // let contentMessage = String(this.getSetting('chatwootStatusChangeMessageTemplate'));
-        // contentMessage = contentMessage.replace('{{phoneNumber}}', account.phone);
-        // contentMessage = contentMessage.replace('{{ticketLink}}', ticketLink);
-        // contentMessage = contentMessage.replace('{{ticketSubject}}', this.ticket.subject);
-        // contentMessage = contentMessage.replace('{{contactName}}', account.fullname);
-        // contentMessage = contentMessage.replace('{{ticketStatus}}', this.statusToName(this.ticket.status));
-
-        // const message = {
-        //   "content": contentMessage,
-        //   "message_type": "outgoing",
-        //   "private": false,
-        //   "content_attributes": {}
-        // }
-
-        // const chatwootPayload = {
-        //   accountID: this.ticket.chatwootAccountID,
-        //   conversationID: this.ticket.chatwootConversationID,
-        //   message: message,
-        //   chatwootApiKey: this.props.sessionUser.chatwootApiKey,
-        // }
-
-        // axios.post('/api/v2/sendNotificationChatwoot', chatwootPayload).then(() => {
-        //   console.log('Succes');
-        // })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
       })
     }
   }
@@ -440,8 +408,7 @@ class SingleTicketContainer extends React.Component {
           <Fragment>
             <div 
             className={'page-content'} 
-            onMouseOver={() => this.onMouseOver()}
-            onMouseOut={() => this.onMouseOut()}
+            
             >
               <div
                 className='uk-float-left page-title page-title-small noshadow nopadding relative'

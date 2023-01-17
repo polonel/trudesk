@@ -124,8 +124,6 @@ class TicketsContainer extends React.Component {
   }
 
   onTCMUpdated(data) {
-    console.log('data');
-    console.log(data);
     this.props.tcmUpdated(data)
   }
 
