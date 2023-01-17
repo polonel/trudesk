@@ -88,7 +88,7 @@ const reducer = handleActions(
       const userGroupIds = action.sessionUser.groups
 
       const idx = state.tcms.findIndex(t => {
-        return t.get('ticketId') === ticket._id
+        return t.get('_id') === tcm._id
       })
 
       const inView = hasInView(
