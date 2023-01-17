@@ -91,6 +91,9 @@ const reducer = handleActions(
         return t.get('_id') === tcm._id
       })
 
+      console.log('idx');
+      console.log(idx);
+
       const inView = hasInView(
         state.viewType,
         ticket.status,
@@ -99,6 +102,9 @@ const reducer = handleActions(
         userGroupIds,
         ticket.group._id
       )
+
+      console.log('inView');
+      console.log(inView);
 
       if (!inView && idx !== -1) {
         return {
@@ -117,7 +123,10 @@ const reducer = handleActions(
         }
       }
 
-
+      console.log('tcm');
+      console.log(tcm);
+      console.log('state.tcms.set(idx, fromJS(tcm))');
+      console.log(state.tcms.set(idx, fromJS(tcm)));
       return {
         ...state,
         tcms: state.tcms.set(idx, fromJS(tcm))
