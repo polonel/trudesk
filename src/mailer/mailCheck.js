@@ -430,7 +430,6 @@ function handleMessages(messages, done) {
                     path: `/uploads/tickets/${t._id}/comments/${commentId}/${sanitizedFilename}`,
                     type: attachmentFromMessage.contentType
                   }
-                  t.attachments.push(attachment)
 
                   let commentForAttachFile = t.comments.filter(function (comment) {
                     return comment._id == commentId;
