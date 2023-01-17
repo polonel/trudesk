@@ -110,12 +110,13 @@ const reducer = handleActions(
       if (!inView) return { ...state }
 
       if (idx === -1) {
-        const withTCMs = state.tcms.push(fromJS(tcm))
+        const withTCM = state.tcms.push(fromJS(tcm))
         return {
           ...state,
-          tcms: withTCMs
+          tcms: withTCM.sortBy(t => -t.get('ticketUid'))
         }
       }
+
 
       return {
         ...state,
