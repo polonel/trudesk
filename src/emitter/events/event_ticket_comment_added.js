@@ -24,34 +24,29 @@ const { head, filter, flattenDeep, concat, uniqBy } = require('lodash')
 const templateDir = path.resolve(__dirname, '../../', 'mailer', 'templates')
 
 
-function tcmUpdate(ticket, userId){
-    if (ticket.status != 3){
+function tcmUpdate(ticket, userId) {
+    if (ticket.status != 3) {
 
-        tcmSchema.updateOne({ ticketId: ticket._id},{users:[]}, (err,tcm)=>{
+        tcmSchema.updateOne({ ticketId: ticket._id }, { users: [] }, (err, tcm) => {
             if (err) console.log(err);
-          })
-    
-        tcmSchema.updateOne({ ticketId: ticket._id}, {$push:{users:userId}}, (err,tcm)=>{
-            if (err) console.log(err);
-            if (tcm.matchedCount == 0){
-                const tcm = {
-                    ticketId: ticket._id,
-                    ticketUid: ticket.uid,
-                    users:[userId]
-                  }
-                tcmSchema.create(tcm,(err)=>{
-                    if (err) throw err
-                    tcmSchema.findOne({ticketId:ticket._id},(err,tcm) => {
-                        emitter.emit('ticket:tcm:update', {tcm, ticket})
+            tcmSchema.updateOne({ ticketId: ticket._id }, { $push: { users: userId } }, (err, tcm) => {
+                if (err) console.log(err);
+                if (tcm.matchedCount == 0) {
+                    const tcm = {
+                        ticketId: ticket._id,
+                        ticketUid: ticket.uid,
+                        users: [userId]
+                    }
+                    tcmSchema.create(tcm, (err) => {
+                        if (err) throw err
+                        tcmSchema.findOne({ ticketId: ticket._id }, (err, tcm) => {
+                            emitter.emit('ticket:tcm:update', { tcm, ticket })
+                        })
                     })
-                  })
-            }
-          })
-       
+                }
+            })
+        })
     }
-
-   
-
 }
 
 function sendPushNotification(tpsObj, data) {
@@ -257,7 +252,7 @@ module.exports = async (ticket, comment, hostname) => {
 
                         await notification.save()
                     }
-                    
+
                     createNotification(ticket)
                     util.sendToAllConnectedClients(io, socketEvents.TICKETS_CREATED, ticket)
 
