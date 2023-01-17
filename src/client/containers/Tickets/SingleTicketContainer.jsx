@@ -164,9 +164,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   onTCMUpdated(data) {
-    console.log('this')
-    console.log(this)
-    //ticketChecked(data)
+    ticketChecked(this)
   }
 
   onSocketUpdateComments(data) {
