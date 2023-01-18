@@ -51,11 +51,12 @@ class TicketsContainer extends React.Component {
   selectedTickets = []
   constructor(props) {
     super(props)
-    this.state = [
-      tickets = this.props.tickets
-    ]
-    makeObservable(this)
     
+    this.state = {
+      tickets: this.props.tickets
+    }
+    makeObservable(this)
+
 
 
     this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
@@ -388,16 +389,16 @@ class TicketsContainer extends React.Component {
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader sortData = {this.sortData} key={0} width={45} height={50} component={selectAllCheckbox} />,
-              <TableHeader sortData = {this.sortData} key={1} width={60} text={'Status'} />,
-              <TableHeader sortData = {this.sortData} key={2} width={65} text={'#'} />,
-              <TableHeader sortData = {this.sortData} key={3} width={'12%'} text={'Subject'} />,
-              <TableHeader sortData = {this.sortData} key={4} width={110} text={'Created'} />,
-              <TableHeader sortData = {this.sortData} key={5} width={170} text={'Requester'} />,
-              <TableHeader sortData = {this.sortData} key={6} width={175} text={'Customer'} />,
-              <TableHeader sortData = {this.sortData} key={7} text={'Assignee'} />,
-              <TableHeader sortData = {this.sortData} key={8} width={110} text={'Due Date'} />,
-              <TableHeader sortData = {this.sortData} key={9} text={'Updated'} />
+              <TableHeader sortData={this.sortData} key={0} width={45} height={50} component={selectAllCheckbox} />,
+              <TableHeader sortData={this.sortData} key={1} width={60} text={'Status'} />,
+              <TableHeader sortData={this.sortData} key={2} width={65} text={'#'} />,
+              <TableHeader sortData={this.sortData} key={3} width={'12%'} text={'Subject'} />,
+              <TableHeader sortData={this.sortData} key={4} width={110} text={'Created'} />,
+              <TableHeader sortData={this.sortData} key={5} width={170} text={'Requester'} />,
+              <TableHeader sortData={this.sortData} key={6} width={175} text={'Customer'} />,
+              <TableHeader sortData={this.sortData} key={7} text={'Assignee'} />,
+              <TableHeader sortData={this.sortData} key={8} width={110} text={'Due Date'} />,
+              <TableHeader sortData={this.sortData} key={9} text={'Updated'} />
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
