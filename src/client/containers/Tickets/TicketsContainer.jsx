@@ -51,8 +51,11 @@ class TicketsContainer extends React.Component {
   selectedTickets = []
   constructor(props) {
     super(props)
+    this.state = [
+      tickets = this.props.tickets
+    ]
     makeObservable(this)
-
+    
 
 
     this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
@@ -204,6 +207,7 @@ class TicketsContainer extends React.Component {
 
   sortData(field) {
     console.log(field)
+
   }
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
@@ -397,7 +401,7 @@ class TicketsContainer extends React.Component {
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
-            {!this.props.loading && this.props.tickets.size < 1 && (
+            {!this.props.loading && this.state.tickets.size < 1 && (
               <TableRow clickable={false}>
                 <TableCell colSpan={10}>
                   <h5 style={{ margin: 10 }}>No Tickets Found</h5>
@@ -406,7 +410,7 @@ class TicketsContainer extends React.Component {
             )}
             {this.props.loading && loadingItems}
             {!this.props.loading &&
-              this.props.tickets.map(ticket => {
+              this.state.tickets.map(ticket => {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:
