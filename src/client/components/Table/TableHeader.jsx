@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 
 class TableHeader extends React.Component {
   render () {
-    const { width, height, padding, textAlign, text, component } = this.props
+    const { sortData, width, height, padding, textAlign, text, component } = this.props
 
     return (
       <th
@@ -30,6 +30,7 @@ class TableHeader extends React.Component {
           textTransform: 'uppercase',
           textAlign: textAlign
         }}
+        onClick = {()=>{sortData(text)}}
       >
         {component}
         {text}
