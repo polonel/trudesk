@@ -54,8 +54,6 @@ class TicketsContainer extends React.Component {
     super(props)
     makeObservable(this)
 
-
-
     this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
     this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
     this.onTicketCreated = this.onTicketCreated.bind(this)
@@ -210,7 +208,7 @@ class TicketsContainer extends React.Component {
       sorting: field,
       userId: this.props.sessionUser._id
     }
-    this.props.tSortingUpdated()
+    this.props.tSortingUpdated(data)
   }
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])

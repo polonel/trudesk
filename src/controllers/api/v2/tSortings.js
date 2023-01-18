@@ -14,30 +14,55 @@
 
 var _ = require('lodash')
 var async = require('async')
-
+var tSortingSchema = require('../../../models/tsorting')
 var apiTSortings = {}
 
-apiTSortings.get = function (req, res) {
-  var tSortingSchema = require('../../../models/tcm')
+apiTSortings.get = function(req, res) {
 
-  var tSortings = []
+    var tSortings = []
 
-  async.parallel(
-    [
-      function (done) {
-        tSortingSchema.find({}, function (err, t) {
-          if (err) return done(err)
-          tSortings = t
-          return done()
-        })
-      }
-    ],
-    function (err) {
-      if (err) return res.status(400).json({ success: false, error: err })
+    async.parallel(
+        [
+            function(done) {
+                tSortingSchema.find({}, function(err, t) {
+                    if (err) return done(err)
+                    tSortings = t
+                    return done()
+                })
+            }
+        ],
+        function(err) {
+            if (err) return res.status(400).json({ success: false, error: err })
 
-      return res.json({ success: true, tSortings: tSortings })
-    }
-  )
+            return res.json({ success: true, tSortings: tSortings })
+        }
+    )
+}
+
+apiTSortings.put = function(req, res) {
+    const data = req.body;
+    // tSortingSchema.updateOne({ ticketId: ticket._id }, { users: [] }, (err) => {
+    //     if (err) console.log(err);
+    //     tSortingSchema.updateOne({ userId: req.body }, { $push: { users: userId } }, (err, tcm) => {
+    //         if (err) console.log(err);
+    //         if (tcm.matchedCount == 0) {
+    //             const tcm = {
+    //                 ticketId: ticket._id,
+    //                 ticketUid: ticket.uid,
+    //                 users: [userId]
+    //             }
+    //             tSortingSchema.create(tcm, (err) => {
+    //                 if (err) throw err
+    //                 tSortingSchema.findOne({ ticketId: ticket._id }, (err, tcm) => {
+    //                     emitter.emit('ticket:tcm:update', { tcm, ticket })
+    //                 })
+    //             })
+    //         }
+    //         tSortingSchema.findOne({ ticketId: ticket._id }, (err, tcm) => {
+    //             emitter.emit('ticket:tcm:update', { tcm, ticket })
+    //         })
+    //     })
+    // })
 }
 
 module.exports = apiTSortings
