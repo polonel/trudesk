@@ -491,7 +491,7 @@ apiTickets.create = function (req, res) {
         try {
 
           ticket.subscribers = [user._id]
-          if (req.body.owner.email || req.body.owner.email !== '') {
+          if (req.body?.owner?.email && req.body?.owner?.email !== '') {
             ticket.subscribers.push(req.body.owner)
           }
 

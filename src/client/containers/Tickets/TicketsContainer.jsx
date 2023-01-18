@@ -202,6 +202,9 @@ class TicketsContainer extends React.Component {
     this._clearChecked()
   }
 
+  sortData(field){
+    console.log(field)
+  }
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
@@ -381,16 +384,16 @@ class TicketsContainer extends React.Component {
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader key={0} width={45} height={50} component={selectAllCheckbox} />,
-              <TableHeader key={1} width={60} text={'Status'} />,
+              <TableHeader  key={0} width={45} height={50} component={selectAllCheckbox} />,
+              <TableHeader onClick = {this.sortData('Status')} key={1} width={60} text={'Status'} />,
               <TableHeader key={2} width={65} text={'#'} />,
-              <TableHeader key={3} width={'12%'} text={'Subject'} />,
-              <TableHeader key={4} width={110} text={'Created'} />,
-              <TableHeader key={5} width={170} text={'Requester'} />,
-              <TableHeader key={6} width={175} text={'Customer'} />,
-              <TableHeader key={7} text={'Assignee'} />,
-              <TableHeader key={8} width={110} text={'Due Date'} />,
-              <TableHeader key={9} text={'Updated'} />
+              <TableHeader onClick = {this.sortData('Subject')} key={3} width={'12%'} text={'Subject'} />,
+              <TableHeader onClick = {this.sortData('Created')} key={4} width={110} text={'Created'} />,
+              <TableHeader onClick = {this.sortData('Requester')} key={5} width={170} text={'Requester'} />,
+              <TableHeader onClick = {this.sortData('Customer')} key={6} width={175} text={'Customer'} />,
+              <TableHeader onClick = {this.sortData('Assignee')} key={7} text={'Assignee'} />,
+              <TableHeader onClick = {this.sortData('Due Date')} key={8} width={110} text={'Due Date'} />,
+              <TableHeader onClick = {this.sortData('Updated')} key={9} text={'Updated'} />
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
