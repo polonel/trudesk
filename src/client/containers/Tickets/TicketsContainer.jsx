@@ -25,6 +25,7 @@ import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
 import { fetchTCMs, tcmUpdated } from 'actions/tcms'
+import { fetchTSorting, tSortingUpdated } from 'actions/tSorting'
 
 import PageTitle from 'components/PageTitle'
 import Table from 'components/Table'
@@ -51,10 +52,6 @@ class TicketsContainer extends React.Component {
   selectedTickets = []
   constructor(props) {
     super(props)
-    
-    this.state = {
-      tickets: this.props.tickets
-    }
     makeObservable(this)
 
 
@@ -77,7 +74,8 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
     this.props.fetchTCMs()
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+    this.props.fetchTSorting()
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
   }
 
   componentDidUpdate() {
@@ -148,7 +146,7 @@ class TicketsContainer extends React.Component {
     axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`, { checked, userId })
       .then(res => {
         if (res.data.success) {
-          this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+          this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
           this._clearChecked()
         } else {
           helpers.UI.showSnackbar('An unknown error occurred.', true)
@@ -208,7 +206,11 @@ class TicketsContainer extends React.Component {
 
   sortData(field) {
     console.log(field)
-
+    data = {
+      sorting: field,
+      userId: this.props.sessionUser._id
+    }
+    this.props.tSortingUpdated()
   }
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
@@ -268,7 +270,7 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketsListUpdated() {
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
   }
 
   render() {
@@ -402,7 +404,7 @@ class TicketsContainer extends React.Component {
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
-            {!this.props.loading && this.state.tickets.size < 1 && (
+            {!this.props.loading && this.props.tickets.size < 1 && (
               <TableRow clickable={false}>
                 <TableCell colSpan={10}>
                   <h5 style={{ margin: 10 }}>No Tickets Found</h5>
@@ -411,7 +413,7 @@ class TicketsContainer extends React.Component {
             )}
             {this.props.loading && loadingItems}
             {!this.props.loading &&
-              this.state.tickets.map(ticket => {
+              this.props.tickets.map(ticket => {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:
@@ -581,12 +583,14 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   fetchTCMs,
   fetchTickets,
+  fetchTSorting,
   fetchSettings,
   fetchSearchResults,
   deleteTicket,
   ticketEvent,
   ticketUpdated,
   tcmUpdated,
+  tSortingUpdated,
   unloadTickets,
   showModal,
 })(TicketsContainer)

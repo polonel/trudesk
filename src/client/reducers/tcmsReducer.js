@@ -105,7 +105,7 @@ const reducer = handleActions(
       if (!inView && idx !== -1) {
         return {
           ...state,
-          tickets: state.tcms.delete(idx)
+          tcms: state.tcms.delete(idx)
         }
       }
 

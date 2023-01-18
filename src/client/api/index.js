@@ -181,6 +181,13 @@ api.tcms.fetchTCMs = ()=>{
   })
 }
 
+api.tSortings = {}
+api.tSortings.fetchTSortings= ()=>{
+  return axios.get('/api/v2/tSortings').then(res => {
+    return res.data
+  })
+}
+
 api.accounts = {}
 
 api.accounts.create = payload => {

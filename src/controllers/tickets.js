@@ -289,6 +289,76 @@ ticketsController.filter = function (req, res, next) {
   return next()
 }
 
+ticketsController.sort = function (req, res, next) {
+  let page = req.query.page
+  if (_.isUndefined(page)) page = 0
+
+  const queryString = req.query
+  const uid = queryString.uid
+  const subject = queryString.fs
+  const issue = queryString.it
+  const dateStart = queryString.ds
+  const dateEnd = queryString.de
+  let status = queryString.st
+  let priority = queryString.pr
+  let groups = queryString.gp
+  let types = queryString.tt
+  let tags = queryString.tag
+  let assignee = queryString.au
+  let requester = queryString.rq
+  const rawNoPage = req.originalUrl.replace(/[?&]page=[^&#]*(#.*)?$/, '$1').replace(/([?&])page=[^&]*&/, '$1')
+
+  if (!_.isUndefined(status)) status = xss(status)
+  if (!_.isUndefined(status) && !_.isArray(status)) status = [status]
+  if (!_.isUndefined(priority)) priority = xss(priority)
+  if (!_.isUndefined(priority) && !_.isArray(priority)) priority = [priority]
+  if (!_.isUndefined(groups)) groups = xss(groups)
+  if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups]
+  if (!_.isUndefined(types)) types = xss(types)
+  if (!_.isUndefined(types) && !_.isArray(types)) types = [types]
+  if (!_.isUndefined(tags)) tags = xss(tags)
+  if (!_.isUndefined(tags) && !_.isArray(tags)) tags = [tags]
+  if (!_.isUndefined(assignee)) assignee = xss(assignee)
+  if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee]
+  if (!_.isUndefined(requester)) requester = xss(requester)
+  if (!_.isUndefined(requester) && !_.isArray(requester)) requester = [requester]
+  
+  const filter = {
+    uid: uid,
+    subject: xss(subject),
+    issue: issue,
+    date: {
+      start: dateStart,
+      end: dateEnd
+    },
+    status: status,
+    priority: priority,
+    groups: groups,
+    tags: tags,
+    types: types,
+    assignee: assignee,
+    requester: requester,
+    raw: rawNoPage
+  }
+
+  const processor = {}
+  processor.title = 'Tickets'
+  processor.nav = 'tickets'
+  processor.renderpage = 'tickets'
+  processor.pagetype = 'filter'
+  processor.filter = filter
+  processor.object = {
+    limit: 50,
+    page: page,
+    status: filter.status,
+    user: req.user._id,
+    filter: filter
+  }
+
+  req.processor = processor
+
+  return next()
+}
 /**
  * Process the ```req.processor``` object and render the correct view
  * @param {object} req Express Request
@@ -313,7 +383,7 @@ ticketsController.processor = function (req, res) {
   const object = processor.object
   content.data.page = object.page
   content.data.filter = object.filter
-
+  content.data.sort = object.sort
   return res.render(processor.renderpage, content)
 }
 

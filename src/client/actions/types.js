@@ -67,6 +67,11 @@ export const TRANSFER_TO_THIRDPARTY = defineAction('TRANSFER_TO_THIRDPARTY', [SU
 //TCM
 export const FETCH_TCMS = defineAction('FETCH_TCMS', [SUCCESS, PENDING, ERROR])
 export const TCM_UPDATED = defineAction('TCM_UPDATED', [SUCCESS])
+
+//
+export const FETCH_TSORTINGS = defineAction('FETCH_TSORTINGS', [SUCCESS, PENDING, ERROR])
+export const TSORTING_UPDATED = defineAction('TSORTING_UPDATED', [SUCCESS])
+
 // Accounts
 export const FETCH_ACCOUNTS = defineAction('FETCH_ACCOUNTS', [PENDING, SUCCESS, ERROR])
 export const FIND_ACCOUNTS = defineAction('FIND_ACCOUNTS', [PENDING, SUCCESS, ERROR])

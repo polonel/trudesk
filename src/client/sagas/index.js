@@ -26,6 +26,7 @@ import SearchSaga from './search'
 import MessagesSaga from './messages'
 import ReportsSaga from './reports'
 import TCMsSaga from './tcms'
+import TSortingsSaga from './tSortings'
 
 export default function * IndexSagas () {
   yield all([
@@ -41,6 +42,7 @@ export default function * IndexSagas () {
     SearchSaga(),
     MessagesSaga(),
     ReportsSaga(),
-    TCMsSaga()
+    TCMsSaga(),
+    TSortingsSaga()
   ])
 }

@@ -55,5 +55,6 @@ apiController.v2.elasticsearch = require('./api/v2/elasticsearch')
 apiController.v2.mailer = require('./api/v2/mailer')
 apiController.v2.messages = require('./api/v2/messages')
 apiController.v2.tcms = require('./api/v2/tcms')
+apiController.v2.tSortings = require('./api/v2/tSortings')
 
 module.exports = apiController

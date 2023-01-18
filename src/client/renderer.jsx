@@ -52,10 +52,12 @@ export default function (store) {
     const page = document.getElementById('tickets-container').getAttribute('data-page')
     let filter = document.getElementById('tickets-container').getAttribute('data-filter')
     filter = filter ? JSON.parse(filter) : {}
+    let sort = document.getElementById('tickets-container').getAttribute('data-sort')
+    sort = sort ? JSON.parse(sort) : {}
 
     const TicketsContainerWithProvider = (
       <Provider store={store}>
-        <TicketsContainer view={view} page={page} filter={filter} />
+        <TicketsContainer view={view} page={page} filter={filter} sort = {sort} />
       </Provider>
     )
 
