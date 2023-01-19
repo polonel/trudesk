@@ -39,10 +39,9 @@ const reducer = handleActions(
     },
 
     [TSORTING_UPDATED.SUCCESS]: (state, action) => {
-      const tSorting = action.payload.tSorting;
-
+      const userId = action.payload.userId;
       const idx = state.tSortings.findIndex((t) => {
-        return t.get('_id') === tSorting._id;
+        return t.get('userId') === userId;
       });
 
       const inView = true;
@@ -55,7 +54,8 @@ const reducer = handleActions(
       }
 
       if (!inView) return { ...state };
-
+      console.log('idx');
+      console.log(idx);
       if (idx === -1) {
         const withTSorting = state.tSortings.push(fromJS(tSorting));
         return {
@@ -63,7 +63,8 @@ const reducer = handleActions(
           tSortings: withTSorting,
         };
       }
-
+      console.log('tSorting');
+      console.log(tSorting);
       return {
         ...state,
         tSortings: state.tSortings.set(idx, fromJS(tSorting)),
