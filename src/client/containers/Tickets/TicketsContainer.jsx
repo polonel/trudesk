@@ -60,6 +60,7 @@ class TicketsContainer extends React.Component {
     this.onTicketUpdated = this.onTicketUpdated.bind(this);
     this.onTicketDeleted = this.onTicketDeleted.bind(this);
     this.onTCMUpdated = this.onTCMUpdated.bind(this);
+    this.onTSortingUpdated = this.onTSortingUpdated.bind(this);
   }
 
   componentDidMount() {
@@ -67,6 +68,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded);
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated);
     this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated);
+    this.props.socket.on('$trudesk:client:tsorting:update', this.onTSortingUpdated);
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted);
@@ -117,6 +119,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated);
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated);
+    this.props.socket.off('$trudesk:client:tsorting:update', this.onTSortingUpdated);
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted);
   }
@@ -220,7 +223,6 @@ class TicketsContainer extends React.Component {
       sorting: field,
       userId: this.props.sessionUser._id,
     };
-    this.props.tSortingUpdated(data);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
@@ -229,6 +231,10 @@ class TicketsContainer extends React.Component {
       sorting: field.toLowerCase(),
     });
   };
+
+  onTSortingUpdated() {
+    this.props.tSortingUpdated(data);
+  }
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
