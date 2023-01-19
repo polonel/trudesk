@@ -28,7 +28,8 @@ class TableHeader extends React.Component {
           verticalAlign: 'middle',
           fontSize: 12,
           textTransform: 'uppercase',
-          textAlign: textAlign
+          textAlign: textAlign,
+          cursor: 'pointer'
         }}
         onClick = {()=>{sortData(text)}}
       >

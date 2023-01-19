@@ -392,7 +392,7 @@ class TicketsContainer extends React.Component {
               <TableHeader sortData={this.sortData} key={0} width={45} height={50} component={selectAllCheckbox} />,
               <TableHeader sortData={this.sortData} key={1} width={60} text={'Status'} />,
               <TableHeader sortData={this.sortData} key={2} width={65} text={'#'} />,
-              <TableHeader style={{cursor: 'pointer'}} sortData={this.sortData} key={3} width={'12%'} text={'Subject'} />,
+              <TableHeader sortData={this.sortData} key={3} width={'12%'} text={'Subject'} />,
               <TableHeader sortData={this.sortData} key={4} width={110} text={'Created'} />,
               <TableHeader sortData={this.sortData} key={5} width={170} text={'Requester'} />,
               <TableHeader sortData={this.sortData} key={6} width={175} text={'Customer'} />,
