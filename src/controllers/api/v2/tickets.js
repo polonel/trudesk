@@ -99,10 +99,12 @@ ticketsV2.get = async(req, res) => {
         const tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject)
         const totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject)
 
-        if (sorting && sorting !== 'undefined' && sorting !== 'false')
+        if (sorting && sorting !== 'undefined' && sorting !== 'false') {
             tickets.sort((ticket1, ticket2) => {
+                console.log(ticket1[sorting])
                 return ticket1[sorting] > ticket2[sorting] ? 1 : -1
             })
+        }
 
         return apiUtils.sendApiSuccess(res, {
             tickets,
