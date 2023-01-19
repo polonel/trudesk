@@ -78,7 +78,7 @@ class TicketsContainer extends React.Component {
       page: this.props.page,
       type: this.props.view,
       filter: this.props.filter,
-      sorting: this.props.sorting.sorting,
+      //sorting: this.props.sorting.sorting,
     });
   }
 
@@ -292,7 +292,7 @@ class TicketsContainer extends React.Component {
       page: this.props.page,
       type: this.props.view,
       filter: this.props.filter,
-      sorting: this.props.sorting,
+      //sorting: this.props.sorting,
     });
   }
 

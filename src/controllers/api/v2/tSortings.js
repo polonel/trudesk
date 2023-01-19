@@ -68,8 +68,6 @@ apiTSortings.put = function (req, res) {
             { sorting: data.sorting, direction: direction },
             (err, tSorting) => {
               if (err) console.log(err);
-              if (tSorting.matchedCount == 0) {
-              }
               return done();
             }
           );
