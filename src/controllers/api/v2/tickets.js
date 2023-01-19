@@ -108,12 +108,12 @@ ticketsV2.get = async (req, res) => {
           break;
         case 'customer':
           tickets.sort((ticket1, ticket2) => {
-            return ticket1[sorting].name > ticket2[sorting].name ? 1 : -1;
+            return ticket1.group.name > ticket2.group.name ? 1 : -1;
           });
           break;
         case 'assignee':
           tickets.sort((ticket1, ticket2) => {
-            return ticket1[sorting].fullname > ticket2[sorting].fullname ? 1 : -1;
+            return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
           });
           break;
         default:
