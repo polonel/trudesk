@@ -222,6 +222,7 @@ api.accounts.getWithPage = payload => {
             return res.data
         })
 }
+
 api.accounts.updateUser = payload => {
     return axios.put(`/api/v2/accounts/${payload.username}`, payload).then(res => {
         return res.data

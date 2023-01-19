@@ -25,7 +25,7 @@ import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 import { fetchSettings } from 'actions/settings'
 import { fetchTCMs, tcmUpdated } from 'actions/tcms'
-import { fetchTSorting, tSortingUpdated } from 'actions/tSorting'
+import { fetchTSortings, tSortingUpdated } from 'actions/tSorting'
 
 import PageTitle from 'components/PageTitle'
 import Table from 'components/Table'
@@ -72,7 +72,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
     this.props.fetchSettings()
     this.props.fetchTCMs()
-    this.props.fetchTSorting()
+    this.props.fetchTSortings()
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
   }
 
@@ -581,7 +581,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   fetchTCMs,
   fetchTickets,
-  fetchTSorting,
+  fetchTSortings,
   fetchSettings,
   fetchSearchResults,
   deleteTicket,
