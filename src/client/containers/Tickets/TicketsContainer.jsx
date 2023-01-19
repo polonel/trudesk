@@ -202,7 +202,7 @@ class TicketsContainer extends React.Component {
     this._clearChecked()
   }
 
-  sortData(field) {
+  sortData= (field) => {
     console.log(field)
     data = {
       sorting: field,
