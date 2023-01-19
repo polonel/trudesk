@@ -11,78 +11,84 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { observer } from 'mobx-react'
-import { makeObservable, observable } from 'mobx'
-import { each, without, uniq } from 'lodash'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { observer } from 'mobx-react';
+import { makeObservable, observable } from 'mobx';
+import { each, without, uniq } from 'lodash';
 
-import Log from '../../logger'
-import axios from 'axios'
-import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
-import { fetchSearchResults } from 'actions/search'
-import { showModal } from 'actions/common'
-import { fetchSettings } from 'actions/settings'
-import { fetchTCMs, tcmUpdated } from 'actions/tcms'
-import { fetchTSortings, tSortingUpdated } from 'actions/tSorting'
+import Log from '../../logger';
+import axios from 'axios';
+import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets';
+import { fetchSearchResults } from 'actions/search';
+import { showModal } from 'actions/common';
+import { fetchSettings } from 'actions/settings';
+import { fetchTCMs, tcmUpdated } from 'actions/tcms';
+import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
 
-import PageTitle from 'components/PageTitle'
-import Table from 'components/Table'
-import TableHeader from 'components/Table/TableHeader'
-import TableRow from 'components/Table/TableRow'
-import TitlePagination from 'components/TitlePagination'
-import PageContent from 'components/PageContent'
-import TableCell from 'components/Table/TableCell'
-import PageTitleButton from 'components/PageTitleButton'
-import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
-import Dropdown from 'components/Dropdown'
-import DropdownItem from 'components/Dropdown/DropdownItem'
-import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
-import Button from 'components/Button'
+import PageTitle from 'components/PageTitle';
+import Table from 'components/Table';
+import TableHeader from 'components/Table/TableHeader';
+import TableRow from 'components/Table/TableRow';
+import TitlePagination from 'components/TitlePagination';
+import PageContent from 'components/PageContent';
+import TableCell from 'components/Table/TableCell';
+import PageTitleButton from 'components/PageTitleButton';
+import DropdownTrigger from 'components/Dropdown/DropdownTrigger';
+import Dropdown from 'components/Dropdown';
+import DropdownItem from 'components/Dropdown/DropdownItem';
+import DropdownSeparator from 'components/Dropdown/DropdownSeperator';
+import Button from 'components/Button';
 
-import helpers from 'lib/helpers'
-import anime from 'animejs'
-import moment from 'moment-timezone'
-import SearchResults from 'components/SearchResults'
+import helpers from 'lib/helpers';
+import anime from 'animejs';
+import moment from 'moment-timezone';
+import SearchResults from 'components/SearchResults';
 
 @observer
 class TicketsContainer extends React.Component {
-  @observable searchTerm = ''
-  selectedTickets = []
+  @observable searchTerm = '';
+  selectedTickets = [];
   constructor(props) {
-    super(props)
-    makeObservable(this)
+    super(props);
+    makeObservable(this);
 
-    this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this)
-    this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this)
-    this.onTicketCreated = this.onTicketCreated.bind(this)
-    this.onTicketUpdated = this.onTicketUpdated.bind(this)
-    this.onTicketDeleted = this.onTicketDeleted.bind(this)
-    this.onTCMUpdated = this.onTCMUpdated.bind(this)
+    this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this);
+    this.onTicketsListUpdated = this.onTicketsListUpdated.bind(this);
+    this.onTicketCreated = this.onTicketCreated.bind(this);
+    this.onTicketUpdated = this.onTicketUpdated.bind(this);
+    this.onTicketDeleted = this.onTicketDeleted.bind(this);
+    this.onTCMUpdated = this.onTCMUpdated.bind(this);
   }
 
   componentDidMount() {
-    console.log('componentDidMount')
-    this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
-    this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated)
-    this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated)
-    this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
-    this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
-    this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
-    this.props.fetchSettings()
-    this.props.fetchTCMs()
-    this.props.fetchTSortings()
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
+    console.log('componentDidMount');
+    this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded);
+    this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated);
+    this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated);
+    this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated);
+    this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated);
+    this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted);
+    this.props.fetchSettings();
+    this.props.fetchTCMs();
+    this.props.fetchTSortings();
+    this.props.fetchTickets({
+      limit: 50,
+      page: this.props.page,
+      type: this.props.view,
+      filter: this.props.filter,
+      sorting: this.props.sorting.sorting,
+    });
   }
 
   componentDidUpdate() {
     if (this.timeline) {
-      this.timeline.pause()
-      this.timeline.seek(0)
+      this.timeline.pause();
+      this.timeline.seek(0);
     }
 
-    anime.remove('tr.overdue td')
+    anime.remove('tr.overdue td');
 
     this.timeline = anime.timeline({
       direction: 'alternate',
@@ -90,148 +96,161 @@ class TicketsContainer extends React.Component {
       autoPlay: false,
       easing: 'steps(1)',
       loop: true,
-      backgroundColor: 'blue'
-    })
+      backgroundColor: 'blue',
+    });
 
     this.timeline.add({
       targets: 'tr.overdue td',
       backgroundColor: '#b71c1c',
-      color: '#ffffff'
-    })
+      color: '#ffffff',
+    });
 
-    this.timeline.play()
+    this.timeline.play();
   }
 
   componentWillUnmount() {
-    anime.remove('tr.overdue td')
-    this.timeline = null
-    console.log('componentWillUnmount')
-    this.props.unloadTickets()
-    this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded)
-    this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated)
-    this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
-    this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated)
-    this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
-    this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
+    anime.remove('tr.overdue td');
+    this.timeline = null;
+    console.log('componentWillUnmount');
+    this.props.unloadTickets();
+    this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded);
+    this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated);
+    this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated);
+    this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated);
+    this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated);
+    this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted);
   }
 
   onTicketCreated(ticket) {
-    if (this.props.page === '0') this.props.ticketEvent({ type: 'created', data: ticket })
+    if (this.props.page === '0') this.props.ticketEvent({ type: 'created', data: ticket });
   }
 
   onTicketUpdated(data) {
-    this.props.ticketUpdated(data)
+    this.props.ticketUpdated(data);
   }
 
   onTCMUpdated(data) {
-    this.props.tcmUpdated(data)
+    this.props.tcmUpdated(data);
   }
 
   onTicketDeleted(id) {
-    this.props.ticketEvent({ type: 'deleted', data: id })
+    this.props.ticketEvent({ type: 'deleted', data: id });
   }
 
   onTicketCheckChanged(e, id) {
-    if (e.target.checked) this.selectedTickets.push(id)
-    else this.selectedTickets = without(this.selectedTickets, id)
+    if (e.target.checked) this.selectedTickets.push(id);
+    else this.selectedTickets = without(this.selectedTickets, id);
 
-    this.selectedTickets = uniq(this.selectedTickets)
+    this.selectedTickets = uniq(this.selectedTickets);
   }
 
   onTicketCommentAdded() {
-    const checked = false
-    const userId = this.props.shared.sessionUser._id
-    axios.put(`/api/v2/tickets/checked/${this.props.ticketUid}`, { checked, userId })
-      .then(res => {
+    const checked = false;
+    const userId = this.props.shared.sessionUser._id;
+    axios
+      .put(`/api/v2/tickets/checked/${this.props.ticketUid}`, { checked, userId })
+      .then((res) => {
         if (res.data.success) {
-          this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
-          this._clearChecked()
+          this.props.fetchTickets({
+            limit: 50,
+            page: this.props.page,
+            type: this.props.view,
+            filter: this.props.filter,
+            sort: this.props.sort,
+          });
+          this._clearChecked();
         } else {
-          helpers.UI.showSnackbar('An unknown error occurred.', true)
-          Log.error(res.data.error)
+          helpers.UI.showSnackbar('An unknown error occurred.', true);
+          Log.error(res.data.error);
         }
       })
-      .catch(error => {
-        Log.error(error)
-        helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
-      })
+      .catch((error) => {
+        Log.error(error);
+        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
+      });
   }
 
   onSetStatus(status) {
-    let statusText = ''
+    let statusText = '';
     switch (status) {
       case 0:
-        statusText = 'New'
-        break
+        statusText = 'New';
+        break;
       case 1:
-        statusText = 'Open'
-        break
+        statusText = 'Open';
+        break;
       case 2:
-        statusText = 'Pending'
-        break
+        statusText = 'Pending';
+        break;
       case 3:
-        statusText = 'Closed'
+        statusText = 'Closed';
     }
 
-    const batch = this.selectedTickets.map(id => {
-      return { id, status }
-    })
+    const batch = this.selectedTickets.map((id) => {
+      return { id, status };
+    });
 
     axios
       .put(`/api/v2/tickets/batch`, { batch })
-      .then(res => {
+      .then((res) => {
         if (res.data.success) {
-          helpers.UI.showSnackbar({ text: `Ticket status set to ${statusText}` })
-          this._clearChecked()
+          helpers.UI.showSnackbar({ text: `Ticket status set to ${statusText}` });
+          this._clearChecked();
         } else {
-          helpers.UI.showSnackbar('An unknown error occurred.', true)
-          Log.error(res.data.error)
+          helpers.UI.showSnackbar('An unknown error occurred.', true);
+          Log.error(res.data.error);
         }
       })
-      .catch(error => {
-        Log.error(error)
-        helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
-      })
+      .catch((error) => {
+        Log.error(error);
+        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
+      });
   }
 
   onDeleteClicked() {
-    each(this.selectedTickets, id => {
-      this.props.deleteTicket({ id })
-    })
+    each(this.selectedTickets, (id) => {
+      this.props.deleteTicket({ id });
+    });
 
-    this._clearChecked()
+    this._clearChecked();
   }
 
-  sortData= (field) => {
+  sortData = (field) => {
     const data = {
       sorting: field,
-      userId: this.props.sessionUser._id
-    }
-    this.props.tSortingUpdated(data)
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sorting: field.toLowerCase() })
-  }
+      userId: this.props.sessionUser._id,
+    };
+    this.props.tSortingUpdated(data);
+    this.props.fetchTickets({
+      limit: 50,
+      page: this.props.page,
+      type: this.props.view,
+      filter: this.props.filter,
+      sorting: field.toLowerCase(),
+    });
+  };
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
-      : ''
+      : '';
   }
 
   onSearchTermChanged(e) {
-    this.searchTerm = e.target.value
+    this.searchTerm = e.target.value;
     if (this.searchTerm.length > 3) {
-      SearchResults.toggleAnimation(true, true)
-      this.props.fetchSearchResults({ term: this.searchTerm })
+      SearchResults.toggleAnimation(true, true);
+      this.props.fetchSearchResults({ term: this.searchTerm });
     } else {
-      SearchResults.toggleAnimation(true, false)
+      SearchResults.toggleAnimation(true, false);
     }
   }
 
   _onSearchFocus(e) {
-    if (this.searchTerm.length > 3) SearchResults.toggleAnimation(true, true)
+    if (this.searchTerm.length > 3) SearchResults.toggleAnimation(true, true);
   }
 
   onSearchKeypress(e) {
-    if (this.searchTerm.length > 3) this.props.fetchSearchResults({ term: this.searchTerm })
+    if (this.searchTerm.length > 3) this.props.fetchSearchResults({ term: this.searchTerm });
 
     // e.persist()
     // if (e.charCode === 13) {
@@ -242,69 +261,75 @@ class TicketsContainer extends React.Component {
   }
 
   _selectAll() {
-    this.selectedTickets = []
-    const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]')
-    checkboxes.forEach(item => {
-      this.selectedTickets.push(item.dataset.ticket)
-      item.checked = true
-    })
+    this.selectedTickets = [];
+    const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]');
+    checkboxes.forEach((item) => {
+      this.selectedTickets.push(item.dataset.ticket);
+      item.checked = true;
+    });
 
-    this.selectedTickets = uniq(this.selectedTickets)
+    this.selectedTickets = uniq(this.selectedTickets);
   }
 
   _clearChecked() {
-    this.selectedTickets = []
-    const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]')
-    checkboxes.forEach(item => {
-      item.checked = false
-    })
+    this.selectedTickets = [];
+    const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]');
+    checkboxes.forEach((item) => {
+      item.checked = false;
+    });
 
-    this.selectAllCheckbox.checked = false
+    this.selectAllCheckbox.checked = false;
   }
 
   onSelectAll(e) {
-    if (e.target.checked) this._selectAll()
-    else this._clearChecked()
+    if (e.target.checked) this._selectAll();
+    else this._clearChecked();
   }
 
   onTicketsListUpdated() {
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sorting: this.props.sorting })
+    this.props.fetchTickets({
+      limit: 50,
+      page: this.props.page,
+      type: this.props.view,
+      filter: this.props.filter,
+      sorting: this.props.sorting,
+    });
   }
 
   render() {
     console.log('render');
-    const loadingItems = []
+    const loadingItems = [];
     for (let i = 0; i < 51; i++) {
-      const cells = []
+      const cells = [];
       for (let k = 0; k < 10; k++) {
         cells.push(
           <TableCell key={k} className={'vam'}>
             <div className={'loadingTextAnimation'} />
           </TableCell>
-        )
+        );
       }
 
-      loadingItems.push(<TableRow key={Math.random()}>{cells}</TableRow>)
+      loadingItems.push(<TableRow key={Math.random()}>{cells}</TableRow>);
     }
 
     const selectAllCheckbox = (
       <div style={{ marginLeft: 17 }}>
         <input
-          type='checkbox'
+          type="checkbox"
           id={'select_all'}
           style={{ display: 'none' }}
-          className='svgcheckinput'
-          onChange={e => this.onSelectAll(e)}
-          ref={r => (this.selectAllCheckbox = r)}
+          className="svgcheckinput"
+          onChange={(e) => this.onSelectAll(e)}
+          ref={(r) => (this.selectAllCheckbox = r)}
         />
-        <label htmlFor={'select_all'} className='svgcheck'>
-          <svg width='16px' height='16px' viewBox='0 0 18 18'>
-            <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-            <polyline points='1 9 7 14 15 4' />
+        <label htmlFor={'select_all'} className="svgcheck">
+          <svg width="16px" height="16px" viewBox="0 0 18 18">
+            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
+            <polyline points="1 9 7 14 15 4" />
           </svg>
         </label>
       </div>
-    )
+    );
 
     return (
       <div>
@@ -327,18 +352,18 @@ class TicketsContainer extends React.Component {
                 />
                 <PageTitleButton
                   fontAwesomeIcon={'fa-refresh'}
-                  onButtonClick={e => {
-                    e.preventDefault()
+                  onButtonClick={(e) => {
+                    e.preventDefault();
                     this.props
                       .unloadTickets()
-                      .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }))
+                      .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }));
                   }}
                 />
                 <PageTitleButton
                   fontAwesomeIcon={'fa-filter'}
-                  onButtonClick={e => {
-                    e.preventDefault()
-                    this.props.showModal('FILTER_TICKET')
+                  onButtonClick={(e) => {
+                    e.preventDefault();
+                    this.props.showModal('FILTER_TICKET');
                   }}
                 />
                 <DropdownTrigger pos={'bottom-right'} offset={5} extraClass={'uk-float-left'}>
@@ -359,31 +384,31 @@ class TicketsContainer extends React.Component {
                 <div className={'uk-float-right'}>
                   <div
                     id={'ticket-search-box'}
-                    className='search-box uk-float-left nb'
+                    className="search-box uk-float-left nb"
                     style={{ marginTop: 8, paddingLeft: 0 }}
                   >
                     {this.getSetting('elasticSearchEnabled') && (
                       <input
-                        type='text'
-                        id='tickets_Search'
+                        type="text"
+                        id="tickets_Search"
                         placeholder={'Search'}
                         className={'ticket-top-search'}
                         value={this.searchTerm}
-                        onChange={e => this.onSearchTermChanged(e)}
-                        onFocus={e => this._onSearchFocus(e)}
-                      />)}
+                        onChange={(e) => this.onSearchTermChanged(e)}
+                        onFocus={(e) => this._onSearchFocus(e)}
+                      />
+                    )}
                   </div>
                 </div>
-
               </div>
-              <SearchResults target={'#ticket-search-box'} ref={r => (this.searchContainer = r)} />
+              <SearchResults target={'#ticket-search-box'} ref={(r) => (this.searchContainer = r)} />
             </div>
           }
         />
         <PageContent padding={0} paddingBottom={0} extraClass={'uk-position-relative'}>
           {/*<SpinLoader active={this.props.loading} />*/}
           <Table
-            tableRef={ref => (this.ticketsTable = ref)}
+            tableRef={(ref) => (this.ticketsTable = ref)}
             style={{ margin: 0 }}
             extraClass={'pDataTable'}
             stickyHeader={true}
@@ -398,7 +423,7 @@ class TicketsContainer extends React.Component {
               <TableHeader sortData={this.sortData} key={6} width={175} text={'Customer'} />,
               <TableHeader sortData={this.sortData} key={7} text={'Assignee'} />,
               <TableHeader sortData={this.sortData} key={8} width={110} text={'Due Date'} />,
-              <TableHeader sortData={this.sortData} key={9} text={'Updated'} />
+              <TableHeader sortData={this.sortData} key={9} text={'Updated'} />,
             ]}
           >
             {/* {!this.props.loading && this.props.tickets.size < 1 && ( */}
@@ -411,82 +436,82 @@ class TicketsContainer extends React.Component {
             )}
             {this.props.loading && loadingItems}
             {!this.props.loading &&
-              this.props.tickets.map(ticket => {
+              this.props.tickets.map((ticket) => {
                 const status = () => {
                   switch (ticket.get('status')) {
                     case 0:
-                      return 'new'
+                      return 'new';
                     case 1:
-                      return 'open'
+                      return 'open';
                     case 2:
-                      return 'pending'
+                      return 'pending';
                     case 3:
-                      return 'closed'
+                      return 'closed';
                   }
-                }
+                };
 
                 const statusChecked = () => {
-                  let checked = false
-                  this.props.tcms.map(tcm => {
-                    tcm.get('users').map(userId => {
+                  let checked = false;
+                  this.props.tcms.map((tcm) => {
+                    tcm.get('users').map((userId) => {
                       if (tcm.get('ticketId') == ticket.get('_id') && userId == this.props.sessionUser._id) {
-                        checked = true
+                        checked = true;
                       }
-                    })
-                  })
+                    });
+                  });
                   switch (ticket.get('status')) {
                     case 0:
-                      if (!checked) return 'new'
-                      return 'open'
+                      if (!checked) return 'new';
+                      return 'open';
                     case 1:
-                      if (!checked) return 'new'
-                      return 'open'
+                      if (!checked) return 'new';
+                      return 'open';
                     case 2:
-                      if (!checked) return 'new'
-                      return 'pending'
+                      if (!checked) return 'new';
+                      return 'pending';
                     case 3:
-                      return 'closed'
+                      return 'closed';
                   }
-                }
+                };
 
                 const assignee = () => {
-                  const a = ticket.get('assignee')
-                  return !a ? '--' : a.get('fullname')
-                }
+                  const a = ticket.get('assignee');
+                  return !a ? '--' : a.get('fullname');
+                };
 
                 const updated = ticket.get('updated')
                   ? helpers.formatDate(ticket.get('updated'), helpers.getShortDateFormat()) +
-                  ', ' +
-                  helpers.formatDate(ticket.get('updated'), helpers.getTimeFormat())
-                  : '--'
+                    ', ' +
+                    helpers.formatDate(ticket.get('updated'), helpers.getTimeFormat())
+                  : '--';
 
                 const dueDate = ticket.get('dueDate')
                   ? helpers.formatDate(ticket.get('dueDate'), helpers.getShortDateFormat())
-                  : '--'
+                  : '--';
 
                 const isOverdue = () => {
                   if (!this.props.common.viewdata.get('showOverdue') || [2, 3].indexOf(ticket.get('status')) !== -1)
-                    return false
-                  const overdueIn = ticket.getIn(['priority', 'overdueIn'])
-                  const now = moment()
-                  let updated = ticket.get('updated')
-                  if (updated) updated = moment(updated)
-                  else updated = moment(ticket.get('date'))
+                    return false;
+                  const overdueIn = ticket.getIn(['priority', 'overdueIn']);
+                  const now = moment();
+                  let updated = ticket.get('updated');
+                  if (updated) updated = moment(updated);
+                  else updated = moment(ticket.get('date'));
 
-                  const timeout = updated.clone().add(overdueIn, 'm')
-                  return now.isAfter(timeout)
-                }
+                  const timeout = updated.clone().add(overdueIn, 'm');
+                  return now.isAfter(timeout);
+                };
 
                 return (
                   <TableRow
                     key={ticket.get('_id')}
                     className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''}`}
                     clickable={true}
-                    onClick={e => {
-                      const td = e.target.closest('td')
-                      const input = td.getElementsByTagName('input')
-                      if (input.length > 0) return false
-                      History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`)
+                    onClick={(e) => {
+                      const td = e.target.closest('td');
+                      const input = td.getElementsByTagName('input');
+                      if (input.length > 0) return false;
+                      History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`);
                     }}
                   >
                     <TableCell
@@ -494,17 +519,17 @@ class TicketsContainer extends React.Component {
                       style={{ borderColor: ticket.getIn(['priority', 'htmlColor']), padding: '18px 15px' }}
                     >
                       <input
-                        type='checkbox'
+                        type="checkbox"
                         id={`c_${ticket.get('_id')}`}
                         data-ticket={ticket.get('_id')}
                         style={{ display: 'none' }}
-                        onChange={e => this.onTicketCheckChanged(e, ticket.get('_id'))}
-                        className='svgcheckinput'
+                        onChange={(e) => this.onTicketCheckChanged(e, ticket.get('_id'))}
+                        className="svgcheckinput"
                       />
-                      <label htmlFor={`c_${ticket.get('_id')}`} className='svgcheck'>
-                        <svg width='16px' height='16px' viewBox='0 0 18 18'>
-                          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-                          <polyline points='1 9 7 14 15 4' />
+                      <label htmlFor={`c_${ticket.get('_id')}`} className="svgcheck">
+                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                          <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
+                          <polyline points="1 9 7 14 15 4" />
                         </svg>
                       </label>
                     </TableCell>
@@ -512,11 +537,20 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
-                    <TableCell className={'vam nbb'} style={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }} data-toggle={"tooltip"} data-placement={"bottom"} title={ticket.get('subject')} delay={0} >{ticket.get('subject')}</TableCell>
+                    <TableCell
+                      className={'vam nbb'}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                      data-toggle={'tooltip'}
+                      data-placement={'bottom'}
+                      title={ticket.get('subject')}
+                      delay={0}
+                    >
+                      {ticket.get('subject')}
+                    </TableCell>
                     <TableCell className={'vam nbb'}>
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
@@ -526,12 +560,12 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{dueDate}</TableCell>
                     <TableCell className={'vam nbb'}>{updated}</TableCell>
                   </TableRow>
-                )
+                );
               })}
           </Table>
         </PageContent>
       </div>
-    )
+    );
   }
 }
 
@@ -555,17 +589,17 @@ TicketsContainer.propTypes = {
   showModal: PropTypes.func.isRequired,
   fetchSearchResults: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
-  filter: PropTypes.object.isRequired
-}
+  filter: PropTypes.object.isRequired,
+};
 
 TicketsContainer.defaultProps = {
   view: 'active',
   page: 0,
   prevEnabled: true,
-  nextEnabled: true
-}
+  nextEnabled: true,
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   tickets: state.ticketsState.tickets,
   tcms: state.tcmsState.tcms,
   totalCount: state.ticketsState.totalCount,
@@ -575,8 +609,8 @@ const mapStateToProps = state => ({
   common: state.common,
   socket: state.shared.socket,
   settings: state.settings.settings,
-  sessionUser: state.shared.sessionUser
-})
+  sessionUser: state.shared.sessionUser,
+});
 
 export default connect(mapStateToProps, {
   fetchTCMs,
@@ -591,4 +625,4 @@ export default connect(mapStateToProps, {
   tSortingUpdated,
   unloadTickets,
   showModal,
-})(TicketsContainer)
+})(TicketsContainer);

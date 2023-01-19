@@ -12,63 +12,76 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var tSortingSchema = require('../../../models/tsorting')
-var apiTSortings = {}
+var _ = require('lodash');
+var async = require('async');
+var tSortingSchema = require('../../../models/tsorting');
+var apiTSortings = {};
 
-apiTSortings.get = function(req, res) {
+apiTSortings.get = function (req, res) {
+  var tSortings = [];
 
-    var tSortings = []
+  async.parallel(
+    [
+      function (done) {
+        tSortingSchema.find({}, function (err, t) {
+          if (err) return done(err);
+          tSortings = t;
+          return done();
+        });
+      },
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err });
 
-    async.parallel(
-        [
-            function(done) {
-                tSortingSchema.find({}, function(err, t) {
-                    if (err) return done(err)
-                    tSortings = t
-                    return done()
-                })
+      return res.json({ success: true, tSortings: tSortings });
+    }
+  );
+};
+
+apiTSortings.put = function (req, res) {
+  const data = req.body;
+
+  async.parallel(
+    [
+      function (done) {
+        tSortingSchema.findOne({ userId: data.userId }, (err, tSorting) => {
+          if (err) console.log(err);
+          if (!tSorting) {
+            const tSorting = {
+              userId: data.userId,
+              sorting: data.sorting,
+              direction: 'topDown',
+            };
+            tSortingSchema.create(tSorting, (err) => {
+              if (err) throw err;
+              return done();
+            });
+          }
+
+          let direction = '';
+          if (tSorting.direction == 'topDown') direction == 'bottomUp';
+          else if (tSorting.direction == 'bottomUp') direction == 'none';
+          else direction == 'topDown';
+
+          tSortingSchema.updateMany(
+            { userId: data.userId },
+            { sorting: data.sorting, direction: direction },
+            (err, tSorting) => {
+              if (err) console.log(err);
+              if (tSorting.matchedCount == 0) {
+              }
+              return done();
             }
-        ],
-        function(err) {
-            if (err) return res.status(400).json({ success: false, error: err })
+          );
+        });
+      },
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err });
 
-            return res.json({ success: true, tSortings: tSortings })
-        }
-    )
-}
+      return res.json({ success: true });
+    }
+  );
+};
 
-apiTSortings.put = function(req, res) {
-    const data = req.body;
-
-    async.parallel(
-        [
-            function(done) {
-                tSortingSchema.updateOne({ userId: data.userId }, { sorting: data.sorting }, (err, tSorting) => {
-                    if (err) console.log(err);
-                    if (tSorting.matchedCount == 0) {
-                        const tSorting = {
-                            userId: data.userId,
-                            sorting: data.sorting
-                        }
-                        tSortingSchema.create(tSorting, (err) => {
-                            if (err) throw err
-                            return done()
-                        })
-                    }
-                    return done()
-                })
-            }
-        ],
-        function(err) {
-            if (err) return res.status(400).json({ success: false, error: err })
-
-            return res.json({ success: true })
-        }
-    )
-
-
-}
-
-module.exports = apiTSortings
+module.exports = apiTSortings;
