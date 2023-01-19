@@ -223,8 +223,10 @@ class TicketsContainer extends React.Component {
       sorting: field,
       userId: this.props.sessionUser._id,
     };
+    console.log('sortData');
     console.log('this.props.tSortings');
     console.log(this.props.tSortings);
+    this.props.tSortingUpdated(data);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
@@ -234,8 +236,9 @@ class TicketsContainer extends React.Component {
     });
   };
 
-  onTSortingUpdated() {
-    this.props.tSortingUpdated(data);
+  onTSortingUpdated(data) {
+    console.log('data');
+    console.log(data);
   }
 
   getSetting(stateName) {

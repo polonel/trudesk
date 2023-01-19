@@ -58,7 +58,7 @@ const IndexReducer = combineReducers({
   dashboardState,
   ticketsState,
   tcmsState,
-  tSortingsState,
+  //tSortingsState,
   accountsState,
   groupsState,
   ldapGroupsState,

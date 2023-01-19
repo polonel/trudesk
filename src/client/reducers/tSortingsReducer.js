@@ -54,8 +54,6 @@ const reducer = handleActions(
       }
 
       if (!inView) return { ...state };
-      console.log('idx');
-      console.log(idx);
       if (idx === -1) {
         const withTSorting = state.tSortings.push(fromJS(tSorting));
         return {
@@ -63,8 +61,6 @@ const reducer = handleActions(
           tSortings: withTSorting,
         };
       }
-      console.log('tSorting');
-      console.log(tSorting);
       return {
         ...state,
         tSortings: state.tSortings.set(idx, fromJS(tSorting)),
