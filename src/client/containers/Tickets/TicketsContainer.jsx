@@ -219,6 +219,7 @@ class TicketsContainer extends React.Component {
   }
 
   sortData = (field) => {
+    if (field == '#') field == 'uid';
     const data = {
       sorting: field,
       userId: this.props.sessionUser._id,

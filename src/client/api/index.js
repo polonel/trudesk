@@ -60,7 +60,7 @@ api.tickets.getWithPage = (payload) => {
   );
   return axios
     .get(
-      `/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}&sorting=${sorting}&direction=${direction}`
+      `/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}&direction=${direction}&sorting=${sorting}`
     )
     .then((res) => {
       return res.data;
