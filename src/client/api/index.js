@@ -47,8 +47,6 @@ api.dashboard.getOverdueTickets = () => {
 
 api.tickets = {};
 api.tickets.getWithPage = (payload) => {
-  console.log(payload);
-  console.log('payload');
   const limit = payload.limit ? payload.limit : 50;
   const page = payload.page ? payload.page : 0;
   const type = payload.type ? payload.type : 'all';
@@ -56,6 +54,10 @@ api.tickets.getWithPage = (payload) => {
   const direction = payload.direction;
   const filter = payload.filter ? encodeURIComponent(JSON.stringify(payload.filter, null, 2)) : undefined;
   const fullFilter = filter ? `&filter=${filter}` : undefined;
+  console.log('Запрос');
+  console.log(
+    `/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}&sorting=${sorting}&direction=${direction}`
+  );
   return axios
     .get(
       `/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}&sorting=${sorting}&direction=${direction}`
