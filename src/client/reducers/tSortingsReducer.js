@@ -39,7 +39,7 @@ const reducer = handleActions(
     },
 
     [TSORTING_UPDATED.SUCCESS]: (state, action) => {
-      const tSorting = action.payload.tSortings;
+      const tSorting = action.payload.tSorting;
 
       const idx = state.tSortings.findIndex((t) => {
         return t.get('_id') === tSorting._id;

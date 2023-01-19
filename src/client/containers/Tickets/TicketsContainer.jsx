@@ -221,13 +221,6 @@ class TicketsContainer extends React.Component {
       userId: this.props.sessionUser._id,
     };
     this.props.tSortingUpdated(data);
-    const tSorting = this.props.tSortings
-      .map((tSorting) => {
-        return tSorting.userId == this.props.sessionUser._id;
-      })
-      .toArray();
-    console.log('tSorting');
-    console.log(tSorting);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
