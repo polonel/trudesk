@@ -15,6 +15,7 @@
 var _ = require('lodash');
 var async = require('async');
 var tSortingSchema = require('../../../models/tsorting');
+var emitter = require('../../../emitter');
 var apiTSortings = {};
 
 apiTSortings.get = function (req, res) {
