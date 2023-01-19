@@ -31,7 +31,7 @@ ticketsV2.get = async (req, res) => {
   const query = req.query;
   const type = query.type || 'all';
   const sorting = req.query.sorting;
-
+  const direction = req.query.direction;
   let limit = 50;
   let page = 0;
 
@@ -102,24 +102,66 @@ ticketsV2.get = async (req, res) => {
     if (sorting && sorting !== 'undefined' && sorting !== 'false') {
       switch (sorting) {
         case 'requester':
-          tickets.sort((ticket1, ticket2) => {
-            return ticket1.owner?.fullname > ticket2.owner?.fullname ? 1 : -1;
-          });
+          if (direction == 'topDown') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.owner?.fullname > ticket2.owner?.fullname ? 1 : -1;
+            });
+          } else if (direction == 'bottomUp') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.owner?.fullname < ticket2.owner?.fullname ? 1 : -1;
+            });
+          } else {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.uid > ticket2.uid ? 1 : -1;
+            });
+          }
+
           break;
         case 'customer':
-          tickets.sort((ticket1, ticket2) => {
-            return ticket1.group.name > ticket2.group.name ? 1 : -1;
-          });
+          if (direction == 'topDown') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.group.name > ticket2.group.name ? 1 : -1;
+            });
+          } else if (direction == 'bottomUp') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.group.name < ticket2.group.name ? 1 : -1;
+            });
+          } else {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.uid > ticket2.uid ? 1 : -1;
+            });
+          }
           break;
         case 'assignee':
-          tickets.sort((ticket1, ticket2) => {
-            return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
-          });
+          if (direction == 'topDown') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
+            });
+          } else if (direction == 'bottomUp') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1?.assignee?.fullname < ticket2?.assignee?.fullname ? 1 : -1;
+            });
+          } else {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.uid > ticket2.uid ? 1 : -1;
+            });
+          }
           break;
         default:
-          tickets.sort((ticket1, ticket2) => {
-            return ticket1[sorting] > ticket2[sorting] ? 1 : -1;
-          });
+          if (direction == 'topDown') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1[sorting] > ticket2[sorting] ? 1 : -1;
+            });
+          } else if (direction == 'bottomUp') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1[sorting] < ticket2[sorting] ? 1 : -1;
+            });
+          } else {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1.uid > ticket2.uid ? 1 : -1;
+            });
+          }
+
           break;
       }
     }

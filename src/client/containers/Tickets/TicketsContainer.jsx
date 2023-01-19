@@ -237,8 +237,8 @@ class TicketsContainer extends React.Component {
   };
 
   onTSortingUpdated(data) {
-    console.log('data');
-    console.log(data);
+    console.log('data.tSorting.direction');
+    console.log(data.tSorting.direction);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
