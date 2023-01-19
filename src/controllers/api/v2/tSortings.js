@@ -56,7 +56,7 @@ apiTSortings.put = function (req, res) {
             tSortingSchema.create(tSorting, (err) => {
               if (err) throw err;
               tSortingSchema.findOne({ userId: data.userId }, (err, tSorting) => {
-                emitter.emit('tSorting:update', { userId: tSorting.userId, tSorting: tSorting });
+                emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });
               });
               return done();
             });
@@ -77,7 +77,7 @@ apiTSortings.put = function (req, res) {
             (err, tSorting) => {
               if (err) console.log(err);
               tSortingSchema.findOne({ userId: data.userId }, (err, tSorting) => {
-                emitter.emit('tSorting:update', { userId: tSorting.userId, tSorting: tSorting });
+                emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });
               });
               return done();
             }

@@ -239,6 +239,14 @@ class TicketsContainer extends React.Component {
   onTSortingUpdated(data) {
     console.log('data');
     console.log(data);
+    this.props.fetchTickets({
+      limit: 50,
+      page: this.props.page,
+      type: this.props.view,
+      filter: this.props.filter,
+      sorting: data.sorting.toLowerCase(),
+      direction: data.direction,
+    });
   }
 
   getSetting(stateName) {
