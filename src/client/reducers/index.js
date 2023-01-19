@@ -12,25 +12,26 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { combineReducers } from 'redux'
-import shared from './shared'
-import common from './shared/common'
-import modal from './shared/modalReducer'
-import sidebar from './sidebarReducer'
-import settings from './settings'
-import dashboardState from './dashboardReducer'
-import ticketsState from './ticketsReducer'
-import tagsSettings from './tagsReducer'
-import accountsState from './accountsReducer'
-import groupsState from './groupsReducer'
-import ldapGroupsState from './ldapGroupsReducer'
-import chatwootDataState from './chatwootDataReducer'
-import teamsState from './teamsReducer'
-import departmentsState from './departmentsReducer'
-import noticesState from './noticesReducer'
-import searchState from './searchReducer'
-import messagesState from './messagesReducer'
-import tcmsState from './tcmsReducer'
+import { combineReducers } from 'redux';
+import shared from './shared';
+import common from './shared/common';
+import modal from './shared/modalReducer';
+import sidebar from './sidebarReducer';
+import settings from './settings';
+import dashboardState from './dashboardReducer';
+import ticketsState from './ticketsReducer';
+import tagsSettings from './tagsReducer';
+import accountsState from './accountsReducer';
+import groupsState from './groupsReducer';
+import ldapGroupsState from './ldapGroupsReducer';
+import chatwootDataState from './chatwootDataReducer';
+import teamsState from './teamsReducer';
+import departmentsState from './departmentsReducer';
+import noticesState from './noticesReducer';
+import searchState from './searchReducer';
+import messagesState from './messagesReducer';
+import tcmsState from './tcmsReducer';
+import tSortingsState from './tSortingsReducer';
 
 // const IndexReducer = (state = {}, action) => {
 //   return {
@@ -57,6 +58,7 @@ const IndexReducer = combineReducers({
   dashboardState,
   ticketsState,
   tcmsState,
+  tSortingsState,
   accountsState,
   groupsState,
   ldapGroupsState,
@@ -66,7 +68,7 @@ const IndexReducer = combineReducers({
   noticesState,
   settings,
   tagsSettings,
-  messagesState
-})
+  messagesState,
+});
 
-export default IndexReducer
+export default IndexReducer;

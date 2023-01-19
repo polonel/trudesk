@@ -59,9 +59,13 @@ apiTSortings.put = function (req, res) {
           }
 
           let direction = '';
-          if (tSorting.direction == 'topDown') direction == 'bottomUp';
-          else if (tSorting.direction == 'bottomUp') direction == 'none';
-          else direction == 'topDown';
+          if (tSorting.direction == 'topDown') {
+            direction = 'bottomUp';
+          } else if (tSorting.direction == 'bottomUp') {
+            direction = 'none';
+          } else {
+            direction = 'topDown';
+          }
 
           tSortingSchema.updateMany(
             { userId: data.userId },

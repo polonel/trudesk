@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { fromJS, List } from 'immutable'
-import { handleActions } from 'redux-actions'
-import { FETCH_TSORTINGS, TSORTING_UPDATED } from 'actions/types'
+import { fromJS, List } from 'immutable';
+import { handleActions } from 'redux-actions';
+import { FETCH_TSORTINGS, TSORTING_UPDATED } from 'actions/types';
 
 const initialState = {
   tSortings: List([]),
@@ -26,55 +26,52 @@ const initialState = {
   viewType: 'active',
   loading: false,
   nextPage: 1,
-  prevPage: 0
-}
-
-
+  prevPage: 0,
+};
 
 const reducer = handleActions(
   {
     [FETCH_TSORTINGS.SUCCESS]: (state, action) => {
       return {
         ...state,
-        tSortings: fromJS(action.response.tSortings)
-      }
-    }, 
+        tSortings: fromJS(action.response.tSortings),
+      };
+    },
 
     [TSORTING_UPDATED.SUCCESS]: (state, action) => {
+      const tSorting = action.payload.tSortings;
 
-      const tSorting = action.payload.tcm
+      const idx = state.tSortings.findIndex((t) => {
+        return t.get('_id') === tSorting._id;
+      });
 
-      const idx = state.tSortings.findIndex(t => {
-        return t.get('_id') === tSorting._id
-      })
-      
-      const inView = true
+      const inView = true;
 
       if (!inView && idx !== -1) {
         return {
           ...state,
-          tSortings: state.tSortings.delete(idx)
-        }
+          tSortings: state.tSortings.delete(idx),
+        };
       }
 
-      if (!inView) return { ...state }
+      if (!inView) return { ...state };
 
       if (idx === -1) {
-        const withTSorting = state.tSortings.push(fromJS(tSorting))
+        const withTSorting = state.tSortings.push(fromJS(tSorting));
         return {
           ...state,
-          tSortings: withTSorting
-        }
+          tSortings: withTSorting,
+        };
       }
 
       return {
         ...state,
-        tSortings: state.tSortings.set(idx, fromJS(tSorting))
-      }
-    }
+        tSortings: state.tSortings.set(idx, fromJS(tSorting)),
+      };
+    },
   },
-  
-  initialState
-)
 
-export default reducer
+  initialState
+);
+
+export default reducer;
