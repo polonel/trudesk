@@ -268,7 +268,7 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketsListUpdated() {
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sort: this.props.sort })
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sorting: this.props.sorting })
   }
 
   render() {

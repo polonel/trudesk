@@ -30,6 +30,7 @@ ticketsV2.create = function(req, res) {
 ticketsV2.get = async(req, res) => {
     const query = req.query
     const type = query.type || 'all'
+    const sorting = req.query.sorting
 
     let limit = 50
     let page = 0
@@ -97,6 +98,11 @@ ticketsV2.get = async(req, res) => {
 
         const tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject)
         const totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject)
+
+        if (sorting && sorting !== 'undefined' && sorting !== 'false')
+            tickets.sort((ticket1, ticket2) => {
+                return ticket1[sorting] > ticket2[sorting] ? 1 : -1
+            })
 
         return apiUtils.sendApiSuccess(res, {
             tickets,
