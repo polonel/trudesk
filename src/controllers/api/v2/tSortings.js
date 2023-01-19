@@ -41,28 +41,34 @@ apiTSortings.get = function(req, res) {
 
 apiTSortings.put = function(req, res) {
     const data = req.body;
-    // tSortingSchema.updateOne({ ticketId: ticket._id }, { users: [] }, (err) => {
-    //     if (err) console.log(err);
-    //     tSortingSchema.updateOne({ userId: req.body }, { $push: { users: userId } }, (err, tcm) => {
-    //         if (err) console.log(err);
-    //         if (tcm.matchedCount == 0) {
-    //             const tcm = {
-    //                 ticketId: ticket._id,
-    //                 ticketUid: ticket.uid,
-    //                 users: [userId]
-    //             }
-    //             tSortingSchema.create(tcm, (err) => {
-    //                 if (err) throw err
-    //                 tSortingSchema.findOne({ ticketId: ticket._id }, (err, tcm) => {
-    //                     emitter.emit('ticket:tcm:update', { tcm, ticket })
-    //                 })
-    //             })
-    //         }
-    //         tSortingSchema.findOne({ ticketId: ticket._id }, (err, tcm) => {
-    //             emitter.emit('ticket:tcm:update', { tcm, ticket })
-    //         })
-    //     })
-    // })
+
+    async.parallel(
+        [
+            function(done) {
+                tSortingSchema.updateOne({ userId: data.userId }, { sorting: data.sorting }, (err, tSorting) => {
+                    if (err) console.log(err);
+                    if (tSorting.matchedCount == 0) {
+                        const tSorting = {
+                            userId: data.userId,
+                            sorting: data.sorting
+                        }
+                        tSortingSchema.create(tSorting, (err) => {
+                            if (err) throw err
+                            return done()
+                        })
+                    }
+                    return done()
+                })
+            }
+        ],
+        function(err) {
+            if (err) return res.status(400).json({ success: false, error: err })
+
+            return res.json({ success: true })
+        }
+    )
+
+
 }
 
 module.exports = apiTSortings

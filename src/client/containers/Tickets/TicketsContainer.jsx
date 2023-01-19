@@ -203,12 +203,12 @@ class TicketsContainer extends React.Component {
   }
 
   sortData= (field) => {
-    console.log(field)
-    data = {
+    const data = {
       sorting: field,
       userId: this.props.sessionUser._id
     }
     this.props.tSortingUpdated(data)
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter, sorting: field })
   }
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
