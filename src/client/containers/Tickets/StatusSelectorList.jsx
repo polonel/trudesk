@@ -93,8 +93,6 @@ class StatusSelectorList extends React.Component {
   }
 
   render() {
-    console.log('statusToName(this.status)[0]');
-    console.log(statusToName(this.status)[0]);
     return (
       <div className="floating-ticket-status">
         <div

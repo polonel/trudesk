@@ -252,7 +252,6 @@ class TicketsContainer extends React.Component {
     if (this.props.sessionUser) {
       const userId = this.props.sessionUser._id;
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
-      console.log(tSorting);
       // if (tSorting.direction == 'none') {
       //   tSorting.direction = 'bottomUp';
       // } else if (tSorting.direction == 'topDown') {
@@ -260,7 +259,6 @@ class TicketsContainer extends React.Component {
       // } else if (tSorting.direction == 'bottomUp') {
       //   tSorting.direction = 'topDown';
       // }
-      console.log('this.props.fetchTickets({');
       this.props.fetchTickets({
         limit: 50,
         page: this.props.page,
@@ -577,11 +575,9 @@ class TicketsContainer extends React.Component {
                     className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''}`}
                     clickable={true}
                     onClick={(e) => {
-                      if (e.target.localname !== 'span') {
+                      if (e.target.tagName !== 'SPAN') {
                         const td = e.target.closest('td');
                         const input = td.getElementsByTagName('input');
-                        console.log('TableRow');
-                        console.log(e);
                         if (input.length > 0) return false;
                         History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`);
                       }
