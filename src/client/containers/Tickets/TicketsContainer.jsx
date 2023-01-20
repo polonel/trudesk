@@ -579,7 +579,7 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <select className="selectize-status">
+                      <select className="selectize-status" style={{ appearance: 'none' }}>
                         <option
                           style={{
                             width: 25,
@@ -591,6 +591,7 @@ class TicketsContainer extends React.Component {
                             fontFamily: 'Roboto',
                             borderRadius: 3,
                             backgroundColor: '#29b955',
+                            appearance: none,
                           }}
                           data-value="N"
                         >
@@ -645,9 +646,6 @@ class TicketsContainer extends React.Component {
                         >
                           C
                         </option>
-
-                        <option>1</option>
-                        <option>2</option>
                       </select>
                       <SingleSelectStatus
                         className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
