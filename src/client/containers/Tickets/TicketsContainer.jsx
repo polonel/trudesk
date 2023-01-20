@@ -579,6 +579,21 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
+                      <select className="selectize-status">
+                        <div className="selectize-dropdown-content">
+                          <div data-value="N" data-selectable="" className="option">
+                            N
+                          </div>
+                          <div data-value="O" data-selectable="" className="option">
+                            O
+                          </div>
+                          <div data-value="C" data-selectable="" className="option">
+                            C
+                          </div>
+                        </div>
+                        <option>1</option>
+                        <option>2</option>
+                      </select>
                       <SingleSelectStatus
                         className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
                         items={[
