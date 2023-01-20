@@ -256,10 +256,24 @@ class TicketsContainer extends React.Component {
   }
 
   onTSortingsFetch = (data) => {
-    console.log('this.props.sessionUser._id');
-    console.log(this.props.sessionUser._id);
-    data.tSortings.find((tSorting) => tSorting.userId == this.props.sessionUser._id);
-    console.log(data);
+    const tSorting = data.tSortings.find((tSorting) => tSorting.userId == this.props.sessionUser._id);
+    console.log(tSorting);
+    if (tSorting.direction == 'none') {
+      tSorting.direction = 'bottomUp';
+    } else if (tSorting.direction == 'topDown') {
+      tSorting.direction = 'none';
+    } else if (tSorting.direction == 'bottomUp') {
+      tSorting.direction = 'topDown';
+    }
+
+    this.props.fetchTickets({
+      limit: 50,
+      page: this.props.page,
+      type: this.props.view,
+      filter: this.props.filter,
+      sorting: tSorting.sorting.toLowerCase(),
+      direction: tSorting.direction,
+    });
   };
 
   getSetting(stateName) {
