@@ -248,7 +248,9 @@ class TicketsContainer extends React.Component {
   }
 
   onTSortingsFetch = (data) => {
-    const tSorting = data.tSortings.find((tSorting) => tSorting.userId == this.props.sessionUser._id);
+    console.log('this.props.sessionUser._id');
+    console.log(this.props.sessionUser._id);
+    // const tSorting = data.tSortings.find((tSorting) => tSorting.userId == this.props.sessionUser._id);
     console.log(tSorting);
     if (tSorting.direction == 'none') {
       tSorting.direction = 'bottomUp';
