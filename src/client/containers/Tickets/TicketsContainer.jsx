@@ -70,7 +70,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated);
     this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated);
     this.props.socket.on('$trudesk:client:tsorting:update', this.onTSortingUpdated);
-    this.props.socket.on('$trudesk: client: tsortings: fetch', this.onTSortingsFetch);
+    this.props.socket.on('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted);
@@ -124,7 +124,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated);
     this.props.socket.off('$trudesk:client:tsorting:update', this.onTSortingUpdated);
-    this.props.socket.off('$trudesk: client: tsortings: fetch', this.onTSortingsFetch);
+    this.props.socket.off('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted);
   }
@@ -256,6 +256,7 @@ class TicketsContainer extends React.Component {
   }
 
   onTSortingsFetch(data) {
+    console.log('onTSortingsFetch data');
     console.log(data);
   }
 
