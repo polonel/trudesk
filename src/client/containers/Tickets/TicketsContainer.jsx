@@ -579,18 +579,19 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <select className="selectize-status">
+                      <select className="selectize-status uk-display-inline-block ">
                         <option
                           className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
                           style={{
                             width: 25,
                             lineHeight: 27,
                             height: 25,
-                            textAlign: center,
+                            textAlign: 'center',
                             fontSize: 12,
                             fontWeight: 600,
                             fontFamily: 'Roboto',
                             borderRadius: 3,
+                            background: '#29b955',
                           }}
                           data-value="N"
                           data-selectable=""
@@ -599,12 +600,33 @@ class TicketsContainer extends React.Component {
                         </option>
                         <option
                           className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                          style={{
+                            width: 25,
+                            lineHeight: 27,
+                            height: 25,
+                            textAlign: 'center',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            fontFamily: 'Roboto',
+                            borderRadius: 3,
+                            background: '#2196F3',
+                          }}
                           data-value="O"
                           data-selectable=""
                         >
                           O
                         </option>
                         <option
+                          style={{
+                            width: 25,
+                            lineHeight: 27,
+                            height: 25,
+                            textAlign: 'center',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            fontFamily: 'Roboto',
+                            borderRadius: 3,
+                          }}
                           className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
                           data-value="C"
                           data-selectable=""
