@@ -65,7 +65,6 @@ class TicketsContainer extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     this.props.socket.on('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded);
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated);
     this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated);
@@ -77,8 +76,6 @@ class TicketsContainer extends React.Component {
     this.props.fetchSettings();
     this.props.fetchTCMs();
     this.props.fetchTSortings();
-    console.log('this.props.tSortings');
-    console.log(this.props.tSortings);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
@@ -117,7 +114,6 @@ class TicketsContainer extends React.Component {
   componentWillUnmount() {
     anime.remove('tr.overdue td');
     this.timeline = null;
-    console.log('componentWillUnmount');
     this.props.unloadTickets();
     this.props.socket.off('$trudesk:tickets:comment_note:set', this.onTicketCommentAdded);
     this.props.socket.off('$trudesk:tickets:list:update', this.onTicketsListUpdated);
@@ -229,9 +225,7 @@ class TicketsContainer extends React.Component {
       sorting: field,
       userId: this.props.sessionUser._id,
     };
-    console.log('sortData');
-    console.log('this.props.tSortings');
-    console.log(this.props.tSortings);
+
     this.props.tSortingUpdated(data);
     this.props.fetchTickets({
       limit: 50,
@@ -243,8 +237,6 @@ class TicketsContainer extends React.Component {
   };
 
   onTSortingUpdated(data) {
-    console.log('data.tSorting.direction');
-    console.log(data.tSorting.direction);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
