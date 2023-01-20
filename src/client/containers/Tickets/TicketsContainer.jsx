@@ -587,7 +587,8 @@ class TicketsContainer extends React.Component {
                           { text: 'P', value: 'P' },
                           { text: 'C', value: 'C' },
                         ]}
-                        width={'20'}
+                        width={'25'}
+                        height={'25'}
                         showTextbox={false}
                         defaultValue={status()[0].toUpperCase()}
                         //onSelectChange={(e) => this.onRoleSelectChange(e)}
