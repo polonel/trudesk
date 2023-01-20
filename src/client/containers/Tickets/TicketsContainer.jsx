@@ -255,10 +255,12 @@ class TicketsContainer extends React.Component {
     });
   }
 
-  onTSortingsFetch(data) {
-    console.log('onTSortingsFetch data');
+  onTSortingsFetch = (data) => {
+    console.log('this.props.sessionUser._id');
+    console.log(this.props.sessionUser._id);
+    data.tSortings.find((tSorting) => tSorting.userId == this.props.sessionUser._id);
     console.log(data);
-  }
+  };
 
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
