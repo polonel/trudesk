@@ -38,38 +38,80 @@ div#accountsTable_wrapper
   //border: 2px solid $ticket_status_closed
   +borderRadius(3px)
 
-.ticket-status.ticket-open span,
+.ticket-status.ticket-open span ,
 .ticket-status-open
   background: $ticket_status_open !important
   color: white !important
-.ticket-status.ticket-new span,
+.ticket-status.ticket-new span ,
 .ticket-status-new
   background: $ticket_status_new !important
   color: white !important
-.ticket-status.ticket-pending span,
+.ticket-status.ticket-pending span ,
 .ticket-status-pending
   background: $ticket_status_pending !important
   color: white !important
-.ticket-status.ticket-closed span,
+.ticket-status.ticket-closed span ,
 .ticket-status-closed
   background: $ticket_status_closed !important
   color: white !important
 
 .floating-ticket-status
   .ticket-status,
-  .ticket-status span div
+  .ticket-status span 
     width: 65px !important
   .ticket-status
-    &.ticket-new span div
+    &.ticket-new span 
       background: $ticket_status_new !important
       color: white !important
-    &.ticket-open span div
+    &.ticket-open span 
       background: $ticket_status_open !important
       color: white !important
-    &.ticket-pending span div
+    &.ticket-pending span 
       background: $ticket_status_pending !important
       color: white !important
-    &.ticket-closed span div
+    &.ticket-closed span 
+      background: $ticket_status_closed !important
+      color: white !important
+
+.ticket-status.ticket-open div ,
+.ticket-status-open
+  background: $ticket_status_open !important
+  color: white !important
+.ticket-status.ticket-new.selectize-input div ,
+.ticket-status-new
+  background: $ticket_status_new !important
+  color: white !important
+.selectize-input
+ background: $ticket_status_new !important
+  color: white !important
+.ticket-status.ticket-pending div ,
+.ticket-status-pending
+  background: $ticket_status_pending !important
+  color: white !important
+.ticket-status.ticket-closed div ,
+.ticket-status-closed
+  background: $ticket_status_closed !important
+  color: white !important
+
+.floating-ticket-status
+  .ticket-status,
+  .ticket-status div 
+    width: 65px !important
+  .ticket-status
+    &.ticket-new  
+     &.selectize-input div
+      background: $ticket_status_new !important
+      color: white !important
+    &.ticket-open 
+     &.selectize-input div
+      background: $ticket_status_open !important
+      color: white !important
+    &.ticket-pending 
+     &.selectize-input div
+      background: $ticket_status_pending !important
+      color: white !important
+    &.ticket-closed
+     &.selectize-input div
       background: $ticket_status_closed !important
       color: white !important
 
