@@ -248,26 +248,29 @@ class TicketsContainer extends React.Component {
   }
 
   onTSortingsFetch = (data) => {
-    console.log('this.props.sessionUser._id');
-    console.log(this.props.sessionUser._id);
-    // const tSorting = data.tSortings.find((tSorting) => tSorting.userId == this.props.sessionUser._id);
-    console.log(tSorting);
-    if (tSorting.direction == 'none') {
-      tSorting.direction = 'bottomUp';
-    } else if (tSorting.direction == 'topDown') {
-      tSorting.direction = 'none';
-    } else if (tSorting.direction == 'bottomUp') {
-      tSorting.direction = 'topDown';
+    if (this.props.sessionUser) {
+      const userId = this.props.sessionUser._id;
+      const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
+      console.log(tSorting);
+      // if (tSorting.direction == 'none') {
+      //   tSorting.direction = 'bottomUp';
+      // } else if (tSorting.direction == 'topDown') {
+      //   tSorting.direction = 'none';
+      // } else if (tSorting.direction == 'bottomUp') {
+      //   tSorting.direction = 'topDown';
+      // }
+      console.log('this.props.fetchTickets({');
+      this.props.fetchTickets({
+        limit: 50,
+        page: this.props.page,
+        type: this.props.view,
+        filter: this.props.filter,
+        sorting: tSorting.sorting.toLowerCase(),
+        direction: tSorting.direction,
+      });
+    } else {
+      this.props.fetchTSortings();
     }
-
-    this.props.fetchTickets({
-      limit: 50,
-      page: this.props.page,
-      type: this.props.view,
-      filter: this.props.filter,
-      sorting: tSorting.sorting.toLowerCase(),
-      direction: tSorting.direction,
-    });
   };
 
   getSetting(stateName) {
@@ -455,7 +458,7 @@ class TicketsContainer extends React.Component {
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader sortData={this.sortData} key={0} width={45} height={50} component={selectAllCheckbox} />,
+              <TableHeader key={0} width={45} height={50} component={selectAllCheckbox} />,
               <TableHeader sortData={this.sortData} key={1} width={60} text={'Status'} />,
               <TableHeader sortData={this.sortData} key={2} width={65} text={'#'} />,
               <TableHeader sortData={this.sortData} key={3} width={'12%'} text={'Subject'} />,
@@ -576,6 +579,14 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
+                      <div class="right clearfix" style="min-width: 250px;">
+                        <div style="margin-top: 8px;">
+                          <select id="select_group" name="select_group" data-md-selectize>
+                            <option value="0">Select Group</option>
+                            <option value="_id">"name"</option>
+                          </select>
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell
