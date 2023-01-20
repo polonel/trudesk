@@ -134,8 +134,22 @@ div#accountsTable_wrapper
     &.shown
       height: 124px !important
       opacity: 1 !important
+    #statusSelectList
+    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1)
+    height: 0
+    overflow: hidden
+    opacity: 0
+    &.hide
+      display: block !important
+      height: 0 !important
+      opacity: 0 !important
+      padding: 0 !important
+      margin: 0 !important
+    &.shown
+      height: 124px !important
+      opacity: 1 !important
 
-#statusSelect
+#statusSelectList
   position: absolute
   top: 28px
   left: -5px
