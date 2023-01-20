@@ -108,7 +108,7 @@ class StatusSelectorList extends React.Component {
           ref={(r) => (this.selectorButton = r)}
           style={{ width: 25 }}
         >
-          <span style={{ width: 25 }}>{statusToName(this.status)[0]}</span>
+          <span style={{ width: 25, marginTop: -9 }}>{statusToName(this.status)[0]}</span>
         </div>
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
