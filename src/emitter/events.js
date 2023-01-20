@@ -154,6 +154,12 @@ const eventTicketCommentAdded = require('./events/event_ticket_comment_added');
     //await eventTicketCommentAdded(ticket,comment,hostname)
   });
 
+  emitter.on('tsortings: fetch;', async function (data) {
+    // Goes to client
+    io.sockets.emit('$trudesk:client:tsortings:fetch', data);
+    //await eventTicketCommentAdded(ticket,comment,hostname)
+  });
+
   emitter.on('ticket:note:added', function (ticket) {
     // Goes to client
     io.sockets.emit('updateNotes', ticket);

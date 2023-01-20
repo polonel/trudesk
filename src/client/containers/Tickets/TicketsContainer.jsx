@@ -61,6 +61,7 @@ class TicketsContainer extends React.Component {
     this.onTicketDeleted = this.onTicketDeleted.bind(this);
     this.onTCMUpdated = this.onTCMUpdated.bind(this);
     this.onTSortingUpdated = this.onTSortingUpdated.bind(this);
+    this.onTSortingsFetch = this.onTSortingsFetch.bind(this);
   }
 
   componentDidMount() {
@@ -69,12 +70,15 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:tickets:list:update', this.onTicketsListUpdated);
     this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated);
     this.props.socket.on('$trudesk:client:tsorting:update', this.onTSortingUpdated);
+    this.props.socket.on('$trudesk: client: tsortings: fetch', this.onTSortingsFetch);
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted);
     this.props.fetchSettings();
     this.props.fetchTCMs();
     this.props.fetchTSortings();
+    console.log('this.props.tSortings');
+    console.log(this.props.tSortings);
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
@@ -120,6 +124,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated);
     this.props.socket.off('$trudesk:client:tsorting:update', this.onTSortingUpdated);
+    this.props.socket.off('$trudesk: client: tsortings: fetch', this.onTSortingsFetch);
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted);
   }
@@ -219,7 +224,7 @@ class TicketsContainer extends React.Component {
   }
 
   sortData = (field) => {
-    if (field == '#') field == 'uid';
+    if (field == '#') field = 'uid';
     const data = {
       sorting: field,
       userId: this.props.sessionUser._id,
@@ -248,6 +253,10 @@ class TicketsContainer extends React.Component {
       sorting: data.tSorting.sorting.toLowerCase(),
       direction: data.tSorting.direction,
     });
+  }
+
+  onTSortingsFetch(data) {
+    console.log(data);
   }
 
   getSetting(stateName) {

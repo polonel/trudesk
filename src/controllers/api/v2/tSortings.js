@@ -33,7 +33,7 @@ apiTSortings.get = function (req, res) {
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err });
-
+      emitter.emit('tsortings:fetch', { tSortings: tSortings });
       return res.json({ success: true, tSortings: tSortings });
     }
   );
@@ -60,28 +60,28 @@ apiTSortings.put = function (req, res) {
               });
               return done();
             });
-          }
-
-          let direction = '';
-          if (tSorting.direction == 'topDown') {
-            direction = 'bottomUp';
-          } else if (tSorting.direction == 'bottomUp') {
-            direction = 'none';
           } else {
-            direction = 'topDown';
-          }
-
-          tSortingSchema.updateMany(
-            { userId: data.userId },
-            { sorting: data.sorting, direction: direction },
-            (err, tSorting) => {
-              if (err) console.log(err);
-              tSortingSchema.findOne({ userId: data.userId }, (err, tSorting) => {
-                emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });
-              });
-              return done();
+            let direction = '';
+            if (tSorting.direction == 'topDown') {
+              direction = 'bottomUp';
+            } else if (tSorting.direction == 'bottomUp') {
+              direction = 'none';
+            } else {
+              direction = 'topDown';
             }
-          );
+
+            tSortingSchema.updateMany(
+              { userId: data.userId },
+              { sorting: data.sorting, direction: direction },
+              (err, tSorting) => {
+                if (err) console.log(err);
+                tSortingSchema.findOne({ userId: data.userId }, (err, tSorting) => {
+                  emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });
+                });
+                return done();
+              }
+            );
+          }
         });
       },
     ],

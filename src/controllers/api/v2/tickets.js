@@ -98,6 +98,7 @@ ticketsV2.get = async (req, res) => {
 
     const tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject);
     const totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject);
+    //const tSorting = await Models.TSorting.findOne();
 
     if (sorting && sorting !== 'undefined' && sorting !== 'false') {
       switch (sorting) {
@@ -112,7 +113,7 @@ ticketsV2.get = async (req, res) => {
             });
           } else {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid > ticket2.uid ? 1 : -1;
+              return ticket1.uid < ticket2.uid ? 1 : -1;
             });
           }
 
@@ -128,7 +129,7 @@ ticketsV2.get = async (req, res) => {
             });
           } else {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid > ticket2.uid ? 1 : -1;
+              return ticket1.uid < ticket2.uid ? 1 : -1;
             });
           }
           break;
@@ -143,7 +144,7 @@ ticketsV2.get = async (req, res) => {
             });
           } else {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid > ticket2.uid ? 1 : -1;
+              return ticket1.uid < ticket2.uid ? 1 : -1;
             });
           }
           break;
@@ -158,7 +159,7 @@ ticketsV2.get = async (req, res) => {
             });
           } else {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid > ticket2.uid ? 1 : -1;
+              return ticket1.uid < ticket2.uid ? 1 : -1;
             });
           }
 
