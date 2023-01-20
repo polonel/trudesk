@@ -546,6 +546,22 @@ class TicketsContainer extends React.Component {
                   return now.isAfter(timeout);
                 };
 
+                const hasTicketStatusUpdate = (ticket) => {
+                  const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
+                  const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
+                  if (isAgent || isAdmin) {
+                    return helpers.canUser('tickets:update');
+                  } else {
+                    if (!ticket || !this.props.sessionUser) return false;
+                    return helpers.hasPermOverRole(
+                      ticket.get('owner').role,
+                      this.props.sessionUser.role,
+                      'tickets:update',
+                      false
+                    );
+                  }
+                };
+
                 return (
                   <TableRow
                     key={ticket.get('_id')}
@@ -579,76 +595,15 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <select
-                        className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
-                        style={{ appearance: 'none', border: 'none', borderRadius: 5 }}
-                      >
-                        <option
-                          style={{
-                            width: 25,
-                            lineHeight: 27,
-                            height: 25,
-                            textAlign: 'center',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            fontFamily: 'Roboto',
-                            borderRadius: 3,
-                            backgroundColor: '#29b955',
-                          }}
-                          data-value="N"
-                        >
-                          N
-                        </option>
-                        <option
-                          style={{
-                            width: 25,
-                            lineHeight: 27,
-                            height: 25,
-                            textAlign: 'center',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            fontFamily: 'Roboto',
-                            borderRadius: 3,
-                            backgroundColor: 'red',
-                          }}
-                          data-value="O"
-                        >
-                          O
-                        </option>
-                        <option
-                          style={{
-                            width: 25,
-                            lineHeight: 27,
-                            height: 25,
-                            textAlign: 'center',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            fontFamily: 'Roboto',
-                            borderRadius: 3,
-                            backgroundColor: '#2196F3',
-                          }}
-                          data-value="P"
-                        >
-                          P
-                        </option>
-                        <option
-                          style={{
-                            width: 25,
-                            lineHeight: 27,
-                            height: 25,
-                            textAlign: 'center',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            fontFamily: 'Roboto',
-                            borderRadius: 3,
-                          }}
-                          className={``}
-                          data-value="C"
-                          data-selectable=""
-                        >
-                          C
-                        </option>
-                      </select>
+                      <StatusSelector
+                        ticketId={ticket.get('_id')}
+                        status={ticket.get('status')}
+                        socket={this.props.socket}
+                        onStatusChange={(status) => {
+                          this.sendNotification();
+                        }}
+                        hasPerm={hasTicketStatusUpdate(ticket)}
+                      />
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell
