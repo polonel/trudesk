@@ -308,7 +308,7 @@ class TicketsContainer extends React.Component {
   sendNotification(ticket) {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
-      axios.get(`/api/v1/users/${ticket.get('owner').username}`).then((response) => {
+      axios.get(`/api/v1/users/${ticket.get('owner').get('username')}`).then((response) => {
         console.log(JSON.stringify(response.data));
       });
     }
@@ -577,10 +577,14 @@ class TicketsContainer extends React.Component {
                     className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''}`}
                     clickable={true}
                     onClick={(e) => {
-                      const td = e.target.closest('td');
-                      const input = td.getElementsByTagName('input');
-                      if (input.length > 0) return false;
-                      History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`);
+                      if (e.target.localname !== 'span') {
+                        const td = e.target.closest('td');
+                        const input = td.getElementsByTagName('input');
+                        console.log('TableRow');
+                        console.log(e);
+                        if (input.length > 0) return false;
+                        History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`);
+                      }
                     }}
                   >
                     <TableCell
