@@ -305,6 +305,14 @@ class TicketsContainer extends React.Component {
     // }
   }
 
+  sendNotification(ticket) {
+    const siteURL = this.getSetting('siteUrl');
+    if (this.getSetting('chatwootSettings')) {
+      axios.get(`/api/v1/users/${ticket.get('owner').username}`).then((response) => {
+        console.log(JSON.stringify(response.data));
+      });
+    }
+  }
   _selectAll() {
     this.selectedTickets = [];
     const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]');
@@ -600,7 +608,7 @@ class TicketsContainer extends React.Component {
                         status={ticket.get('status')}
                         socket={this.props.socket}
                         onStatusChange={(status) => {
-                          this.sendNotification();
+                          this.sendNotification(ticket);
                         }}
                         hasPerm={hasTicketStatusUpdate(ticket)}
                       />

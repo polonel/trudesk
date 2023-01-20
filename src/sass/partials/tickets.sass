@@ -134,7 +134,7 @@ div#accountsTable_wrapper
     &.shown
       height: 124px !important
       opacity: 1 !important
-    #statusSelectList
+  #statusSelectList
     transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1)
     height: 0
     overflow: hidden
@@ -148,6 +148,24 @@ div#accountsTable_wrapper
     &.shown
       height: 124px !important
       opacity: 1 !important
+
+#statusSelect
+  position: absolute
+  top: 28px
+  left: -5px
+  padding: 0
+  background: $page_content_right_bg
+  border: 1px solid $page_content_border_color
+  +borderRadius(3px)
+  z-index: 999
+  ul
+    margin: 0
+    list-style: none
+    padding: 5px
+    li
+      margin-bottom: 3px
+      cursor: pointer
+
 
 #statusSelectList
   position: absolute
@@ -165,6 +183,7 @@ div#accountsTable_wrapper
     li
       margin-bottom: 3px
       cursor: pointer
+
 
 .page-actions
   .print-ticket
