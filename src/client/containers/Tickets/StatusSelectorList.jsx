@@ -93,26 +93,23 @@ class StatusSelectorList extends React.Component {
   }
 
   render() {
+    console.log('statusToName(this.status)[0]');
+    console.log(statusToName(this.status)[0]);
     return (
       <div className="floating-ticket-status">
         <div
           title="Change Status"
           className={clsx(
-            `ticket-status`,
-            `ticket-${statusToName(this.status).toLowerCase()}`,
+            `ticket-status-list`,
+            `ticket-status-list ticket-${statusToName(this.status).toLowerCase()}`,
             this.props.hasPerm && `cursor-pointer`
           )}
           onClick={(e) => this.toggleDropMenu(e)}
           ref={(r) => (this.selectorButton = r)}
+          style={{ width: 25 }}
         >
-          <span>{statusToName(this.status)}</span>
+          <span style={{ width: 25 }}>{statusToName(this.status)[0]}</span>
         </div>
-
-        {this.props.hasPerm && (
-          <span className="drop-icon material-icons" style={{ left: 'auto', right: 22, bottom: -18 }}>
-            keyboard_arrow_down
-          </span>
-        )}
 
         <div id={'statusSelect'} ref={(r) => (this.dropMenu = r)} className="hide">
           <ul>

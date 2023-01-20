@@ -39,7 +39,7 @@ import DropdownTrigger from 'components/Dropdown/DropdownTrigger';
 import Dropdown from 'components/Dropdown';
 import DropdownItem from 'components/Dropdown/DropdownItem';
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator';
-import StatusSelector from 'containers/Tickets/StatusSelector';
+import StatusSelectorList from 'containers/Tickets/StatusSelectorList';
 import SingleSelectStatus from 'components/SingleSelectStatus';
 
 import helpers from 'lib/helpers';
@@ -595,10 +595,9 @@ class TicketsContainer extends React.Component {
                       </label>
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
-                      <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <StatusSelector
+                      <StatusSelectorList
                         ticketId={ticket.get('_id')}
-                        status={ticket.get('status')[0]}
+                        status={ticket.get('status')}
                         socket={this.props.socket}
                         onStatusChange={(status) => {
                           this.sendNotification();
