@@ -581,13 +581,25 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                       <select className="selectize-status">
                         <div className="selectize-dropdown-content">
-                          <div data-value="N" data-selectable="" className="option">
+                          <div
+                            className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                            data-value="N"
+                            data-selectable=""
+                          >
                             N
                           </div>
-                          <div data-value="O" data-selectable="" className="option">
+                          <div
+                            className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                            data-value="O"
+                            data-selectable=""
+                          >
                             O
                           </div>
-                          <div data-value="C" data-selectable="" className="option">
+                          <div
+                            className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                            data-value="C"
+                            data-selectable=""
+                          >
                             C
                           </div>
                         </div>
