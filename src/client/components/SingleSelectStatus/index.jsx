@@ -97,7 +97,7 @@ class SingleSelectStatus extends React.Component {
     const value = this.props.multiple && !isArray(this.value) ? [this.value] : this.value;
 
     return (
-      <div>
+      <div style={{ width: 25 }}>
         <select
           className="selectize"
           ref={(select) => {
