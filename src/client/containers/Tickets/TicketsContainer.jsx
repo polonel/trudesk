@@ -581,7 +581,6 @@ class TicketsContainer extends React.Component {
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                       <select className="selectize-status uk-display-inline-block ">
                         <option
-                          className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
                           style={{
                             width: 25,
                             lineHeight: 27,
@@ -591,15 +590,13 @@ class TicketsContainer extends React.Component {
                             fontWeight: 600,
                             fontFamily: 'Roboto',
                             borderRadius: 3,
-                            background: '#29b955',
+                            backgroundColor: '#29b955',
                           }}
                           data-value="N"
-                          data-selectable=""
                         >
                           N
                         </option>
                         <option
-                          className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
                           style={{
                             width: 25,
                             lineHeight: 27,
@@ -609,10 +606,9 @@ class TicketsContainer extends React.Component {
                             fontWeight: 600,
                             fontFamily: 'Roboto',
                             borderRadius: 3,
-                            background: '#2196F3',
+                            backgroundColor: '#2196F3',
                           }}
                           data-value="O"
-                          data-selectable=""
                         >
                           O
                         </option>
@@ -627,7 +623,7 @@ class TicketsContainer extends React.Component {
                             fontFamily: 'Roboto',
                             borderRadius: 3,
                           }}
-                          className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                          className={``}
                           data-value="C"
                           data-selectable=""
                         >
