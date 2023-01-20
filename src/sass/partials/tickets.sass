@@ -73,6 +73,41 @@ div#accountsTable_wrapper
       background: $ticket_status_closed !important
       color: white !important
 
+.ticket-status.ticket-open select ,
+.ticket-status-open
+  background: $ticket_status_open !important
+  color: white !important
+.ticket-status.ticket-new select ,
+.ticket-status-new
+  background: $ticket_status_new !important
+  color: white !important
+.ticket-status.ticket-pending select ,
+.ticket-status-pending
+  background: $ticket_status_pending !important
+  color: white !important
+.ticket-status.ticket-closed select ,
+.ticket-status-closed
+  background: $ticket_status_closed !important
+  color: white !important
+
+.floating-ticket-status
+  .ticket-status,
+  .ticket-status select 
+    width: 65px !important
+  .ticket-status
+    &.ticket-new select 
+      background: $ticket_status_new !important
+      color: white !important
+    &.ticket-open select 
+      background: $ticket_status_open !important
+      color: white !important
+    &.ticket-pending select 
+      background: $ticket_status_pending !important
+      color: white !important
+    &.ticket-closed select 
+      background: $ticket_status_closed !important
+      color: white !important
+
 .ticket-priority
   border-left: 10px solid transparent
   background-clip: padding-box !important //Fix for firefox not showing borders

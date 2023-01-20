@@ -579,7 +579,10 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <select className="selectize-status" style={{ appearance: 'none' }}>
+                      <select
+                        className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                        style={{ appearance: 'none', border: 'none', borderRadius: 5 }}
+                      >
                         <option
                           style={{
                             width: 25,
@@ -591,7 +594,6 @@ class TicketsContainer extends React.Component {
                             fontFamily: 'Roboto',
                             borderRadius: 3,
                             backgroundColor: '#29b955',
-                            appearance: none,
                           }}
                           data-value="N"
                         >
@@ -647,20 +649,6 @@ class TicketsContainer extends React.Component {
                           C
                         </option>
                       </select>
-                      <SingleSelectStatus
-                        className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
-                        items={[
-                          { text: 'N', value: 'N' },
-                          { text: 'O', value: 'O' },
-                          { text: 'P', value: 'P' },
-                          { text: 'C', value: 'C' },
-                        ]}
-                        width={'25'}
-                        height={'25'}
-                        showTextbox={false}
-                        defaultValue={status()[0].toUpperCase()}
-                        //onSelectChange={(e) => this.onRoleSelectChange(e)}
-                      />
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell
