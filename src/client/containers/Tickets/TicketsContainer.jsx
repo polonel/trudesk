@@ -39,7 +39,7 @@ import DropdownTrigger from 'components/Dropdown/DropdownTrigger';
 import Dropdown from 'components/Dropdown';
 import DropdownItem from 'components/Dropdown/DropdownItem';
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator';
-import Button from 'components/Button';
+import SingleSelect from 'components/SingleSelect';
 
 import helpers from 'lib/helpers';
 import anime from 'animejs';
@@ -579,10 +579,17 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <select className={'uk-display-inline-block'} id="select_group" name="select_group">
-                        <option className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</option>
-                        <option className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</option>
-                      </select>
+                      <SingleSelect
+                        items={[
+                          { text: 'N', value: 'N' },
+                          { text: 'O', value: 'O' },
+                          { text: 'P', value: 'P' },
+                          { text: 'C', value: 'C' },
+                        ]}
+                        width={'100'}
+                        showTextbox={false}
+                        //onSelectChange={(e) => this.onRoleSelectChange(e)}
+                      />
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell
