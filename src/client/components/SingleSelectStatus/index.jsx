@@ -99,7 +99,7 @@ class SingleSelectStatus extends React.Component {
     return (
       <div style={{ width: 25 }}>
         <select
-          className="selectize"
+          className="selectize-status"
           ref={(select) => {
             this.select = select;
           }}
