@@ -579,14 +579,10 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <div className={'right clearfix'} style={{ minWidth: 250 }}>
-                        <div style={{ marginTop: 8 }}>
-                          <select id="select_group" name="select_group">
-                            <option value="0">Select Group</option>
-                            <option value="_id">"name"</option>
-                          </select>
-                        </div>
-                      </div>
+                      <select className={'uk-display-inline-block'} id="select_group" name="select_group">
+                        <option className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</option>
+                        <option className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</option>
+                      </select>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell
