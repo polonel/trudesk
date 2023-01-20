@@ -579,7 +579,7 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                      <select className="selectize-status uk-display-inline-block ">
+                      <select className="selectize-status">
                         <option
                           style={{
                             width: 25,
@@ -606,11 +606,27 @@ class TicketsContainer extends React.Component {
                             fontWeight: 600,
                             fontFamily: 'Roboto',
                             borderRadius: 3,
-                            backgroundColor: '#2196F3',
+                            backgroundColor: 'red',
                           }}
                           data-value="O"
                         >
                           O
+                        </option>
+                        <option
+                          style={{
+                            width: 25,
+                            lineHeight: 27,
+                            height: 25,
+                            textAlign: 'center',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            fontFamily: 'Roboto',
+                            borderRadius: 3,
+                            backgroundColor: '#2196F3',
+                          }}
+                          data-value="P"
+                        >
+                          P
                         </option>
                         <option
                           style={{
