@@ -580,29 +580,38 @@ class TicketsContainer extends React.Component {
                     <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
                       <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
                       <select className="selectize-status">
-                        <div className="selectize-dropdown-content">
-                          <div
-                            className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
-                            data-value="N"
-                            data-selectable=""
-                          >
-                            N
-                          </div>
-                          <div
-                            className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
-                            data-value="O"
-                            data-selectable=""
-                          >
-                            O
-                          </div>
-                          <div
-                            className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
-                            data-value="C"
-                            data-selectable=""
-                          >
-                            C
-                          </div>
-                        </div>
+                        <option
+                          className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                          style={{
+                            width: 25,
+                            lineHeight: 27,
+                            height: 25,
+                            textAlign: center,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            fontFamily: 'Roboto',
+                            borderRadius: 3,
+                          }}
+                          data-value="N"
+                          data-selectable=""
+                        >
+                          N
+                        </option>
+                        <option
+                          className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                          data-value="O"
+                          data-selectable=""
+                        >
+                          O
+                        </option>
+                        <option
+                          className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                          data-value="C"
+                          data-selectable=""
+                        >
+                          C
+                        </option>
+
                         <option>1</option>
                         <option>2</option>
                       </select>
