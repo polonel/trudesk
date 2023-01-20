@@ -54,10 +54,6 @@ api.tickets.getWithPage = (payload) => {
   const direction = payload.direction;
   const filter = payload.filter ? encodeURIComponent(JSON.stringify(payload.filter, null, 2)) : undefined;
   const fullFilter = filter ? `&filter=${filter}` : undefined;
-  console.log('Запрос');
-  console.log(
-    `/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}&sorting=${sorting}&direction=${direction}`
-  );
   return axios
     .get(
       `/api/v2/tickets?type=${type}&page=${page}&limit=${limit}${fullFilter}&direction=${direction}&sorting=${sorting}`

@@ -76,13 +76,13 @@ class TicketsContainer extends React.Component {
     this.props.fetchSettings();
     this.props.fetchTCMs();
     this.props.fetchTSortings();
-    this.props.fetchTickets({
-      limit: 50,
-      page: this.props.page,
-      type: this.props.view,
-      filter: this.props.filter,
-      //sorting: this.props.sorting.sorting,
-    });
+    // this.props.fetchTickets({
+    //   limit: 50,
+    //   page: this.props.page,
+    //   type: this.props.view,
+    //   filter: this.props.filter,
+    //   //sorting: this.props.sorting.sorting,
+    // });
   }
 
   componentDidUpdate() {
