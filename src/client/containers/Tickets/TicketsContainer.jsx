@@ -156,13 +156,14 @@ class TicketsContainer extends React.Component {
       .put(`/api/v2/tickets/checked/${this.props.ticketUid}`, { checked, userId })
       .then((res) => {
         if (res.data.success) {
-          this.props.fetchTickets({
-            limit: 50,
-            page: this.props.page,
-            type: this.props.view,
-            filter: this.props.filter,
-            sort: this.props.sort,
-          });
+          // this.props.fetchTickets({
+          //   limit: 50,
+          //   page: this.props.page,
+          //   type: this.props.view,
+          //   filter: this.props.filter,
+          //   sort: this.props.sort,
+          // });
+          this.props.fetchTSortings();
           this._clearChecked();
         } else {
           helpers.UI.showSnackbar('An unknown error occurred.', true);
@@ -332,13 +333,14 @@ class TicketsContainer extends React.Component {
   }
 
   onTicketsListUpdated() {
-    this.props.fetchTickets({
-      limit: 50,
-      page: this.props.page,
-      type: this.props.view,
-      filter: this.props.filter,
-      //sorting: this.props.sorting,
-    });
+    // this.props.fetchTickets({
+    //   limit: 50,
+    //   page: this.props.page,
+    //   type: this.props.view,
+    //   filter: this.props.filter,
+    //   //sorting: this.props.sorting,
+    // });
+    this.props.fetchTSortings();
   }
 
   render() {
@@ -401,7 +403,8 @@ class TicketsContainer extends React.Component {
                     e.preventDefault();
                     this.props
                       .unloadTickets()
-                      .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }));
+                      // .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }));
+                      .then(this.props.fetchTSortings());
                   }}
                 />
                 <PageTitleButton
