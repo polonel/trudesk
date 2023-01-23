@@ -17,13 +17,14 @@ import PropTypes, { object } from 'prop-types';
 import { observer } from 'mobx-react';
 import { observable, makeObservable } from 'mobx';
 import { connect } from 'react-redux';
-@observer
+
 class TableHeader extends React.Component {
-  @observable sortingDirection = '';
-  @observable activeTableHandler = '';
   constructor(props) {
     super(props);
-
+    this.state = {
+      sortingDirection: '',
+      activeTableHandler: '',
+    };
     makeObservable(this);
     this.onTSortingUpdated = this.onTSortingUpdated.bind(this);
     this.onTSortingsFetch = this.onTSortingsFetch.bind(this);
@@ -42,17 +43,23 @@ class TableHeader extends React.Component {
     const userId = this.props.sessionUser._id;
     const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
     if (tSorting.sorting) {
-      this.activeTableHandler = tSorting.sorting;
-      this.sortingDirection = tSorting.direction;
+      this.setState({
+        activeTableHandler: tSorting.sorting,
+        sortingDirection: tSorting.direction,
+      });
     }
   };
 
   onTSortingUpdated = (data) => {
     if (this.props.text == this.activeTableHandler) {
-      this.sortingDirection = data.tSorting.direction;
+      this.setState({
+        sortingDirection: data.tSorting.direction,
+      });
     } else {
-      this.activeTableHandler = this.props.text;
-      this.sortingDirection = 'none';
+      this.setState({
+        activeTableHandler: this.props.text,
+        sortingDirection: 'none',
+      });
     }
   };
 
@@ -82,13 +89,13 @@ class TableHeader extends React.Component {
       >
         {component}
         {text}
-        {this.activeTableHandler == text && this.sortingDirection == 'topDown' && (
+        {this.state.activeTableHandler == text && this.state.sortingDirection == 'topDown' && (
           <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
             keyboard_arrow_down
           </span>
         )}
 
-        {this.activeTableHandler == text && this.sortingDirection == 'bottomUp' && (
+        {this.state.activeTableHandler == text && this.state.sortingDirection == 'bottomUp' && (
           <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
             keyboard_arrow_up
           </span>
