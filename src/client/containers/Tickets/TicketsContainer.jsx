@@ -262,7 +262,7 @@ class TicketsContainer extends React.Component {
         direction: tSorting.direction,
       });
     } else {
-      this.onTSortingsFetch(data);
+      this.props.fetchTSortings();
     }
   };
 

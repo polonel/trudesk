@@ -50,8 +50,6 @@ class TableHeader extends React.Component {
           sortingDirection: tSorting.direction,
         });
       }
-    } else {
-      onTSortingsFetch(data);
     }
   };
 
@@ -66,7 +64,7 @@ class TableHeader extends React.Component {
         sortingDirection: 'none',
       });
       if (data.tSorting.sorting == this.state.activeTableHandler) {
-        this.setState({ sortingDirection: data.tSorting.direction });
+        this.setState({ sortingDirection: 'topDown' });
       }
     }
   };
