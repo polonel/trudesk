@@ -60,9 +60,6 @@ class TableHeader extends React.Component {
         activeTableHandler: data.tSorting.sorting,
         sortingDirection: 'none',
       });
-      console.log('this.state.sortingDirection: ' + this.state.sortingDirection);
-      console.log('data.tSorting.sorting: ' + data.tSorting.sorting);
-      console.log('this.state.activeTableHandler: ' + this.state.activeTableHandler);
       if (data.tSorting.sorting == this.state.activeTableHandler) {
         this.setState({ sortingDirection: data.tSorting.direction });
       }
@@ -76,7 +73,6 @@ class TableHeader extends React.Component {
   render() {
     const { sortData, width, height, padding, textAlign, text, component } = this.props;
     const textCheck = () => {
-      console.log('Проверка запущена text ==' + text);
       if (text == '#') return 'uid';
       else return text;
     };
