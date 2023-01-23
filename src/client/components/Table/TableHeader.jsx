@@ -75,6 +75,7 @@ class TableHeader extends React.Component {
 
   render() {
     const { sortData, width, height, padding, textAlign, text, component } = this.props;
+    if (text == '#') text = 'uid';
 
     return (
       <th
@@ -95,19 +96,17 @@ class TableHeader extends React.Component {
       >
         {component}
         {text}
-        {this.state.activeTableHandler == text ||
-          (this.state.activeTableHandler == 'uid' && this.state.sortingDirection == 'topDown' && (
-            <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
-              keyboard_arrow_down
-            </span>
-          ))}
+        {this.state.activeTableHandler == text && this.state.sortingDirection == 'topDown' && (
+          <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+            keyboard_arrow_down
+          </span>
+        )}
 
-        {this.state.activeTableHandler == text ||
-          (this.state.activeTableHandler == 'uid' && this.state.sortingDirection == 'bottomUp' && (
-            <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
-              keyboard_arrow_up
-            </span>
-          ))}
+        {this.state.activeTableHandler == text && this.state.sortingDirection == 'bottomUp' && (
+          <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+            keyboard_arrow_up
+          </span>
+        )}
       </th>
     );
   }
