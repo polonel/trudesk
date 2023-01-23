@@ -249,6 +249,8 @@ class TicketsContainer extends React.Component {
   }
 
   onTSortingsFetch = (data) => {
+    console.log('this.props.sessionUser');
+    console.log(this.props.sessionUser);
     if (this.props.sessionUser) {
       const userId = this.props.sessionUser._id;
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);

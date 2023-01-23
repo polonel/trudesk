@@ -111,9 +111,12 @@ class StatusSelectorList extends React.Component {
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
           <ul>
-            <li className="ticket-status ticket-new" onClick={() => this.changeStatus(0)}>
-              <span>New</span>
-            </li>
+            {statusToName(this.status) !== 'New' && (
+              <li className="ticket-status ticket-new" onClick={() => this.changeStatus(0)}>
+                <span>New</span>
+              </li>
+            )}
+
             <li className="ticket-status ticket-open" onClick={() => this.changeStatus(1)}>
               <span>Open</span>
             </li>
