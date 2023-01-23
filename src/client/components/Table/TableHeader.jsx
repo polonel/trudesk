@@ -66,6 +66,10 @@ class TableHeader extends React.Component {
           sortingDirection: 'none',
         },
         () => {
+          console.log('this.state.sortingDirection');
+          console.log(this.state.sortingDirection);
+          console.log('data.tSorting.sorting');
+          console.log(data.tSorting.sorting);
           if (data.tSorting.sorting == this.state.activeTableHandler) {
             this.setState({ sortingDirection: data.tSorting.direction });
           }
