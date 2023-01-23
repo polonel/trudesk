@@ -55,17 +55,20 @@ class TableHeader extends React.Component {
     console.log(this.state.activeTableHandler);
     console.log('this.props.text');
     console.log(this.props.text);
-    if (this.props.text == this.state.activeTableHandler) {
+    if (data.tSorting.sorting == this.state.activeTableHandler) {
       this.setState({
         sortingDirection: data.tSorting.direction,
       });
     } else {
       this.setState(
         {
-          activeTableHandler: this.props.text,
+          activeTableHandler: data.tSorting.sorting,
           sortingDirection: 'none',
         },
         () => {
+          if (data.tSorting.sorting == this.state.activeTableHandler) {
+            this.setState({ sortingDirection: data.tSorting.direction });
+          }
           console.log('this.state.sortingDirection');
           console.log(this.state.sortingDirection);
         }
