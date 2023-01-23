@@ -62,10 +62,15 @@ apiTSortings.put = function (req, res) {
             });
           } else {
             let direction = '';
-            if (tSorting.direction == 'topDown') {
-              direction = 'bottomUp';
-            } else if (tSorting.direction == 'bottomUp' || tSorting.direction == '' || !tSorting.direction) {
+            if (
+              tSorting.direction == 'bottomUp' ||
+              tSorting.direction == '' ||
+              !tSorting.direction ||
+              data.sorting !== String(tSorting.sorting)
+            ) {
               direction = 'topDown';
+            } else if (String(tSorting.direction) == 'topDown') {
+              direction = 'bottomUp';
             }
 
             tSortingSchema.updateMany(
