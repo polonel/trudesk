@@ -94,7 +94,7 @@ class StatusSelectorList extends React.Component {
 
   render() {
     return (
-      <div className="floating-ticket-status">
+      <div className="floating-ticket-status" style={{ height: 94 }}>
         <div
           title="Change Status"
           className={clsx(

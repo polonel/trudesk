@@ -12,12 +12,46 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes, { object } from 'prop-types';
 
 class TableHeader extends React.Component {
-  render () {
-    const { sortData, width, height, padding, textAlign, text, component } = this.props
+  sortingDirection = '';
+  activeTableHandler = '';
+  constructor(props) {
+    super(props);
+
+    makeObservable(this);
+
+    this.onTSortingsFetch = this.onTSortingsFetch.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.socket.on('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
+    this.props.socket.on('$trudesk:client:tsorting:update', this.onTSortingUpdated);
+  }
+
+  onTSortingsFetch = (data) => {
+    const userId = this.props.sessionUser._id;
+    const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
+    if (tSorting.sorting) {
+      this.activeTableHandler = tSorting.sorting;
+      this.sortingDirection = tSorting.direction;
+    }
+  };
+
+  onTSortingUpdated = (data) => {
+    if (this.props.text == activeTableHandler) {
+      this.sortingDirection = data.tSorting.direction;
+    }
+  };
+
+  clickTableHandler(text) {
+    activeTableHandler = text;
+  }
+
+  render() {
+    const { sortData, width, height, padding, textAlign, text, component } = this.props;
 
     return (
       <th
@@ -29,14 +63,28 @@ class TableHeader extends React.Component {
           fontSize: 12,
           textTransform: 'uppercase',
           textAlign: textAlign,
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
-        onClick = {()=>{sortData(text)}}
+        onClick={() => {
+          sortData(text);
+          this.clickTableHandler(text);
+        }}
       >
         {component}
         {text}
+        {this.activeTableHandler == text && this.sortingDirection == 'topDown' && (
+          <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+            keyboard_arrow_down
+          </span>
+        )}
+
+        {this.activeTableHandler == text && this.sortingDirection == 'bottomUp' && (
+          <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+            keyboard_arrow_up
+          </span>
+        )}
       </th>
-    )
+    );
   }
 }
 
@@ -46,11 +94,11 @@ TableHeader.propTypes = {
   padding: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   textAlign: PropTypes.string,
   text: PropTypes.string,
-  component: PropTypes.oneOfType([PropTypes.element, PropTypes.func])
-}
+  component: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+};
 
 TableHeader.defaultProps = {
-  textAlign: 'left'
-}
+  textAlign: 'left',
+};
 
-export default TableHeader
+export default TableHeader;

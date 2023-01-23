@@ -228,16 +228,16 @@ class TicketsContainer extends React.Component {
     };
 
     this.props.tSortingUpdated(data);
-    this.props.fetchTickets({
-      limit: 50,
-      page: this.props.page,
-      type: this.props.view,
-      filter: this.props.filter,
-      sorting: field.toLowerCase(),
-    });
+    // this.props.fetchTickets({
+    //   limit: 50,
+    //   page: this.props.page,
+    //   type: this.props.view,
+    //   filter: this.props.filter,
+    //   sorting: field.toLowerCase(),
+    // });
   };
 
-  onTSortingUpdated(data) {
+  onTSortingUpdated = (data) => {
     this.props.fetchTickets({
       limit: 50,
       page: this.props.page,
@@ -246,21 +246,12 @@ class TicketsContainer extends React.Component {
       sorting: data.tSorting.sorting.toLowerCase(),
       direction: data.tSorting.direction,
     });
-  }
+  };
 
   onTSortingsFetch = (data) => {
-    console.log('this.props.sessionUser');
-    console.log(this.props.sessionUser);
     if (this.props.sessionUser) {
       const userId = this.props.sessionUser._id;
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
-      // if (tSorting.direction == 'none') {
-      //   tSorting.direction = 'bottomUp';
-      // } else if (tSorting.direction == 'topDown') {
-      //   tSorting.direction = 'none';
-      // } else if (tSorting.direction == 'bottomUp') {
-      //   tSorting.direction = 'topDown';
-      // }
       this.props.fetchTickets({
         limit: 50,
         page: this.props.page,

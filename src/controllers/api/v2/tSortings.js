@@ -64,9 +64,7 @@ apiTSortings.put = function (req, res) {
             let direction = '';
             if (tSorting.direction == 'topDown') {
               direction = 'bottomUp';
-            } else if (tSorting.direction == 'bottomUp') {
-              direction = 'none';
-            } else {
+            } else if (tSorting.direction == 'bottomUp' || tSorting.direction == '' || !tSorting.direction) {
               direction = 'topDown';
             }
 

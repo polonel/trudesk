@@ -111,12 +111,7 @@ ticketsV2.get = async (req, res) => {
             tickets.sort((ticket1, ticket2) => {
               return ticket1.owner?.fullname < ticket2.owner?.fullname ? 1 : -1;
             });
-          } else {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid < ticket2.uid ? 1 : -1;
-            });
           }
-
           break;
         case 'customer':
           if (direction == 'topDown') {
@@ -126,10 +121,6 @@ ticketsV2.get = async (req, res) => {
           } else if (direction == 'bottomUp') {
             tickets.sort((ticket1, ticket2) => {
               return ticket1.group.name < ticket2.group.name ? 1 : -1;
-            });
-          } else {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid < ticket2.uid ? 1 : -1;
             });
           }
           break;
@@ -142,9 +133,16 @@ ticketsV2.get = async (req, res) => {
             tickets.sort((ticket1, ticket2) => {
               return ticket1?.assignee?.fullname < ticket2?.assignee?.fullname ? 1 : -1;
             });
-          } else {
+          }
+          break;
+        case 'created':
+          if (direction == 'topDown') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid < ticket2.uid ? 1 : -1;
+              return ticket1?.date > ticket2?.date ? 1 : -1;
+            });
+          } else if (direction == 'bottomUp') {
+            tickets.sort((ticket1, ticket2) => {
+              return ticket1?.date < ticket2?.date ? 1 : -1;
             });
           }
           break;
@@ -157,12 +155,7 @@ ticketsV2.get = async (req, res) => {
             tickets.sort((ticket1, ticket2) => {
               return ticket1[sorting] < ticket2[sorting] ? 1 : -1;
             });
-          } else {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.uid < ticket2.uid ? 1 : -1;
-            });
           }
-
           break;
       }
     }
