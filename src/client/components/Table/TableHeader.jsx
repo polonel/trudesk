@@ -24,7 +24,7 @@ class TableHeader extends React.Component {
     super(props);
 
     makeObservable(this);
-
+    this.onTSortingUpdated = this.onTSortingUpdated.bind(this);
     this.onTSortingsFetch = this.onTSortingsFetch.bind(this);
   }
 
@@ -33,6 +33,10 @@ class TableHeader extends React.Component {
     this.props.socket.on('$trudesk:client:tsorting:update', this.onTSortingUpdated);
   }
 
+  componentWillUnmount() {
+    this.props.socket.off('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
+    this.props.socket.off('$trudesk:client:tsorting:update', this.onTSortingUpdated);
+  }
   onTSortingsFetch = (data) => {
     const userId = this.props.sessionUser._id;
     const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
@@ -48,9 +52,9 @@ class TableHeader extends React.Component {
     }
   };
 
-  clickTableHandler(text) {
-    activeTableHandler = text;
-  }
+  // clickTableHandler(text) {
+  //   activeTableHandler = text;
+  // }
 
   render() {
     const { sortData, width, height, padding, textAlign, text, component } = this.props;
@@ -69,7 +73,7 @@ class TableHeader extends React.Component {
         }}
         onClick={() => {
           sortData(text);
-          this.clickTableHandler(text);
+          //this.clickTableHandler(text);
         }}
       >
         {component}
@@ -103,4 +107,8 @@ TableHeader.defaultProps = {
   textAlign: 'left',
 };
 
-export default TableHeader;
+const mapStateToProps = (state) => ({
+  socket: state.shared.socket,
+});
+
+export default connect(mapStateToProps)(TicketsContainer);
