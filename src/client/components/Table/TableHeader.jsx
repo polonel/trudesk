@@ -39,14 +39,19 @@ class TableHeader extends React.Component {
     this.props.socket.off('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
     this.props.socket.off('$trudesk:client:tsorting:update', this.onTSortingUpdated);
   }
+
   onTSortingsFetch = (data) => {
-    const userId = this.props.sessionUser._id;
-    const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
-    if (tSorting.sorting) {
-      this.setState({
-        activeTableHandler: tSorting.sorting,
-        sortingDirection: tSorting.direction,
-      });
+    if (this.props.sessionUser) {
+      const userId = this.props.sessionUser._id;
+      const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
+      if (tSorting.sorting) {
+        this.setState({
+          activeTableHandler: tSorting.sorting,
+          sortingDirection: tSorting.direction,
+        });
+      }
+    } else {
+      onTSortingsFetch(data);
     }
   };
 
