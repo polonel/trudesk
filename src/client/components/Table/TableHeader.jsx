@@ -74,8 +74,11 @@ class TableHeader extends React.Component {
   // }
 
   render() {
-    let { sortData, width, height, padding, textAlign, text, component } = this.props;
-
+    const { sortData, width, height, padding, textAlign, text, component } = this.props;
+    const textCheck = () => {
+      if (text == '#') return 'uid';
+      else return text;
+    };
     return (
       <th
         style={{
@@ -95,17 +98,14 @@ class TableHeader extends React.Component {
       >
         {component}
         {text}
-        {() => {
-          console.log('Сработала проверка text');
-          if (text == '#') text == 'uid';
-        }}
-        {this.state.activeTableHandler == text && this.state.sortingDirection == 'topDown' && (
+
+        {this.state.activeTableHandler == textCheck && this.state.sortingDirection == 'topDown' && (
           <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
             keyboard_arrow_down
           </span>
         )}
 
-        {this.state.activeTableHandler == text && this.state.sortingDirection == 'bottomUp' && (
+        {this.state.activeTableHandler == textCheck && this.state.sortingDirection == 'bottomUp' && (
           <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
             keyboard_arrow_up
           </span>
