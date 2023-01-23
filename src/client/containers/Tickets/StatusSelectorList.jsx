@@ -112,20 +112,25 @@ class StatusSelectorList extends React.Component {
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
           <ul>
             {statusToName(this.status) !== 'New' && (
-              <li className="ticket-status ticket-new" onClick={() => this.changeStatus(0)}>
+              <li className={`ticket-status ticket-new`} onClick={() => this.changeStatus(0)}>
                 <span>New</span>
               </li>
             )}
-
-            <li className="ticket-status ticket-open" onClick={() => this.changeStatus(1)}>
-              <span>Open</span>
-            </li>
-            <li className="ticket-status ticket-pending" onClick={() => this.changeStatus(2)}>
-              <span>Pending</span>
-            </li>
-            <li className="ticket-status ticket-closed" onClick={() => this.changeStatus(3)}>
-              <span>Closed</span>
-            </li>
+            {statusToName(this.status) !== 'Open' && (
+              <li className="ticket-status ticket-open" onClick={() => this.changeStatus(1)}>
+                <span>Open</span>
+              </li>
+            )}
+            {statusToName(this.status) !== 'Pending' && (
+              <li className="ticket-status ticket-pending" onClick={() => this.changeStatus(2)}>
+                <span>Pending</span>
+              </li>
+            )}
+            {statusToName(this.status) !== 'Closed' && (
+              <li className="ticket-status ticket-closed" onClick={() => this.changeStatus(3)}>
+                <span>Closed</span>
+              </li>
+            )}
           </ul>
         </div>
       </div>
