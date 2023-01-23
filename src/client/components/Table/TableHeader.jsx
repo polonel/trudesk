@@ -14,10 +14,12 @@
 
 import React from 'react';
 import PropTypes, { object } from 'prop-types';
-
+import { observer } from 'mobx-react';
+import { observable, makeObservable } from 'mobx';
+@observer
 class TableHeader extends React.Component {
-  sortingDirection = '';
-  activeTableHandler = '';
+  @observable sortingDirection = '';
+  @observable activeTableHandler = '';
   constructor(props) {
     super(props);
 
