@@ -16,6 +16,7 @@ import React from 'react';
 import PropTypes, { object } from 'prop-types';
 import { observer } from 'mobx-react';
 import { observable, makeObservable } from 'mobx';
+import { connect } from 'react-redux';
 @observer
 class TableHeader extends React.Component {
   @observable sortingDirection = '';
@@ -47,8 +48,11 @@ class TableHeader extends React.Component {
   };
 
   onTSortingUpdated = (data) => {
-    if (this.props.text == activeTableHandler) {
+    if (this.props.text == this.activeTableHandler) {
       this.sortingDirection = data.tSorting.direction;
+    } else {
+      this.activeTableHandler = this.props.text;
+      this.sortingDirection = 'none';
     }
   };
 
@@ -109,6 +113,7 @@ TableHeader.defaultProps = {
 
 const mapStateToProps = (state) => ({
   socket: state.shared.socket,
+  sessionUser: state.shared.sessionUser,
 });
 
-export default connect(mapStateToProps)(TicketsContainer);
+export default connect(mapStateToProps)(TableHeader);
