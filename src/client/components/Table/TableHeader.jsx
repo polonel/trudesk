@@ -51,32 +51,21 @@ class TableHeader extends React.Component {
   };
 
   onTSortingUpdated = (data) => {
-    console.log('this.state.activeTableHandler');
-    console.log(this.state.activeTableHandler);
-    console.log('this.props.text');
-    console.log(this.props.text);
     if (data.tSorting.sorting == this.state.activeTableHandler) {
       this.setState({
         sortingDirection: data.tSorting.direction,
       });
     } else {
-      this.setState(
-        {
-          activeTableHandler: data.tSorting.sorting,
-          sortingDirection: 'none',
-        },
-        () => {
-          console.log('this.state.sortingDirection');
-          console.log(this.state.sortingDirection);
-          console.log('data.tSorting.sorting');
-          console.log(data.tSorting.sorting);
-          if (data.tSorting.sorting == this.state.activeTableHandler) {
-            this.setState({ sortingDirection: data.tSorting.direction });
-          }
-          console.log('this.state.sortingDirection');
-          console.log(this.state.sortingDirection);
-        }
-      );
+      this.setState({
+        activeTableHandler: data.tSorting.sorting,
+        sortingDirection: 'none',
+      });
+      console.log('this.state.sortingDirection: ' + this.state.sortingDirection);
+      console.log('data.tSorting.sorting: ' + data.tSorting.sorting);
+      console.log('this.state.activeTableHandler: ' + this.state.activeTableHandler);
+      if (data.tSorting.sorting == this.state.activeTableHandler) {
+        this.setState({ sortingDirection: data.tSorting.direction });
+      }
     }
   };
 
@@ -106,17 +95,19 @@ class TableHeader extends React.Component {
       >
         {component}
         {text}
-        {this.state.activeTableHandler == text && this.state.sortingDirection == 'topDown' && (
-          <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
-            keyboard_arrow_down
-          </span>
-        )}
+        {this.state.activeTableHandler == text ||
+          (this.state.activeTableHandler == 'uid' && this.state.sortingDirection == 'topDown' && (
+            <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+              keyboard_arrow_down
+            </span>
+          ))}
 
-        {this.state.activeTableHandler == text && this.state.sortingDirection == 'bottomUp' && (
-          <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
-            keyboard_arrow_up
-          </span>
-        )}
+        {this.state.activeTableHandler == text ||
+          (this.state.activeTableHandler == 'uid' && this.state.sortingDirection == 'bottomUp' && (
+            <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+              keyboard_arrow_up
+            </span>
+          ))}
       </th>
     );
   }
