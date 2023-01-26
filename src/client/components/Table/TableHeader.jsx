@@ -44,7 +44,9 @@ class TableHeader extends React.Component {
     if (this.props.sessionUser) {
       const userId = this.props.sessionUser._id;
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
-      if (tSorting && tSorting?.sorting) {
+
+      if (tSorting) {
+        console.log('Проверка пройдена');
         this.setState({
           activeTableHandler: tSorting.sorting,
           sortingDirection: tSorting.direction,

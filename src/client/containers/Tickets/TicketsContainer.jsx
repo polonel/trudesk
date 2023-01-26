@@ -254,14 +254,16 @@ class TicketsContainer extends React.Component {
       console.log('sessionUser присутствует');
       const userId = this.props.sessionUser._id;
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
-      this.props.fetchTickets({
-        limit: 50,
-        page: this.props.page,
-        type: this.props.view,
-        filter: this.props.filter,
-        sorting: tSorting.sorting.toLowerCase(),
-        direction: tSorting.direction,
-      });
+      if (tSorting) {
+        this.props.fetchTickets({
+          limit: 50,
+          page: this.props.page,
+          type: this.props.view,
+          filter: this.props.filter,
+          sorting: tSorting.sorting.toLowerCase(),
+          direction: tSorting.direction,
+        });
+      }
     } else {
       this.props.fetchTSortings();
     }
