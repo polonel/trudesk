@@ -108,55 +108,55 @@ ticketsV2.get = async (req, res) => {
         case 'requester':
           if (direction == 'topDown') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.owner?.fullname > ticket2.owner?.fullname ? 1 : -1;
+              return ticket1.owner?.fullname < ticket2.owner?.fullname ? 1 : -1;
             });
           } else if (direction == 'bottomUp') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.owner?.fullname < ticket2.owner?.fullname ? 1 : -1;
+              return ticket1.owner?.fullname > ticket2.owner?.fullname ? 1 : -1;
             });
           }
           break;
         case 'customer':
           if (direction == 'topDown') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.group.name > ticket2.group.name ? 1 : -1;
+              return ticket1.group.name < ticket2.group.name ? 1 : -1;
             });
           } else if (direction == 'bottomUp') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1.group.name < ticket2.group.name ? 1 : -1;
+              return ticket1.group.name > ticket2.group.name ? 1 : -1;
             });
           }
           break;
         case 'assignee':
           if (direction == 'topDown') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
+              return ticket1?.assignee?.fullname < ticket2?.assignee?.fullname ? 1 : -1;
             });
           } else if (direction == 'bottomUp') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1?.assignee?.fullname < ticket2?.assignee?.fullname ? 1 : -1;
+              return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
             });
           }
           break;
         case 'created':
           if (direction == 'topDown') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1?.date > ticket2?.date ? 1 : -1;
+              return ticket1?.date < ticket2?.date ? 1 : -1;
             });
           } else if (direction == 'bottomUp') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1?.date < ticket2?.date ? 1 : -1;
+              return ticket1?.date > ticket2?.date ? 1 : -1;
             });
           }
           break;
         default:
           if (direction == 'topDown') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1[sorting] > ticket2[sorting] ? 1 : -1;
+              return ticket1[sorting] < ticket2[sorting] ? 1 : -1;
             });
           } else if (direction == 'bottomUp') {
             tickets.sort((ticket1, ticket2) => {
-              return ticket1[sorting] < ticket2[sorting] ? 1 : -1;
+              return ticket1[sorting] > ticket2[sorting] ? 1 : -1;
             });
           }
           break;
