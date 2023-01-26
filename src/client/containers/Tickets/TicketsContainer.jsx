@@ -263,9 +263,21 @@ class TicketsContainer extends React.Component {
           sorting: tSorting.sorting.toLowerCase(),
           direction: tSorting.direction,
         });
+      } else {
+        this.props.fetchTSortings({
+          limit: 50,
+          page: this.props.page,
+          type: this.props.view,
+          filter: this.props.filter,
+        });
       }
     } else {
-      this.props.fetchTSortings();
+      this.props.fetchTSortings({
+        limit: 50,
+        page: this.props.page,
+        type: this.props.view,
+        filter: this.props.filter,
+      });
     }
   };
 
