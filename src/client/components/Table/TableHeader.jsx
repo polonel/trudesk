@@ -43,6 +43,9 @@ class TableHeader extends React.Component {
   onTSortingsFetch = (data) => {
     if (this.props.sessionUser) {
       const userId = this.props.sessionUser._id;
+
+      console.log('tSorting');
+      console.log(tSorting);
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
       if (tSorting.sorting) {
         this.setState({

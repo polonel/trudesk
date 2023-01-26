@@ -141,9 +141,7 @@
 {{#block "js-plugins"}}
 
 {{/block}}
-<script type="text/javascript">
-
-        
+<script type="text/javascript">  
         
     window.addEventListener("message", function (event) {
             const eventData = JSON.parse(event.data);
@@ -158,11 +156,14 @@
             let customAttributes =  eventData.data.conversation.custom_attributes.trudesk;
             let url = window.location.href;
             url = url.match(/https:\/\/.*\//)[0].slice(0, -1);
+            console.log(window.location);
             if (window.location == `${url}/dashboard`){
                 if(customAttributes){
+                 console.log('customAttributes');
                     customAttributes = customAttributes.replace('#','');
                     window.location = `${url}/tickets/${customAttributes}` 
                 }else{
+                    console.log('changeMappingOrCreate');
                     window.location = `${url}/changeMappingOrCreate?username=${username}&phone=${phone}&email=${email}&contactID=${contactID}&accountID=${accountID}&customAttributes=${customAttributes}&conversationID=${conversationID}&contactName=${contactName}` 
                 }
                 }

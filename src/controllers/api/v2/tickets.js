@@ -96,68 +96,74 @@ ticketsV2.get = async (req, res) => {
     // if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
     if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id;
 
-    const tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject);
-    const totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject);
     //const tSorting = await Models.TSorting.findOne();
-
+    let tickets;
+    let totalCount;
     if (sorting && sorting !== 'undefined' && sorting !== 'false') {
-      switch (sorting) {
-        case 'requester':
-          if (direction == 'topDown') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.owner?.fullname > ticket2.owner?.fullname ? 1 : -1;
-            });
-          } else if (direction == 'bottomUp') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.owner?.fullname < ticket2.owner?.fullname ? 1 : -1;
-            });
-          }
-          break;
-        case 'customer':
-          if (direction == 'topDown') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.group.name > ticket2.group.name ? 1 : -1;
-            });
-          } else if (direction == 'bottomUp') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1.group.name < ticket2.group.name ? 1 : -1;
-            });
-          }
-          break;
-        case 'assignee':
-          if (direction == 'topDown') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
-            });
-          } else if (direction == 'bottomUp') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1?.assignee?.fullname < ticket2?.assignee?.fullname ? 1 : -1;
-            });
-          }
-          break;
-        case 'created':
-          if (direction == 'topDown') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1?.date > ticket2?.date ? 1 : -1;
-            });
-          } else if (direction == 'bottomUp') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1?.date < ticket2?.date ? 1 : -1;
-            });
-          }
-          break;
-        default:
-          if (direction == 'topDown') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1[sorting] > ticket2[sorting] ? 1 : -1;
-            });
-          } else if (direction == 'bottomUp') {
-            tickets.sort((ticket1, ticket2) => {
-              return ticket1[sorting] < ticket2[sorting] ? 1 : -1;
-            });
-          }
-          break;
-      }
+      queryObject.sorting = sorting;
+      queryObject.direction = direction;
+      tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject);
+      totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject);
+      // switch (sorting) {
+      //   case 'requester':
+      //     if (direction == 'topDown') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1.owner?.fullname > ticket2.owner?.fullname ? 1 : -1;
+      //       });
+      //     } else if (direction == 'bottomUp') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1.owner?.fullname < ticket2.owner?.fullname ? 1 : -1;
+      //       });
+      //     }
+      //     break;
+      //   case 'customer':
+      //     if (direction == 'topDown') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1.group.name > ticket2.group.name ? 1 : -1;
+      //       });
+      //     } else if (direction == 'bottomUp') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1.group.name < ticket2.group.name ? 1 : -1;
+      //       });
+      //     }
+      //     break;
+      //   case 'assignee':
+      //     if (direction == 'topDown') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1?.assignee?.fullname > ticket2?.assignee?.fullname ? 1 : -1;
+      //       });
+      //     } else if (direction == 'bottomUp') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1?.assignee?.fullname < ticket2?.assignee?.fullname ? 1 : -1;
+      //       });
+      //     }
+      //     break;
+      //   case 'created':
+      //     if (direction == 'topDown') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1?.date > ticket2?.date ? 1 : -1;
+      //       });
+      //     } else if (direction == 'bottomUp') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1?.date < ticket2?.date ? 1 : -1;
+      //       });
+      //     }
+      //     break;
+      //   default:
+      //     if (direction == 'topDown') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1[sorting] > ticket2[sorting] ? 1 : -1;
+      //       });
+      //     } else if (direction == 'bottomUp') {
+      //       tickets.sort((ticket1, ticket2) => {
+      //         return ticket1[sorting] < ticket2[sorting] ? 1 : -1;
+      //       });
+      //     }
+      //     break;
+      // }
+    } else {
+      tickets = await Models.Ticket.getTicketsWithObject(mappedGroups, queryObject);
+      totalCount = await Models.Ticket.getCountWithObject(mappedGroups, queryObject);
     }
 
     return apiUtils.sendApiSuccess(res, {
