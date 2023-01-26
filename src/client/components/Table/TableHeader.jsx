@@ -101,13 +101,13 @@ class TableHeader extends React.Component {
         {component}
         {text}
 
-        {this.state.activeTableHandler == textCheck() && this.state.sortingDirection == 'topDown' && (
+        {this.state.activeTableHandler == textCheck() && this.state.sortingDirection == 'bottomUp' && (
           <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
             keyboard_arrow_up
           </span>
         )}
 
-        {this.state.activeTableHandler == textCheck() && this.state.sortingDirection == 'bottomUp' && (
+        {this.state.activeTableHandler == textCheck() && this.state.sortingDirection == 'topDown' && (
           <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
             keyboard_arrow_down
           </span>

@@ -53,7 +53,8 @@ apiTSortings.put = function (req, res) {
               sorting: data.sorting,
               direction: 'topDown',
             };
-            tSortingSchema.create(tSorting, (err) => {
+            tSortingSchema.create(tSorting, (err, tSorting) => {
+              const stringSorting = String(tSorting.sorting);
               if (err) throw err;
               tSortingSchema.findOne({ userId: data.userId }, (err, tSorting) => {
                 emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });

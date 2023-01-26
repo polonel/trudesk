@@ -251,7 +251,6 @@ class TicketsContainer extends React.Component {
 
   onTSortingsFetch = (data) => {
     if (this.props.sessionUser) {
-      console.log('sessionUser присутствует');
       const userId = this.props.sessionUser._id;
       const tSorting = data.tSortings.find((tSorting) => tSorting.userId == userId);
       if (tSorting) {
@@ -264,7 +263,7 @@ class TicketsContainer extends React.Component {
           direction: tSorting.direction,
         });
       } else {
-        this.props.fetchTSortings({
+        this.props.fetchTickets({
           limit: 50,
           page: this.props.page,
           type: this.props.view,
