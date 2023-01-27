@@ -923,25 +923,117 @@ function buildQueryWithObject(SELF, grpId, object, count) {
     //   const sortingObject = sortingObjects[object.sorting];
     //   // if (object.sorting == 'requester' || object.sorting == 'cusomer') {
     //   // }
+    let $match = {};
+    let $or = [];
+    // Filter Query
+    if (object.filter) {
+      // Filter on UID
+      if (object.filter.uid) {
+        object.filter.uid = parseInt(object.filter.uid);
+        if (!_.isNaN(object.filter.uid)) $or.push({ uid: object.filter.uid }); //query.or([{ uid: object.filter.uid }]);
+      }
 
-    //   // query = SELF.model(COLLECTION)
-    //   //   .aggregate([
-    //   //     {
-    //   //       $match: { group: { $in: grpId } },
-    //   //     },
-    //   //     {
-    //   //       $lookup: {
-    //   //         from: 'accounts',
-    //   //         localField: 'owner',
-    //   //         foreignField: '_id',
-    //   //         as: 'ownerData',
-    //   //       },
-    //   //     },
-    //   //     {
-    //   //       $unwind: '$ownerData',
-    //   //     },
-    //   //   ])
-    //   //   .sort({ 'ownerData.fullname': 1 });
+      // Priority Filter
+      if (object.filter.priority) $match.priority = { $in: object.filter.priority }; //query.where({ priority: { $in: object.filter.priority } });
+
+      // Ticket Type Filter
+      if (object.filter.types) $match.type.$in = object.filter.type; //query.where({ type: { $in: object.filter.types } });
+
+      // Tags Filter
+      if (object.filter.tags) $match.tags.$in = object.filter.tags; //query.where({ tags: { $in: object.filter.tags } });
+
+      // Assignee Filter
+      if (object.filter.assignee) $match.assignee.$in = object.filter.assignee; //query.where({ assignee: { $in: object.filter.assignee } });
+
+      // Unassigned Filter
+      if (object.filter.unassigned) $match.assignee.$exists = false; //query.where({ assignee: { $exists: false } });
+
+      // Owner Filter
+      if (object.filter.owner) $match.owner.$in = object.filter.owner; //query.where({ owner: { $in: object.filter.owner } });
+
+      // Subject Filter
+      if (object.filter.subject) $or.push({ subject: new RegExp(object.filter.subject, 'i') }); //query.or([{ subject: new RegExp(object.filter.subject, 'i') }]);
+
+      // Issue Filter
+      if (object.filter.issue) $or.push({ issue: new RegExp(object.filter.issue, 'i') }); //query.or([{ issue: new RegExp(object.filter.issue, 'i') }]);
+
+      // Date Filter
+      if (object.filter.date) {
+        let startDate = new Date(2000, 0, 1, 0, 0, 1);
+        let endDate = new Date();
+        if (object.filter.date.start) startDate = new Date(object.filter.date.start);
+        if (object.filter.date.end) endDate = new Date(object.filter.date.end);
+
+        $match.date = { $gte: startDate, $lte: endDate }; //query.where({ date: { $gte: startDate, $lte: endDate } });
+      }
+    }
+    $match.group = { $in: grpId };
+
+    if (object.owner) $match.owner = object.owner; //query.where('owner', object.owner);
+    if (object.assignedSelf) $match.assignee = object.user; // query.where('assignee', object.user);
+    if (object.unassigned) $match.assignee = { $exists: false }; //query.where({ assignee: { $exists: false } });
+
+    if (_.isArray(_status) && _status.length > 0) {
+      $match.status = { $in: _status }; //query.where({ status: { $in: _status } });
+    }
+
+    const aggregate = [
+      {
+        $match: { group: { $in: grpId } },
+      },
+      { $lookup: { from: 'accounts', localField: 'owner', foreignField: '_id', as: 'owner' } },
+      { $lookup: { from: 'accounts', localField: 'assignee', foreignField: '_id', as: 'assignee' } },
+      { $lookup: { from: 'accounts', localField: 'subscribers', foreignField: '_id', as: 'subscribers' } },
+      { $lookup: { from: 'accounts', localField: 'comments.owner', foreignField: '_id', as: 'comments.owner' } },
+      { $lookup: { from: 'accounts', localField: 'notes.owner', foreignField: '_id', as: 'notes.owner' } },
+      { $lookup: { from: 'accounts', localField: 'history.owner', foreignField: '_id', as: 'history.owner' } },
+      { $lookup: { from: 'tickettypes', localField: 'type', foreignField: '_id', as: 'type' } },
+      { $lookup: { from: 'tags', localField: 'tags', foreignField: '_id', as: 'tags' } },
+      { $lookup: { from: 'groups', localField: 'group', foreignField: '_id', as: 'group' } },
+
+      { $unwind: { path: '$owner', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$assignee', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$subscribers', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$comments.owner', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$notes.owner', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$history.owner', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$type', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$tags', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$group', preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: {
+            owner: '$owner',
+            group: '$group',
+            assignee: '$assignee',
+            subscribers: '$subscribers',
+            comments: '$comments',
+            notes: '$notes',
+            history: '$history',
+            type: '$type',
+            tags: '$tags',
+            deleted: '$deleted',
+            uid: '$uid',
+            attachments: '$attachments',
+            subject: '$subject',
+            status: '$status',
+            priority: '$priority',
+            issue: '$issue',
+            date: '$date',
+          },
+        },
+      },
+      { $sort: { uid: -1 } },
+      { $skip: page * limit },
+      { $limit: limit },
+    ];
+
+    // if (limit !== -1) aggregate.push({ $skip: page * limit }, { $limit: limit }); //query.skip(page * limit).limit(limit);
+
+    query = SELF.model(COLLECTION).aggregate(aggregate);
+
+    // .skip(page * limit)
+    // .limit(limit);
 
     //   const options = { sort: [['owner.fullname', -1]] };
 
@@ -955,71 +1047,29 @@ function buildQueryWithObject(SELF, grpId, object, count) {
     //     .populate('assignee', 'username fullname email role image title')
     //     .populate('type tags group');
     // } else {
-    query = SELF.model(COLLECTION)
-      .find({ group: { $in: grpId }, deleted: false })
-      .populate(
-        'owner assignee subscribers comments.owner notes.owner history.owner',
-        'username fullname email role image title'
-      )
-      .populate('assignee', 'username fullname email role image title')
-      .populate('type tags group')
-      .sort({ uid: -1 });
+
+    // query = SELF.model(COLLECTION)
+    //   .find({ group: { $in: grpId }, deleted: false })
+    //   .populate(
+    //     'owner assignee subscribers comments.owner notes.owner history.owner',
+    //     'username fullname email role image title'
+    //   )
+    //   .populate('assignee', 'username fullname email role image title')
+    //   .populate('type tags group')
+    //   .sort({ 'assignee.fullname': -1 });
     // }
   }
 
   // Query with Limit?
-  if (limit !== -1) query.skip(page * limit).limit(limit);
+  //if (limit !== -1) query.skip(page * limit).limit(limit);
   // Status Query
-  if (_.isArray(_status) && _status.length > 0) {
-    query.where({ status: { $in: _status } });
-  }
+  // if (_.isArray(_status) && _status.length > 0) {
+  //   query.where({ status: { $in: _status } });
+  // }
 
-  // Filter Query
-  if (object.filter) {
-    // Filter on UID
-    if (object.filter.uid) {
-      object.filter.uid = parseInt(object.filter.uid);
-      if (!_.isNaN(object.filter.uid)) query.or([{ uid: object.filter.uid }]);
-    }
-
-    // Priority Filter
-    if (object.filter.priority) query.where({ priority: { $in: object.filter.priority } });
-
-    // Ticket Type Filter
-    if (object.filter.types) query.where({ type: { $in: object.filter.types } });
-
-    // Tags Filter
-    if (object.filter.tags) query.where({ tags: { $in: object.filter.tags } });
-
-    // Assignee Filter
-    if (object.filter.assignee) query.where({ assignee: { $in: object.filter.assignee } });
-
-    // Unassigned Filter
-    if (object.filter.unassigned) query.where({ assignee: { $exists: false } });
-
-    // Owner Filter
-    if (object.filter.owner) query.where({ owner: { $in: object.filter.owner } });
-
-    // Subject Filter
-    if (object.filter.subject) query.or([{ subject: new RegExp(object.filter.subject, 'i') }]);
-
-    // Issue Filter
-    if (object.filter.issue) query.or([{ issue: new RegExp(object.filter.issue, 'i') }]);
-
-    // Date Filter
-    if (object.filter.date) {
-      let startDate = new Date(2000, 0, 1, 0, 0, 1);
-      let endDate = new Date();
-      if (object.filter.date.start) startDate = new Date(object.filter.date.start);
-      if (object.filter.date.end) endDate = new Date(object.filter.date.end);
-
-      query.where({ date: { $gte: startDate, $lte: endDate } });
-    }
-  }
-
-  if (object.owner) query.where('owner', object.owner);
-  if (object.assignedSelf) query.where('assignee', object.user);
-  if (object.unassigned) query.where({ assignee: { $exists: false } });
+  // if (object.owner) query.where('owner', object.owner);
+  // if (object.assignedSelf) query.where('assignee', object.user);
+  // if (object.unassigned) query.where({ assignee: { $exists: false } });
 
   return query;
 }
