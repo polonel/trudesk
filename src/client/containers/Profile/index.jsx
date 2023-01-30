@@ -123,13 +123,16 @@ class ProfileContainer extends React.Component {
 
   onSaveProfileClicked = (e) => {
     e.preventDefault();
-    if ((this.fullname && this.fullname.length) > 50 || (this.email && this.email.length > 50)) {
+    if (
+      (this.fullname && this.fullname.length) > 50 ||
+      (this.props.sessionUser.email && this.props.sessionUser.email.length > 50)
+    ) {
       helpers.UI.showSnackbar('Field length too long', true);
       return;
     }
-    console.log(this.email);
-    console.log('this.email');
-    if (!this._validateEmail(this.email)) {
+    console.log(this.props.sessionUser.email);
+    console.log('this.props.sessionUser.email');
+    if (!this._validateEmail(this.props.sessionUser.email)) {
       helpers.UI.showSnackbar('Invalid Email', true);
       return;
     }
