@@ -900,6 +900,7 @@ function buildQueryWithObject(SELF, grpId, object, count) {
   else {
     if (object.sorting) {
       let direction;
+      if (object.sorting == 'due date') object.sorting = 'dueDate';
       if (object.direction == 'topDown') direction = -1;
       if (object.direction == 'bottomUp') direction = 1;
       const sortingObjects = {
@@ -920,6 +921,15 @@ function buildQueryWithObject(SELF, grpId, object, count) {
         },
         customer: {
           'group.name': direction,
+        },
+        assignee: {
+          'assignee.fullname': direction,
+        },
+        dueDate: {
+          dueDate: direction,
+        },
+        updated: {
+          updated: direction,
         },
       };
       sortingObject = sortingObjects[object.sorting];
@@ -1075,6 +1085,8 @@ function buildQueryWithObject(SELF, grpId, object, count) {
           priority: { $first: '$priority' },
           issue: { $first: '$issue' },
           date: { $first: '$date' },
+          dueDate: { $first: '$dueDate' },
+          updated: { $first: '$updated' },
           // },
         },
       },
@@ -1086,48 +1098,8 @@ function buildQueryWithObject(SELF, grpId, object, count) {
       { $limit: limit },
     ];
 
-    // if (limit !== -1) aggregate.push({ $skip: page * limit }, { $limit: limit }); //query.skip(page * limit).limit(limit);
-
     query = SELF.model(COLLECTION).aggregate(aggregate);
-
-    // .skip(page * limit)
-    // .limit(limit);
-
-    //   const options = { sort: [['owner.fullname', -1]] };
-
-    //   query = SELF.model(COLLECTION)
-    //     .find({ group: { $in: grpId }, deleted: false })
-    //     .populate('owner', 'fullname', { sort: { fullname: -1 } })
-    //     .populate(
-    //       'owner assignee subscribers comments.owner notes.owner history.owner',
-    //       'username fullname email role image title'
-    //     )
-    //     .populate('assignee', 'username fullname email role image title')
-    //     .populate('type tags group');
-    // } else {
-
-    // query = SELF.model(COLLECTION)
-    //   .find({ group: { $in: grpId }, deleted: false })
-    //   .populate(
-    //     'owner assignee subscribers comments.owner notes.owner history.owner',
-    //     'username fullname email role image title'
-    //   )
-    //   .populate('assignee', 'username fullname email role image title')
-    //   .populate('type tags group')
-    //   .sort({ 'assignee.fullname': -1 });
-    // }
   }
-
-  // Query with Limit?
-  //if (limit !== -1) query.skip(page * limit).limit(limit);
-  // Status Query
-  // if (_.isArray(_status) && _status.length > 0) {
-  //   query.where({ status: { $in: _status } });
-  // }
-
-  // if (object.owner) query.where('owner', object.owner);
-  // if (object.assignedSelf) query.where('assignee', object.user);
-  // if (object.unassigned) query.where({ assignee: { $exists: false } });
 
   return query;
 }
