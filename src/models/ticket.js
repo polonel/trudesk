@@ -894,93 +894,146 @@ function buildQueryWithObject(SELF, grpId, object, count) {
     );
 
   let query;
+  let match = {};
+  let sortingObject = {};
   if (count) query = SELF.model(COLLECTION).countDocuments({ groups: { $in: grpId }, deleted: false });
   else {
-    // if (object.sorting) {
-    //   let direction;
-    //   if (object.direction == 'topDown') direction = -1;
-    //   if (object.direction == 'bottomUp') direction = 1;
-    //   const sortingObjects = {
-    //     uid: {
-    //       uid: direction,
-    //     },
-    //     status: {
-    //       status: direction,
-    //     },
-    //     subject: {
-    //       subject: direction,
-    //     },
-    //     created: {
-    //       date: direction,
-    //     },
-    //     requester: {
-    //       'ownerData.fullname': direction,
-    //     },
-    //     customer: {
-    //       'groupData.name': direction,
-    //     },
-    //   };
-    //   const sortingObject = sortingObjects[object.sorting];
-    //   // if (object.sorting == 'requester' || object.sorting == 'cusomer') {
-    //   // }
-    let $match = {};
-    let $or = [];
+    if (object.sorting) {
+      let direction;
+      if (object.direction == 'topDown') direction = -1;
+      if (object.direction == 'bottomUp') direction = 1;
+      const sortingObjects = {
+        uid: {
+          uid: direction,
+        },
+        status: {
+          status: direction,
+        },
+        subject: {
+          subject: direction,
+        },
+        created: {
+          date: direction,
+        },
+        requester: {
+          'owner.fullname': direction,
+        },
+        customer: {
+          'group.name': direction,
+        },
+      };
+      sortingObject = sortingObjects[object.sorting];
+    }
+    // if (object.sorting == 'requester' || object.sorting == 'cusomer') {
+    // }
+
     // Filter Query
     if (object.filter) {
       // Filter on UID
       if (object.filter.uid) {
         object.filter.uid = parseInt(object.filter.uid);
-        if (!_.isNaN(object.filter.uid)) $or.push({ uid: object.filter.uid }); //query.or([{ uid: object.filter.uid }]);
+        if (!_.isNaN(object.filter.uid)) match.uid = { $in: object.filter.uid };
+        //$or.push({ uid: object.filter.uid }); //query.or([{ uid: object.filter.uid }]);
       }
 
       // Priority Filter
-      if (object.filter.priority) $match.priority = { $in: object.filter.priority }; //query.where({ priority: { $in: object.filter.priority } });
+      if (object.filter.priority) match['priority._id'] = { $in: object.filter.priority }; //query.where({ priority: { $in: object.filter.priority } });
 
       // Ticket Type Filter
-      if (object.filter.types) $match.type.$in = object.filter.type; //query.where({ type: { $in: object.filter.types } });
+      if (object.filter.types) {
+        let types = [];
+        if (object.filter.types) {
+          for (let type of object.filter.types) {
+            let typeFilter = mongoose.Types.ObjectId(type);
+            types.push(typeFilter);
+          }
+        }
+        match['type._id'] = { $in: types };
+      }
+      //query.where({ type: { $in: object.filter.types } });
 
       // Tags Filter
-      if (object.filter.tags) $match.tags.$in = object.filter.tags; //query.where({ tags: { $in: object.filter.tags } });
+      if (object.filter.tags) {
+        let tags = [];
+        if (object.filter.tags) {
+          for (let tag of object.filter.tags) {
+            let tagFilter = mongoose.Types.ObjectId(tag);
+            tags.push(tagFilter);
+          }
+        }
+        match['tags._id'] = { $in: tags };
+      } //query.where({ tags: { $in: object.filter.tags } });
 
       // Assignee Filter
-      if (object.filter.assignee) $match.assignee.$in = object.filter.assignee; //query.where({ assignee: { $in: object.filter.assignee } });
+      if (object.filter.assignee) {
+        let assignees = [];
+        if (object.filter.assignee) {
+          for (let assignee of object.filter.assignee) {
+            let assigneeFilter = mongoose.Types.ObjectId(assignee);
+            assignees.push(assigneeFilter);
+          }
+        }
+        match['assignee._id'] = { $in: assignees };
+      } //query.where({ assignee: { $in: object.filter.assignee } });
 
       // Unassigned Filter
-      if (object.filter.unassigned) $match.assignee.$exists = false; //query.where({ assignee: { $exists: false } });
+      if (object.filter.unassigned) match.assignee = { $exist: false }; //query.where({ assignee: { $exists: false } });
 
       // Owner Filter
-      if (object.filter.owner) $match.owner.$in = object.filter.owner; //query.where({ owner: { $in: object.filter.owner } });
+      if (object.filter.owner) {
+        let owners = [];
+        if (object.filter.owner) {
+          for (let owner of object.filter.owner) {
+            let ownerFilter = mongoose.Types.ObjectId(owner);
+            owners.push(ownerFilter);
+          }
+        }
+        match['owner._id'] = { $in: object.filter.owner };
+      } //query.where({ owner: { $in: object.filter.owner } });]
 
       // Subject Filter
-      if (object.filter.subject) $or.push({ subject: new RegExp(object.filter.subject, 'i') }); //query.or([{ subject: new RegExp(object.filter.subject, 'i') }]);
+      if (object.filter.subject) match.subject = { $in: [new RegExp(object.filter.subject, 'i')] }; // $or.push({ subject: new RegExp(object.filter.subject, 'i') }); //query.or([{ subject: new RegExp(object.filter.subject, 'i') }]);
 
       // Issue Filter
-      if (object.filter.issue) $or.push({ issue: new RegExp(object.filter.issue, 'i') }); //query.or([{ issue: new RegExp(object.filter.issue, 'i') }]);
+      if (object.filter.issue) match.issue = { $in: [new RegExp(object.filter.issue, 'i')] }; //$or.push({ issue: new RegExp(object.filter.issue, 'i') }); //query.or([{ issue: new RegExp(object.filter.issue, 'i') }]);
 
       // Date Filter
       if (object.filter.date) {
         let startDate = new Date(2000, 0, 1, 0, 0, 1);
         let endDate = new Date();
-        if (object.filter.date.start) startDate = new Date(object.filter.date.start);
-        if (object.filter.date.end) endDate = new Date(object.filter.date.end);
-
-        $match.date = { $gte: startDate, $lte: endDate }; //query.where({ date: { $gte: startDate, $lte: endDate } });
+        let regexp = /-?\d+(\.\d+)?/g;
+        if (object.filter.date.start) {
+          const [day, month, year] = object.filter.date.start.match(regexp);
+          //const [year, month, day] = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()];
+          startDate = new Date(Number(year), Number(month) - 1, Number(day));
+        }
+        if (object.filter.date.end) {
+          const [day, month, year] = object.filter.date.end.match(regexp);
+          // const [year, month, day] = [endDate.getFullYear(), endDate.getMonth(), endDate.getDate()];
+          endDate = new Date(Number(year), Number(month) - 1, Number(day));
+        }
+        match.date = { $gte: startDate, $lte: endDate }; //query.where({ date: { $gte: startDate, $lte: endDate } });
       }
     }
-    $match.group = { $in: grpId };
+    let grps = [];
+    for (let grp of grpId) {
+      grps.push(mongoose.Types.ObjectId(grp));
+      match['group._id'] = { $in: grps };
+    }
 
-    if (object.owner) $match.owner = object.owner; //query.where('owner', object.owner);
-    if (object.assignedSelf) $match.assignee = object.user; // query.where('assignee', object.user);
-    if (object.unassigned) $match.assignee = { $exists: false }; //query.where({ assignee: { $exists: false } });
+    if (object.owner) match['owner._id'] = object.owner; //query.where('owner', object.owner);
+    if (object.assignedSelf) match['assignee._id'] = object.user; // query.where('assignee', object.user);
+    if (object.unassigned) match.assignee = { $exists: false }; //query.where({ assignee: { $exists: false } });
 
+    let statusArray = [];
     if (_.isArray(_status) && _status.length > 0) {
-      $match.status = { $in: _status }; //query.where({ status: { $in: _status } });
+      for (let status of _status) {
+        statusArray.push(Number(status));
+      }
+      match.status = { $in: statusArray }; //query.where({ status: { $in: _status } });
     }
 
     const aggregate = [
-      {
-        $match: { group: { $in: grpId } },
-      },
       { $lookup: { from: 'accounts', localField: 'owner', foreignField: '_id', as: 'owner' } },
       { $lookup: { from: 'accounts', localField: 'assignee', foreignField: '_id', as: 'assignee' } },
       { $lookup: { from: 'accounts', localField: 'subscribers', foreignField: '_id', as: 'subscribers' } },
@@ -1002,28 +1055,33 @@ function buildQueryWithObject(SELF, grpId, object, count) {
       { $unwind: { path: '$group', preserveNullAndEmptyArrays: true } },
       {
         $group: {
-          _id: {
-            owner: '$owner',
-            group: '$group',
-            assignee: '$assignee',
-            subscribers: '$subscribers',
-            comments: '$comments',
-            notes: '$notes',
-            history: '$history',
-            type: '$type',
-            tags: '$tags',
-            deleted: '$deleted',
-            uid: '$uid',
-            attachments: '$attachments',
-            subject: '$subject',
-            status: '$status',
-            priority: '$priority',
-            issue: '$issue',
-            date: '$date',
-          },
+          _id: '$_id',
+          owner: { $first: '$owner' },
+          // _id: {
+          //   owner: '$owner',
+          group: { $first: '$group' },
+          assignee: { $first: '$assignee' },
+          subscribers: { $first: '$subscribers' },
+          comments: { $first: '$comments' },
+          notes: { $first: '$notes' },
+          history: { $first: '$history' },
+          type: { $first: '$type' },
+          tags: { $first: '$tags' },
+          deleted: { $first: '$deleted' },
+          uid: { $first: '$uid' },
+          attachments: { $first: '$attachments' },
+          subject: { $first: '$subject' },
+          status: { $first: '$status' },
+          priority: { $first: '$priority' },
+          issue: { $first: '$issue' },
+          date: { $first: '$date' },
+          // },
         },
       },
-      { $sort: { uid: -1 } },
+      {
+        $match: match,
+      },
+      { $sort: sortingObject },
       { $skip: page * limit },
       { $limit: limit },
     ];
