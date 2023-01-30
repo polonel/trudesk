@@ -130,8 +130,6 @@ class ProfileContainer extends React.Component {
       helpers.UI.showSnackbar('Field length too long', true);
       return;
     }
-    console.log(this.props.sessionUser.email);
-    console.log('this.props.sessionUser.email');
     if (!this._validateEmail(this.props.sessionUser.email)) {
       helpers.UI.showSnackbar('Invalid Email', true);
       return;

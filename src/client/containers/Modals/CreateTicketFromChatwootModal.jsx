@@ -214,10 +214,8 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                 this.sendNotification(ticketLink, ticketUID, ticketSubject, ticketStatus);
             }
             if (attachmentsBoolean) {
-                console.log(`onAttachmentInputChange`)
                 this.onAttachmentInputChange(ticket._id, data.socketid, ticketUID)
             } else {
-                console.log(ticketLink)
                 location.href = ticketLink
             }
         })
@@ -263,7 +261,6 @@ class CreateTicketFromChatwootModalContainer extends React.Component {
                     }
                 })
                 .catch(error => {
-                    console.log('Ошибка')
                     Log.error(error)
                     if (error.response) Log.error(error.response)
                     helpers.UI.showSnackbar(error, true)

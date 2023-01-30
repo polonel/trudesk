@@ -357,8 +357,6 @@ class TicketsContainer extends React.Component {
   }
 
   render() {
-    console.log('render');
-    console.log(this.props.tickets);
     const loadingItems = [];
     for (let i = 0; i < 51; i++) {
       const cells = [];

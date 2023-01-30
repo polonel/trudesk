@@ -933,6 +933,8 @@ function buildQueryWithObject(SELF, grpId, object, count) {
         },
       };
       sortingObject = sortingObjects[object.sorting];
+    } else {
+      sortingObject = { uid: -1 };
     }
     // if (object.sorting == 'requester' || object.sorting == 'cusomer') {
     // }

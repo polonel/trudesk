@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2022. Trudesk, Inc (Chris Brame) All rights reserved.
  */
 
-import { fromJS, Map, List } from 'immutable'
-import { handleActions } from 'redux-actions'
-import { sortBy, map } from 'lodash'
+import { fromJS, Map, List } from 'immutable';
+import { handleActions } from 'redux-actions';
+import { sortBy, map } from 'lodash';
 import {
   FETCH_CONVERSATIONS,
   FETCH_SINGLE_CONVERSATION,
@@ -23,8 +23,8 @@ import {
   UNLOAD_SINGLE_CONVERSATION,
   UNLOAD_CONVERSATIONS,
   DELETE_CONVERSATION,
-  SET_CURRENT_CONVERSATION
-} from 'actions/types'
+  SET_CURRENT_CONVERSATION,
+} from 'actions/types';
 
 const initialState = {
   loading: false,
@@ -34,103 +34,102 @@ const initialState = {
   currentConversation: null,
 
   loadingChatWindowConversation: Map({}),
-  chatWindowConversations: Map({})
-}
+  chatWindowConversations: Map({}),
+};
 
 const reducer = handleActions(
   {
-    [FETCH_CONVERSATIONS.PENDING]: state => {
+    [FETCH_CONVERSATIONS.PENDING]: (state) => {
       return {
         ...state,
-        loading: true
-      }
+        loading: true,
+      };
     },
 
     [FETCH_CONVERSATIONS.SUCCESS]: (state, action) => {
       return {
         ...state,
         loading: false,
-        conversations: fromJS(action.response.conversations)
-      }
+        conversations: fromJS(action.response.conversations),
+      };
     },
 
     [DELETE_CONVERSATION.SUCCESS]: (state, action) => {
-      if (!action.response.conversation) return { ...state }
-      const conversation = action.response.conversation
-      const idx = state.conversations.findIndex(i => i.get('_id').toString() === conversation._id.toString())
-      if (idx === -1) return { ...state }
+      if (!action.response.conversation) return { ...state };
+      const conversation = action.response.conversation;
+      const idx = state.conversations.findIndex((i) => i.get('_id').toString() === conversation._id.toString());
+      if (idx === -1) return { ...state };
 
       return {
         ...state,
-        conversations: state.conversations.delete(idx)
-      }
+        conversations: state.conversations.delete(idx),
+      };
     },
 
-    [UNLOAD_CONVERSATIONS.SUCCESS]: state => {
+    [UNLOAD_CONVERSATIONS.SUCCESS]: (state) => {
       return {
         ...state,
-        conversations: initialState.conversations
-      }
+        conversations: initialState.conversations,
+      };
     },
 
-    [FETCH_SINGLE_CONVERSATION.PENDING]: state => {
+    [FETCH_SINGLE_CONVERSATION.PENDING]: (state) => {
       return {
         ...state,
-        loadingSingleConversation: true
-      }
+        loadingSingleConversation: true,
+      };
     },
 
     [FETCH_SINGLE_CONVERSATION.SUCCESS]: (state, action) => {
       return {
         ...state,
         loadingSingleConversation: false,
-        currentConversation: fromJS(action.response.conversation)
-      }
+        currentConversation: fromJS(action.response.conversation),
+      };
     },
 
     [SET_CURRENT_CONVERSATION.SUCCESS]: (state, action) => {
-      const conversation = action.payload.conversation
-      console.log(conversation)
-      if (!conversation) return { ...state }
+      const conversation = action.payload.conversation;
+      if (!conversation) return { ...state };
 
       return {
         ...state,
         loadingSingleConversation: false,
-        currentConversation: fromJS(conversation)
-      }
+        currentConversation: fromJS(conversation),
+      };
     },
 
-    [UNLOAD_SINGLE_CONVERSATION.SUCCESS]: state => {
+    [UNLOAD_SINGLE_CONVERSATION.SUCCESS]: (state) => {
       return {
         ...state,
-        currentConversation: null
-      }
+        currentConversation: null,
+      };
     },
 
     [MESSAGES_SEND.SUCCESS]: (state, action) => {
-      return { ...state }
+      return { ...state };
     },
 
     [MESSAGES_UI_RECEIVE.SUCCESS]: (state, action) => {
-      const message = fromJS(action.payload.message)
-      const isOwner = action.payload.isOwner
+      const message = fromJS(action.payload.message);
+      const isOwner = action.payload.isOwner;
       let conversation = state.conversations.find(
-        c => c.get('_id').toString() === message.get('conversation').toString()
-      )
-      const index = state.conversations.indexOf(conversation)
+        (c) => c.get('_id').toString() === message.get('conversation').toString()
+      );
+      const index = state.conversations.indexOf(conversation);
 
       if (index === -1) {
         return {
-          ...state
-        }
+          ...state,
+        };
       }
 
       conversation = conversation.set(
         'recentMessage',
         `${isOwner ? 'You' : message.get('owner').get('fullname')}: ${message.get('body')}`
-      )
+      );
 
-      conversation = conversation.set('updatedAt', message.get('createdAt'))
+      conversation = conversation.set('updatedAt', message.get('createdAt'));
 
       if (
         !state.currentConversation ||
@@ -138,20 +137,20 @@ const reducer = handleActions(
       ) {
         return {
           ...state,
-          conversations: state.conversations.set(index, conversation)
-        }
+          conversations: state.conversations.set(index, conversation),
+        };
       }
 
-      const newMessageList = state.currentConversation.get('messages').push(message)
+      const newMessageList = state.currentConversation.get('messages').push(message);
 
       return {
         ...state,
         conversations: state.conversations.set(index, conversation),
-        currentConversation: state.currentConversation.set('messages', newMessageList)
-      }
-    }
+        currentConversation: state.currentConversation.set('messages', newMessageList),
+      };
+    },
   },
   initialState
-)
+);
 
-export default reducer
+export default reducer;
