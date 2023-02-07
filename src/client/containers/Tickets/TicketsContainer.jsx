@@ -370,7 +370,6 @@ class TicketsContainer extends React.Component {
 
       loadingItems.push(<TableRow key={Math.random()}>{cells}</TableRow>);
     }
-
     const selectAllCheckbox = (
       <div style={{ marginLeft: 17 }}>
         <input
@@ -581,7 +580,7 @@ class TicketsContainer extends React.Component {
                 return (
                   <TableRow
                     key={ticket.get('_id')}
-                    className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''}`}
+                    className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''} tableRowHover`}
                     clickable={true}
                     onClick={(e) => {
                       if (e.target.tagName !== 'SPAN') {
@@ -644,7 +643,7 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {assignee()}
-                      <span className="drop-icon material-icons" style={{ left: 'auto', top: 15 }}>
+                      <span className="drop-icon material-icons spanBackHand" style={{ left: 20, top: 15 }}>
                         back_hand
                       </span>
                     </TableCell>
