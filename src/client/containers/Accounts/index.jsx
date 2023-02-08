@@ -182,7 +182,7 @@ class AccountsContainer extends React.Component {
                   <li>
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Phone</span>
-                      <a href={`mailto:${user.get('phone')}`}>{user.get('phone')}</a>
+                      <a href={`tel:${user.get('phone')}`}>{user.get('phone')}</a>
                     </div>
                   </li>
                   <li>
