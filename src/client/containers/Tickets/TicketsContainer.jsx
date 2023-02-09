@@ -643,9 +643,12 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell className={'vam nbb'}>
                       {assignee()}
-                      {/* <span className="drop-icon material-icons spanBackHand" style={{ left: 20, top: 15 }}>
+                      <span
+                        className="drop-icon material-icons"
+                        style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
+                      >
                         back_hand
-                      </span> */}
+                      </span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{dueDate}</TableCell>
                     <TableCell className={'vam nbb'}>{updated}</TableCell>
