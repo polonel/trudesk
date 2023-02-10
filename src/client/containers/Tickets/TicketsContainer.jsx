@@ -11,7 +11,7 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React from 'react';
+import React, { Fragment, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { observer } from 'mobx-react';
@@ -41,6 +41,8 @@ import Dropdown from 'components/Dropdown';
 import DropdownItem from 'components/Dropdown/DropdownItem';
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator';
 import StatusSelectorList from 'containers/Tickets/StatusSelectorList';
+import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
+import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import SingleSelectStatus from 'components/SingleSelectStatus';
 
 import helpers from 'lib/helpers';
@@ -658,15 +660,23 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell className={'vam nbb'}>
-                      <a
-                            role="button"
-                            title="Set Assignee"
-                            style={{ float: 'left' }}
-                            className="relative no-ajaxy"
-                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                          >
+                      <span
+                        role="button"
+                        title="Set Assignee"
+                        // style={{ float: 'left' }}
+                        // className="relative no-ajaxy"
+                        onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                      >
                         {assignee()}
-                        </a>
+                        <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                          <Avatar
+                            image={ticket.get('assignee') && ticket.get('assignee').get('image')}
+                            //showOnlineBubble={this.ticket.assignee !== undefined}
+                            userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
+                          />
+                          <span className="drop-icon material-icons">keyboard_arrow_down</span>
+                        </PDropdownTrigger>
+                      </span>
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
@@ -682,7 +692,7 @@ class TicketsContainer extends React.Component {
                           <AssigneeDropdownPartial
                             forwardedRef={this.assigneeDropdownPartial}
                             ticketId={ticket.get('_id')}
-                            onClearClick={() => (ticket.get('assignee') = undefined)}
+                            // onClearClick={() => (ticket.get('assignee') = undefined)}
                             // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
                           />
                         )}
