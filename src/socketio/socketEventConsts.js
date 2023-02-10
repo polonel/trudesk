@@ -28,9 +28,7 @@ exported.TICKETS_UPDATE = '$trudesk:tickets:update';
 // --- SUB TICKET EVENTS
 exported.TICKETS_LIST_UPDATE = '$trudesk:tickets:list:update';
 exported.TICKETS_UI_STATUS_UPDATE = '$trudesk:tickets:ui:status:update';
-exported.TICKETS_UI_ASSIGNEE_UPDATE = '$trudesk:tickets:ui:status:update';
 exported.TICKETS_STATUS_SET = '$trudesk:tickets:status:set';
-exported.TICKETS_ASSIGNEE_SET = '$trudesk:tickets:assignee:set';
 
 exported.TICKETS_UI_GROUP_UPDATE = '$trudesk:tickets:ui:group:update';
 exported.TICKETS_GROUP_SET = '$trudesk:tickets:group:set';

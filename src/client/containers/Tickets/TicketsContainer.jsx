@@ -26,7 +26,7 @@ import { showModal } from 'actions/common';
 import { fetchSettings } from 'actions/settings';
 import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
-import { TICKETS_ASSIGNEE_SET, TICKETS_UI_ASSIGNEE_UPDATE } from 'serverSocket/socketEventConsts';
+import { TICKETS_ASSIGNEE_SET } from 'serverSocket/socketEventConsts';
 
 import PageTitle from 'components/PageTitle';
 import Table from 'components/Table';
@@ -76,7 +76,6 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted);
-    this.props.socket.on(TICKETS_UI_ASSIGNEE_UPDATE, this.onUpdateTicketAssignee);
     this.props.fetchSettings();
     this.props.fetchTCMs();
     this.props.fetchTSortings();
@@ -127,7 +126,6 @@ class TicketsContainer extends React.Component {
     this.props.socket.off('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted);
-    this.props.socket.off(TICKETS_UI_ASSIGNEE_UPDATE, this.onUpdateTicketAssignee);
   }
 
   onUpdateTicketAssignee(data) {
@@ -367,9 +365,9 @@ class TicketsContainer extends React.Component {
     this.props.fetchTSortings();
   }
 
-  changeAssignee(ticket, assignee) {
+  changeAssignee(ticketId, assignee) {
     if (!this.props.hasPerm) return;
-    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: ticket.get('_id'), value: assignee });
+    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: assignee, ticketId: ticketId });
     //this.forceClose();
   }
 
@@ -663,7 +661,7 @@ class TicketsContainer extends React.Component {
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
-                        onClick={this.changeAssignee(ticket, this.props.sessionUser._id)}
+                        onClick={this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id)}
                         hasPerm={hasTicketUpdate(ticket)}
                       >
                         back_hand

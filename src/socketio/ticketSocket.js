@@ -183,29 +183,6 @@ events.onUpdateTicketStatus = (socket) => {
   });
 };
 
-events.onUpdateTicketAssignee = (socket) => {
-  socket.on(socketEvents.TICKETS_ASSIGNEE_SET, async (data) => {
-    const ticketId = data._id;
-    const assignee = data.value;
-    const ownerId = socket.request.user._id;
-
-    try {
-      let ticket = await ticketSchema.getTicketById(ticketId);
-      ticket = await ticket.setAssignee(ownerId, assignee);
-      ticket = await ticket.save();
-      configForSendMail(ticket, 'assignee-changed');
-      // emitter.emit('ticket:updated', t)
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ASSIGNEE_UPDATE, {
-        tid: ticket._id,
-        owner: ticket.owner,
-        assignee: assignee,
-      });
-    } catch (e) {
-      // Blank
-    }
-  });
-};
-
 events.onUpdateTicket = function (socket) {
   socket.on(socketEvents.TICKETS_UPDATE, async (data) => {
     try {
