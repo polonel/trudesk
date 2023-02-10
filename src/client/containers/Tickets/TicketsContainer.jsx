@@ -26,7 +26,7 @@ import { showModal } from 'actions/common';
 import { fetchSettings } from 'actions/settings';
 import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
-import { TICKETS_ASSIGNEE_SET } from 'serverSocket/socketEventConsts';
+import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD } from 'serverSocket/socketEventConsts';
 
 import PageTitle from 'components/PageTitle';
 import Table from 'components/Table';
@@ -51,6 +51,7 @@ import SearchResults from 'components/SearchResults';
 @observer
 class TicketsContainer extends React.Component {
   @observable searchTerm = '';
+  assigneeDropdownPartial = createRef();
   selectedTickets = [];
   constructor(props) {
     super(props);
@@ -657,7 +658,15 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell className={'vam nbb'}>
-                      {assignee()}
+                      <a
+                            role="button"
+                            title="Set Assignee"
+                            style={{ float: 'left' }}
+                            className="relative no-ajaxy"
+                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                          >
+                        {assignee()}
+                        </a>
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
@@ -672,9 +681,9 @@ class TicketsContainer extends React.Component {
                         {hasTicketUpdate && (
                           <AssigneeDropdownPartial
                             forwardedRef={this.assigneeDropdownPartial}
-                            ticketId={this.ticket._id}
-                            onClearClick={() => (this.ticket.assignee = undefined)}
-                            onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
+                            ticketId={ticket.get('_id')}
+                            onClearClick={() => (ticket.get('assignee') = undefined)}
+                            // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
                           />
                         )}
                       </div>
