@@ -28,6 +28,7 @@ import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
 import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD } from 'serverSocket/socketEventConsts';
 
+import Avatar from 'components/Avatar/Avatar';
 import PageTitle from 'components/PageTitle';
 import Table from 'components/Table';
 import TableHeader from 'components/Table/TableHeader';
@@ -671,9 +672,21 @@ class TicketsContainer extends React.Component {
                             onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                           >
                             <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                              <Avatar
+                                image={ticket.get('assignee') && ticket.get('assignee').get('image')}
+                                // showOnlineBubble={this.ticket.assignee !== undefined}
+                                userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
+                              />
                               <span className="drop-icon material-icons">keyboard_arrow_down</span>
                             </PDropdownTrigger>
                           </a>
+                        )}
+                        {!hasTicketUpdate && (
+                          <Avatar
+                            image={ticket.get('assignee') && ticket.get('assignee').get('image')}
+                            // showOnlineBubble={this.ticket.assignee !== undefined}
+                            userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
+                          />
                         )}
                         <div className="ticket-assignee-details">
                           {!ticket.get('assignee') && <h3>No User Assigned</h3>}
