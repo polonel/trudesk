@@ -366,7 +366,7 @@ class TicketsContainer extends React.Component {
   }
 
   changeAssignee(ticketId, assignee) {
-    if (!this.props.hasPerm) return;
+    // if (!this.props.hasPerm) return;
     this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: assignee, ticketId: ticketId });
     //this.forceClose();
   }
@@ -575,8 +575,8 @@ class TicketsContainer extends React.Component {
                   const timeout = updated.clone().add(overdueIn, 'm');
                   return now.isAfter(timeout);
                 };
-
-                const hasTicketUpdate = (ticket) => {
+                const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update');
+                const hasTicketElementUpdate = (ticket) => {
                   const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
                   const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
                   if (isAgent || isAdmin) {
@@ -633,7 +633,7 @@ class TicketsContainer extends React.Component {
                         onStatusChange={(status) => {
                           this.sendNotification(ticket);
                         }}
-                        hasPerm={hasTicketUpdate(ticket)}
+                        hasPerm={hasTicketElementUpdate(ticket)}
                       />
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
@@ -661,11 +661,23 @@ class TicketsContainer extends React.Component {
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
-                        onClick={this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id)}
-                        hasPerm={hasTicketUpdate(ticket)}
+                        onClick={() => {
+                          this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                        }}
+                        hasPerm={hasTicketElementUpdate(ticket)}
                       >
                         back_hand
                       </span>
+                      <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
+                        {hasTicketUpdate && (
+                          <AssigneeDropdownPartial
+                            forwardedRef={this.assigneeDropdownPartial}
+                            ticketId={this.ticket._id}
+                            onClearClick={() => (this.ticket.assignee = undefined)}
+                            onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
+                          />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{dueDate}</TableCell>
                     <TableCell className={'vam nbb'}>{updated}</TableCell>

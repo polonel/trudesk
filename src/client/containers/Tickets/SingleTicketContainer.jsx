@@ -11,18 +11,18 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment, createRef } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { observable, computed, makeObservable } from 'mobx'
-import { observer } from 'mobx-react'
-import sortBy from 'lodash/sortBy'
-import union from 'lodash/union'
-import { fetchSettings } from 'actions/settings'
-import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
-import { fetchGroups, unloadGroups } from 'actions/groups'
-import { showModal } from 'actions/common'
-import { fetchAccounts } from 'actions/accounts'
+import React, { Fragment, createRef } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { observable, computed, makeObservable } from 'mobx';
+import { observer } from 'mobx-react';
+import sortBy from 'lodash/sortBy';
+import union from 'lodash/union';
+import { fetchSettings } from 'actions/settings';
+import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets';
+import { fetchGroups, unloadGroups } from 'actions/groups';
+import { showModal } from 'actions/common';
+import { fetchAccounts } from 'actions/accounts';
 
 import {
   TICKETS_UPDATE,
@@ -39,179 +39,180 @@ import {
   TICKETS_UI_TAGS_UPDATE,
   TICKETS_COMMENT_NOTE_REMOVE,
   TICKETS_COMMENT_NOTE_SET,
-  TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE
-} from 'serverSocket/socketEventConsts'
+  TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE,
+} from 'serverSocket/socketEventConsts';
 
-import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial'
-import Avatar from 'components/Avatar/Avatar'
-import CommentNotePartial from 'containers/Tickets/CommentNotePartial'
-import DatePicker from 'components/DatePicker'
-import EasyMDE from 'components/EasyMDE'
-import IssuePartial from 'containers/Tickets/IssuePartial'
-import AttachFilesToComment from 'containers/Tickets/AttachFilesToComment'
-import OffCanvasEditor from 'components/OffCanvasEditor'
-import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
-import StatusSelector from 'containers/Tickets/StatusSelector'
-import TruTabSection from 'components/TruTabs/TruTabSection'
-import TruTabSelector from 'components/TruTabs/TruTabSelector'
-import TruTabSelectors from 'components/TruTabs/TruTabSelectors'
-import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
-import axios from 'axios'
-import helpers from 'lib/helpers'
-import Log from '../../logger'
-import UIkit from 'uikit'
-import moment from 'moment'
-import SpinLoader from 'components/SpinLoader'
+import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
+import Avatar from 'components/Avatar/Avatar';
+import CommentNotePartial from 'containers/Tickets/CommentNotePartial';
+import DatePicker from 'components/DatePicker';
+import EasyMDE from 'components/EasyMDE';
+import IssuePartial from 'containers/Tickets/IssuePartial';
+import AttachFilesToComment from 'containers/Tickets/AttachFilesToComment';
+import OffCanvasEditor from 'components/OffCanvasEditor';
+import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
+import StatusSelector from 'containers/Tickets/StatusSelector';
+import TruTabSection from 'components/TruTabs/TruTabSection';
+import TruTabSelector from 'components/TruTabs/TruTabSelector';
+import TruTabSelectors from 'components/TruTabs/TruTabSelectors';
+import TruTabWrapper from 'components/TruTabs/TruTabWrapper';
+import axios from 'axios';
+import helpers from 'lib/helpers';
+import Log from '../../logger';
+import UIkit from 'uikit';
+import moment from 'moment';
+import SpinLoader from 'components/SpinLoader';
 
-const fetchTicket = parent => {
+const fetchTicket = (parent) => {
   axios
     .get(`/api/v2/tickets/${parent.props.ticketUid}`)
-    .then(res => {
+    .then((res) => {
       // setTimeout(() => {
-      parent.ticket = res.data.ticket
+      parent.ticket = res.data.ticket;
       parent.isSubscribed =
-        parent.ticket && parent.ticket.subscribers.findIndex(i => i._id === parent.props.shared.sessionUser._id) !== -1
-      // }, 3000) 
-      ticketChecked(parent)
+        parent.ticket &&
+        parent.ticket.subscribers.findIndex((i) => i._id === parent.props.shared.sessionUser._id) !== -1;
+      // }, 3000)
+      ticketChecked(parent);
     })
-    .catch(error => {
+    .catch((error) => {
       if (error.response.status === 403) {
-        History.pushState(null, null, '/tickets')
+        History.pushState(null, null, '/tickets');
       }
-      Log.error(error)
-    })
-}
+      Log.error(error);
+    });
+};
 
-const ticketChecked = (parent)=> {
-  const checked = true
-  const userId = parent.props.shared.sessionUser._id
-  axios.put(`/api/v2/tickets/checked/${parent.props.ticketUid}`, {checked, userId}) 
-}
+const ticketChecked = (parent) => {
+  const checked = true;
+  const userId = parent.props.shared.sessionUser._id;
+  axios.put(`/api/v2/tickets/checked/${parent.props.ticketUid}`, { checked, userId });
+};
 
 const showPriorityConfirm = () => {
   UIkit.modal.confirm(
     'Selected Priority does not exist for this ticket type. Priority has reset to the default for this type.' +
-    '<br><br><strong>Please select a new priority</strong>',
-    () => { },
+      '<br><br><strong>Please select a new priority</strong>',
+    () => {},
     { cancelButtonClass: 'uk-hidden' }
-  )
-}
+  );
+};
 
 @observer
 class SingleTicketContainer extends React.Component {
-  @observable ticket = null
-  @observable isSubscribed = false
-  @observable siteURL = ''
-  @observable commentAttachedFiles = []
-  @observable thisData = this
-  assigneeDropdownPartial = createRef()
+  @observable ticket = null;
+  @observable isSubscribed = false;
+  @observable siteURL = '';
+  @observable commentAttachedFiles = [];
+  @observable thisData = this;
+  assigneeDropdownPartial = createRef();
 
   constructor(props) {
-    super(props)
-    makeObservable(this)
-    this.onUpdateTicket = this.onUpdateTicket.bind(this)
-    this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this)
-    this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this)
-    this.onUpdateAssignee = this.onUpdateAssignee.bind(this)
-    this.onUpdateTicketType = this.onUpdateTicketType.bind(this)
-    this.onUpdateTicketPriority = this.onUpdateTicketPriority.bind(this)
-    this.onUpdateTicketGroup = this.onUpdateTicketGroup.bind(this)
-    this.onUpdateTicketDueDate = this.onUpdateTicketDueDate.bind(this)
-    this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
-    this.onTCMUpdated = this.onTCMUpdated.bind(this)
+    super(props);
+    makeObservable(this);
+    this.onUpdateTicket = this.onUpdateTicket.bind(this);
+    this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this);
+    this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this);
+    this.onUpdateAssignee = this.onUpdateAssignee.bind(this);
+    this.onUpdateTicketType = this.onUpdateTicketType.bind(this);
+    this.onUpdateTicketPriority = this.onUpdateTicketPriority.bind(this);
+    this.onUpdateTicketGroup = this.onUpdateTicketGroup.bind(this);
+    this.onUpdateTicketDueDate = this.onUpdateTicketDueDate.bind(this);
+    this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this);
+    this.onTCMUpdated = this.onTCMUpdated.bind(this);
   }
 
   componentDidMount() {
-    this.props.socket.on(TICKETS_UPDATE, this.onUpdateTicket)
-    this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
-    this.props.socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
-    this.props.socket.on(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
-    this.props.socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
-    this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
-    this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
-    this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated)
+    this.props.socket.on(TICKETS_UPDATE, this.onUpdateTicket);
+    this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee);
+    this.props.socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType);
+    this.props.socket.on(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority);
+    this.props.socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup);
+    this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate);
+    this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags);
+    this.props.socket.on('$trudesk:client:tcm:update', this.onTCMUpdated);
     this.props.fetchSettings();
-    fetchTicket(this)
-    this.props.fetchTicketTypes()
-    this.props.fetchGroups()
-    document.addEventListener('keydown',this.keydownHandler);
+    fetchTicket(this);
+    this.props.fetchTicketTypes();
+    this.props.fetchGroups();
+    document.addEventListener('keydown', this.keydownHandler);
   }
 
   componentDidUpdate() {
-    helpers.resizeFullHeight()
-    helpers.setupScrollers()
+    helpers.resizeFullHeight();
+    helpers.setupScrollers();
   }
 
   componentWillUnmount() {
-    this.props.socket.off(TICKETS_UPDATE, this.onUpdateTicket)
-    this.props.socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
-    this.props.socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
-    this.props.socket.off(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
-    this.props.socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
-    this.props.socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
-    this.props.socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
-    this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated)
-    document.removeEventListener('keydown',this.keydownHandler);
-    this.props.unloadGroups()
+    this.props.socket.off(TICKETS_UPDATE, this.onUpdateTicket);
+    this.props.socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee);
+    this.props.socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType);
+    this.props.socket.off(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority);
+    this.props.socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup);
+    this.props.socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate);
+    this.props.socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags);
+    this.props.socket.off('$trudesk:client:tcm:update', this.onTCMUpdated);
+    document.removeEventListener('keydown', this.keydownHandler);
+    this.props.unloadGroups();
   }
   updateData = (attachments) => {
-    this.commentAttachedFiles = attachments
-  }
+    this.commentAttachedFiles = attachments;
+  };
   onUpdateTicket(data) {
     if (this.ticket._id === data._id) {
-      this.ticket = data
+      this.ticket = data;
     }
   }
 
   onTCMUpdated(data) {
-    ticketChecked(this)
+    ticketChecked(this);
   }
 
   onSocketUpdateComments(data) {
-    if (this.ticket._id === data._id) this.ticket.comments = data.comments
+    if (this.ticket._id === data._id) this.ticket.comments = data.comments;
   }
 
   onUpdateTicketNotes(data) {
-    if (this.ticket._id === data._id) this.ticket.notes = data.notes
+    if (this.ticket._id === data._id) this.ticket.notes = data.notes;
   }
 
   onUpdateAssignee(data) {
     if (this.ticket._id === data._id) {
-      this.ticket.assignee = data.assignee
+      this.ticket.assignee = data.assignee;
       if (this.ticket.assignee && this.ticket.assignee._id === this.props.shared.sessionUser._id)
-        this.isSubscribed = true
+        this.isSubscribed = true;
     }
   }
 
   onUpdateTicketType(data) {
-    if (this.ticket._id === data._id) this.ticket.type = data.type
+    if (this.ticket._id === data._id) this.ticket.type = data.type;
   }
 
   onUpdateTicketPriority(data) {
-    if (this.ticket._id === data._id) this.ticket.priority = data.priority
+    if (this.ticket._id === data._id) this.ticket.priority = data.priority;
   }
 
   onUpdateTicketGroup(data) {
-    if (this.ticket._id === data._id) this.ticket.group = data.group
+    if (this.ticket._id === data._id) this.ticket.group = data.group;
   }
 
   onUpdateTicketDueDate(data) {
-    if (this.ticket._id === data._id) this.ticket.dueDate = data.dueDate
+    if (this.ticket._id === data._id) this.ticket.dueDate = data.dueDate;
   }
 
   onUpdateTicketTags(data) {
-    if (this.ticket._id === data._id) this.ticket.tags = data.tags
+    if (this.ticket._id === data._id) this.ticket.tags = data.tags;
   }
 
   onCommentNoteSubmit(e, type) {
-    e.preventDefault()
-    const isNote = type === 'note'
-    let newComment
-    let attachmentsBoolean = false
+    e.preventDefault();
+    const isNote = type === 'note';
+    let newComment;
+    let attachmentsBoolean = false;
     if (this.commentAttachedFiles?.length !== 0) {
-      attachmentsBoolean = true
+      attachmentsBoolean = true;
     } else {
-      attachmentsBoolean = false
+      attachmentsBoolean = false;
     }
     axios
       .post(`/api/v1/tickets/add${isNote ? 'note' : 'comment'}`, {
@@ -219,112 +220,114 @@ class SingleTicketContainer extends React.Component {
         comment: !isNote && this.commentMDE.getEditorText(),
         attachments: attachmentsBoolean,
         ticketid: isNote && this.ticket._id,
-        note: isNote && this.noteMDE.getEditorText()
+        note: isNote && this.noteMDE.getEditorText(),
       })
-      .then(res => {
+      .then((res) => {
         if (res && res.data && res.data.success) {
           if (isNote) {
-            this.ticket.notes = res.data.ticket.notes
-            this.noteMDE.setEditorText('')
+            this.ticket.notes = res.data.ticket.notes;
+            this.noteMDE.setEditorText('');
           } else {
-            this.ticket.comments = res.data.ticket.comments
-            this.commentMDE.setEditorText('')
-            newComment = res.data.comment
+            this.ticket.comments = res.data.ticket.comments;
+            this.commentMDE.setEditorText('');
+            newComment = res.data.comment;
           }
 
-          helpers.scrollToBottom('.page-content-right', true)
-          this.ticket.history = res.data.ticket.history
+          helpers.scrollToBottom('.page-content-right', true);
+          this.ticket.history = res.data.ticket.history;
           if (newComment) {
-            const commentId = this.ticket.comments.filter(comment => {
-              return comment.owner._id == newComment.owner
-                &&
-                comment.date == newComment.date
-                &&
+            const commentId = this.ticket.comments.filter((comment) => {
+              return (
+                comment.owner._id == newComment.owner &&
+                comment.date == newComment.date &&
                 comment.comment == newComment.comment
-            })[0]._id
-            this.attachingFileToComment(commentId)
+              );
+            })[0]._id;
+            this.attachingFileToComment(commentId);
           }
         }
       })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
-
+      .catch((error) => {
+        Log.error(error);
+        if (error.response) Log.error(error.response);
+        helpers.UI.showSnackbar(error, true);
+      });
   }
 
   attachingFileToComment = async (commentId) => {
-    let countAttachments = 0
-    let filesCount = 1
+    let countAttachments = 0;
+    let filesCount = 1;
     for (const attachmentFile of this.commentAttachedFiles) {
-      countAttachments++
-      const formData = new FormData()
+      countAttachments++;
+      const formData = new FormData();
 
-      if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !== 0) {
-        formData.append('sendMail', true)
+      if (countAttachments == this.commentAttachedFiles?.length && this.commentAttachedFiles?.length !== 0) {
+        formData.append('sendMail', true);
       } else {
-        formData.append('sendMail', false)
+        formData.append('sendMail', false);
       }
 
-      formData.append('attachmentsCount', this.commentAttachedFiles.length)
-      formData.append('filesCount', filesCount)
-      formData.append('commentId', commentId)
-      formData.append('ticketId', this.ticket._id)
-      formData.append('attachment', attachmentFile)
-      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      formData.append('attachmentsCount', this.commentAttachedFiles.length);
+      formData.append('filesCount', filesCount);
+      formData.append('commentId', commentId);
+      formData.append('ticketId', this.ticket._id);
+      formData.append('attachment', attachmentFile);
+      const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
       await axios
         .post(`/tickets/comments/uploadattachment`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'CSRF-TOKEN': token
-          }
+            'CSRF-TOKEN': token,
+          },
         })
         .then(() => {
-          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, { commentId: commentId, ticketId: this.ticket._id })
-          helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-          if ((countAttachments == this.commentAttachedFiles?.length) && this.commentAttachedFiles?.length !== 0) {
-            this.commentAttachedFiles = []
+          this.props.socket.emit(TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, {
+            commentId: commentId,
+            ticketId: this.ticket._id,
+          });
+          helpers.UI.showSnackbar('Attachment Successfully Uploaded');
+          if (countAttachments == this.commentAttachedFiles?.length && this.commentAttachedFiles?.length !== 0) {
+            this.commentAttachedFiles = [];
           }
-          filesCount++
+          filesCount++;
         })
-        .catch(error => {
-          Log.error(error)
-          if (error.response) Log.error(error.response)
-          helpers.UI.showSnackbar(error, true)
-        })
+        .catch((error) => {
+          Log.error(error);
+          if (error.response) Log.error(error.response);
+          helpers.UI.showSnackbar(error, true);
+        });
     }
-  }
+  };
 
   getSetting(stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
-      : ''
+      : '';
   }
 
-  keydownHandler = (e)=>{
-    if(e.keyCode===13 && e.ctrlKey) this.onCommentNoteSubmit(e, 'comment')
-  }
+  keydownHandler = (e) => {
+    if (e.keyCode === 13 && e.ctrlKey) this.onCommentNoteSubmit(e, 'comment');
+  };
 
-  statusToName = status => {
+  statusToName = (status) => {
     switch (status) {
       case 0:
-        return 'New'
+        return 'New';
       case 1:
-        return 'Open'
+        return 'Open';
       case 2:
-        return 'Pending'
+        return 'Pending';
       case 3:
-        return 'Closed'
+        return 'Closed';
     }
-  }
+  };
 
   sendNotification() {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
       axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
         console.log(JSON.stringify(response.data));
-      })
+      });
     }
   }
 
@@ -332,111 +335,108 @@ class SingleTicketContainer extends React.Component {
     axios
       .put(`/api/v1/tickets/${this.ticket._id}/subscribe`, {
         user: this.props.shared.sessionUser._id,
-        subscribe: e.target.checked
+        subscribe: e.target.checked,
       })
-      .then(res => {
+      .then((res) => {
         if (res.data.success && res.data.ticket) {
-          this.ticket.subscribers = res.data.ticket.subscribers
-          this.isSubscribed = this.ticket.subscribers.findIndex(i => i._id === this.props.shared.sessionUser._id) !== -1
+          this.ticket.subscribers = res.data.ticket.subscribers;
+          this.isSubscribed =
+            this.ticket.subscribers.findIndex((i) => i._id === this.props.shared.sessionUser._id) !== -1;
         }
       })
-      .catch(error => {
-        Log.error(error.response || error)
-      })
+      .catch((error) => {
+        Log.error(error.response || error);
+      });
   }
 
   transferToThirdParty(e) {
-    this.props.transferToThirdParty({ uid: this.ticket.uid })
+    this.props.transferToThirdParty({ uid: this.ticket.uid });
   }
 
   @computed
   get notesTagged() {
-    this.ticket.notes.forEach(i => (i.isNote = true))
+    this.ticket.notes.forEach((i) => (i.isNote = true));
 
-    return this.ticket.notes
+    return this.ticket.notes;
   }
 
   @computed get commentsAndNotes() {
-    if (!this.ticket) return []
+    if (!this.ticket) return [];
     if (!helpers.canUser('tickets:notes', true)) {
-      return sortBy(this.ticket.comments, 'date')
+      return sortBy(this.ticket.comments, 'date');
     }
 
-    let commentsAndNotes = union(this.ticket.comments, this.notesTagged)
-    commentsAndNotes = sortBy(commentsAndNotes, 'date')
+    let commentsAndNotes = union(this.ticket.comments, this.notesTagged);
+    commentsAndNotes = sortBy(commentsAndNotes, 'date');
 
-    return commentsAndNotes
+    return commentsAndNotes;
   }
 
   @computed get hasCommentsOrNotes() {
-    if (!this.ticket) return false
-    return this.ticket.comments.length > 0 || this.ticket.notes.length > 0
+    if (!this.ticket) return false;
+    return this.ticket.comments.length > 0 || this.ticket.notes.length > 0;
   }
 
   render() {
-    
     const mappedGroups = this.props.groupsState
-      ? this.props.groupsState.groups.map(group => {
-        return { text: group.get('name'), value: group.get('_id') }
-      })
-      : []
+      ? this.props.groupsState.groups.map((group) => {
+          return { text: group.get('name'), value: group.get('_id') };
+        })
+      : [];
 
     const mappedTypes = this.props.ticketTypes
-      ? this.props.ticketTypes.map(type => {
-        return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() }
-      })
-      : []
+      ? this.props.ticketTypes.map((type) => {
+          return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() };
+        })
+      : [];
 
     // Perms
-    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update')
+    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update');
     const hasTicketStatusUpdate = () => {
-      const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
-      const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
+      const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
+      const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
       if (isAgent || isAdmin) {
-        return helpers.canUser('tickets:update')
+        return helpers.canUser('tickets:update');
       } else {
-        if (!this.ticket || !this.props.sessionUser) return false
-        return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
+        if (!this.ticket || !this.props.sessionUser) return false;
+        return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false);
       }
-    }
+    };
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
         {!this.ticket && <SpinLoader active={true} />}
         {this.ticket && (
           <Fragment>
-            <div 
-            className={'page-content'} 
-            
-            >
+            <div className={'page-content'}>
               <div
-                className='uk-float-left page-title page-title-small noshadow nopadding relative'
+                className="uk-float-left page-title page-title-small noshadow nopadding relative"
                 style={{ width: 360, maxWidth: 360, minWidth: 360 }}
               >
-                <div className='page-title-border-right relative' style={{ padding: '0 30px' }}>
+                <div className="page-title-border-right relative" style={{ padding: '0 30px' }}>
                   <p>Ticket #{this.ticket.uid}</p>
                   <StatusSelector
                     ticketId={this.ticket._id}
                     status={this.ticket.status}
                     socket={this.props.socket}
-                    onStatusChange={status => {
-                      this.sendNotification()
-                      this.ticket.status = status
+                    onStatusChange={(status) => {
+                      this.sendNotification();
+                      this.ticket.status = status;
                     }}
                     hasPerm={hasTicketStatusUpdate()}
                   />
                 </div>
                 {/*  Left Side */}
-                <div className='page-content-left full-height scrollable'>
-                  <div className='ticket-details-wrap uk-position-relative uk-clearfix'>
-                    <div className='ticket-assignee-wrap uk-clearfix' style={{ paddingRight: 30 }}>
+                <div className="page-content-left full-height scrollable">
+                  <div className="ticket-details-wrap uk-position-relative uk-clearfix">
+                    <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
                       <h4>Assignee</h4>
-                      <div className='ticket-assignee uk-clearfix'>
+                      <div className="ticket-assignee uk-clearfix">
                         {hasTicketUpdate && (
                           <a
-                            role='button'
-                            title='Set Assignee'
+                            role="button"
+                            title="Set Assignee"
                             style={{ float: 'left' }}
-                            className='relative no-ajaxy'
+                            className="relative no-ajaxy"
                             onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                           >
                             <PDropdownTrigger target={this.assigneeDropdownPartial}>
@@ -445,7 +445,7 @@ class SingleTicketContainer extends React.Component {
                                 showOnlineBubble={this.ticket.assignee !== undefined}
                                 userId={this.ticket.assignee && this.ticket.assignee._id}
                               />
-                              <span className='drop-icon material-icons'>keyboard_arrow_down</span>
+                              <span className="drop-icon material-icons">keyboard_arrow_down</span>
                             </PDropdownTrigger>
                           </a>
                         )}
@@ -456,13 +456,13 @@ class SingleTicketContainer extends React.Component {
                             userId={this.ticket.assignee && this.ticket.assignee._id}
                           />
                         )}
-                        <div className='ticket-assignee-details'>
+                        <div className="ticket-assignee-details">
                           {!this.ticket.assignee && <h3>No User Assigned</h3>}
                           {this.ticket.assignee && (
                             <Fragment>
                               <h3>{this.ticket.assignee.fullname}</h3>
                               <a
-                                className='comment-email-link uk-text-truncate uk-display-inline-block'
+                                className="comment-email-link uk-text-truncate uk-display-inline-block"
                                 href={`mailto:${this.ticket.assignee.email}`}
                               >
                                 {this.ticket.assignee.email}
@@ -483,69 +483,69 @@ class SingleTicketContainer extends React.Component {
                       )}
                     </div>
 
-                    <div className='uk-width-1-1 padding-left-right-15'>
-                      <div className='tru-card ticket-details uk-clearfix'>
+                    <div className="uk-width-1-1 padding-left-right-15">
+                      <div className="tru-card ticket-details uk-clearfix">
                         {/* Type */}
-                        <div className='uk-width-1-2 uk-float-left nopadding'>
-                          <div className='marginright5'>
+                        <div className="uk-width-1-2 uk-float-left nopadding">
+                          <div className="marginright5">
                             <span>Type</span>
                             {hasTicketUpdate && (
                               <select
                                 value={this.ticket.type._id}
-                                onChange={e => {
-                                  const type = this.props.ticketTypes.find(t => t.get('_id') === e.target.value)
+                                onChange={(e) => {
+                                  const type = this.props.ticketTypes.find((t) => t.get('_id') === e.target.value);
 
                                   const priority = type
                                     .get('priorities')
-                                    .findIndex(p => p.get('_id') === this.ticket.priority._id)
+                                    .findIndex((p) => p.get('_id') === this.ticket.priority._id);
 
-                                  const hasPriority = priority !== -1
+                                  const hasPriority = priority !== -1;
 
                                   if (!hasPriority) {
                                     this.props.socket.emit(TICKETS_PRIORITY_SET, {
                                       _id: this.ticket._id,
-                                      value: type.get('priorities').find(() => true)
-                                    })
+                                      value: type.get('priorities').find(() => true),
+                                    });
 
-                                    showPriorityConfirm()
+                                    showPriorityConfirm();
                                   }
 
                                   this.props.socket.emit(TICKETS_TYPE_SET, {
                                     _id: this.ticket._id,
-                                    value: e.target.value
-                                  })
+                                    value: e.target.value,
+                                  });
                                 }}
                               >
                                 {mappedTypes &&
-                                  mappedTypes.map(type => (
+                                  mappedTypes.map((type) => (
                                     <option key={type.value} value={type.value}>
                                       {type.text}
                                     </option>
                                   ))}
                               </select>
                             )}
-                            {!hasTicketUpdate && <div className='input-box'>{this.ticket.type.name}</div>}
+                            {!hasTicketUpdate && <div className="input-box">{this.ticket.type.name}</div>}
                           </div>
                         </div>
                         {/* Priority */}
-                        <div className='uk-width-1-2 uk-float-left nopadding'>
-                          <div className='marginleft5'>
+                        <div className="uk-width-1-2 uk-float-left nopadding">
+                          <div className="marginleft5">
                             <span>Priority</span>
                             {hasTicketUpdate && (
                               <select
-                                name='tPriority'
-                                id='tPriority'
+                                name="tPriority"
+                                id="tPriority"
                                 value={this.ticket.priority._id}
-                                onChange={e =>
+                                onChange={(e) =>
                                   this.props.socket.emit(TICKETS_PRIORITY_SET, {
                                     _id: this.ticket._id,
-                                    value: e.target.value
+                                    value: e.target.value,
                                   })
                                 }
                               >
                                 {this.ticket.type &&
                                   this.ticket.type.priorities &&
-                                  this.ticket.type.priorities.map(priority => (
+                                  this.ticket.type.priorities.map((priority) => (
                                     <option key={priority._id} value={priority._id}>
                                       {priority.name}
                                     </option>
@@ -556,20 +556,20 @@ class SingleTicketContainer extends React.Component {
                           </div>
                         </div>
                         {/*  Group */}
-                        <div className='uk-width-1-1 nopadding uk-clearfix'>
+                        <div className="uk-width-1-1 nopadding uk-clearfix">
                           <span>Group</span>
                           {hasTicketUpdate && (
                             <select
                               value={this.ticket.group._id}
-                              onChange={e => {
+                              onChange={(e) => {
                                 this.props.socket.emit(TICKETS_GROUP_SET, {
                                   _id: this.ticket._id,
-                                  value: e.target.value
-                                })
+                                  value: e.target.value,
+                                });
                               }}
                             >
                               {mappedGroups &&
-                                mappedGroups.map(group => (
+                                mappedGroups.map((group) => (
                                   <option key={group.value} value={group.value}>
                                     {group.text}
                                   </option>
@@ -579,18 +579,18 @@ class SingleTicketContainer extends React.Component {
                           {!hasTicketUpdate && <div className={'input-box'}>{this.ticket.group.name}</div>}
                         </div>
                         {/*  Due Date */}
-                        <div className='uk-width-1-1 p-0'>
+                        <div className="uk-width-1-1 p-0">
                           <span>Due Date</span> {hasTicketUpdate && <span>-&nbsp;</span>}
                           {hasTicketUpdate && (
                             <div className={'uk-display-inline'}>
                               <a
                                 role={'button'}
-                                onClick={e => {
-                                  e.preventDefault()
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   this.props.socket.emit(TICKETS_DUEDATE_SET, {
                                     _id: this.ticket._id,
-                                    value: undefined
-                                  })
+                                    value: undefined,
+                                  });
                                 }}
                               >
                                 Clear
@@ -600,40 +600,40 @@ class SingleTicketContainer extends React.Component {
                                 format={helpers.getShortDateFormat()}
                                 value={this.ticket.dueDate}
                                 small={true}
-                                onChange={e => {
+                                onChange={(e) => {
                                   const dueDate = moment(e.target.value, helpers.getShortDateFormat())
                                     .utc()
-                                    .toISOString()
+                                    .toISOString();
 
-                                  this.props.socket.emit(TICKETS_DUEDATE_SET, { _id: this.ticket._id, value: dueDate })
+                                  this.props.socket.emit(TICKETS_DUEDATE_SET, { _id: this.ticket._id, value: dueDate });
                                 }}
                               />
                             </div>
                           )}
                           {!hasTicketUpdate && (
-                            <div className='input-box'>
+                            <div className="input-box">
                               {helpers.formatDate(this.ticket.dueDate, this.props.common.get('shortDateFormat'))}
                             </div>
                           )}
                         </div>
 
                         {/* Tags */}
-                        <div className='uk-width-1-1 nopadding'>
+                        <div className="uk-width-1-1 nopadding">
                           <span>
                             Tags
                             {hasTicketUpdate && (
                               <Fragment>
                                 <span> - </span>
-                                <div id='editTags' className={'uk-display-inline'}>
+                                <div id="editTags" className={'uk-display-inline'}>
                                   <a
                                     role={'button'}
                                     style={{ fontSize: 11 }}
-                                    className='no-ajaxy'
+                                    className="no-ajaxy"
                                     onClick={() => {
                                       this.props.showModal('ADD_TAGS_MODAL', {
                                         ticketId: this.ticket._id,
-                                        currentTags: this.ticket.tags.map(tag => tag._id)
-                                      })
+                                        currentTags: this.ticket.tags.map((tag) => tag._id),
+                                      });
                                     }}
                                   >
                                     Edit Tags
@@ -642,10 +642,10 @@ class SingleTicketContainer extends React.Component {
                               </Fragment>
                             )}
                           </span>
-                          <div className='tag-list uk-clearfix'>
+                          <div className="tag-list uk-clearfix">
                             {this.ticket.tags &&
-                              this.ticket.tags.map(tag => (
-                                <div key={tag._id} className='item'>
+                              this.ticket.tags.map((tag) => (
+                                <div key={tag._id} className="item">
                                   {tag.name}
                                 </div>
                               ))}
@@ -655,14 +655,14 @@ class SingleTicketContainer extends React.Component {
                     </div>
 
                     {helpers.canUser('agent:*', true) && (
-                      <div className='uk-width-1-1 padding-left-right-15'>
-                        <div className='tru-card ticket-details pr-0 pb-0' style={{ height: 250 }}>
+                      <div className="uk-width-1-1 padding-left-right-15">
+                        <div className="tru-card ticket-details pr-0 pb-0" style={{ height: 250 }}>
                           Ticket History
                           <hr style={{ padding: 0, margin: 0 }} />
-                          <div className='history-items scrollable' style={{ paddingTop: 12 }}>
+                          <div className="history-items scrollable" style={{ paddingTop: 12 }}>
                             {this.ticket.history &&
-                              this.ticket.history.map(item => (
-                                <div key={item._id} className='history-item'>
+                              this.ticket.history.map((item) => (
+                                <div key={item._id} className="history-item">
                                   <time
                                     dateTime={helpers.formatDate(item.date, this.props.common.get('longDateFormat'))}
                                   />
@@ -680,71 +680,71 @@ class SingleTicketContainer extends React.Component {
                 </div>
               </div>
               {/* Right Side */}
-              <div className='page-message nopadding' style={{ marginLeft: 360 }}>
-                <div className='page-title-right noshadow'>
+              <div className="page-message nopadding" style={{ marginLeft: 360 }}>
+                <div className="page-title-right noshadow">
                   {this.props.common.get('hasThirdParty') && (
-                    <div className='page-top-comments uk-float-right'>
+                    <div className="page-top-comments uk-float-right">
                       <a
-                        role='button'
-                        className='btn md-btn-primary no-ajaxy'
-                        onClick={e => {
-                          e.preventDefault()
-                          this.transferToThirdParty(e)
+                        role="button"
+                        className="btn md-btn-primary no-ajaxy"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          this.transferToThirdParty(e);
                         }}
                       >
                         Transfer to ThirdParty
                       </a>
                     </div>
                   )}
-                  <div className='page-top-comments uk-float-right'>
+                  <div className="page-top-comments uk-float-right">
                     <a
-                      role='button'
-                      className='btn no-ajaxy'
-                      onClick={e => {
-                        e.preventDefault()
-                        helpers.scrollToBottom('.page-content-right', true)
+                      role="button"
+                      className="btn no-ajaxy"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        helpers.scrollToBottom('.page-content-right', true);
                       }}
                     >
                       Add Comment
                     </a>
                   </div>
                   <div
-                    className='onoffswitch subscribeSwitch uk-float-right'
+                    className="onoffswitch subscribeSwitch uk-float-right"
                     style={{ marginRight: 10, position: 'relative', top: 18 }}
                   >
                     <input
                       id={'subscribeSwitch'}
-                      type='checkbox'
-                      name='subscribeSwitch'
-                      className='onoffswitch-checkbox'
+                      type="checkbox"
+                      name="subscribeSwitch"
+                      className="onoffswitch-checkbox"
                       checked={this.isSubscribed}
-                      onChange={e => this.onSubscriberChanged(e)}
+                      onChange={(e) => this.onSubscriberChanged(e)}
                     />
-                    <label className='onoffswitch-label' htmlFor='subscribeSwitch'>
-                      <span className='onoffswitch-inner subscribeSwitch-inner' />
-                      <span className='onoffswitch-switch subscribeSwitch-switch' />
+                    <label className="onoffswitch-label" htmlFor="subscribeSwitch">
+                      <span className="onoffswitch-inner subscribeSwitch-inner" />
+                      <span className="onoffswitch-switch subscribeSwitch-switch" />
                     </label>
                   </div>
-                  <div className='pagination uk-float-right' style={{ marginRight: 5 }}>
-                    <ul className='button-group'>
+                  <div className="pagination uk-float-right" style={{ marginRight: 5 }}>
+                    <ul className="button-group">
                       {helpers.canUser('tickets:print') && (
-                        <li className='pagination'>
+                        <li className="pagination">
                           <a
                             href={`/tickets/print/${this.ticket.uid}`}
-                            className='btn no-ajaxy'
+                            className="btn no-ajaxy"
                             style={{ borderRadius: 3, marginRight: 5 }}
-                            rel='noopener noreferrer'
-                            target='_blank'
+                            rel="noopener noreferrer"
+                            target="_blank"
                           >
-                            <i className='material-icons'>&#xE8AD;</i>
+                            <i className="material-icons">&#xE8AD;</i>
                           </a>
                         </li>
                       )}
                     </ul>
                   </div>
                 </div>
-                <div className='page-content-right full-height scrollable'>
-                  <div className='comments-wrapper'>
+                <div className="page-content-right full-height scrollable">
+                  <div className="comments-wrapper">
                     <IssuePartial
                       ticketId={this.ticket._id}
                       status={this.ticket.status}
@@ -764,21 +764,21 @@ class SingleTicketContainer extends React.Component {
                         <TruTabSelectors style={{ marginLeft: 110 }}>
                           <TruTabSelector
                             selectorId={0}
-                            label='All'
+                            label="All"
                             active={true}
                             showBadge={true}
                             badgeText={this.commentsAndNotes.length}
                           />
                           <TruTabSelector
                             selectorId={1}
-                            label='Comments'
+                            label="Comments"
                             showBadge={true}
                             badgeText={this.ticket ? this.ticket.comments && this.ticket.comments.length : 0}
                           />
                           {helpers.canUser('tickets:notes', true) && (
                             <TruTabSelector
                               selectorId={2}
-                              label='Notes'
+                              label="Notes"
                               showBadge={true}
                               badgeText={this.ticket ? this.ticket.notes && this.ticket.notes.length : 0}
                             />
@@ -787,58 +787,57 @@ class SingleTicketContainer extends React.Component {
 
                         {/* Tab Sections */}
                         <TruTabSection sectionId={0} active={true}>
-                          <div className='all-comments'>
-                            {this.commentsAndNotes.map(item => (
-                              (
-                                <CommentNotePartial
-                                  ticketId={this.ticket._id}
-                                  status={this.ticket.status}
-                                  owner={this.ticket.owner}
-                                  subject={this.ticket.subject}
-                                  issue={this.ticket.issue}
-                                  date={this.ticket.date}
-                                  attachments={this.ticket.attachments}
-                                  editorWindow={this.editorWindow}
-                                  socket={this.props.socket}
-                                  ticket={this.ticket}
-                                  key={item._id}
-                                  ticketStatus={this.ticket.status}
-                                  ticketSubject={this.ticket.subject}
-                                  comment={item}
-                                  isNote={item.isNote}
-                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
-                                    'timeFormat'
-                                  )}`}
-                                  onEditClick={() => {
-                                    this.editorWindow.openEditorWindow({
-                                      showSubject: false,
-                                      comment: item,
-                                      text: !item.isNote ? item.comment : item.note,
-                                      onPrimaryClick: data => {
-                                        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
-                                          _id: this.ticket._id,
-                                          item: item._id,
-                                          isNote: item.isNote,
-                                          value: data.text
-                                        })
-                                      }
-                                    })
-                                  }}
-                                  onRemoveClick={() => {
-                                    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
-                                      _id: this.ticket._id,
-                                      value: item._id,
-                                      isNote: item.isNote
-                                    })
-                                  }}
-                                />)
+                          <div className="all-comments">
+                            {this.commentsAndNotes.map((item) => (
+                              <CommentNotePartial
+                                ticketId={this.ticket._id}
+                                status={this.ticket.status}
+                                owner={this.ticket.owner}
+                                subject={this.ticket.subject}
+                                issue={this.ticket.issue}
+                                date={this.ticket.date}
+                                attachments={this.ticket.attachments}
+                                editorWindow={this.editorWindow}
+                                socket={this.props.socket}
+                                ticket={this.ticket}
+                                key={item._id}
+                                ticketStatus={this.ticket.status}
+                                ticketSubject={this.ticket.subject}
+                                comment={item}
+                                isNote={item.isNote}
+                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
+                                  'timeFormat'
+                                )}`}
+                                onEditClick={() => {
+                                  this.editorWindow.openEditorWindow({
+                                    showSubject: false,
+                                    comment: item,
+                                    text: !item.isNote ? item.comment : item.note,
+                                    onPrimaryClick: (data) => {
+                                      this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
+                                        _id: this.ticket._id,
+                                        item: item._id,
+                                        isNote: item.isNote,
+                                        value: data.text,
+                                      });
+                                    },
+                                  });
+                                }}
+                                onRemoveClick={() => {
+                                  this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
+                                    _id: this.ticket._id,
+                                    value: item._id,
+                                    isNote: item.isNote,
+                                  });
+                                }}
+                              />
                             ))}
                           </div>
                         </TruTabSection>
                         <TruTabSection sectionId={1}>
-                          <div className='comments'>
+                          <div className="comments">
                             {this.ticket &&
-                              this.ticket.comments.map(comment => (
+                              this.ticket.comments.map((comment) => (
                                 <CommentNotePartial
                                   ticketId={this.ticket._id}
                                   status={this.ticket.status}
@@ -862,33 +861,32 @@ class SingleTicketContainer extends React.Component {
                                       showSubject: false,
                                       text: comment.comment,
                                       comment: comment,
-                                      onPrimaryClick: data => {
+                                      onPrimaryClick: (data) => {
                                         this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
                                           _id: this.ticket._id,
                                           item: comment._id,
                                           isNote: comment.isNote,
-                                          value: data.text
-                                        })
-                                      }
-                                    })
+                                          value: data.text,
+                                        });
+                                      },
+                                    });
                                   }}
                                   onRemoveClick={() => {
                                     this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
                                       _id: this.ticket._id,
                                       value: comment._id,
-                                      isNote: comment.isNote
-                                    })
+                                      isNote: comment.isNote,
+                                    });
                                   }}
                                 />
                               ))}
                           </div>
                         </TruTabSection>
                         <TruTabSection sectionId={2}>
-                          <div className='notes'>
+                          <div className="notes">
                             {this.ticket &&
-                              this.ticket.notes.map(note => (
+                              this.ticket.notes.map((note) => (
                                 <CommentNotePartial
-
                                   ticketId={this.ticket._id}
                                   status={this.ticket.status}
                                   owner={this.ticket.owner}
@@ -911,22 +909,22 @@ class SingleTicketContainer extends React.Component {
                                     this.editorWindow.openEditorWindow({
                                       showSubject: false,
                                       text: note.note,
-                                      onPrimaryClick: data => {
+                                      onPrimaryClick: (data) => {
                                         this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
                                           _id: this.ticket._id,
                                           item: note._id,
                                           isNote: note.isNote,
-                                          value: data.text
-                                        })
-                                      }
-                                    })
+                                          value: data.text,
+                                        });
+                                      },
+                                    });
                                   }}
                                   onRemoveClick={() => {
                                     this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
                                       _id: this.ticket._id,
                                       value: note._id,
-                                      isNote: note.isNote
-                                    })
+                                      isNote: note.isNote,
+                                    });
                                   }}
                                 />
                               ))}
@@ -938,7 +936,7 @@ class SingleTicketContainer extends React.Component {
                     {/* Comment / Notes Form */}
                     {this.ticket.status !== 3 &&
                       (helpers.canUser('comments:create', true) || helpers.canUser('tickets:notes', true)) && (
-                        <div className='uk-width-1-1 ticket-reply uk-clearfix'>
+                        <div className="uk-width-1-1 ticket-reply uk-clearfix">
                           <Avatar image={this.props.shared.sessionUser.image} showOnlineBubble={false} />
                           <TruTabWrapper style={{ paddingLeft: 85 }}>
                             <TruTabSelectors showTrack={false}>
@@ -958,12 +956,12 @@ class SingleTicketContainer extends React.Component {
                               style={{ paddingTop: 0 }}
                               active={helpers.canUser('comments:create', true)}
                             >
-                              <form onSubmit={e => this.onCommentNoteSubmit(e, 'comment')}>
+                              <form onSubmit={(e) => this.onCommentNoteSubmit(e, 'comment')}>
                                 <EasyMDE
                                   allowImageUpload={true}
                                   inlineImageUploadUrl={'/tickets/uploadmdeimage'}
                                   inlineImageUploadHeaders={{ ticketid: this.ticket._id }}
-                                  ref={r => (this.commentMDE = r)}
+                                  ref={(r) => (this.commentMDE = r)}
                                 />
                                 <AttachFilesToComment
                                   ticket={this.props.ticket}
@@ -978,11 +976,11 @@ class SingleTicketContainer extends React.Component {
                                   updateData={this.updateData}
                                   commentAttachedFiles={this.commentAttachedFiles}
                                 />
-                                <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
-                                  <div className='uk-float-right'>
+                                <div className="uk-width-1-1 uk-clearfix" style={{ marginTop: 50 }}>
+                                  <div className="uk-float-right">
                                     <button
-                                      type='submit'
-                                      className='uk-button uk-button-accent'
+                                      type="submit"
+                                      className="uk-button uk-button-accent"
                                       style={{ padding: '10px 15px' }}
                                     >
                                       Post Comment
@@ -996,19 +994,19 @@ class SingleTicketContainer extends React.Component {
                               style={{ paddingTop: 0 }}
                               active={!helpers.canUser('comments:create') && helpers.canUser('tickets:notes', true)}
                             >
-                              <form onSubmit={e => this.onCommentNoteSubmit(e, 'note')}>
+                              <form onSubmit={(e) => this.onCommentNoteSubmit(e, 'note')}>
                                 <EasyMDE
                                   allowImageUpload={true}
                                   inlineImageUploadUrl={'/tickets/uploadmdeimage'}
                                   inlineImageUploadHeaders={{ ticketid: this.ticket._id }}
-                                  ref={r => (this.noteMDE = r)}
+                                  ref={(r) => (this.noteMDE = r)}
                                 />
 
-                                <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
-                                  <div className='uk-float-right'>
+                                <div className="uk-width-1-1 uk-clearfix" style={{ marginTop: 50 }}>
+                                  <div className="uk-float-right">
                                     <button
-                                      type='submit'
-                                      className='uk-button uk-button-accent'
+                                      type="submit"
+                                      className="uk-button uk-button-accent"
                                       style={{ padding: '10px 15px' }}
                                     >
                                       Save Note
@@ -1026,7 +1024,7 @@ class SingleTicketContainer extends React.Component {
             </div>
             <OffCanvasEditor
               primaryLabel={'Save Edit'}
-              ref={r => (this.editorWindow = r)}
+              ref={(r) => (this.editorWindow = r)}
               ticketId={this.ticket._id}
               status={this.ticket.status}
               owner={this.ticket.owner}
@@ -1041,13 +1039,12 @@ class SingleTicketContainer extends React.Component {
               ticketSubject={this.ticket.subject}
               attachingFileToComment={this.attachingFileToComment}
               updateData={this.updateData}
-              dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
-                'timeFormat'
-              )}`} />
+              dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
+            />
           </Fragment>
         )}
       </div>
-    )
+    );
   }
 }
 
@@ -1064,10 +1061,10 @@ SingleTicketContainer.propTypes = {
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
-  transferToThirdParty: PropTypes.func
-}
+  transferToThirdParty: PropTypes.func,
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   common: state.common.viewdata,
   shared: state.shared,
   sessionUser: state.shared.sessionUser,
@@ -1076,7 +1073,7 @@ const mapStateToProps = state => ({
   groupsState: state.groupsState,
   settings: state.settings.settings,
   accountsState: state.accountsState,
-})
+});
 
 export default connect(mapStateToProps, {
   fetchTicketTypes,
@@ -1085,5 +1082,5 @@ export default connect(mapStateToProps, {
   showModal,
   transferToThirdParty,
   fetchSettings,
-  fetchAccounts
-})(SingleTicketContainer)
+  fetchAccounts,
+})(SingleTicketContainer);
