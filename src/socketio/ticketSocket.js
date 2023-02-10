@@ -11,549 +11,567 @@
  *  Updated:    1/20/19 4:43 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
-var _ = require('lodash')
-var async = require('async')
-var winston = require('winston')
-var marked = require('marked')
-var sanitizeHtml = require('sanitize-html')
-var utils = require('../helpers/utils')
-var emitter = require('../emitter')
-var logger = require('../logger')
-var socketEvents = require('./socketEventConsts')
-var ticketSchema = require('../models/ticket')
-var commentSchema = require('../models/comment')
-var tcmSchema = require('../models/tcm')
-var prioritySchema = require('../models/ticketpriority')
-var userSchema = require('../models/user')
-var roleSchema = require('../models/role')
-var permissions = require('../permissions')
-var xss = require('xss')
-var { head, filter } = require('lodash')
-var settingSchema = require('../models/setting')
-var templateSchema = require('../models/template')
-var path = require('path')
-var templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
-var Email = require('email-templates')
-var Mailer = require('../mailer')
-var fs = require('fs-extra')
-var events = {}
+var _ = require('lodash');
+var async = require('async');
+var winston = require('winston');
+var marked = require('marked');
+var sanitizeHtml = require('sanitize-html');
+var utils = require('../helpers/utils');
+var emitter = require('../emitter');
+var logger = require('../logger');
+var socketEvents = require('./socketEventConsts');
+var ticketSchema = require('../models/ticket');
+var commentSchema = require('../models/comment');
+var tcmSchema = require('../models/tcm');
+var prioritySchema = require('../models/ticketpriority');
+var userSchema = require('../models/user');
+var roleSchema = require('../models/role');
+var permissions = require('../permissions');
+var xss = require('xss');
+var { head, filter } = require('lodash');
+var settingSchema = require('../models/setting');
+var templateSchema = require('../models/template');
+var path = require('path');
+var templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates');
+var Email = require('email-templates');
+var Mailer = require('../mailer');
+var fs = require('fs-extra');
+var events = {};
 
 function register(socket) {
-  events.onUpdateTicketGrid(socket)
-  events.onUpdateTicketStatus(socket)
-  events.onUpdateTicket(socket)
-  events.onUpdateAssigneeList(socket)
-  events.onSetAssignee(socket)
-  events.onUpdateTicketTags(socket)
-  events.onClearAssignee(socket)
-  events.onSetTicketType(socket)
-  events.onSetTicketPriority(socket)
-  events.onSetTicketGroup(socket)
-  events.onSetTicketDueDate(socket)
-  events.onSetTicketIssue(socket)
-  events.onCommentNoteSet(socket)
-  events.onRemoveCommentNote(socket)
-  events.onAttachmentsUIUpdate(socket)
+  events.onUpdateTicketGrid(socket);
+  events.onUpdateTicketStatus(socket);
+  events.onUpdateTicket(socket);
+  events.onUpdateAssigneeList(socket);
+  events.onSetAssignee(socket);
+  events.onUpdateTicketTags(socket);
+  events.onClearAssignee(socket);
+  events.onSetTicketType(socket);
+  events.onSetTicketPriority(socket);
+  events.onSetTicketGroup(socket);
+  events.onSetTicketDueDate(socket);
+  events.onSetTicketIssue(socket);
+  events.onCommentNoteSet(socket);
+  events.onRemoveCommentNote(socket);
+  events.onAttachmentsUIUpdate(socket);
 }
 
-function eventLoop() { }
+function eventLoop() {}
 
 events.onUpdateTicketGrid = function (socket) {
   socket.on('ticket:updategrid', function () {
-    utils.sendToAllConnectedClients(io, 'ticket:updategrid')
-  })
-}
-
+    utils.sendToAllConnectedClients(io, 'ticket:updategrid');
+  });
+};
 
 const sendMail = async (ticket, emails, baseUrl, betaEnabled, templateName) => {
-  let email = null
+  let email = null;
   if (betaEnabled) {
     email = new Email({
       render: (view, locals) => {
         return new Promise((resolve, reject) => {
-          ; (async () => {
+          (async () => {
             try {
-              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
-              const template = await templateSchema.findOne({ name: view })
-              if (!template) return reject(new Error('Invalid Template'))
-              const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
-              const results = await email.juiceResources(html)
-              return resolve(results)
+              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'));
+              const template = await templateSchema.findOne({ name: view });
+              if (!template) return reject(new Error('Invalid Template'));
+              const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals);
+              const results = await email.juiceResources(html);
+              return resolve(results);
             } catch (e) {
-              return reject(e)
+              return reject(e);
             }
-          })()
-        })
-      }
-    })
+          })();
+        });
+      },
+    });
   } else {
     email = new Email({
       views: {
         root: templateDir,
         options: {
-          extension: 'handlebars'
-        }
-      }
-    })
+          extension: 'handlebars',
+        },
+      },
+    });
   }
 
-  const template = await templateSchema.findOne({ name: templateName })
+  const template = await templateSchema.findOne({ name: templateName });
   if (template) {
-    const ticketJSON = ticket.toJSON()
-    ticketJSON.status = ticket.statusFormatted
+    const ticketJSON = ticket.toJSON();
+    ticketJSON.status = ticket.statusFormatted;
     switch (ticketJSON.status) {
       case 'New':
-        ticketJSON.status = 'Новая'
-        break
+        ticketJSON.status = 'Новая';
+        break;
       case 'Open':
-        ticketJSON.status = 'Открыта'
-        break
+        ticketJSON.status = 'Открыта';
+        break;
       case 'Pending':
-        ticketJSON.status = 'В ожидании'
-        break
+        ticketJSON.status = 'В ожидании';
+        break;
       case 'Closed':
-        ticketJSON.status = 'Закрыта'
-        break
+        ticketJSON.status = 'Закрыта';
+        break;
     }
     if (ticketJSON.assignee) {
-      const assignee = await userSchema.findOne({ _id: ticketJSON.assignee })
-      ticketJSON.assignee = assignee.fullname
+      const assignee = await userSchema.findOne({ _id: ticketJSON.assignee });
+      ticketJSON.assignee = assignee.fullname;
     }
-    const context = { base_url: baseUrl, ticket: ticketJSON }
+    const context = { base_url: baseUrl, ticket: ticketJSON };
 
-
-    const html = await email.render(templateName, context)
-    const subjectParsed = global.Handlebars.compile(template.subject)(context)
+    const html = await email.render(templateName, context);
+    const subjectParsed = global.Handlebars.compile(template.subject)(context);
     const mailOptions = {
       to: emails.join(),
       subject: subjectParsed,
       html,
-      generateTextFromHTML: true
-    }
+      generateTextFromHTML: true,
+    };
 
-    await Mailer.sendMail(mailOptions)
+    await Mailer.sendMail(mailOptions);
 
-    logger.debug(`Sent [${emails.length}] emails.`)
+    logger.debug(`Sent [${emails.length}] emails.`);
   }
-}
+};
 
 const configForSendMail = async (ticket, templateName) => {
-  const ticketObject = ticket
+  const ticketObject = ticket;
   try {
-    const ticket = await ticketSchema.getTicketById(ticketObject._id)
-    const settings = await settingSchema.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
+    const ticket = await ticketSchema.getTicketById(ticketObject._id);
+    const settings = await settingSchema.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email']);
 
-    const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
-    let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
-    mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
-    let betaEnabled = head(filter(settings, ['name', 'beta:email']))
-    betaEnabled = !betaEnabled ? false : betaEnabled.value
+    const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value;
+    let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']));
+    mailerEnabled = !mailerEnabled ? false : mailerEnabled.value;
+    let betaEnabled = head(filter(settings, ['name', 'beta:email']));
+    betaEnabled = !betaEnabled ? false : betaEnabled.value;
 
     //++ ShaturaPro LIN 14.10.2022
     //const [emails] = await Promise.all([parseMemberEmails(ticket)])
-    const emails = []
+    const emails = [];
     if (ticket.owner.email && ticket.owner.email !== '') {
-      emails.push(ticket.owner.email)
+      emails.push(ticket.owner.email);
     }
 
-    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName)
-
+    if (mailerEnabled) await sendMail(ticket, emails, baseUrl, betaEnabled, templateName);
   } catch (e) {
-    logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`)
+    logger.warn(`[trudesk:events:ticket:status:change] - Error: ${e}`);
   }
-}
+};
 
-events.onUpdateTicketStatus = socket => {
-  socket.on(socketEvents.TICKETS_STATUS_SET, async data => {
-    const ticketId = data._id
-    const status = data.value
-    const ownerId = socket.request.user._id
+events.onUpdateTicketStatus = (socket) => {
+  socket.on(socketEvents.TICKETS_STATUS_SET, async (data) => {
+    const ticketId = data._id;
+    const status = data.value;
+    const ownerId = socket.request.user._id;
 
     try {
-      let ticket = await ticketSchema.getTicketById(ticketId)
-      ticket = await ticket.setStatus(ownerId, status)
-      ticket = await ticket.save()
-      configForSendMail(ticket, 'status-changed')
+      let ticket = await ticketSchema.getTicketById(ticketId);
+      ticket = await ticket.setStatus(ownerId, status);
+      ticket = await ticket.save();
+      configForSendMail(ticket, 'status-changed');
       // emitter.emit('ticket:updated', t)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
         tid: ticket._id,
         owner: ticket.owner,
-        status: status
-      })
-
-
+        status: status,
+      });
     } catch (e) {
       // Blank
     }
-  })
-}
+  });
+};
+
+events.onUpdateTicketAssignee = (socket) => {
+  socket.on(socketEvents.TICKETS_ASSIGNEE_SET, async (data) => {
+    const ticketId = data._id;
+    const assignee = data.value;
+    const ownerId = socket.request.user._id;
+
+    try {
+      let ticket = await ticketSchema.getTicketById(ticketId);
+      ticket = await ticket.setAssignee(ownerId, assignee);
+      ticket = await ticket.save();
+      configForSendMail(ticket, 'assignee-changed');
+      // emitter.emit('ticket:updated', t)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ASSIGNEE_UPDATE, {
+        tid: ticket._id,
+        owner: ticket.owner,
+        assignee: assignee,
+      });
+    } catch (e) {
+      // Blank
+    }
+  });
+};
 
 events.onUpdateTicket = function (socket) {
-  socket.on(socketEvents.TICKETS_UPDATE, async data => {
+  socket.on(socketEvents.TICKETS_UPDATE, async (data) => {
     try {
-      const ticket = await ticketSchema.getTicketById(data._id)
-      configForSendMail(ticket, 'comment-added')
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+      const ticket = await ticketSchema.getTicketById(data._id);
+      configForSendMail(ticket, 'comment-added');
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket);
     } catch (error) {
       // Blank
     }
-  })
-}
+  });
+};
 
 events.onUpdateTCM = function (socket) {
-  socket.on(socketEvents.TCMS_UPDATE, async data => {
+  socket.on(socketEvents.TCMS_UPDATE, async (data) => {
     try {
-      const tcm = await tcmSchema.findOne({ticketId:data._id})
-      utils.sendToAllConnectedClients(io, socketEvents.TCMS_UPDATE, tcm)
+      const tcm = await tcmSchema.findOne({ ticketId: data._id });
+      utils.sendToAllConnectedClients(io, socketEvents.TCMS_UPDATE, tcm);
     } catch (error) {
       // Blank
     }
-  })
-}
+  });
+};
 
 events.onUpdateAssigneeList = function (socket) {
   socket.on(socketEvents.TICKETS_ASSIGNEE_LOAD, function () {
     roleSchema.getAgentRoles(function (err, roles) {
-      if (err) return true
+      if (err) return true;
       userSchema.find({ role: { $in: roles }, deleted: false }, function (err, users) {
-        if (err) return true
+        if (err) return true;
 
-        var sortedUser = _.sortBy(users, 'fullname')
+        var sortedUser = _.sortBy(users, 'fullname');
 
-        utils.sendToSelf(socket, socketEvents.TICKETS_ASSIGNEE_LOAD, sortedUser)
-      })
-    })
-  })
-}
+        utils.sendToSelf(socket, socketEvents.TICKETS_ASSIGNEE_LOAD, sortedUser);
+      });
+    });
+  });
+};
 
 events.onSetAssignee = function (socket) {
   socket.on(socketEvents.TICKETS_ASSIGNEE_SET, function (data) {
-    var userId = data._id
-    var ownerId = socket.request.user._id
-    var ticketId = data.ticketId
+    var userId = data._id;
+    var ownerId = socket.request.user._id;
+    var ticketId = data.ticketId;
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+      if (err) return true;
 
       async.parallel(
         {
           setAssignee: function (callback) {
             ticket.setAssignee(ownerId, userId, function (err, ticket) {
-              callback(err, ticket)
-            })
+              callback(err, ticket);
+            });
           },
           subscriber: function (callback) {
             ticket.addSubscriber(userId, function (err, ticket) {
-              callback(err, ticket)
-            })
-          }
+              callback(err, ticket);
+            });
+          },
         },
         function (err, results) {
-          if (err) return true
+          if (err) return true;
 
-          ticket = results.subscriber
+          ticket = results.subscriber;
           ticket.save(function (err, ticket) {
-            if (err) return true
+            if (err) return true;
             ticket.populate('assignee', function (err, ticket) {
-              if (err) return true
+              if (err) return true;
 
               emitter.emit('ticket:subscriber:update', {
                 user: userId,
-                subscribe: true
-              })
+                subscribe: true,
+              });
 
               emitter.emit(socketEvents.TICKETS_ASSIGNEE_SET, {
                 assigneeId: ticket.assignee._id,
                 ticketId: ticket._id,
                 ticketUid: ticket.uid,
-                hostname: socket.handshake.headers.host
-              })
+                hostname: socket.handshake.headers.host,
+              });
 
               emitter.emit('ticket:assignee:changed', {
                 ticket: ticket,
-                hostname: socket.handshake.headers.host
-              })
+                hostname: socket.handshake.headers.host,
+              });
 
               // emitter.emit('ticket:updated', ticket)
-              utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, ticket)
-            })
-          })
+              utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, ticket);
+            });
+          });
         }
-      )
-    })
-  })
-}
+      );
+    });
+  });
+};
 
 events.onSetTicketType = function (socket) {
   socket.on(socketEvents.TICKETS_TYPE_SET, function (data) {
-    const ticketId = data._id
-    const typeId = data.value
-    const ownerId = socket.request.user._id
+    const ticketId = data._id;
+    const typeId = data.value;
+    const ownerId = socket.request.user._id;
 
-    if (_.isUndefined(ticketId) || _.isUndefined(typeId)) return true
+    if (_.isUndefined(ticketId) || _.isUndefined(typeId)) return true;
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+      if (err) return true;
       ticket.setTicketType(ownerId, typeId, function (err, t) {
-        if (err) return true
+        if (err) return true;
 
         t.save(function (err, tt) {
-          if (err) return true
+          if (err) return true;
 
           ticketSchema.populate(tt, 'type', function (err) {
-            if (err) return true
+            if (err) return true;
 
             // emitter.emit('ticket:updated', tt)
-            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TYPE_UPDATE, tt)
-          })
-        })
-      })
-    })
-  })
-}
+            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TYPE_UPDATE, tt);
+          });
+        });
+      });
+    });
+  });
+};
 
-events.onUpdateTicketTags = socket => {
-  socket.on(socketEvents.TICKETS_UI_TAGS_UPDATE, async data => {
-    const ticketId = data.ticketId
-    if (_.isUndefined(ticketId)) return true
+events.onUpdateTicketTags = (socket) => {
+  socket.on(socketEvents.TICKETS_UI_TAGS_UPDATE, async (data) => {
+    const ticketId = data.ticketId;
+    if (_.isUndefined(ticketId)) return true;
 
     try {
-      const ticket = await ticketSchema.findOne({ _id: ticketId }).populate('tags')
+      const ticket = await ticketSchema.findOne({ _id: ticketId }).populate('tags');
 
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TAGS_UPDATE, ticket)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TAGS_UPDATE, ticket);
     } catch (e) {
       // Blank
     }
-  })
-}
+  });
+};
 
 events.onSetTicketPriority = function (socket) {
   socket.on(socketEvents.TICKETS_PRIORITY_SET, function (data) {
-    const ticketId = data._id
-    const priority = data.value
-    const ownerId = socket.request.user._id
+    const ticketId = data._id;
+    const priority = data.value;
+    const ownerId = socket.request.user._id;
 
-    if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true
+    if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true;
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+      if (err) return true;
       prioritySchema.getPriority(priority, function (err, p) {
         if (err) {
-          winston.debug(err)
-          return true
+          winston.debug(err);
+          return true;
         }
 
         ticket.setTicketPriority(ownerId, p, function (err, t) {
-          if (err) return true
+          if (err) return true;
           t.save(function (err, tt) {
-            if (err) return true
+            if (err) return true;
 
             // emitter.emit('ticket:updated', tt)
-            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_PRIORITY_UPDATE, tt)
-          })
-        })
-      })
-    })
-  })
-}
+            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_PRIORITY_UPDATE, tt);
+          });
+        });
+      });
+    });
+  });
+};
 
-events.onClearAssignee = socket => {
-  socket.on(socketEvents.TICKETS_ASSIGNEE_CLEAR, async id => {
-    const ownerId = socket.request.user._id
+events.onClearAssignee = (socket) => {
+  socket.on(socketEvents.TICKETS_ASSIGNEE_CLEAR, async (id) => {
+    const ownerId = socket.request.user._id;
 
     try {
-      const ticket = await ticketSchema.findOne({ _id: id })
-      const updatedTicket = await ticket.clearAssignee(ownerId)
-      const savedTicket = await updatedTicket.save()
+      const ticket = await ticketSchema.findOne({ _id: id });
+      const updatedTicket = await ticket.clearAssignee(ownerId);
+      const savedTicket = await updatedTicket.save();
 
       // emitter.emit('ticket:updated', tt)
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, savedTicket)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, savedTicket);
     } catch (e) {
       // Blank
     }
-  })
-}
+  });
+};
 
 events.onSetTicketGroup = function (socket) {
   socket.on(socketEvents.TICKETS_GROUP_SET, function (data) {
-    const ticketId = data._id
-    const groupId = data.value
-    const ownerId = socket.request.user._id
+    const ticketId = data._id;
+    const groupId = data.value;
+    const ownerId = socket.request.user._id;
 
-    if (_.isUndefined(ticketId) || _.isUndefined(groupId)) return true
+    if (_.isUndefined(ticketId) || _.isUndefined(groupId)) return true;
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+      if (err) return true;
 
       ticket.setTicketGroup(ownerId, groupId, function (err, t) {
-        if (err) return true
+        if (err) return true;
 
         t.save(function (err, tt) {
-          if (err) return true
+          if (err) return true;
 
           ticketSchema.populate(tt, 'group', function (err) {
-            if (err) return true
+            if (err) return true;
 
             // emitter.emit('ticket:updated', tt)
-            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_GROUP_UPDATE, tt)
-          })
-        })
-      })
-    })
-  })
-}
+            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_GROUP_UPDATE, tt);
+          });
+        });
+      });
+    });
+  });
+};
 
 events.onSetTicketDueDate = function (socket) {
   socket.on(socketEvents.TICKETS_DUEDATE_SET, function (data) {
-    const ticketId = data._id
-    const dueDate = data.value
-    const ownerId = socket.request.user._id
+    const ticketId = data._id;
+    const dueDate = data.value;
+    const ownerId = socket.request.user._id;
 
-    if (_.isUndefined(ticketId)) return true
+    if (_.isUndefined(ticketId)) return true;
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
+      if (err) return true;
 
       ticket.setTicketDueDate(ownerId, dueDate, function (err, t) {
-        if (err) return true
+        if (err) return true;
 
         t.save(function (err, tt) {
-          if (err) return true
+          if (err) return true;
 
           // emitter.emit('ticket:updated', tt)
-          utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_DUEDATE_UPDATE, tt)
-        })
-      })
-    })
-  })
-}
+          utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_DUEDATE_UPDATE, tt);
+        });
+      });
+    });
+  });
+};
 
-events.onSetTicketIssue = socket => {
-  socket.on(socketEvents.TICKETS_ISSUE_SET, async data => {
-    const ticketId = data._id
-    const issue = data.value
-    const subject = data.subject
-    const ownerId = socket.request.user._id
-    if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true
+events.onSetTicketIssue = (socket) => {
+  socket.on(socketEvents.TICKETS_ISSUE_SET, async (data) => {
+    const ticketId = data._id;
+    const issue = data.value;
+    const subject = data.subject;
+    const ownerId = socket.request.user._id;
+    if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
 
     try {
-      let ticket = await ticketSchema.getTicketById(ticketId)
-      if (subject !== ticket.subject) ticket = await ticket.setSubject(ownerId, subject)
-      if (issue !== ticket.issue) ticket = await ticket.setIssue(ownerId, issue)
+      let ticket = await ticketSchema.getTicketById(ticketId);
+      if (subject !== ticket.subject) ticket = await ticket.setSubject(ownerId, subject);
+      if (issue !== ticket.issue) ticket = await ticket.setIssue(ownerId, issue);
 
-      ticket = await ticket.save()
+      ticket = await ticket.save();
 
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket);
     } catch (e) {
       // Blank
     }
-  })
-}
+  });
+};
 
-events.onCommentNoteSet = socket => {
-  socket.on(socketEvents.TICKETS_COMMENT_NOTE_SET, async data => {
-    const ownerId = socket.request.user._id
-    const ticketId = data._id
-    const itemId = data.item
-    let text = data.value
-    const isNote = data.isNote
+events.onCommentNoteSet = (socket) => {
+  socket.on(socketEvents.TICKETS_COMMENT_NOTE_SET, async (data) => {
+    const ownerId = socket.request.user._id;
+    const ticketId = data._id;
+    const itemId = data.item;
+    let text = data.value;
+    const isNote = data.isNote;
 
-    if (_.isUndefined(ticketId) || _.isUndefined(itemId) || _.isUndefined(text)) return true
+    if (_.isUndefined(ticketId) || _.isUndefined(itemId) || _.isUndefined(text)) return true;
 
     marked.setOptions({
-      breaks: true
-    })
+      breaks: true,
+    });
 
-    text = sanitizeHtml(text).trim()
-    const markedText = xss(marked.parse(text))
+    text = sanitizeHtml(text).trim();
+    const markedText = xss(marked.parse(text));
 
     try {
-      let ticket = await ticketSchema.getTicketById(ticketId)
-      if (!isNote) ticket = await ticket.updateComment(ownerId, itemId, markedText)
-      else ticket = await ticket.updateNote(ownerId, itemId, markedText)
-      ticket = await ticket.save()
-      configForSendMail(ticket)
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+      let ticket = await ticketSchema.getTicketById(ticketId);
+      if (!isNote) ticket = await ticket.updateComment(ownerId, itemId, markedText);
+      else ticket = await ticket.updateNote(ownerId, itemId, markedText);
+      ticket = await ticket.save();
+      configForSendMail(ticket);
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket);
     } catch (e) {
-      winston.error(e)
+      winston.error(e);
     }
-  })
-}
+  });
+};
 
-events.onRemoveCommentNote = socket => {
-  socket.on(socketEvents.TICKETS_COMMENT_NOTE_REMOVE, async data => {
-    const ownerId = socket.request.user._id
-    const ticketId = data._id
-    const itemId = data.value
-    const isNote = data.isNote
+events.onRemoveCommentNote = (socket) => {
+  socket.on(socketEvents.TICKETS_COMMENT_NOTE_REMOVE, async (data) => {
+    const ownerId = socket.request.user._id;
+    const ticketId = data._id;
+    const itemId = data.value;
+    const isNote = data.isNote;
 
     try {
-      let ticket = await ticketSchema.getTicketById(ticketId)
-      if (!isNote) ticket = await ticket.removeComment(ownerId, itemId)
-      else ticket = await ticket.removeNote(ownerId, itemId)
+      let ticket = await ticketSchema.getTicketById(ticketId);
+      if (!isNote) ticket = await ticket.removeComment(ownerId, itemId);
+      else ticket = await ticket.removeNote(ownerId, itemId);
 
-      let savePath = path.join(__dirname, `../../public/uploads/tickets/${ticketId}/comments/${itemId}`)
-      if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
-      if (fs.existsSync(savePath)) fs.emptyDirSync(savePath)
-      if (fs.existsSync(savePath)) fs.rmdirSync(savePath)
+      let savePath = path.join(__dirname, `../../public/uploads/tickets/${ticketId}/comments/${itemId}`);
+      if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath);
+      if (fs.existsSync(savePath)) fs.emptyDirSync(savePath);
+      if (fs.existsSync(savePath)) fs.rmdirSync(savePath);
 
-      ticket = await ticket.save()
+      ticket = await ticket.save();
 
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  })
-}
+  });
+};
 
-events.onAttachmentsUIUpdate = socket => {
-  socket.on(socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, async data => {
-    const ticketId = data._id
+events.onAttachmentsUIUpdate = (socket) => {
+  socket.on(socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, async (data) => {
+    const ticketId = data._id;
 
-    if (_.isUndefined(ticketId)) return true
+    if (_.isUndefined(ticketId)) return true;
 
     try {
-      const ticket = await ticketSchema.getTicketById(ticketId)
-      const user = socket.request.user
-      if (_.isUndefined(user)) return true
+      const ticket = await ticketSchema.getTicketById(ticketId);
+      const user = socket.request.user;
+      if (_.isUndefined(user)) return true;
 
-      const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
+      const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment');
 
       const data = {
         ticket,
-        canRemoveAttachments
-      }
+        canRemoveAttachments,
+      };
 
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, data)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, data);
     } catch (e) {
       // Blank
     }
-  })
-  socket.on(socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, async data => {
-    const commentId = data.commentId
-    const ticketId = data.ticketId
-    if (_.isUndefined(commentId)) return true
-    if (_.isUndefined(ticketId)) return true
+  });
+  socket.on(socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, async (data) => {
+    const commentId = data.commentId;
+    const ticketId = data.ticketId;
+    if (_.isUndefined(commentId)) return true;
+    if (_.isUndefined(ticketId)) return true;
     try {
-      const ticket = await ticketSchema.getTicketById(ticketId)
-      const user = socket.request.user
-      if (_.isUndefined(user)) return true
+      const ticket = await ticketSchema.getTicketById(ticketId);
+      const user = socket.request.user;
+      if (_.isUndefined(user)) return true;
 
-      const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
+      const canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment');
 
       const data = {
         ticket,
         commentId,
-        canRemoveAttachments
-      }
+        canRemoveAttachments,
+      };
 
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, data)
-      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_COMMENTS_UI_ATTACHMENTS_UPDATE, data);
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket);
     } catch (e) {
       // Blank
     }
-  })
-}
+  });
+};
 
 module.exports = {
   events: events,
   eventLoop: eventLoop,
-  register: register
-}
+  register: register,
+};

@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
-  require('matchdep')
-    .filterAll('grunt-*')
-    .forEach(grunt.loadNpmTasks)
+  require('matchdep').filterAll('grunt-*').forEach(grunt.loadNpmTasks);
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -13,9 +11,9 @@ module.exports = function (grunt) {
       web: {
         options: {
           script: 'app.js',
-          port: 8118
-        }
-      }
+          port: 8118,
+        },
+      },
     },
 
     watch: {
@@ -24,27 +22,27 @@ module.exports = function (grunt) {
         tasks: ['express:web'],
         options: {
           nospawn: true,
-          atBegin: true
-        }
-      }
+          atBegin: true,
+        },
+      },
     },
 
     parallel: {
       web: {
         options: {
-          stream: true
+          stream: true,
         },
         tasks: [
           {
             grunt: true,
-            args: ['watch:web']
+            args: ['watch:web'],
           },
           {
             grunt: true,
-            args: ['shell:webpackWatch']
-          }
-        ]
-      }
+            args: ['shell:webpackWatch'],
+          },
+        ],
+      },
     },
 
     cssmin: {
@@ -73,24 +71,24 @@ module.exports = function (grunt) {
             'src/public/js/vendor/easymde/dist/easymde.min.css',
             'src/public/js/vendor/grapesjs/css/grapes.min.css',
             'node_modules/react-grid-layout/css/styles.css',
-            'node_modules/react-resizable/css/styles.css'
-          ]
-        }
+            'node_modules/react-resizable/css/styles.css',
+          ],
+        },
       },
       minify: {
         expand: true,
         cwd: 'public/css/',
         src: ['*.css', '!app.min.css', '!*.min.css'],
         dest: 'public/css/',
-        ext: '.min.css'
-      }
+        ext: '.min.css',
+      },
     },
 
     uglify: {
       uikit: {
         options: {
           beautify: false,
-          mangle: false
+          mangle: false,
         },
 
         src: [
@@ -118,22 +116,22 @@ module.exports = function (grunt) {
           'src/public/js/vendor/uikit/js/components/tooltip.js',
           'src/public/js/vendor/uikit/js/components/upload.js',
 
-          'src/public/js/vendor/uikit/js/custom.js'
+          'src/public/js/vendor/uikit/js/custom.js',
         ],
-        dest: 'src/public/js/vendor/uikit/js/uikit_combined.min.js'
-      }
+        dest: 'src/public/js/vendor/uikit/js/uikit_combined.min.js',
+      },
     },
 
     shell: {
       webpackWatch: 'yarn run webpackwatch',
       webpackDev: 'yarn run webpackdev',
-      webpackDist: 'yarn run webpackdist'
-    }
-  })
+      webpackDist: 'yarn run webpackdist',
+    },
+  });
 
-  grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin'])
-  grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'cssmin', 'parallel:web'])
-  grunt.registerTask('build', ['uglify:uikit', 'cssmin', 'shell:webpackDist'])
-  grunt.registerTask('devbuild', ['shell:webpackDev'])
-  grunt.registerTask('default', ['server'])
-}
+  grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin']);
+  grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'cssmin', 'parallel:web']);
+  grunt.registerTask('build', ['uglify:uikit', 'cssmin', 'shell:webpackDist']);
+  grunt.registerTask('devbuild', ['shell:webpackDev']);
+  grunt.registerTask('default', ['server']);
+};

@@ -26,6 +26,7 @@ import { showModal } from 'actions/common';
 import { fetchSettings } from 'actions/settings';
 import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
+import { TICKETS_ASSIGNEE_SET, TICKETS_UI_ASSIGNEE_UPDATE } from 'serverSocket/socketEventConsts';
 
 import PageTitle from 'components/PageTitle';
 import Table from 'components/Table';
@@ -63,6 +64,7 @@ class TicketsContainer extends React.Component {
     this.onTCMUpdated = this.onTCMUpdated.bind(this);
     this.onTSortingUpdated = this.onTSortingUpdated.bind(this);
     this.onTSortingsFetch = this.onTSortingsFetch.bind(this);
+    this.onUpdateTicketAssignee = this.onUpdateTicketAssignee.bind(this);
   }
 
   componentDidMount() {
@@ -74,6 +76,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:created', this.onTicketCreated);
     this.props.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted);
+    this.props.socket.on(TICKETS_UI_ASSIGNEE_UPDATE, this.onUpdateTicketAssignee);
     this.props.fetchSettings();
     this.props.fetchTCMs();
     this.props.fetchTSortings();
@@ -124,6 +127,14 @@ class TicketsContainer extends React.Component {
     this.props.socket.off('$trudesk:client:tsortings:fetch', this.onTSortingsFetch);
     this.props.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated);
     this.props.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted);
+    this.props.socket.off(TICKETS_UI_ASSIGNEE_UPDATE, this.onUpdateTicketAssignee);
+  }
+
+  onUpdateTicketAssignee(data) {
+    if (this.props.ticketId === data.tid) {
+      this.assignee = data.status;
+      if (this.props.onStatusChange) this.props.onStatusChange(this.status);
+    }
   }
 
   onTicketCreated(ticket) {
@@ -356,6 +367,12 @@ class TicketsContainer extends React.Component {
     this.props.fetchTSortings();
   }
 
+  changeAssignee(ticket, assignee) {
+    if (!this.props.hasPerm) return;
+    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: ticket.get('_id'), value: assignee });
+    //this.forceClose();
+  }
+
   render() {
     const loadingItems = [];
     for (let i = 0; i < 51; i++) {
@@ -561,7 +578,7 @@ class TicketsContainer extends React.Component {
                   return now.isAfter(timeout);
                 };
 
-                const hasTicketStatusUpdate = (ticket) => {
+                const hasTicketUpdate = (ticket) => {
                   const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
                   const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
                   if (isAgent || isAdmin) {
@@ -618,7 +635,7 @@ class TicketsContainer extends React.Component {
                         onStatusChange={(status) => {
                           this.sendNotification(ticket);
                         }}
-                        hasPerm={hasTicketStatusUpdate(ticket)}
+                        hasPerm={hasTicketUpdate(ticket)}
                       />
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
@@ -646,6 +663,8 @@ class TicketsContainer extends React.Component {
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
+                        onClick={this.changeAssignee(ticket, this.props.sessionUser._id)}
+                        hasPerm={hasTicketUpdate(ticket)}
                       >
                         back_hand
                       </span>
