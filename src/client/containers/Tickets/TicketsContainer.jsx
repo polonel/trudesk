@@ -660,23 +660,37 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell className={'vam nbb'}>
-                      <span
-                        role="button"
-                        title="Set Assignee"
-                        // style={{ float: 'left' }}
-                        // className="relative no-ajaxy"
-                        onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                      >
-                        {assignee()}
-                        <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                          <Avatar
-                            image={ticket.get('assignee') && ticket.get('assignee').get('image')}
-                            //showOnlineBubble={this.ticket.assignee !== undefined}
-                            userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
-                          />
-                          <span className="drop-icon material-icons">keyboard_arrow_down</span>
-                        </PDropdownTrigger>
-                      </span>
+                      {assignee()}
+                      <div className="ticket-assignee uk-clearfix">
+                        {hasTicketUpdate && (
+                          <a
+                            role="button"
+                            title="Set Assignee"
+                            style={{ float: 'left' }}
+                            className="relative no-ajaxy"
+                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                          >
+                            <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                              <span className="drop-icon material-icons">keyboard_arrow_down</span>
+                            </PDropdownTrigger>
+                          </a>
+                        )}
+                        <div className="ticket-assignee-details">
+                          {!ticket.get('assignee') && <h3>No User Assigned</h3>}
+                          {ticket.get('assignee') && (
+                            <Fragment>
+                              <h3>{ticket.get('assignee').get('fullname')}</h3>
+                              <a
+                                className="comment-email-link uk-text-truncate uk-display-inline-block"
+                                href={`mailto:${ticket.get('assignee').get('email')}`}
+                              >
+                                {ticket.get('assignee').get('email')}
+                              </a>
+                              <span className={'uk-display-block'}>{ticket.get('assignee').get('title')}</span>
+                            </Fragment>
+                          )}
+                        </div>
+                      </div>
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
