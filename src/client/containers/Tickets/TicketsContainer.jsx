@@ -682,18 +682,16 @@ class TicketsContainer extends React.Component {
                         }}
                         onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                         hasPerm={hasTicketElementUpdate(ticket)}
+                      />
+                      <span
+                        role="button"
+                        title="Set Assignee"
+                        style={{ float: 'left' }}
+                        className="relative no-ajaxy"
+                        onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                       >
-                        <a
-                          role="button"
-                          title="Set Assignee"
-                          style={{ float: 'left' }}
-                          className="relative no-ajaxy"
-                          onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                        >
-                          {assignee()}
-                        </a>
-                      </AssigneeDropdownPartialList>
-
+                        {assignee()}
+                      </span>
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}

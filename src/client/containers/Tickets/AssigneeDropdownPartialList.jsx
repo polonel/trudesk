@@ -110,7 +110,10 @@ class StatusSelectorList extends React.Component {
             `ticket-status-list ticket-${statusToName(this.status).toLowerCase()}`,
             this.props.hasPerm && `cursor-pointer`
           )}
-          onClick={(e) => this.toggleDropMenu(e)}
+          onClick={(e) => {
+            this.props.socket.emit(TICKETS_ASSIGNEE_LOAD);
+            this.toggleDropMenu(e);
+          }}
           ref={(r) => (this.selectorButton = r)}
           style={{ width: 25 }}
         >
