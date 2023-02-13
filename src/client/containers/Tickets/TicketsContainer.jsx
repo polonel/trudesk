@@ -673,29 +673,37 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <AssigneeDropdownPartialList
-                        ticketId={ticket.get('_id')}
-                        status={ticket.get('status')}
-                        socket={this.props.socket}
-                        onStatusChange={(status) => {
-                          this.sendNotification(ticket);
-                        }}
+                      <a
+                        role="button"
+                        title="Set Assignee"
+                        style={{ float: 'left' }}
+                        className="relative no-ajaxy"
                         onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                        hasPerm={hasTicketElementUpdate(ticket)}
                       >
-                        {assignee()}
-                      </AssigneeDropdownPartialList>
+                        <AssigneeDropdownPartialList
+                          ticketId={ticket.get('_id')}
+                          status={ticket.get('status')}
+                          socket={this.props.socket}
+                          onStatusChange={(status) => {
+                            this.sendNotification(ticket);
+                          }}
+                          onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                          hasPerm={hasTicketElementUpdate(ticket)}
+                        >
+                          {assignee()}
+                        </AssigneeDropdownPartialList>
 
-                      <span
-                        className="drop-icon material-icons"
-                        style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
-                        onClick={() => {
-                          this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
-                        }}
-                        hasPerm={hasTicketElementUpdate(ticket)}
-                      >
-                        back_hand
-                      </span>
+                        <span
+                          className="drop-icon material-icons"
+                          style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
+                          onClick={() => {
+                            this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                          }}
+                          hasPerm={hasTicketElementUpdate(ticket)}
+                        >
+                          back_hand
+                        </span>
+                      </a>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{dueDate}</TableCell>
                     <TableCell className={'vam nbb'}>{updated}</TableCell>
