@@ -94,6 +94,8 @@ class StatusSelectorList extends React.Component {
 
   onUpdateAssigneeList(data) {
     console.log('onUpdateAssigneeList');
+    console.log('this.props.ticketId');
+    console.log(this.props.ticketId);
     if (this.props.ticketId == data.ticketId) {
       console.log('onUpdateAssigneeList');
       this.agents = data.sortedUser || [];
