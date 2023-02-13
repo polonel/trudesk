@@ -602,7 +602,8 @@ class TicketsContainer extends React.Component {
                     className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''} tableRowHover`}
                     clickable={true}
                     onClick={(e) => {
-                      if (e.target.tagName !== 'SPAN') {
+                      if (e.target.tagName !== 'SPAN' && e.target.id !== 'assignee') {
+                        console.log(e.target.id);
                         const td = e.target.closest('td');
                         const input = td.getElementsByTagName('input');
                         if (input.length > 0) return false;
@@ -660,72 +661,79 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
-                    <TableCell className={'vam nbb'}>
+                    <TableCell id="assignee" className={'vam nbb'}>
                       {assignee()}
-                      <span>
-                        <div className="ticket-assignee uk-clearfix">
-                          {hasTicketUpdate && (
-                            <a
-                              role="button"
-                              title="Set Assignee"
-                              style={{ float: 'left' }}
-                              className="relative no-ajaxy"
-                              onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                            >
-                              <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                                <Avatar
-                                  image={ticket.get('assignee') && ticket.get('assignee').get('image')}
-                                  // showOnlineBubble={this.ticket.assignee !== undefined}
-                                  userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
-                                />
-                                <span className="drop-icon material-icons">keyboard_arrow_down</span>
-                              </PDropdownTrigger>
-                            </a>
-                          )}
-                          {!hasTicketUpdate && (
-                            <Avatar
-                              image={ticket.get('assignee') && ticket.get('assignee').get('image')}
-                              // showOnlineBubble={this.ticket.assignee !== undefined}
-                              userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
-                            />
-                          )}
-                          <div className="ticket-assignee-details">
-                            {!ticket.get('assignee') && <h3>No User Assigned</h3>}
-                            {ticket.get('assignee') && (
-                              <Fragment>
-                                <h3>{ticket.get('assignee').get('fullname')}</h3>
-                                <a
-                                  className="comment-email-link uk-text-truncate uk-display-inline-block"
-                                  href={`mailto:${ticket.get('assignee').get('email')}`}
-                                >
-                                  {ticket.get('assignee').get('email')}
-                                </a>
-                                <span className={'uk-display-block'}>{ticket.get('assignee').get('title')}</span>
-                              </Fragment>
-                            )}
-                          </div>
-                        </div>
-                        <span
-                          className="drop-icon material-icons"
-                          style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
-                          onClick={() => {
-                            this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
-                          }}
-                          hasPerm={hasTicketElementUpdate(ticket)}
-                        >
-                          back_hand
-                        </span>
-                        <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                          {hasTicketUpdate && (
-                            <AssigneeDropdownPartial
-                              forwardedRef={this.assigneeDropdownPartial}
-                              ticketId={ticket.get('_id')}
-                              // onClearClick={() => (ticket.get('assignee') = undefined)}
-                              // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                            />
+
+                      <div id="assignee" className="ticket-assignee uk-clearfix">
+                        {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
+                          <a
+                            id="assignee"
+                            role="button"
+                            title="Set Assignee"
+                            style={{ float: 'left' }}
+                            className="relative no-ajaxy"
+                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                          >
+                            <PDropdownTrigger id="assignee" target={this.assigneeDropdownPartial}>
+                              <Avatar
+                                id="assignee"
+                                image={ticket.get('assignee') && ticket.get('assignee').get('image')}
+                                // showOnlineBubble={this.ticket.assignee !== undefined}
+                                userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
+                              />
+                              <span id="assignee" className="drop-icon material-icons">
+                                keyboard_arrow_down
+                              </span>
+                            </PDropdownTrigger>
+                          </a>
+                        )}
+                        {!(ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update')) && (
+                          <Avatar
+                            id="assignee"
+                            image={ticket.get('assignee') && ticket.get('assignee').get('image')}
+                            // showOnlineBubble={this.ticket.assignee !== undefined}
+                            userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
+                          />
+                        )}
+                        <div id="assignee" className="ticket-assignee-details">
+                          {!ticket.get('assignee') && <h3>No User Assigned</h3>}
+                          {ticket.get('assignee') && (
+                            <Fragment id="assignee">
+                              <h3 id="assignee">{ticket.get('assignee').get('fullname')}</h3>
+                              <a
+                                id="assignee"
+                                className="comment-email-link uk-text-truncate uk-display-inline-block"
+                                href={`mailto:${ticket.get('assignee').get('email')}`}
+                              >
+                                {ticket.get('assignee').get('email')}
+                              </a>
+                              <span id="assignee" className={'uk-display-block'}>
+                                {ticket.get('assignee').get('title')}
+                              </span>
+                            </Fragment>
                           )}
                         </div>
+                      </div>
+                      <span
+                        className="drop-icon material-icons"
+                        style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
+                        onClick={() => {
+                          this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                        }}
+                        hasPerm={hasTicketElementUpdate(ticket)}
+                      >
+                        back_hand
                       </span>
+                      <div id="assignee" className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
+                        {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
+                          <AssigneeDropdownPartial
+                            forwardedRef={this.assigneeDropdownPartial}
+                            ticketId={ticket.get('_id')}
+                            // onClearClick={() => (ticket.get('assignee') = undefined)}
+                            // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
+                          />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{dueDate}</TableCell>
                     <TableCell className={'vam nbb'}>{updated}</TableCell>
