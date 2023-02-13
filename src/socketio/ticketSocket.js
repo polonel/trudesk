@@ -207,15 +207,16 @@ events.onUpdateTCM = function (socket) {
 };
 
 events.onUpdateAssigneeList = function (socket) {
-  socket.on(socketEvents.TICKETS_ASSIGNEE_LOAD, function () {
+  socket.on(socketEvents.TICKETS_ASSIGNEE_LOAD, function (data) {
     roleSchema.getAgentRoles(function (err, roles) {
       if (err) return true;
       userSchema.find({ role: { $in: roles }, deleted: false }, function (err, users) {
         if (err) return true;
 
         var sortedUser = _.sortBy(users, 'fullname');
-
-        utils.sendToSelf(socket, socketEvents.TICKETS_ASSIGNEE_LOAD, sortedUser);
+        var ticketId = data.ticketId;
+        const data = { ticketId, sortedUser };
+        utils.sendToSelf(socket, socketEvents.TICKETS_ASSIGNEE_LOAD, data);
       });
     });
   });

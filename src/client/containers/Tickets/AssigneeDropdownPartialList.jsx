@@ -93,7 +93,10 @@ class StatusSelectorList extends React.Component {
   }
 
   onUpdateAssigneeList(data) {
-    this.agents = data || [];
+    if (this.props.ticketId == data.ticketId) {
+      console.log('onUpdateAssigneeList');
+      this.agents = data.sortedUser || [];
+    }
   }
 
   changeStatus(status) {
@@ -113,7 +116,7 @@ class StatusSelectorList extends React.Component {
             this.props.hasPerm && `cursor-pointer`
           )}
           onClick={(e) => {
-            this.props.socket.emit(TICKETS_ASSIGNEE_LOAD);
+            this.props.socket.emit(TICKETS_ASSIGNEE_LOAD, { ticketId: this.props.ticketId });
             this.toggleDropMenu(e);
           }}
           ref={(r) => (this.selectorButton = r)}

@@ -674,6 +674,7 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       <AssigneeDropdownPartialList
+                        id={ticket.get('_id')}
                         ticketId={ticket.get('_id')}
                         status={ticket.get('status')}
                         assignee={assignee()}
