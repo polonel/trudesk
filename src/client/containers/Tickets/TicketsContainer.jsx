@@ -56,11 +56,13 @@ import SearchResults from 'components/SearchResults';
 class TicketsContainer extends React.Component {
   @observable agents = [];
   @observable searchTerm = '';
-  @observable pDropDownTicket = '';
   assigneeDropdownPartial = createRef();
   selectedTickets = [];
   constructor(props) {
     super(props);
+    this.state = {
+      pDropDownTicket: '',
+    };
     makeObservable(this);
 
     this.onTicketCommentAdded = this.onTicketCommentAdded.bind(this);
@@ -328,8 +330,12 @@ class TicketsContainer extends React.Component {
   }
 
   pDropDown(ticketId) {
-    this.pDropDownTicket = ticketId;
+    console.log('pDropDown');
+    this.setState({
+      pDropDownTicket: ticketId,
+    });
   }
+
   sendNotification(ticket) {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
@@ -668,111 +674,6 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       {assignee()}
-
-                      <div id="assignee" className="ticket-assignee uk-clearfix">
-                        {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
-                          <a
-                            id="assignee"
-                            role="button"
-                            title="Set Assignee"
-                            style={{ float: 'left' }}
-                            className="relative no-ajaxy"
-                            onClick={() => this.pDropDown(ticket.get('_id'))}
-                          >
-                            <PDropdownTrigger id="assignee" target={this.assigneeDropdownPartial}>
-                              <Avatar
-                                id="assignee"
-                                image={ticket.get('assignee') && ticket.get('assignee').get('image')}
-                                // showOnlineBubble={this.ticket.assignee !== undefined}
-                                userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
-                              />
-                              <span id="assignee" className="drop-icon material-icons">
-                                keyboard_arrow_down
-                              </span>
-                            </PDropdownTrigger>
-                          </a>
-                        )}
-                        {!(ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update')) && (
-                          <Avatar
-                            id="assignee"
-                            image={ticket.get('assignee') && ticket.get('assignee').get('image')}
-                            // showOnlineBubble={this.ticket.assignee !== undefined}
-                            userId={ticket.get('assignee') && ticket.get('assignee').get('_id')}
-                          />
-                        )}
-                        <div id="assignee" className="ticket-assignee-details">
-                          {!ticket.get('assignee') && <h3>No User Assigned</h3>}
-                          {ticket.get('assignee') && (
-                            <Fragment id="assignee">
-                              <h3 id="assignee">{ticket.get('assignee').get('fullname')}</h3>
-                              <a
-                                id="assignee"
-                                className="comment-email-link uk-text-truncate uk-display-inline-block"
-                                href={`mailto:${ticket.get('assignee').get('email')}`}
-                              >
-                                {ticket.get('assignee').get('email')}
-                              </a>
-                              <span id="assignee" className={'uk-display-block'}>
-                                {ticket.get('assignee').get('title')}
-                              </span>
-                            </Fragment>
-                          )}
-                        </div>
-                        {this.pDropDownTicket == this.ticket.get('_id') && (
-                          <PDropDown
-                            ref={this.props.forwardedRef}
-                            title={'Select Assignee'}
-                            id={'assigneeDropdown'}
-                            className={'opt-ignore-notice'}
-                            override={true}
-                            leftArrow={true}
-                            topOffset={75}
-                            leftOffset={35}
-                            minHeight={215}
-                            rightComponent={
-                              <a
-                                className={'hoverUnderline no-ajaxy'}
-                                onClick={() => {
-                                  helpers.hideAllpDropDowns();
-                                  if (this.props.onClearClick) this.props.onClearClick();
-                                  this.props.socket.emit(TICKETS_ASSIGNEE_CLEAR, this.props.ticketId);
-                                }}
-                              >
-                                Clear Assignee
-                              </a>
-                            }
-                          >
-                            {this.agents.map((agent) => {
-                              return (
-                                <li
-                                  key={agent._id}
-                                  onClick={() => {
-                                    if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
-                                    helpers.hideAllpDropDowns();
-                                    this.props.socket.emit(TICKETS_ASSIGNEE_SET, {
-                                      _id: agent._id,
-                                      ticketId: this.props.ticketId,
-                                    });
-                                  }}
-                                >
-                                  <a className="messageNotification no-ajaxy" role="button">
-                                    <div className="uk-clearfix">
-                                      <Avatar userId={agent._id} image={agent.image} size={50} />
-                                      <div className="messageAuthor">
-                                        <strong>{agent.fullname}</strong>
-                                      </div>
-                                      <div className="messageSnippet">
-                                        <span>{agent.email}</span>
-                                      </div>
-                                      <div className="messageDate">{agent.title}</div>
-                                    </div>
-                                  </a>
-                                </li>
-                              );
-                            })}
-                          </PDropDown>
-                        )}
-                      </div>
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
