@@ -42,7 +42,7 @@ import Dropdown from 'components/Dropdown';
 import DropdownItem from 'components/Dropdown/DropdownItem';
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator';
 import StatusSelectorList from 'containers/Tickets/StatusSelectorList';
-import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
+import AssigneeDropdownPartialList from 'containers/Tickets/AssigneeDropdownPartialList';
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import SingleSelectStatus from 'components/SingleSelectStatus';
 import PDropDown from 'components/PDropdown';
@@ -673,7 +673,18 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      {assignee()}
+                      <AssigneeDropdownPartialList
+                        ticketId={ticket.get('_id')}
+                        status={ticket.get('status')}
+                        socket={this.props.socket}
+                        onStatusChange={(status) => {
+                          this.sendNotification(ticket);
+                        }}
+                        hasPerm={hasTicketElementUpdate(ticket)}
+                      >
+                        {assignee()}
+                      </AssigneeDropdownPartialList>
+
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
@@ -684,16 +695,6 @@ class TicketsContainer extends React.Component {
                       >
                         back_hand
                       </span>
-                      <div id="assignee" className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                        {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
-                          <AssigneeDropdownPartial
-                            forwardedRef={this.assigneeDropdownPartial}
-                            ticketId={ticket.get('_id')}
-                            // onClearClick={() => (ticket.get('assignee') = undefined)}
-                            // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                          />
-                        )}
-                      </div>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{dueDate}</TableCell>
                     <TableCell className={'vam nbb'}>{updated}</TableCell>
