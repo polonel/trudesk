@@ -680,6 +680,7 @@ class TicketsContainer extends React.Component {
                         onStatusChange={(status) => {
                           this.sendNotification(ticket);
                         }}
+                        onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                         hasPerm={hasTicketElementUpdate(ticket)}
                       >
                         {assignee()}

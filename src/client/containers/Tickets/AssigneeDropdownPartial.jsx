@@ -44,7 +44,6 @@ class AssigneeDropdownPartial extends React.Component {
   }
 
   onUpdateAssigneeList(data) {
-    console.log('onUpdateAssieneeList');
     this.agents = data || [];
   }
 

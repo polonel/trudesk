@@ -16,7 +16,8 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { observer } from 'mobx-react';
 import { observable, makeObservable } from 'mobx';
-
+import Avatar from 'components/Avatar/Avatar';
+import helpers from 'lib/helpers';
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts';
 
 const statusToName = (status) => {
@@ -35,6 +36,7 @@ const statusToName = (status) => {
 @observer
 class StatusSelectorList extends React.Component {
   @observable status = null;
+  @observable agents = [];
 
   constructor(props) {
     super(props);
@@ -48,7 +50,7 @@ class StatusSelectorList extends React.Component {
 
   componentDidMount() {
     document.addEventListener('click', this.onDocumentClick);
-
+    this.props.socket.on(TICKETS_ASSIGNEE_LOAD, this.onUpdateAssigneeList);
     this.props.socket.on(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus);
   }
 
@@ -58,6 +60,7 @@ class StatusSelectorList extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('click', this.onDocumentClick);
+    this.props.socket.off(TICKETS_ASSIGNEE_LOAD, this.onUpdateAssigneeList);
     this.props.socket.off(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus);
   }
 
@@ -86,6 +89,10 @@ class StatusSelectorList extends React.Component {
     this.dropMenu.classList.add('hide');
   }
 
+  onUpdateAssigneeList(data) {
+    this.agents = data || [];
+  }
+
   changeStatus(status) {
     if (!this.props.hasPerm) return;
     this.props.socket.emit(TICKETS_STATUS_SET, { _id: this.props.ticketId, value: status });
@@ -110,28 +117,31 @@ class StatusSelectorList extends React.Component {
         </div>
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
-          <ul>
-            {statusToName(this.status) !== 'New' && (
-              <li className={`ticket-status ticket-new`} onClick={() => this.changeStatus(0)}>
-                <span>New</span>
+          {this.agents.map((agent) => {
+            return (
+              <li
+                key={agent._id}
+                onClick={() => {
+                  if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
+                  helpers.hideAllpDropDowns();
+                  this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
+                }}
+              >
+                <a className="messageNotification no-ajaxy" role="button">
+                  <div className="uk-clearfix">
+                    <Avatar userId={agent._id} image={agent.image} size={50} />
+                    <div className="messageAuthor">
+                      <strong>{agent.fullname}</strong>
+                    </div>
+                    <div className="messageSnippet">
+                      <span>{agent.email}</span>
+                    </div>
+                    <div className="messageDate">{agent.title}</div>
+                  </div>
+                </a>
               </li>
-            )}
-            {statusToName(this.status) !== 'Open' && (
-              <li className="ticket-status ticket-open" onClick={() => this.changeStatus(1)}>
-                <span>Open</span>
-              </li>
-            )}
-            {statusToName(this.status) !== 'Pending' && (
-              <li className="ticket-status ticket-pending" onClick={() => this.changeStatus(2)}>
-                <span>Pending</span>
-              </li>
-            )}
-            {statusToName(this.status) !== 'Closed' && (
-              <li className="ticket-status ticket-closed" onClick={() => this.changeStatus(3)}>
-                <span>Closed</span>
-              </li>
-            )}
-          </ul>
+            );
+          })}
         </div>
       </div>
     );
