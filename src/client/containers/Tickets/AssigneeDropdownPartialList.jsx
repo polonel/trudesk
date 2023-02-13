@@ -19,6 +19,7 @@ import { observable, makeObservable } from 'mobx';
 import Avatar from 'components/Avatar/Avatar';
 import helpers from 'lib/helpers';
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts';
+import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
 
 const statusToName = (status) => {
   switch (status) {
@@ -117,31 +118,33 @@ class StatusSelectorList extends React.Component {
         </div>
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
-          {this.agents.map((agent) => {
-            return (
-              <li
-                key={agent._id}
-                onClick={() => {
-                  if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
-                  helpers.hideAllpDropDowns();
-                  this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
-                }}
-              >
-                <a className="messageNotification no-ajaxy" role="button">
-                  <div className="uk-clearfix">
-                    <Avatar userId={agent._id} image={agent.image} size={50} />
-                    <div className="messageAuthor">
-                      <strong>{agent.fullname}</strong>
+          <ul>
+            {this.agents.map((agent) => {
+              return (
+                <li
+                  key={agent._id}
+                  onClick={() => {
+                    if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
+                    helpers.hideAllpDropDowns();
+                    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
+                  }}
+                >
+                  <a className="messageNotification no-ajaxy" role="button">
+                    <div className="uk-clearfix">
+                      <Avatar userId={agent._id} image={agent.image} size={50} />
+                      <div className="messageAuthor">
+                        <strong>{agent.fullname}</strong>
+                      </div>
+                      <div className="messageSnippet">
+                        <span>{agent.email}</span>
+                      </div>
+                      <div className="messageDate">{agent.title}</div>
                     </div>
-                    <div className="messageSnippet">
-                      <span>{agent.email}</span>
-                    </div>
-                    <div className="messageDate">{agent.title}</div>
-                  </div>
-                </a>
-              </li>
-            );
-          })}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     );
