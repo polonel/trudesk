@@ -92,7 +92,7 @@ class StatusSelectorList extends React.Component {
     this.dropMenu.classList.add('hide');
   }
 
-  onUpdateAssigneeList(data) {
+  onUpdateAssigneeList = (data) => {
     console.log('onUpdateAssigneeList');
     console.log('this.props.ticketId');
     console.log(this.props.ticketId);
@@ -100,7 +100,7 @@ class StatusSelectorList extends React.Component {
       console.log('onUpdateAssigneeList');
       this.agents = data.sortedUser || [];
     }
-  }
+  };
 
   changeStatus(status) {
     if (!this.props.hasPerm) return;
