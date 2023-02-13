@@ -26,7 +26,7 @@ import { showModal } from 'actions/common';
 import { fetchSettings } from 'actions/settings';
 import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
-import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD } from 'serverSocket/socketEventConsts';
+import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
 
 import Avatar from 'components/Avatar/Avatar';
 import PageTitle from 'components/PageTitle';
@@ -45,6 +45,7 @@ import StatusSelectorList from 'containers/Tickets/StatusSelectorList';
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import SingleSelectStatus from 'components/SingleSelectStatus';
+import PDropDown from 'components/PDropdown';
 
 import helpers from 'lib/helpers';
 import anime from 'animejs';
@@ -53,7 +54,9 @@ import SearchResults from 'components/SearchResults';
 
 @observer
 class TicketsContainer extends React.Component {
+  @observable agents = [];
   @observable searchTerm = '';
+  @observable pDropDownTicket = '';
   assigneeDropdownPartial = createRef();
   selectedTickets = [];
   constructor(props) {
@@ -324,6 +327,9 @@ class TicketsContainer extends React.Component {
     // }
   }
 
+  pDropDown(ticketId) {
+    this.pDropDownTicket = ticketId;
+  }
   sendNotification(ticket) {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
@@ -579,7 +585,6 @@ class TicketsContainer extends React.Component {
                   const timeout = updated.clone().add(overdueIn, 'm');
                   return now.isAfter(timeout);
                 };
-                const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update');
                 const hasTicketElementUpdate = (ticket) => {
                   const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
                   const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
@@ -672,7 +677,7 @@ class TicketsContainer extends React.Component {
                             title="Set Assignee"
                             style={{ float: 'left' }}
                             className="relative no-ajaxy"
-                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                            onClick={() => this.pDropDown(ticket.get('_id'))}
                           >
                             <PDropdownTrigger id="assignee" target={this.assigneeDropdownPartial}>
                               <Avatar
@@ -713,6 +718,60 @@ class TicketsContainer extends React.Component {
                             </Fragment>
                           )}
                         </div>
+                        {this.pDropDownTicket == this.ticket.get('_id') && (
+                          <PDropDown
+                            ref={this.props.forwardedRef}
+                            title={'Select Assignee'}
+                            id={'assigneeDropdown'}
+                            className={'opt-ignore-notice'}
+                            override={true}
+                            leftArrow={true}
+                            topOffset={75}
+                            leftOffset={35}
+                            minHeight={215}
+                            rightComponent={
+                              <a
+                                className={'hoverUnderline no-ajaxy'}
+                                onClick={() => {
+                                  helpers.hideAllpDropDowns();
+                                  if (this.props.onClearClick) this.props.onClearClick();
+                                  this.props.socket.emit(TICKETS_ASSIGNEE_CLEAR, this.props.ticketId);
+                                }}
+                              >
+                                Clear Assignee
+                              </a>
+                            }
+                          >
+                            {this.agents.map((agent) => {
+                              return (
+                                <li
+                                  key={agent._id}
+                                  onClick={() => {
+                                    if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
+                                    helpers.hideAllpDropDowns();
+                                    this.props.socket.emit(TICKETS_ASSIGNEE_SET, {
+                                      _id: agent._id,
+                                      ticketId: this.props.ticketId,
+                                    });
+                                  }}
+                                >
+                                  <a className="messageNotification no-ajaxy" role="button">
+                                    <div className="uk-clearfix">
+                                      <Avatar userId={agent._id} image={agent.image} size={50} />
+                                      <div className="messageAuthor">
+                                        <strong>{agent.fullname}</strong>
+                                      </div>
+                                      <div className="messageSnippet">
+                                        <span>{agent.email}</span>
+                                      </div>
+                                      <div className="messageDate">{agent.title}</div>
+                                    </div>
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </PDropDown>
+                        )}
                       </div>
                       <span
                         className="drop-icon material-icons"
