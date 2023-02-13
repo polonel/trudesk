@@ -37,6 +37,7 @@ const statusToName = (status) => {
 @observer
 class StatusSelectorList extends React.Component {
   @observable status = null;
+  @observable assignee = null;
   @observable agents = [];
 
   constructor(props) {
@@ -44,6 +45,7 @@ class StatusSelectorList extends React.Component {
     makeObservable(this);
 
     this.status = this.props.status;
+    this.assignee = this.props.assignee;
 
     this.onDocumentClick = this.onDocumentClick.bind(this);
     this.onUpdateTicketStatus = this.onUpdateTicketStatus.bind(this);
@@ -117,7 +119,7 @@ class StatusSelectorList extends React.Component {
           ref={(r) => (this.selectorButton = r)}
           style={{ width: 25 }}
         >
-          <span style={{ width: 25, marginTop: -9 }}>{statusToName(this.status)[0]}</span>
+          <span style={{ width: 25, marginTop: -9 }}>{this.assignee}</span>
         </div>
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">

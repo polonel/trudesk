@@ -676,11 +676,12 @@ class TicketsContainer extends React.Component {
                       <AssigneeDropdownPartialList
                         ticketId={ticket.get('_id')}
                         status={ticket.get('status')}
+                        assignee={assignee()}
                         socket={this.props.socket}
                         onStatusChange={(status) => {
                           this.sendNotification(ticket);
                         }}
-                        onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                        // onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                         hasPerm={hasTicketElementUpdate(ticket)}
                       />
                       <span
@@ -690,7 +691,7 @@ class TicketsContainer extends React.Component {
                         className="relative no-ajaxy"
                         onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                       >
-                        {assignee()}
+                        {/* {assignee()} */}
                       </span>
                       <span
                         className="drop-icon material-icons"
