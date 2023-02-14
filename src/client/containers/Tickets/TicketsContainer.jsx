@@ -27,6 +27,7 @@ import { fetchSettings } from 'actions/settings';
 import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
 import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
+import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
 
 import Avatar from 'components/Avatar/Avatar';
 import PageTitle from 'components/PageTitle';
@@ -678,28 +679,35 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <AssigneeDropdownPartialList
-                        id={ticket.get('_id')}
-                        ticketId={ticket.get('_id')}
-                        status={ticket.get('status')}
-                        assignee={assignee()}
-                        assigneeId={assigneeId()}
-                        socket={this.props.socket}
-                        onStatusChange={(status) => {
-                          this.sendNotification(ticket);
-                        }}
-                        // onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                        hasPerm={hasTicketElementUpdate(ticket)}
-                      />
-                      <span
-                        role="button"
-                        title="Set Assignee"
-                        style={{ float: 'left' }}
-                        className="relative no-ajaxy"
-                        onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                      >
-                        {/* {assignee()} */}
-                      </span>
+                      <div className="ticket-details-wrap uk-position-relative uk-clearfix">
+                        <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
+                          <div className="ticket-assignee uk-clearfix">
+                            {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
+                              <span
+                                role="button"
+                                title="Set Assignee"
+                                style={{ float: 'left' }}
+                                className="relative no-ajaxy"
+                                onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                              >
+                                <PDropdownTrigger target={this.assigneeDropdownPartialList}>
+                                  <span>{this.ticket.assignee.fullname}</span>
+                                </PDropdownTrigger>
+                              </span>
+                            )}
+                          </div>
+
+                          {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
+                            <AssigneeDropdownPartial
+                              forwardedRef={this.assigneeDropdownPartialList}
+                              ticketId={this.ticket._id}
+                              onClearClick={() => (this.ticket.assignee = undefined)}
+                              onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
+                            />
+                          )}
+                        </div>
+                      </div>
+
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}

@@ -485,19 +485,21 @@ class SingleTicketContainer extends React.Component {
                     </div>
                     <div className="ticket-details-wrap uk-position-relative uk-clearfix">
                       <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                        {hasTicketUpdate && (
-                          <a
-                            role="button"
-                            title="Set Assignee"
-                            style={{ float: 'left' }}
-                            className="relative no-ajaxy"
-                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                          >
-                            <PDropdownTrigger target={this.assigneeDropdownPartialList}>
-                              <span className="drop-icon material-icons">{this.ticket.assignee}</span>
-                            </PDropdownTrigger>
-                          </a>
-                        )}
+                        <div className="ticket-assignee uk-clearfix">
+                          {hasTicketUpdate && (
+                            <span
+                              role="button"
+                              title="Set Assignee"
+                              style={{ float: 'left' }}
+                              className="relative no-ajaxy"
+                              onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                            >
+                              <PDropdownTrigger target={this.assigneeDropdownPartialList}>
+                                <span>{this.ticket.assignee.fullname}</span>
+                              </PDropdownTrigger>
+                            </span>
+                          )}
+                        </div>
 
                         {hasTicketUpdate && (
                           <AssigneeDropdownPartial
