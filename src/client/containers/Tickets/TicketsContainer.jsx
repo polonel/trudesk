@@ -691,7 +691,7 @@ class TicketsContainer extends React.Component {
                                 onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                               >
                                 <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                                  <span>{ticket.get('assignee').get(fullname)}</span>
+                                  <span>{assignee()}</span>
                                 </PDropdownTrigger>
                               </span>
                             )}
