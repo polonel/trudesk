@@ -494,7 +494,7 @@ class SingleTicketContainer extends React.Component {
                               className="relative no-ajaxy"
                               onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                             >
-                              <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                              <PDropdownTrigger target={this.assigneeDropdownPartialList}>
                                 <span>{this.ticket.assignee.fullname}</span>
                               </PDropdownTrigger>
                             </span>
@@ -503,91 +503,7 @@ class SingleTicketContainer extends React.Component {
 
                         {hasTicketUpdate && (
                           <AssigneeDropdownPartial
-                            forwardedRef={this.assigneeDropdownPartial}
-                            ticketId={this.ticket._id}
-                            onClearClick={() => (this.ticket.assignee = undefined)}
-                            onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                          />
-                        )}
-                      </div>
-                    </div>
-                    <div className="ticket-details-wrap uk-position-relative uk-clearfix">
-                      <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                        <div className="ticket-assignee uk-clearfix">
-                          {hasTicketUpdate && (
-                            <span
-                              role="button"
-                              title="Set Assignee"
-                              style={{ float: 'left' }}
-                              className="relative no-ajaxy"
-                              onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                            >
-                              <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                                <span>{this.ticket.assignee.fullname}</span>
-                              </PDropdownTrigger>
-                            </span>
-                          )}
-                        </div>
-
-                        {hasTicketUpdate && (
-                          <AssigneeDropdownPartial
-                            forwardedRef={this.assigneeDropdownPartial}
-                            ticketId={this.ticket._id}
-                            onClearClick={() => (this.ticket.assignee = undefined)}
-                            onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                          />
-                        )}
-                      </div>
-                    </div>
-                    <div className="ticket-details-wrap uk-position-relative uk-clearfix">
-                      <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                        <div className="ticket-assignee uk-clearfix">
-                          {hasTicketUpdate && (
-                            <span
-                              role="button"
-                              title="Set Assignee"
-                              style={{ float: 'left' }}
-                              className="relative no-ajaxy"
-                              onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                            >
-                              <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                                <span>{this.ticket.assignee.fullname}</span>
-                              </PDropdownTrigger>
-                            </span>
-                          )}
-                        </div>
-
-                        {hasTicketUpdate && (
-                          <AssigneeDropdownPartial
-                            forwardedRef={this.assigneeDropdownPartial}
-                            ticketId={this.ticket._id}
-                            onClearClick={() => (this.ticket.assignee = undefined)}
-                            onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                          />
-                        )}
-                      </div>
-                    </div>
-                    <div className="ticket-details-wrap uk-position-relative uk-clearfix">
-                      <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                        <div className="ticket-assignee uk-clearfix">
-                          {hasTicketUpdate && (
-                            <span
-                              role="button"
-                              title="Set Assignee"
-                              style={{ float: 'left' }}
-                              className="relative no-ajaxy"
-                              onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                            >
-                              <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                                <span>{this.ticket.assignee.fullname}</span>
-                              </PDropdownTrigger>
-                            </span>
-                          )}
-                        </div>
-
-                        {hasTicketUpdate && (
-                          <AssigneeDropdownPartial
-                            forwardedRef={this.assigneeDropdownPartial}
+                            forwardedRef={this.assigneeDropdownPartialList}
                             ticketId={this.ticket._id}
                             onClearClick={() => (this.ticket.assignee = undefined)}
                             onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}

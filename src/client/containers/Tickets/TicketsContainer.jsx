@@ -47,6 +47,7 @@ import AssigneeDropdownPartialList from 'containers/Tickets/AssigneeDropdownPart
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import SingleSelectStatus from 'components/SingleSelectStatus';
 import PDropDown from 'components/PDropdown';
+import RefAssignee from 'components/RefAssignee';
 
 import helpers from 'lib/helpers';
 import anime from 'animejs';
@@ -679,7 +680,9 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <div className="ticket-details-wrap uk-position-relative uk-clearfix">
+                      <RefAssignee ticket={ticket} assignee={assignee()} />
+
+                      {/* <div className="ticket-details-wrap uk-position-relative uk-clearfix">
                         <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
                           <div className="ticket-assignee uk-clearfix">
                             {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
@@ -706,7 +709,7 @@ class TicketsContainer extends React.Component {
                             />
                           )}
                         </div>
-                      </div>
+                      </div> */}
 
                       <span
                         className="drop-icon material-icons"
