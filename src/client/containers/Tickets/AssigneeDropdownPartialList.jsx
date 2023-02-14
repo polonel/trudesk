@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { observer } from 'mobx-react';
 import { observable, makeObservable } from 'mobx';
+import PDropDown from 'components/PDropdown';
 import Avatar from 'components/Avatar/Avatar';
 import helpers from 'lib/helpers';
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts';
@@ -93,11 +94,7 @@ class StatusSelectorList extends React.Component {
   }
 
   onUpdateAssigneeList = (data) => {
-    console.log('onUpdateAssigneeList');
-    console.log('this.props.ticketId');
-    console.log(this.props.ticketId);
     if (this.props.ticketId == data.ticketId) {
-      console.log('onUpdateAssigneeList');
       this.agents = data.sortedUser || [];
     }
   };
@@ -129,7 +126,29 @@ class StatusSelectorList extends React.Component {
         </div>
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
-          <ul>
+          <PDropDown
+            ref={this.props.forwardedRef}
+            title={'Select Assignee'}
+            id={'assigneeDropdown'}
+            className={'opt-ignore-notice'}
+            override={true}
+            leftArrow={true}
+            topOffset={75}
+            leftOffset={35}
+            minHeight={215}
+            rightComponent={
+              <a
+                className={'hoverUnderline no-ajaxy'}
+                onClick={() => {
+                  helpers.hideAllpDropDowns();
+                  if (this.props.onClearClick) this.props.onClearClick();
+                  this.props.socket.emit(TICKETS_ASSIGNEE_CLEAR, this.props.ticketId);
+                }}
+              >
+                Clear Assignee
+              </a>
+            }
+          >
             {this.agents.map((agent) => {
               return (
                 <li
@@ -155,7 +174,7 @@ class StatusSelectorList extends React.Component {
                 </li>
               );
             })}
-          </ul>
+          </PDropDown>
         </div>
       </div>
     );
