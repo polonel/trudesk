@@ -569,6 +569,11 @@ class TicketsContainer extends React.Component {
                   return !a ? '--' : a.get('fullname');
                 };
 
+                const assigneeId = () => {
+                  const a = ticket.get('assignee');
+                  return !a ? '--' : a.get('_id');
+                };
+
                 const updated = ticket.get('updated')
                   ? helpers.formatDate(ticket.get('updated'), helpers.getShortDateFormat()) +
                     ', ' +
@@ -678,6 +683,7 @@ class TicketsContainer extends React.Component {
                         ticketId={ticket.get('_id')}
                         status={ticket.get('status')}
                         assignee={assignee()}
+                        assigneeId={assigneeId()}
                         socket={this.props.socket}
                         onStatusChange={(status) => {
                           this.sendNotification(ticket);

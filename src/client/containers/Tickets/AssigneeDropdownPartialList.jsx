@@ -16,7 +16,6 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { observer } from 'mobx-react';
 import { observable, makeObservable } from 'mobx';
-import PDropDown from 'components/PDropdown';
 import Avatar from 'components/Avatar/Avatar';
 import helpers from 'lib/helpers';
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts';
@@ -126,55 +125,22 @@ class StatusSelectorList extends React.Component {
         </div>
 
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
-          <PDropDown
-            ref={this.props.forwardedRef}
-            title={'Select Assignee'}
-            id={'assigneeDropdown'}
-            className={'opt-ignore-notice'}
-            override={true}
-            leftArrow={true}
-            topOffset={75}
-            leftOffset={35}
-            minHeight={215}
-            rightComponent={
-              <a
-                className={'hoverUnderline no-ajaxy'}
-                onClick={() => {
-                  helpers.hideAllpDropDowns();
-                  if (this.props.onClearClick) this.props.onClearClick();
-                  this.props.socket.emit(TICKETS_ASSIGNEE_CLEAR, this.props.ticketId);
-                }}
-              >
-                Clear Assignee
-              </a>
-            }
-          >
-            {this.agents.map((agent) => {
-              return (
-                <li
-                  key={agent._id}
-                  onClick={() => {
-                    if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
-                    helpers.hideAllpDropDowns();
-                    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
-                  }}
-                >
-                  <a className="messageNotification no-ajaxy" role="button">
-                    <div className="uk-clearfix">
-                      <Avatar userId={agent._id} image={agent.image} size={50} />
-                      <div className="messageAuthor">
-                        <strong>{agent.fullname}</strong>
-                      </div>
-                      <div className="messageSnippet">
-                        <span>{agent.email}</span>
-                      </div>
-                      <div className="messageDate">{agent.title}</div>
-                    </div>
-                  </a>
-                </li>
-              );
-            })}
-          </PDropDown>
+          <div className="uk-width-1-1 padding-left-right-15">
+            <div className="tru-card ticket-details pr-0 pb-0" style={{ height: 250 }}>
+              Ticket History
+              <hr style={{ padding: 0, margin: 0 }} />
+              <div className="history-items scrollable" style={{ paddingTop: 12 }}>
+                {this.agents.map((agent) => (
+                  <div key={agent._id} className="history-item">
+                    <em>
+                      Action by: <span>{agent.fullname}</span>
+                    </em>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          ;
         </div>
       </div>
     );

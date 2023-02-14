@@ -220,6 +220,8 @@ events.onUpdateAssigneeList = function (socket) {
         var sortedUser = _.sortBy(users, 'fullname');
         if (ticketId) {
           var data = { ticketId, sortedUser };
+        } else {
+          var data = sortedUser;
         }
 
         utils.sendToSelf(socket, socketEvents.TICKETS_ASSIGNEE_LOAD, data);
