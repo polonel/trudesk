@@ -11,23 +11,13 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment } from 'react';
+import React, { Fragment, createRef } from 'react';
 import PropTypes from 'prop-types';
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import { makeObservable, observable } from 'mobx';
 
 import helpers from 'lib/helpers';
-
-const setupImages = (parent) => {
-  const imagesEl = parent.body.querySelectorAll('img:not(.hasLinked)');
-  imagesEl.forEach((i) => helpers.setupImageLink(i));
-};
-
-const setupLinks = (parent) => {
-  const linksEl = parent.body.querySelectorAll('a');
-  linksEl.forEach((i) => helpers.setupLinkWarning(i));
-};
 
 class RefAssignee extends React.Component {
   assigneeDropdownPartial = createRef();
@@ -64,7 +54,7 @@ class RefAssignee extends React.Component {
                 onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
               >
                 <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                  <span>{assignee()}</span>
+                  <span>{this.props.assignee}</span>
                 </PDropdownTrigger>
               </span>
             )}
@@ -98,4 +88,10 @@ RefAssignee.defaultProps = {
   isNote: false,
 };
 
-export default RefAssignee;
+const mapStateToProps = (state) => ({
+  socket: state.shared.socket,
+  settings: state.settings.settings,
+  sessionUser: state.shared.sessionUser,
+});
+
+export default connect(mapStateToProps, {})(RefAssignee);
