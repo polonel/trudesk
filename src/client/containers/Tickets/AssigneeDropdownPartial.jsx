@@ -56,9 +56,12 @@ class AssigneeDropdownPartial extends React.Component {
         className={'opt-ignore-notice'}
         override={true}
         leftArrow={true}
-        topOffset={75}
+        topOffset={() => {
+          if (this.props.topOffset) return this.props.topOffset;
+          else return 75;
+        }}
         leftOffset={35}
-        minHeight={this.props.minHeight || 215}
+        minHeight={215}
         rightComponent={
           <a
             className={'hoverUnderline no-ajaxy'}

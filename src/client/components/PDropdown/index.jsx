@@ -100,7 +100,7 @@ class PDropDown extends React.Component {
         const noticeFrame = document.getElementById('notice-banner');
         let hasNotice = false;
         if (noticeFrame) hasNotice = !noticeFrame.classList.contains('uk-hidden');
-        if (hasNotice && !ref.classList.contains('opt-ignore-notice')) top -= 30;
+        if (hasNotice && !ref.classList.contains('opt-ignore-notice')) tgop -= 30;
 
         top = top + 'px';
 
