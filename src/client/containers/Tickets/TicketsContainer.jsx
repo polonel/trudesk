@@ -43,11 +43,11 @@ import Dropdown from 'components/Dropdown';
 import DropdownItem from 'components/Dropdown/DropdownItem';
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator';
 import StatusSelectorList from 'containers/Tickets/StatusSelectorList';
+import RefAssignee from 'containers/Tickets/RefAssignee';
 import AssigneeDropdownPartialList from 'containers/Tickets/AssigneeDropdownPartialList';
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import SingleSelectStatus from 'components/SingleSelectStatus';
 import PDropDown from 'components/PDropdown';
-import RefAssignee from 'components/RefAssignee';
 
 import helpers from 'lib/helpers';
 import anime from 'animejs';
