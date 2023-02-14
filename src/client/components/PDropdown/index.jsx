@@ -157,20 +157,29 @@ class PDropDown extends React.Component {
         style={{ minHeight, minWidth }}
       >
         {showTitlebar && (
-          <div className="actions">
-            {titleHref && <a href={titleHref}>{title}</a>}
+          <div id="assigneeDropdown" className="actions">
+            {titleHref && (
+              <a id="assigneeDropdown" href={titleHref}>
+                {title}
+              </a>
+            )}
             {!titleHref && <span style={{ paddingLeft: '5px' }}>{title}</span>}
-            {rightComponent && <div className="uk-float-right">{rightComponent}</div>}
+            {rightComponent && (
+              <div id="assigneeDropdown" className="uk-float-right">
+                {rightComponent}
+              </div>
+            )}
           </div>
         )}
         {isListItems && (
-          <div className="items close-on-click">
-            <ul>{children}</ul>
+          <div id="assigneeDropdown" className="items close-on-click">
+            <ul id="assigneeDropdown">{children}</ul>
           </div>
         )}
         {!isListItems && <div>{children}</div>}
         {footerComponent && (
           <div
+            id="assigneeDropdown"
             className={'bottom-actions actions uk-float-left'}
             style={{ borderBottom: 'none', borderTop: '1px solid rgba(0,0,0,0.2)' }}
           >

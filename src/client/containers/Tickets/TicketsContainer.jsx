@@ -620,7 +620,7 @@ class TicketsContainer extends React.Component {
                     className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''} tableRowHover`}
                     clickable={true}
                     onClick={(e) => {
-                      if (e.target.tagName !== 'SPAN' && e.target.id !== 'assignee') {
+                      if (e.target.tagName !== 'SPAN' && e.target.id !== 'assigneeDropdown') {
                         console.log(e.target.id);
                         const td = e.target.closest('td');
                         const input = td.getElementsByTagName('input');
@@ -680,7 +680,9 @@ class TicketsContainer extends React.Component {
                     <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <RefAssignee ticket={ticket} assignee={assignee()} />
+                      <span>
+                        <RefAssignee ticket={ticket} assignee={assignee()} />
+                      </span>
 
                       {/* <div className="ticket-details-wrap uk-position-relative uk-clearfix">
                         <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>

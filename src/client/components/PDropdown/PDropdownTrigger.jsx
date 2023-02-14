@@ -39,7 +39,12 @@ class PDropdownTrigger extends React.Component {
 
   render() {
     return (
-      <div ref={this.containerRef} className={'uk-clearfix'} onClick={(e) => this.onTargetClick(e)}>
+      <div
+        id="assigneeDropdown"
+        ref={this.containerRef}
+        className={'uk-clearfix'}
+        onClick={(e) => this.onTargetClick(e)}
+      >
         {this.props.children}
       </div>
     );

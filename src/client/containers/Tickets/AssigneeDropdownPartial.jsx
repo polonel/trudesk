@@ -75,6 +75,7 @@ class AssigneeDropdownPartial extends React.Component {
         {this.agents.map((agent) => {
           return (
             <li
+              id="assigneeDropdown"
               key={agent._id}
               onClick={() => {
                 if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
@@ -82,16 +83,18 @@ class AssigneeDropdownPartial extends React.Component {
                 this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
               }}
             >
-              <a className="messageNotification no-ajaxy" role="button">
-                <div className="uk-clearfix">
-                  <Avatar userId={agent._id} image={agent.image} size={50} />
-                  <div className="messageAuthor">
-                    <strong>{agent.fullname}</strong>
+              <a id="assigneeDropdown" className="messageNotification no-ajaxy" role="button">
+                <div id="assigneeDropdown" className="uk-clearfix">
+                  <Avatar id="assigneeDropdown" userId={agent._id} image={agent.image} size={50} />
+                  <div id="assigneeDropdown" className="messageAuthor">
+                    <strong id="assigneeDropdown">{agent.fullname}</strong>
                   </div>
-                  <div className="messageSnippet">
+                  <div id="assigneeDropdown" className="messageSnippet">
                     <span>{agent.email}</span>
                   </div>
-                  <div className="messageDate">{agent.title}</div>
+                  <div id="assigneeDropdown" className="messageDate">
+                    {agent.title}
+                  </div>
                 </div>
               </a>
             </li>

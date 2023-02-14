@@ -12,10 +12,12 @@
  */
 
 import React, { Fragment, createRef } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import { makeObservable, observable } from 'mobx';
+import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
 
 import helpers from 'lib/helpers';
 
