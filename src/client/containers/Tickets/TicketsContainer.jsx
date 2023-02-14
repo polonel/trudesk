@@ -720,7 +720,7 @@ class TicketsContainer extends React.Component {
                       <RefAssignee ticket={ticket} assignee={assignee()} />
                       <span
                         className="drop-icon material-icons"
-                        style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
+                        style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto', fontSize: 16 }}
                         onClick={() => {
                           this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
                         }}
