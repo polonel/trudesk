@@ -576,6 +576,15 @@ class TicketsContainer extends React.Component {
                   return !a ? '--' : a.get('_id');
                 };
 
+                const onClickTableCell = (e, ticketUID) => {
+                  if (e.target.tagName !== 'SPAN' && e.target.id !== 'assigneeDropdown') {
+                    const td = e.target.closest('td');
+                    const input = td.getElementsByTagName('input');
+                    if (input.length > 0) return false;
+                    History.pushState(null, `Ticket-${ticketUID}`, `/tickets/${ticketUID}`);
+                  }
+                };
+
                 const updated = ticket.get('updated')
                   ? helpers.formatDate(ticket.get('updated'), helpers.getShortDateFormat()) +
                     ', ' +
@@ -619,19 +628,13 @@ class TicketsContainer extends React.Component {
                     key={ticket.get('_id')}
                     className={`ticket-${statusChecked()} ${isOverdue() ? 'overdue' : ''} tableRowHover`}
                     clickable={true}
-                    onClick={(e) => {
-                      if (e.target.tagName !== 'SPAN' && e.target.id !== 'assigneeDropdown') {
-                        console.log(e.target.id);
-                        const td = e.target.closest('td');
-                        const input = td.getElementsByTagName('input');
-                        if (input.length > 0) return false;
-                        History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`);
-                      }
-                    }}
                   >
                     <TableCell
                       className={'ticket-priority nbb vam'}
                       style={{ borderColor: ticket.getIn(['priority', 'htmlColor']), padding: '18px 15px' }}
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
                     >
                       <input
                         type="checkbox"
@@ -648,7 +651,12 @@ class TicketsContainer extends React.Component {
                         </svg>
                       </label>
                     </TableCell>
-                    <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={`ticket-status ticket-${status()} vam nbb uk-text-center`}
+                    >
                       <StatusSelectorList
                         ticketId={ticket.get('_id')}
                         status={ticket.get('status')}
@@ -659,8 +667,18 @@ class TicketsContainer extends React.Component {
                         hasPerm={hasTicketElementUpdate(ticket)}
                       />
                     </TableCell>
-                    <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={'vam nbb'}
+                    >
+                      {ticket.get('uid')}
+                    </TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
                       className={'vam nbb'}
                       style={{
                         whiteSpace: 'nowrap',
@@ -674,11 +692,30 @@ class TicketsContainer extends React.Component {
                     >
                       {ticket.get('subject')}
                     </TableCell>
-                    <TableCell className={'vam nbb'}>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={'vam nbb'}
+                    >
                       {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
                     </TableCell>
-                    <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
-                    <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={'vam nbb'}
+                    >
+                      {ticket.getIn(['owner', 'fullname'])}
+                    </TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={'vam nbb'}
+                    >
+                      {ticket.getIn(['group', 'name'])}
+                    </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       <span>
                         <RefAssignee ticket={ticket} assignee={assignee()} />
@@ -724,8 +761,22 @@ class TicketsContainer extends React.Component {
                         back_hand
                       </span>
                     </TableCell>
-                    <TableCell className={'vam nbb'}>{dueDate}</TableCell>
-                    <TableCell className={'vam nbb'}>{updated}</TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={'vam nbb'}
+                    >
+                      {dueDate}
+                    </TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        onClickTableCell(e, ticket.get('uid'));
+                      }}
+                      className={'vam nbb'}
+                    >
+                      {updated}
+                    </TableCell>
                   </TableRow>
                 );
               })}
