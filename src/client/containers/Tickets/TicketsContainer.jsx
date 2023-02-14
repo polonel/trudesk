@@ -717,39 +717,7 @@ class TicketsContainer extends React.Component {
                       {ticket.getIn(['group', 'name'])}
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <span>
-                        <RefAssignee ticket={ticket} assignee={assignee()} />
-                      </span>
-
-                      {/* <div className="ticket-details-wrap uk-position-relative uk-clearfix">
-                        <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
-                          <div className="ticket-assignee uk-clearfix">
-                            {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
-                              <span
-                                role="button"
-                                title="Set Assignee"
-                                style={{ float: 'left' }}
-                                className="relative no-ajaxy"
-                                onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                              >
-                                <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                                  <span>{assignee()}</span>
-                                </PDropdownTrigger>
-                              </span>
-                            )}
-                          </div>
-
-                          {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
-                            <AssigneeDropdownPartial
-                              forwardedRef={this.assigneeDropdownPartial}
-                              ticketId={ticket.get('_id')}
-                              // onClearClick={() => (this.ticket.assignee = undefined)}
-                              // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                            />
-                          )}
-                        </div>
-                      </div> */}
-
+                      <RefAssignee ticket={ticket} assignee={assignee()} />
                       <span
                         className="drop-icon material-icons"
                         style={{ left: 20, top: 15, paddingLeft: 10, left: 'auto' }}
