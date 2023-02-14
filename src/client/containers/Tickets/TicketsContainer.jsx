@@ -690,8 +690,8 @@ class TicketsContainer extends React.Component {
                                 className="relative no-ajaxy"
                                 onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                               >
-                                <PDropdownTrigger target={this.assigneeDropdownPartialList}>
-                                  <span>{this.ticket.assignee.fullname}</span>
+                                <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                                  <span>{ticket.get('assignee').get(fullname)}</span>
                                 </PDropdownTrigger>
                               </span>
                             )}
@@ -699,10 +699,10 @@ class TicketsContainer extends React.Component {
 
                           {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
                             <AssigneeDropdownPartial
-                              forwardedRef={this.assigneeDropdownPartialList}
-                              ticketId={this.ticket._id}
-                              onClearClick={() => (this.ticket.assignee = undefined)}
-                              onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
+                              forwardedRef={this.assigneeDropdownPartial}
+                              ticketId={ticket.get('_id')}
+                              // onClearClick={() => (this.ticket.assignee = undefined)}
+                              // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
                             />
                           )}
                         </div>
