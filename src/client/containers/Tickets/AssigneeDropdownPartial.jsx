@@ -58,7 +58,7 @@ class AssigneeDropdownPartial extends React.Component {
         leftArrow={true}
         topOffset={75}
         leftOffset={35}
-        minHeight={215}
+        minHeight={this.props.minHeight || 215}
         rightComponent={
           <a
             className={'hoverUnderline no-ajaxy'}
