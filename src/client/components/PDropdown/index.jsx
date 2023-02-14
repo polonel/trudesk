@@ -12,121 +12,123 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React, { createRef } from 'react'
-import PropTypes from 'prop-types'
-import clsx from 'clsx'
+import React, { createRef } from 'react';
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 class PDropDown extends React.Component {
-  dropRef = createRef()
-  pTriggerRef = null
+  dropRef = createRef();
+  pTriggerRef = null;
 
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this.hideDropdownOnMouseUp = this.hideDropdownOnMouseUp.bind(this)
-    this.closeOnClick = this.closeOnClick.bind(this)
+    this.hideDropdownOnMouseUp = this.hideDropdownOnMouseUp.bind(this);
+    this.closeOnClick = this.closeOnClick.bind(this);
   }
 
-  hideDropdownOnMouseUp (e) {
+  hideDropdownOnMouseUp(e) {
     if (this.dropRef.current) {
       if (!this.dropRef.current.contains(e.target) && !this.pTriggerRef.contains(e.target)) {
-        document.removeEventListener('mouseup', this.hideDropdownOnMouseUp)
-        this.dropRef.current.classList.remove('pDropOpen')
+        document.removeEventListener('mouseup', this.hideDropdownOnMouseUp);
+        this.dropRef.current.classList.remove('pDropOpen');
       }
     }
   }
 
-  closeOnClick () {
+  closeOnClick() {
     if (this.dropRef.current) {
-      document.removeEventListener('mouseup', this.hideDropdownOnMouseUp)
-      this.dropRef.current.classList.remove('pDropOpen')
+      document.removeEventListener('mouseup', this.hideDropdownOnMouseUp);
+      this.dropRef.current.classList.remove('pDropOpen');
     }
   }
 
-  show (pTrigger) {
+  show(pTrigger) {
     if (!pTrigger) {
-      console.error('Invalid pTrigger sent to show method')
-      return true
+      console.error('Invalid pTrigger sent to show method');
+      return true;
     }
 
-    this.pTriggerRef = pTrigger
+    this.pTriggerRef = pTrigger;
 
     if (this.dropRef.current) {
-      const ref = this.dropRef.current
+      const ref = this.dropRef.current;
+      console.log('this.dropRef.current');
+      console.log(this.dropRef.current);
       if (ref.classList.contains('pDropOpen')) {
-        ref.classList.remove('pDropOpen')
+        ref.classList.remove('pDropOpen');
 
-        return true
+        return true;
       }
 
       // Bind Doc event
-      document.removeEventListener('mouseup', this.hideDropdownOnMouseUp)
-      document.addEventListener('mouseup', this.hideDropdownOnMouseUp)
+      document.removeEventListener('mouseup', this.hideDropdownOnMouseUp);
+      document.addEventListener('mouseup', this.hideDropdownOnMouseUp);
 
-      const pageContent = document.getElementById('page-content')
+      const pageContent = document.getElementById('page-content');
       if (pageContent) {
-        let pageOffsetLeft = 0
-        let pageOffsetTop = 0
-        let pTriggerOffsetLeft = pTrigger.getBoundingClientRect().left
-        let pTriggerOffsetTop = pTrigger.getBoundingClientRect().top
-        const pTriggerHeight = pTrigger.offsetHeight
+        let pageOffsetLeft = 0;
+        let pageOffsetTop = 0;
+        let pTriggerOffsetLeft = pTrigger.getBoundingClientRect().left;
+        let pTriggerOffsetTop = pTrigger.getBoundingClientRect().top;
+        const pTriggerHeight = pTrigger.offsetHeight;
 
-        let left0 = 250
-        if (ref.classList.contains('pSmall')) left0 = 180
-        if (ref.classList.contains('p-dropdown-left')) left0 = 0
+        let left0 = 250;
+        if (ref.classList.contains('pSmall')) left0 = 180;
+        if (ref.classList.contains('p-dropdown-left')) left0 = 0;
 
         if (pageContent.contains(pTrigger)) {
-          pageOffsetLeft = pageContent.clientLeft
-          pageOffsetTop = pageContent.clientTop
-          pTriggerOffsetLeft = pTrigger.offsetLeft
-          pTriggerOffsetTop = pTrigger.offsetTop
+          pageOffsetLeft = pageContent.clientLeft;
+          pageOffsetTop = pageContent.clientTop;
+          pTriggerOffsetLeft = pTrigger.offsetLeft;
+          pTriggerOffsetTop = pTrigger.offsetTop;
         }
 
-        pageOffsetTop += pTriggerOffsetTop
+        pageOffsetTop += pTriggerOffsetTop;
 
-        let left = pTriggerOffsetLeft - window.scrollX - pageOffsetLeft - left0
+        let left = pTriggerOffsetLeft - window.scrollX - pageOffsetLeft - left0;
 
-        if (this.props.leftOffset) left += Number(this.props.leftOffset)
+        if (this.props.leftOffset) left += Number(this.props.leftOffset);
 
-        left = left + 'px'
+        left = left + 'px';
 
-        const topOffset = pTriggerOffsetTop - window.scrollY + pageOffsetTop
-        let top = pTriggerHeight + topOffset
+        const topOffset = pTriggerOffsetTop - window.scrollY + pageOffsetTop;
+        let top = pTriggerHeight + topOffset;
 
-        if (this.props.topOffset) top += Number(this.props.topOffset)
+        if (this.props.topOffset) top += Number(this.props.topOffset);
 
-        const noticeFrame = document.getElementById('notice-banner')
-        let hasNotice = false
-        if (noticeFrame) hasNotice = !noticeFrame.classList.contains('uk-hidden')
-        if (hasNotice && !ref.classList.contains('opt-ignore-notice')) top -= 30
+        const noticeFrame = document.getElementById('notice-banner');
+        let hasNotice = false;
+        if (noticeFrame) hasNotice = !noticeFrame.classList.contains('uk-hidden');
+        if (hasNotice && !ref.classList.contains('opt-ignore-notice')) top -= 30;
 
-        top = top + 'px'
+        top = top + 'px';
 
-        const aLinks = ref.querySelectorAll('a')
+        const aLinks = ref.querySelectorAll('a');
         // eslint-disable-next-line no-unused-vars
         for (const link of aLinks) {
-          link.removeEventListener('click', this.closeOnClick)
-          link.addEventListener('click', this.closeOnClick)
+          link.removeEventListener('click', this.closeOnClick);
+          link.addEventListener('click', this.closeOnClick);
         }
 
-        const closeOnClick = ref.querySelectorAll('.close-on-click')
+        const closeOnClick = ref.querySelectorAll('.close-on-click');
         // eslint-disable-next-line no-unused-vars
         for (const link of closeOnClick) {
-          link.removeEventListener('click', this.closeOnClick)
-          link.addEventListener('click', this.closeOnClick)
+          link.removeEventListener('click', this.closeOnClick);
+          link.addEventListener('click', this.closeOnClick);
         }
 
-        ref.style.position = 'absolute'
-        ref.style.left = left
-        ref.style.top = top
-        ref.classList.add('pDropOpen')
+        ref.style.position = 'absolute';
+        ref.style.left = left;
+        ref.style.top = top;
+        ref.classList.add('pDropOpen');
 
-        this.props.onShow()
+        this.props.onShow();
       }
     }
   }
 
-  render () {
+  render() {
     const {
       title,
       titleHref,
@@ -142,8 +144,8 @@ class PDropDown extends React.Component {
       footerComponent,
       minHeight,
       minWidth,
-      isListItems
-    } = this.props
+      isListItems,
+    } = this.props;
     return (
       <div
         id={this.props.id}
@@ -155,14 +157,14 @@ class PDropDown extends React.Component {
         style={{ minHeight, minWidth }}
       >
         {showTitlebar && (
-          <div className='actions'>
+          <div className="actions">
             {titleHref && <a href={titleHref}>{title}</a>}
             {!titleHref && <span style={{ paddingLeft: '5px' }}>{title}</span>}
-            {rightComponent && <div className='uk-float-right'>{rightComponent}</div>}
+            {rightComponent && <div className="uk-float-right">{rightComponent}</div>}
           </div>
         )}
         {isListItems && (
-          <div className='items close-on-click'>
+          <div className="items close-on-click">
             <ul>{children}</ul>
           </div>
         )}
@@ -176,7 +178,7 @@ class PDropDown extends React.Component {
           </div>
         )}
       </div>
-    )
+    );
   }
 }
 
@@ -197,8 +199,8 @@ PDropDown.propTypes = {
   isListItems: PropTypes.bool,
   className: PropTypes.string,
   onShow: PropTypes.func.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
-}
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+};
 
 PDropDown.defaultProps = {
   showTitlebar: true,
@@ -209,7 +211,7 @@ PDropDown.defaultProps = {
   leftOffset: '0',
   minHeight: 0,
   isListItems: true,
-  onShow: () => {}
-}
+  onShow: () => {},
+};
 
-export default PDropDown
+export default PDropDown;

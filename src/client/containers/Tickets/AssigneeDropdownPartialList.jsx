@@ -127,8 +127,6 @@ class StatusSelectorList extends React.Component {
         <div id={'statusSelectList'} ref={(r) => (this.dropMenu = r)} className="hide">
           <div className="uk-width-1-1 padding-left-right-15">
             <div className="tru-card ticket-details pr-0 pb-0" style={{ height: 250 }}>
-              Ticket History
-              <hr style={{ padding: 0, margin: 0 }} />
               <div className="history-items scrollable" style={{ paddingTop: 12 }}>
                 {this.agents.map((agent) => (
                   <div key={agent._id} className="history-item">

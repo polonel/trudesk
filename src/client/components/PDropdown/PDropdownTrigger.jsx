@@ -12,41 +12,43 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React, { createRef } from 'react'
-import PropTypes from 'prop-types'
+import React, { createRef } from 'react';
+import PropTypes from 'prop-types';
 
 class PDropdownTrigger extends React.Component {
-  containerRef = createRef()
+  containerRef = createRef();
 
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
   }
 
-  componentDidMount () {}
+  componentDidMount() {}
 
-  componentDidUpdate (prevProps, prevState, snapshot) {}
+  componentDidUpdate(prevProps, prevState, snapshot) {}
 
-  componentWillUnmount () {}
+  componentWillUnmount() {}
 
-  onTargetClick (e) {
-    e.preventDefault()
+  onTargetClick(e) {
+    e.preventDefault();
+    console.log('this.props.target');
+    console.log(this.props.target);
     if (this.props.target && this.props.target.current && typeof this.props.target.current.show === 'function') {
-      this.props.target.current.show(this.containerRef.current)
+      this.props.target.current.show(this.containerRef.current);
     }
   }
 
-  render () {
+  render() {
     return (
-      <div ref={this.containerRef} className={'uk-clearfix'} onClick={e => this.onTargetClick(e)}>
+      <div ref={this.containerRef} className={'uk-clearfix'} onClick={(e) => this.onTargetClick(e)}>
         {this.props.children}
       </div>
-    )
+    );
   }
 }
 
 PDropdownTrigger.propTypes = {
   target: PropTypes.any.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
-}
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+};
 
-export default PDropdownTrigger
+export default PDropdownTrigger;
