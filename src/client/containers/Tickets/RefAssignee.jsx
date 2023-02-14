@@ -45,7 +45,7 @@ class RefAssignee extends React.Component {
     const ticket = this.props.ticket;
     return (
       <div className="ticket-details-wrap uk-position-relative uk-clearfix">
-        <div className="ticket-assignee-wrap uk-clearfix" style={{ paddingRight: 30 }}>
+        <div className="ticket-assignee-wrap-list uk-clearfix" style={{ paddingRight: 30 }}>
           <div className="ticket-assignee uk-clearfix">
             {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
               <span
