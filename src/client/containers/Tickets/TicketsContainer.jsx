@@ -718,7 +718,7 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       <RefAssignee ticket={ticket} assignee={assignee()} />
-                      <div style={{ position: absolute, right: 50, top: 0 }}>
+                      <div style={{ position: 'absolute', right: 50, top: 0 }}>
                         <span
                           className="drop-icon material-icons"
                           style={{ top: 15, left: 'auto', fontSize: 16 }}
