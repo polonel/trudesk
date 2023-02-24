@@ -718,18 +718,20 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       <RefAssignee ticket={ticket} assignee={assignee()} />
-                      <div style={{ position: 'absolute', right: 50, top: 0 }}>
-                        <span
-                          className="drop-icon material-icons"
-                          style={{ top: 15, left: 'auto', fontSize: 16 }}
-                          onClick={() => {
-                            this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
-                          }}
-                          hasPerm={hasTicketElementUpdate(ticket)}
-                        >
-                          back_hand
-                        </span>
-                      </div>
+                      {hasTicketElementUpdate(ticket) && (
+                        <div style={{ position: 'absolute', right: 50, top: 0 }}>
+                          <span
+                            className="drop-icon material-icons"
+                            style={{ top: 15, left: 'auto', fontSize: 16 }}
+                            onClick={() => {
+                              this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                            }}
+                            hasPerm={hasTicketElementUpdate(ticket)}
+                          >
+                            back_hand
+                          </span>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell
                       onClick={(e) => {

@@ -392,7 +392,7 @@ class SingleTicketContainer extends React.Component {
       : [];
 
     // Perms
-    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update');
+
     const hasTicketStatusUpdate = () => {
       const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
       const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
@@ -403,6 +403,9 @@ class SingleTicketContainer extends React.Component {
         return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false);
       }
     };
+
+    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && hasTicketStatusUpdate();
+
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
         {!this.ticket && <SpinLoader active={true} />}
