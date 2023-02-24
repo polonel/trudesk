@@ -400,10 +400,10 @@ class SingleTicketContainer extends React.Component {
         return helpers.canUser('tickets:update');
       } else {
         if (!this.ticket || !this.props.sessionUser) return false;
-        return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false);
+        // return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false);
+        return false;
       }
     };
-
     const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && hasTicketStatusUpdate();
 
     return (

@@ -914,7 +914,7 @@ function buildQueryWithObject(SELF, grpId, object, count) {
           subject: direction,
         },
         created: {
-          date: direction,
+          date: -direction,
         },
         requester: {
           'owner.fullname': direction,
@@ -926,10 +926,10 @@ function buildQueryWithObject(SELF, grpId, object, count) {
           'assignee.fullname': direction,
         },
         dueDate: {
-          dueDate: direction,
+          dueDate: -direction,
         },
         updated: {
-          updated: direction,
+          updated: -direction,
         },
       };
       sortingObject = sortingObjects[object.sorting];
