@@ -48,6 +48,11 @@ class AssigneeDropdownPartial extends React.Component {
   }
 
   render() {
+    let topOffset;
+    if (this.props.topOffset) {
+      topOffset = this.props.topOffset;
+    } else topOffset = 75;
+
     return (
       <PDropDown
         ref={this.props.forwardedRef}
@@ -56,10 +61,7 @@ class AssigneeDropdownPartial extends React.Component {
         className={'opt-ignore-notice'}
         override={true}
         leftArrow={true}
-        topOffset={() => {
-          if (this.props.topOffset) return this.props.topOffset;
-          else return 75;
-        }}
+        topOffset={topOffset}
         leftOffset={35}
         minHeight={215}
         rightComponent={
