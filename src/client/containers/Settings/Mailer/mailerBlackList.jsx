@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { updateSetting } from 'actions/settings';
 import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
+import { showModal, hideModal } from 'actions/common';
 import Log from '../../../logger';
 import axios from 'axios';
 
@@ -205,4 +206,4 @@ const mapStateToProps = (state) => ({
   settings: state.settings.settings,
 });
 
-export default connect(mapStateToProps, { updateSetting })(MailerSettingsBlackList);
+export default connect(mapStateToProps, { updateSetting, showModal, hideModal })(MailerSettingsBlackList);
