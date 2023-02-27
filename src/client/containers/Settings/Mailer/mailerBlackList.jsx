@@ -86,7 +86,7 @@ templateBody.propTypes = {
 };
 
 @observer
-class MailerSettingsTemplates extends React.Component {
+class MailerSettingsBlackList extends React.Component {
   @observable betaEnabled = false;
   @observable templates = [];
 
@@ -156,7 +156,7 @@ class MailerSettingsTemplates extends React.Component {
         bodyComponent: templateBody({
           template: templateJS,
           handleSaveSubject: (e) => this.onSaveSubject(e),
-          handleOpenEditor: (e) => MailerSettingsTemplates.onOpenEditor(e, templateJS.name),
+          handleOpenEditor: (e) => MailerSettingsBlackList.onOpenEditor(e, templateJS.name),
         }),
       };
     });
@@ -167,20 +167,30 @@ class MailerSettingsTemplates extends React.Component {
     return (
       <div>
         <SettingItem
-          title={'Enable New Email Templates'}
+          title={'Blacklist email'}
           subtitle={
             <div>
               Adding an email to the blacklist so that trudesk does not process emails from these email addresses
             </div>
           }
-          component={<Button text={'Add to list'} small={true} />}
         />
+        <div class="right uk-width-1-3" style="position: relative; padding-top: 5px;">
+          <div class="uk-float-left" style="padding-right: 35px; min-width: 130px; width: 100%;padding-top:10px">
+            <button
+              class="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+              type="button"
+              style="max-height: 27px;"
+            >
+              <div class="uk-float-left uk-width-1-1 uk-text-center"> Add to list</div>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-MailerSettingsTemplates.propTypes = {
+MailerSettingsBlackList.propTypes = {
   updateSetting: PropTypes.func.isRequired,
   settings: PropTypes.object.isRequired,
 };
@@ -189,4 +199,4 @@ const mapStateToProps = (state) => ({
   settings: state.settings.settings,
 });
 
-export default connect(mapStateToProps, { updateSetting })(MailerSettingsTemplates);
+export default connect(mapStateToProps, { updateSetting })(MailerSettingsBlackList);
