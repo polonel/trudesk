@@ -183,8 +183,9 @@ class MailerSettingsBlackList extends React.Component {
                   className={'uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button'}
                   type={'button'}
                   style={{ maxHeight: 27 }}
+                  onClick={() => this.props.showModal('SHOW_BLACKLIST')}
                 >
-                  <div className={`uk-float-left uk-width-1-1 uk-text-center`}> Add to list</div>
+                  <div className={`uk-float-left uk-width-1-1 uk-text-center`}> Open list </div>
                 </button>
               </div>
             </div>

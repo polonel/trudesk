@@ -12,41 +12,42 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 // Modals
-import NoticeAlertModal from './NoticeAlertModal'
-import CreateTicketTypeModal from './CreateTicketTypeModal'
-import DeleteTicketTypeModal from './DeleteTicketTypeModal'
-import FilterTicketModal from './FilterTicketsModal'
-import AddPriorityToTypeModal from './AddPriorityToTypeModal'
-import CreatePriorityModal from './CreatePriorityModal'
-import DeletePriorityModal from './DeletePriorityModal'
-import CreateTagModal from './CreateTagModal'
-import AddTagsModal from './AddTagsModal'
-import CreateTicketModal from './CreateTicketModal'
-import CreateRoleModal from './CreateRoleModal'
-import DeleteRoleModal from './DeleteRoleModal'
-import ViewAllNotificationsModal from './ViewAllNotificationsModal'
-import CreateAccountModal from './CreateAccountModal'
-import EditAccountModal from './EditAccountModal'
-import CreateGroupModal from './CreateGroupModal'
-import EditGroupModal from './EditGroupModal'
-import CreateTeamModal from './CreateTeamModal'
-import EditTeamModal from './EditTeamModal'
-import CreateDepartmentModal from './CreateDepartmentModal'
-import EditDepartmentModal from './EditDepartmentModal'
-import MappingChatwoot from './MappingChatwootModal'
-import CreateNoticeModal from 'containers/Modals/CreateNoticeModal'
-import EditNoticeModal from 'containers/Modals/EditNoticeModal'
-import LinkWarningModal from 'containers/Modals/LinkWarningModal'
-import PasswordPromptModal from 'containers/Modals/PasswordPromptModal'
-import PrivacyPolicyModal from 'containers/Modals/PrivacyPolicyModal'
-
+import NoticeAlertModal from './NoticeAlertModal';
+import CreateTicketTypeModal from './CreateTicketTypeModal';
+import DeleteTicketTypeModal from './DeleteTicketTypeModal';
+import FilterTicketModal from './FilterTicketsModal';
+import AddPriorityToTypeModal from './AddPriorityToTypeModal';
+import CreatePriorityModal from './CreatePriorityModal';
+import DeletePriorityModal from './DeletePriorityModal';
+import CreateTagModal from './CreateTagModal';
+import AddTagsModal from './AddTagsModal';
+import CreateTicketModal from './CreateTicketModal';
+import CreateRoleModal from './CreateRoleModal';
+import DeleteRoleModal from './DeleteRoleModal';
+import ViewAllNotificationsModal from './ViewAllNotificationsModal';
+import CreateAccountModal from './CreateAccountModal';
+import EditAccountModal from './EditAccountModal';
+import CreateGroupModal from './CreateGroupModal';
+import EditGroupModal from './EditGroupModal';
+import CreateTeamModal from './CreateTeamModal';
+import EditTeamModal from './EditTeamModal';
+import CreateDepartmentModal from './CreateDepartmentModal';
+import EditDepartmentModal from './EditDepartmentModal';
+import MappingChatwoot from './MappingChatwootModal';
+import CreateNoticeModal from 'containers/Modals/CreateNoticeModal';
+import EditNoticeModal from 'containers/Modals/EditNoticeModal';
+import LinkWarningModal from 'containers/Modals/LinkWarningModal';
+import PasswordPromptModal from 'containers/Modals/PasswordPromptModal';
+import PrivacyPolicyModal from 'containers/Modals/PrivacyPolicyModal';
+import BlackListModal from 'containers/Modals/BlackListModal';
 
 const MODAL_COMPONENTS = {
+  SHOW_BLACKLIST: BlackListModal,
   NOTICE_ALERT: NoticeAlertModal,
   CREATE_TICKET: CreateTicketModal,
   CREATE_TICKET_TYPE: CreateTicketTypeModal,
@@ -73,21 +74,21 @@ const MODAL_COMPONENTS = {
   EDIT_NOTICE: EditNoticeModal,
   LINK_WARNING: LinkWarningModal,
   PASSWORD_PROMPT: PasswordPromptModal,
-  PRIVACY_POLICY: PrivacyPolicyModal
-}
+  PRIVACY_POLICY: PrivacyPolicyModal,
+};
 
 const ModalRoot = ({ modalType, modalProps }) => {
   if (!modalType) {
-    return <div id={'modal-wrap'} />
+    return <div id={'modal-wrap'} />;
   }
 
-  const SpecificModal = MODAL_COMPONENTS[modalType]
-  return <SpecificModal {...modalProps} />
-}
+  const SpecificModal = MODAL_COMPONENTS[modalType];
+  return <SpecificModal {...modalProps} />;
+};
 
 ModalRoot.propTypes = {
   modalType: PropTypes.string,
-  modalProps: PropTypes.object
-}
+  modalProps: PropTypes.object,
+};
 
-export default connect(state => state.modal)(ModalRoot)
+export default connect((state) => state.modal)(ModalRoot);
