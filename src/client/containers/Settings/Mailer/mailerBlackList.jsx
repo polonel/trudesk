@@ -177,7 +177,7 @@ class MailerSettingsBlackList extends React.Component {
             <div className={'right uk-width-1-3'} style={{ position: 'relative', paddingTop: 5 }}>
               <div
                 className={'uk-float-left'}
-                style={{ paddingRight: 35, minWidth: 130, width: '100%', paddingTop: 10 }}
+                style={{ paddingRight: 25, minWidth: 130, width: '100%', paddingTop: 5 }}
               >
                 <button
                   className={'uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button'}
