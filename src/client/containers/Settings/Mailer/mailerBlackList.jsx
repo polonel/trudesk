@@ -173,18 +173,23 @@ class MailerSettingsBlackList extends React.Component {
               Adding an email to the blacklist so that trudesk does not process emails from these email addresses
             </div>
           }
+          component={
+            <div className={'right uk-width-1-3'} style={{ position: 'relative', paddingTop: 5 }}>
+              <div
+                className={'uk-float-left'}
+                style={{ paddingRight: 35, minWidth: 130, width: '100%', paddingTop: 10 }}
+              >
+                <button
+                  className={'uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button'}
+                  type={'button'}
+                  style={{ maxHeight: 27 }}
+                >
+                  <div className={`uk-float-left uk-width-1-1 uk-text-center`}> Add to list</div>
+                </button>
+              </div>
+            </div>
+          }
         />
-        <div className={'right uk-width-1-3'} style={{ position: 'relative', paddingTop: 5 }}>
-          <div className={'uk-float-left'} style={{ paddingRight: 35, minWidth: 130, width: '100%', paddingTop: 10 }}>
-            <button
-              className={'uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button'}
-              type={'button'}
-              style={{ maxHeight: 27 }}
-            >
-              <div class="uk-float-left uk-width-1-1 uk-text-center"> Add to list</div>
-            </button>
-          </div>
-        </div>
       </div>
     );
   }
