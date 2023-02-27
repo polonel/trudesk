@@ -174,12 +174,12 @@ class MailerSettingsBlackList extends React.Component {
             </div>
           }
         />
-        <div class="right uk-width-1-3" style="position: relative; padding-top: 5px;">
-          <div class="uk-float-left" style="padding-right: 35px; min-width: 130px; width: 100%;padding-top:10px">
+        <div className={'right uk-width-1-3'} style={{ position: 'relative', paddingTop: 5 }}>
+          <div className={'uk-float-left'} style={{ paddingRight: 35, minWidth: 130, width: '100%', paddingTop: 10 }}>
             <button
-              class="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
-              type="button"
-              style="max-height: 27px;"
+              className={'uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button'}
+              type={'button'}
+              style={{ maxHeight: 27 }}
             >
               <div class="uk-float-left uk-width-1-1 uk-text-center"> Add to list</div>
             </button>
