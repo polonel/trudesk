@@ -54,13 +54,13 @@ class BlackListModal extends React.Component {
           <hr className="nomargin-top clear" />
           <div className="panel-body2" style={{ padding: '20px 15px 15px 15px' }}>
             <div className="uk-position-relative">
-              <div className="zone mb-10" style={{ display: deletedTickets.length ? 'none' : 'block' }}>
+              <div className="zone mb-10">
                 <div className="z-box uk-clearfix">
                   <h2 className="uk-text-muted uk-text-center">No Deleted Tickets</h2>
                 </div>
               </div>
 
-              <table className="uk-table mt-0 mb-5" style={{ display: deletedTickets.length ? 'block' : 'none' }}>
+              <table className="uk-table mt-0 mb-5">
                 <thead>
                   <tr>
                     <th>UID</th>
@@ -71,7 +71,7 @@ class BlackListModal extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {deletedTickets.map((ticket) => (
+                  {/* {deletedTickets.map((ticket) => (
                     <tr key={ticket.uid}>
                       <td className="valign-middle" style={{ width: '10%', height: '60px' }}>
                         {ticket.uid}
@@ -89,14 +89,14 @@ class BlackListModal extends React.Component {
                         <div className="md-btn-group">
                           <button
                             className="md-btn md-btn-small md-btn-wave"
-                            onClick={() => restoreDeletedTicket(ticket)}
+                            // onClick={() => restoreDeletedTicket(ticket)}
                           >
                             Restore
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ))} */}
                 </tbody>
               </table>
               <div className="uk-pagination deletedTicketPagination"></div>
