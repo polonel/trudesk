@@ -56,8 +56,8 @@ class RefAssignee extends React.Component {
                 onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
               >
                 <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                  <div style="min-width: 200px; min-height: 36px">
-                    <div style="padding-top:12px">{this.props.assignee}</div>
+                  <div style={{ minWidth: 200, minHeight: 36 }}>
+                    <div style={{ paddingTop: 12 }}>{this.props.assignee}</div>
                   </div>
                 </PDropdownTrigger>
               </span>
