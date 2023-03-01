@@ -96,4 +96,4 @@ apiBlackList.put = function (req, res) {
   );
 };
 
-module.exports = apiTSortings;
+module.exports = apiBlackList;

@@ -2,10 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
-import ReactMarkdown from 'react-markdown';
-import gfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-
+import Button from 'components/Button';
 import BaseModal from 'containers/Modals/BaseModal';
 
 import Log from '../../logger';
@@ -66,12 +63,7 @@ class BlackListModal extends React.Component {
 
                       <td className="uk-text-right valign-middle">
                         <div className="md-btn-group">
-                          <button
-                            className="md-btn md-btn-small md-btn-wave"
-                            // onClick={() => restoreDeletedTicket(ticket)}
-                          >
-                            Restore
-                          </button>
+                          <Button type={'submit'} text={'Add'} small={true} />
                         </div>
                       </td>
                     </tr>
