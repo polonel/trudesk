@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
+import { connect } from 'react-redux';
 import Button from 'components/Button';
 import BaseModal from 'containers/Modals/BaseModal';
-
+import { updateSetting } from 'actions/settings';
 import Log from '../../logger';
 import axios from 'axios';
 
@@ -25,9 +26,13 @@ class BlackListModal extends React.Component {
     }
   }
 
-  onFormSubmit(e) {
-    e.preventDefault();
-    this.updateSetting('blacklist', 'blacklist:array', this.blacklist);
+  onFormSubmit() {
+    console.log('onFormSubmit');
+    this.props.updateSetting({
+      name: 'blacklist:array',
+      value: this.blacklist,
+      stateName: 'blacklist',
+    });
   }
 
   render() {
@@ -63,7 +68,9 @@ class BlackListModal extends React.Component {
 
                       <td className="uk-text-right valign-middle">
                         <div className="md-btn-group">
-                          <Button type={'submit'} text={'Add'} small={true} />
+                          <button className="md-btn md-btn-small md-btn-wave" onClick={() => this.onFormSubmit()}>
+                            Add
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -80,6 +87,13 @@ class BlackListModal extends React.Component {
   }
 }
 
-BlackListModal.propTypes = {};
+BlackListModal.propTypes = {
+  updateSetting: PropTypes.func.isRequired,
+  settings: PropTypes.object.isRequired,
+};
 
-export default BlackListModal;
+const mapStateToProps = (state) => ({
+  settings: state.settings.settings,
+});
+
+export default connect(mapStateToProps, { updateSetting, showModal, hideModal })(BlackListModal);
