@@ -19,19 +19,25 @@ class BlackListModal extends React.Component {
     makeObservable(this);
   }
 
+  getSetting(stateName) {
+    return this.props.settings.getIn(['settings', stateName, 'value'])
+      ? this.props.settings.getIn(['settings', stateName, 'value'])
+      : '';
+  }
+
   componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
     if (prevProps.settings !== this.props.settings) {
-      if (this.blacklist !== this.getSetting('blacklist:array')) this.blackList = this.getSetting('blacklist:array');
+      if (this.blacklist !== this.getSetting('mailer:blacklist')) this.blackList = this.getSetting('mailer:blacklist');
     }
   }
 
   onFormSubmit() {
     console.log('onFormSubmit');
     this.props.updateSetting({
-      name: 'blacklist:array',
+      name: 'mailer:blacklist',
       value: this.blacklist,
-      stateName: 'blacklist',
+      stateName: 'milerBlacklist',
     });
   }
 
@@ -96,4 +102,4 @@ const mapStateToProps = (state) => ({
   settings: state.settings.settings,
 });
 
-export default connect(mapStateToProps, { updateSetting, showModal, hideModal })(BlackListModal);
+export default connect(mapStateToProps, { updateSetting })(BlackListModal);
