@@ -14,77 +14,56 @@ import axios from 'axios';
 @observer
 class BlackListModal extends React.Component {
   @observable privacyPolicy = '';
-
+  @observable blacklist = [];
   constructor(props) {
     super(props);
 
     makeObservable(this);
   }
 
-  componentDidMount() {
-    axios
-      .get('/api/v1/privacypolicy')
-      .then((res) => {
-        this.privacyPolicy = res.data ? res.data.privacyPolicy : '';
-      })
-      .catch((err) => {
-        Log.error(err);
-      });
+  componentDidUpdate(prevProps) {
+    // helpers.UI.reRenderInputs()
+    if (prevProps.settings !== this.props.settings) {
+      if (this.blacklist !== this.getSetting('blacklist:array')) this.blackList = this.getSetting('blacklist:array');
+    }
+  }
+
+  onFormSubmit(e) {
+    e.preventDefault();
+    this.updateSetting('blacklist', 'blacklist:array', this.blacklist);
   }
 
   render() {
     return (
-      <div className="setting-item-wrap uk-margin-medium-bottom">
-        <div
-          className="panel trupanel nopadding no-hover-shadow uk-overflow-hidden"
-          style={{ minHeight: '60px', height: 'auto' }}
-        >
-          <div className="left">
-            <h6 style={{ padding: '0 0 0 15px', margin: '15px 0 0 0', fontSize: '16px', lineHeight: '14px' }}>
-              Restore Deleted Tickets
-            </h6>
-            <h5 style={{ padding: '0 0 10px 15px', margin: '2px 0 0 0', fontSize: '12px' }} className="uk-text-muted">
-              Tickets marked as deleted are shown below.
-            </h5>
-          </div>
-          <div
-            className="right uk-width-1-3 uk-clearfix"
-            style={{ position: 'relative', marginRight: '15px', marginTop: '5px' }}
-          ></div>
-          <hr className="nomargin-top clear" />
-          <div className="panel-body2" style={{ padding: '20px 15px 15px 15px' }}>
-            <div className="uk-position-relative">
-              <div className="zone mb-10">
-                <div className="z-box uk-clearfix">
-                  <h2 className="uk-text-muted uk-text-center">No Deleted Tickets</h2>
+      <BaseModal options={{}}>
+        <div className="setting-item-wrap uk-margin-medium-bottom">
+          <div style={{ minHeight: '60px', height: 'auto' }}>
+            <div>
+              <div className="uk-position-relative">
+                <div>
+                  <div>
+                    <h2 className="uk-text-muted uk-text-center">Black list</h2>
+                  </div>
                 </div>
-              </div>
 
-              <table className="uk-table mt-0 mb-5">
-                <thead>
-                  <tr>
-                    <th>UID</th>
-                    <th>Subject</th>
-                    <th>Group</th>
-                    <th>Date</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* {deletedTickets.map((ticket) => (
-                    <tr key={ticket.uid}>
-                      <td className="valign-middle" style={{ width: '10%', height: '60px' }}>
-                        {ticket.uid}
+                <table className="uk-table mt-0 mb-5">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* {deletedTickets.map((ticket) => ( */}
+                    <tr>
+                      <td className="valign-middle" style={{ width: '5%', height: '30px' }}>
+                        1
                       </td>
-                      <td className="valign-middle" style={{ width: '30%' }}>
-                        {ticket.subject}
+                      <td className="valign-middle" style={{ width: '95%' }}>
+                        Email@email.ru
                       </td>
-                      <td className="valign-middle" style={{ width: '30%' }}>
-                        {ticket.group.name}
-                      </td>
-                      <td className="valign-middle" style={{ width: '30%' }}>
-                        {ticket.date}
-                      </td>
+
                       <td className="uk-text-right valign-middle">
                         <div className="md-btn-group">
                           <button
@@ -96,14 +75,15 @@ class BlackListModal extends React.Component {
                         </div>
                       </td>
                     </tr>
-                  ))} */}
-                </tbody>
-              </table>
-              <div className="uk-pagination deletedTicketPagination"></div>
+                    {/* ))} */}
+                  </tbody>
+                </table>
+                <div className="uk-pagination deletedTicketPagination"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </BaseModal>
     );
   }
 }

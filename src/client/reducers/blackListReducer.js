@@ -15,103 +15,29 @@
 import { fromJS, List } from 'immutable';
 import { handleActions } from 'redux-actions';
 import isUndefined from 'lodash/isUndefined';
-import { FETCH_TCMS, TCM_UPDATED } from 'actions/types';
+import { FETCH_BLACKLIST, BLACKLIST_UPDATED } from 'actions/types';
 
 const initialState = {
-  blackList: List([]),
-  tickets: List([]),
-  loadingTicketTypes: false,
-  types: List([]),
-  priorities: List([]),
-  totalCount: '',
-  viewType: 'active',
-  loading: false,
-  nextPage: 1,
-  prevPage: 0,
+  blacklist: List([]),
 };
-
-// Util function until custom views are finished
-function hasInView(view, status, assignee, userId, userGroupIds, groupId) {
-  let hasView = false;
-  let hasGroup = false;
-  switch (view) {
-    case 'filter':
-      hasView = true;
-      break;
-    case 'all':
-      hasView = [0, 1, 2, 3].indexOf(status) !== -1;
-      break;
-    case 'active':
-      hasView = [0, 1, 2].indexOf(status) !== -1;
-      break;
-    case 'assigned':
-      hasView = assignee === userId;
-      break;
-    case 'unassigned':
-      hasView = isUndefined(assignee);
-      break;
-    case 'new':
-      hasView = status === 0;
-      break;
-    case 'open':
-      hasView = status === 1;
-      break;
-    case 'pending':
-      hasView = status === 2;
-      break;
-    case 'closed':
-      hasView = status === 3;
-      break;
-    default:
-      hasView = false;
-  }
-
-  if (isUndefined(userGroupIds) || isUndefined(groupId)) hasGroup = false;
-  else hasGroup = userGroupIds.indexOf(groupId) !== -1;
-
-  return hasGroup && hasView;
-}
 
 const reducer = handleActions(
   {
-    [FETCH_TCMS.SUCCESS]: (state, action) => {
+    [FETCH_BLACKLIST.SUCCESS]: (state, action) => {
       return {
         ...state,
-        tcms: fromJS(action.response.tcms),
+        blacklist: fromJS(action.response.blacklist),
       };
     },
 
-    [TCM_UPDATED.SUCCESS]: (state, action) => {
-      const ticket = action.payload.ticket;
-      const tcm = action.payload.tcm;
-      const userGroupIds = action.sessionUser.groups;
-
-      const idx = state.tcms.findIndex((t) => {
-        return t.get('_id') === tcm._id;
+    [BLACKLIST_UPDATED.SUCCESS]: (state, action) => {
+      const resEmail = action.response.email;
+      const emailIndex = state.blacklist.findIndex((e) => {
+        return e.get('_id') === resEmail._id;
       });
-
-      const inView = true;
-
-      if (!inView && idx !== -1) {
-        return {
-          ...state,
-          tcms: state.tcms.delete(idx),
-        };
-      }
-
-      if (!inView) return { ...state };
-
-      if (idx === -1) {
-        const withTCM = state.tcms.push(fromJS(tcm));
-        return {
-          ...state,
-          tcms: withTCM.sortBy((t) => -t.get('ticketUid')),
-        };
-      }
-
       return {
         ...state,
-        tcms: state.tcms.set(idx, fromJS(tcm)),
+        blacklist: state.blacklist.set(emailIndex, fromJS(resEmail)),
       };
     },
   },

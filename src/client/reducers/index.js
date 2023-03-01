@@ -31,6 +31,7 @@ import noticesState from './noticesReducer';
 import searchState from './searchReducer';
 import messagesState from './messagesReducer';
 import tcmsState from './tcmsReducer';
+import blacklistState from './blackListReducer';
 import tSortingsState from './tSortingsReducer';
 
 // const IndexReducer = (state = {}, action) => {
@@ -58,6 +59,7 @@ const IndexReducer = combineReducers({
   dashboardState,
   ticketsState,
   tcmsState,
+  blacklistState,
   //tSortingsState,
   accountsState,
   groupsState,

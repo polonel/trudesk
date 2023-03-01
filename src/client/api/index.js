@@ -200,6 +200,19 @@ api.tSortings.tSortingUpdated = (payload) => {
   });
 };
 
+api.blacklist = {};
+api.blacklist.fetch = () => {
+  return axios.get('/api/v2/blacklist').then((res) => {
+    return res.data;
+  });
+};
+
+api.blacklist.update = (payload) => {
+  return axios.put('/api/v2/blacklist', payload).then((res) => {
+    return res.data;
+  });
+};
+
 api.accounts = {};
 
 api.accounts.create = (payload) => {
