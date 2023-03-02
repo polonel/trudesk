@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Button from 'components/Button';
 import BaseModal from 'containers/Modals/BaseModal';
 import { updateSetting } from 'actions/settings';
-//import { fetchBlackList, addEmail } from 'actions/blacklist';
+import { fetchBlackList, addEmail } from 'actions/blacklist';
 import { fetchAccounts } from 'actions/accounts';
 import InfiniteScroll from 'react-infinite-scroller';
 import Log from '../../logger';
@@ -36,15 +36,11 @@ class BlackListModal extends React.Component {
   }
 
   componentDidMount() {
-    this.props
-      // .fetchBlackList({ limit: 10, skip: this.props.blacklist, type: this.props.view, showDeleted: true })
-      // .then(({ response }) => {
-      //   this.hasMore = response.count >= 5;
-      // });
-      .fetchAccounts({ limit: 10, type: this.props.view, showDeleted: true })
-      .then(({ response }) => {
-        this.hasMore = response.count >= 5;
-      });
+    console.log('fetchBlackList');
+    this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length });
+    //   .then(({ response }) => {
+    //   this.hasMore = response.count >= 5;
+    // });
     this.initialLoad = false;
   }
 

@@ -24,6 +24,7 @@ const initialState = {
 const reducer = handleActions(
   {
     [FETCH_BLACKLIST.SUCCESS]: (state, action) => {
+      console.log('fetchBlackList');
       return {
         ...state,
         blacklist: fromJS(action.response.blacklist),
