@@ -15,7 +15,7 @@
 import { fromJS, List } from 'immutable';
 import { handleActions } from 'redux-actions';
 import isUndefined from 'lodash/isUndefined';
-import { FETCH_BLACKLIST } from 'actions/types';
+import { FETCH_BLACKLIST, ADD_EMAIL } from 'actions/types';
 
 const initialState = {
   blacklist: List([]),
@@ -24,23 +24,31 @@ const initialState = {
 const reducer = handleActions(
   {
     [FETCH_BLACKLIST.SUCCESS]: (state, action) => {
-      console.log('fetchBlackList');
       return {
         ...state,
         blacklist: fromJS(action.response.blacklist),
       };
     },
 
-    // [BLACKLIST_UPDATED.SUCCESS]: (state, action) => {
-    //   const resEmail = action.response.email;
-    //   const emailIndex = state.blacklist.findIndex((e) => {
-    //     return e.get('_id') === resEmail._id;
-    //   });
-    //   return {
-    //     ...state,
-    //     blacklist: state.blacklist.set(emailIndex, fromJS(resEmail)),
-    //   };
-    // },
+    [ADD_EMAIL.SUCCESS]: (state, action) => {
+      const resBlackList = action.response.blacklist;
+      state.blacklist = resBlackList;
+      return {
+        ...state,
+        blacklist: resBlackList,
+      };
+    },
+
+    [BLACKLIST_UPDATED.SUCCESS]: (state, action) => {
+      const resEmail = action.response.email;
+      const emailIndex = state.blacklist.findIndex((e) => {
+        return e.get('_id') === resEmail._id;
+      });
+      return {
+        ...state,
+        blacklist: state.blacklist.set(emailIndex, fromJS(resEmail)),
+      };
+    },
   },
 
   initialState

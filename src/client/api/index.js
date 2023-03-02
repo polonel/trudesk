@@ -216,6 +216,12 @@ api.blacklist.update = (payload) => {
   });
 };
 
+api.blacklist.add = (payload) => {
+  return axios.post('/api/v2/blacklist', payload).then((res) => {
+    return res.data;
+  });
+};
+
 api.accounts = {};
 
 api.accounts.create = (payload) => {

@@ -12,23 +12,24 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { all } from 'redux-saga/effects'
-import CommonSaga from './common'
-import DashboardSaga from './dashboard'
-import SettingsSaga from './settings'
-import TicketSaga from './tickets'
-import AccountSaga from './accounts'
-import GroupSaga from './groups'
-import TeamSaga from './teams'
-import DepartmentSaga from './departments'
-import NoticeSage from './notices'
-import SearchSaga from './search'
-import MessagesSaga from './messages'
-import ReportsSaga from './reports'
-import TCMsSaga from './tcms'
-import TSortingsSaga from './tSortings'
+import { all } from 'redux-saga/effects';
+import CommonSaga from './common';
+import DashboardSaga from './dashboard';
+import SettingsSaga from './settings';
+import TicketSaga from './tickets';
+import AccountSaga from './accounts';
+import GroupSaga from './groups';
+import TeamSaga from './teams';
+import DepartmentSaga from './departments';
+import NoticeSage from './notices';
+import SearchSaga from './search';
+import MessagesSaga from './messages';
+import ReportsSaga from './reports';
+import TCMsSaga from './tcms';
+import TSortingsSaga from './tSortings';
+import BlackListSaga from './blacklist';
 
-export default function * IndexSagas () {
+export default function* IndexSagas() {
   yield all([
     CommonSaga(),
     DashboardSaga(),
@@ -43,6 +44,7 @@ export default function * IndexSagas () {
     MessagesSaga(),
     ReportsSaga(),
     TCMsSaga(),
-    TSortingsSaga()
-  ])
+    TSortingsSaga(),
+    BlackListSaga(),
+  ]);
 }

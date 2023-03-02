@@ -47,6 +47,24 @@ apiBlackList.get = function (req, res) {
   );
 };
 
+apiBlackList.post = function (req, res) {
+  const email = req.body;
+  async.parallel(
+    [
+      function (done) {
+        blacklistSchema.create(email, (err, email) => {
+          if (err) throw err;
+          return done();
+        });
+      },
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err });
+      return apiUtil.sendApiSuccess(res, { account: user });
+    }
+  );
+};
+
 apiBlackList.put = function (req, res) {
   const data = req.body;
 
@@ -55,39 +73,20 @@ apiBlackList.put = function (req, res) {
       function (done) {
         blacklistSchema.findOne({ email: data.email }, (err, email) => {
           if (err) console.log(err);
-          if (!tSorting) {
+          if (!email) {
             const email = {
               email: data.email,
             };
-            blacklistSchema.create(tSorting, (err, tSorting) => {
-              const stringSorting = String(tSorting.sorting);
+            blacklistSchema.create(email, (err, email) => {
               if (err) throw err;
-              blacklistSchema.findOne({ userId: data.userId }, (err, tSorting) => {
-                emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });
-              });
               return done();
             });
           } else {
-            let direction = '';
-            if (
-              tSorting.direction == 'bottomUp' ||
-              tSorting.direction == '' ||
-              !tSorting.direction ||
-              data.sorting !== String(tSorting.sorting)
-            ) {
-              direction = 'topDown';
-            } else if (String(tSorting.direction) == 'topDown') {
-              direction = 'bottomUp';
-            }
-
             blacklistSchema.updateMany(
-              { userId: data.userId },
-              { sorting: data.sorting, direction: direction },
-              (err, tSorting) => {
+              { emailId: data.emailId },
+              { email: data.sorting, reason: data.reason },
+              (err, email) => {
                 if (err) console.log(err);
-                blacklistSchema.findOne({ userId: data.userId }, (err, tSorting) => {
-                  emitter.emit('tsorting:update', { userId: tSorting.userId, tSorting: tSorting });
-                });
                 return done();
               }
             );

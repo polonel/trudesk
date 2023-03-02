@@ -33,7 +33,7 @@ function* fetchBlackList({ payload }) {
 
 function* addEmail({ payload }) {
   try {
-    const response = yield call(api.blacklist.addEmail, payload);
+    const response = yield call(api.blacklist.add, payload);
     yield put({ type: ADD_EMAIL.SUCCESS, response });
     helpers.UI.showSnackbar('Account created successfully');
   } catch (error) {

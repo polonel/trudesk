@@ -71,6 +71,7 @@ module.exports = function (middleware, router, controllers) {
   //blacklist
   router.get('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.get);
   router.put('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.put);
+  router.add('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.post);
 
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get);
