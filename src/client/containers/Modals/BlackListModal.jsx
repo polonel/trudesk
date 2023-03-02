@@ -6,17 +6,26 @@ import { connect } from 'react-redux';
 import Button from 'components/Button';
 import BaseModal from 'containers/Modals/BaseModal';
 import { updateSetting } from 'actions/settings';
+import { fetchBlackList, addEmail } from 'actions/blacklist';
+import InfiniteScroll from 'react-infinite-scroller';
 import Log from '../../logger';
 import axios from 'axios';
-
+import Table from 'components/Table';
+import TableHeader from 'components/Table/TableHeader';
+import TableRow from 'components/Table/TableRow';
+import PageContent from 'components/PageContent';
+import TableCell from 'components/Table/TableCell';
 @observer
 class BlackListModal extends React.Component {
   @observable privacyPolicy = '';
-  @observable blacklist = [];
+  @observable pageStart = -1;
+  @observable hasMore = true;
+  @observable initialLoad = true;
   constructor(props) {
     super(props);
 
     makeObservable(this);
+    this.getUsersWithPage = this.getUsersWithPage.bind(this);
   }
 
   getSetting(stateName) {
@@ -25,11 +34,39 @@ class BlackListModal extends React.Component {
       : '';
   }
 
+  componentDidMount() {
+    this.props
+      .fetchBlackList({ limit: 10, skip: this.props.blacklist, type: this.props.view, showDeleted: true })
+      .then(({ response }) => {
+        this.hasMore = response.count >= 5;
+      });
+    this.initialLoad = false;
+  }
+
   componentDidUpdate(prevProps) {
     // helpers.UI.reRenderInputs()
-    if (prevProps.settings !== this.props.settings) {
-      if (this.blacklist !== this.getSetting('mailer:blacklist')) this.blackList = this.getSetting('mailer:blacklist');
-    }
+  }
+
+  addEmail(email) {
+    this.blacklist.push(email);
+    const payload = {
+      email: email,
+      reason: 'Причина блокировки',
+    };
+    this.props.addEmail(payload);
+  }
+
+  removeEmail(email) {
+    this.blacklist.splice(email);
+  }
+
+  getEmailsWithPage(page) {
+    this.hasMore = false;
+    this.props
+      .fetchBlackList({ page, limit: 5, skip: this.blacklist.length, type: this.props.view, showDeleted: true })
+      .then(({ response }) => {
+        this.hasMore = response.count >= 5;
+      });
   }
 
   onFormSubmit() {
@@ -64,6 +101,7 @@ class BlackListModal extends React.Component {
                   </thead>
                   <tbody>
                     {/* {deletedTickets.map((ticket) => ( */}
+
                     <tr>
                       <td className="valign-middle" style={{ width: '5%', height: '30px' }}>
                         1
@@ -83,6 +121,50 @@ class BlackListModal extends React.Component {
                     {/* ))} */}
                   </tbody>
                 </table>
+                <PageContent id={'mapping-page-content'} padding={0}>
+                  <InfiniteScroll
+                    pageStart={this.pageStart}
+                    loadMore={this.getEmailsWithPage}
+                    hasMore={true}
+                    initialLoad={this.initialLoad}
+                    threshold={5}
+                    loader={
+                      <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                        <i className={'uk-icon-refresh uk-icon-spin'} />
+                      </div>
+                    }
+                    useWindow={false}
+                    getScrollParent={() => document.getElementById('mapping-page-content')}
+                  >
+                    <Table
+                      style={{ margin: 0 }}
+                      extraClass={'pDataTable'}
+                      stickyHeader={true}
+                      striped={true}
+                      headers={[
+                        <TableHeader key={0} width={'5%'} height={50} />,
+                        <TableHeader key={1} width={'20%'} text={'Username'} />,
+                        <TableHeader key={2} width={'20%'} text={'Name'} />,
+                        <TableHeader key={3} width={'20%'} text={'Email'} />,
+                        <TableHeader key={4} width={'10%'} text={'Group'} />,
+                      ]}
+                    >
+                      {this.blacklist &&
+                        this.blacklist.map((email) => {
+                          return (
+                            <TableRow key={this.blacklist.indexOf(email) + 1} clickable={true}>
+                              <TableCell className={'vam nbb'}>
+                                <div key={this.blacklist.indexOf(email) + 1} className={'uk-float-left'}>
+                                  {email}
+                                </div>
+                              </TableCell>
+                              <TableCell className={'vam nbb'}>{email}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </Table>
+                  </InfiniteScroll>
+                </PageContent>
                 <div className="uk-pagination deletedTicketPagination"></div>
               </div>
             </div>
@@ -100,6 +182,7 @@ BlackListModal.propTypes = {
 
 const mapStateToProps = (state) => ({
   settings: state.settings.settings,
+  blacklist: state.blacklistState,
 });
 
-export default connect(mapStateToProps, { updateSetting })(BlackListModal);
+export default connect(mapStateToProps, { updateSetting, fetchBlackList })(BlackListModal);

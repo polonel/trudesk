@@ -72,6 +72,10 @@ export const TCM_UPDATED = defineAction('TCM_UPDATED', [SUCCESS]);
 export const FETCH_TSORTINGS = defineAction('FETCH_TSORTINGS', [SUCCESS, PENDING, ERROR]);
 export const TSORTING_UPDATED = defineAction('TSORTING_UPDATED', [SUCCESS]);
 
+//blacklist
+export const FETCH_BLACKLIST = defineAction('FETCH_BLACKLIST', [SUCCESS, PENDING, ERROR]);
+export const ADD_EMAIL = defineAction('ADD_EMAIL', [PENDING, SUCCESS, ERROR]);
+
 // Accounts
 export const FETCH_ACCOUNTS = defineAction('FETCH_ACCOUNTS', [PENDING, SUCCESS, ERROR]);
 export const FIND_ACCOUNTS = defineAction('FIND_ACCOUNTS', [PENDING, SUCCESS, ERROR]);
@@ -99,10 +103,6 @@ export const CREATE_LDAPGROUP = defineAction('CREATE_LDAPGROUP', [SUCCESS, PENDI
 export const UPDATE_LDAPGROUP = defineAction('UPDATE_LDAPGROUP', [SUCCESS, PENDING, ERROR]);
 export const DELETE_LDAPGROUP = defineAction('DELETE_LDAPGROUP', [SUCCESS, PENDING, ERROR]);
 export const UNLOAD_LDAPGROUPS = defineAction('UNLOAD_LDAPGROUPS', [SUCCESS]);
-
-// blacklist
-export const FETCH_BLACKLIST = defineAction('FETCH_BLACKLIST', [SUCCESS, ERROR]);
-export const BLACKLIST_UPDATED = defineAction('BLACKLIST_UPDATED', [SUCCESS, PENDING, ERROR]);
 
 // Chatwoot
 export const FETCH_CHATWOOTDATA = defineAction('FETCH_CHATWOOTDATA', [SUCCESS, ERROR]);

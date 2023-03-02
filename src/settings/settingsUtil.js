@@ -86,7 +86,7 @@ util.getSettings = async (callback) => {
         s.mailerUsername = parseSetting(settings, 'mailer:username', '');
         s.mailerPassword = parseSetting(settings, 'mailer:password', '');
         s.mailerFrom = parseSetting(settings, 'mailer:from', '');
-
+        s.milerBlacklist = parseSetting(settings, 'mailer:blacklist', []);
         s.mailerCheckEnabled = parseSetting(settings, 'mailer:check:enable', false);
         s.mailerCheckPolling = parseSetting(settings, 'mailer:check:polling', 600000);
         s.mailerCheckHost = parseSetting(settings, 'mailer:check:host', '');
@@ -141,7 +141,6 @@ util.getSettings = async (callback) => {
           ''
         );
 
-        s.chatwootSettings = parseSetting(settings, 'blacklist:array', []);
         //-- ShaturaPro LIN 22.08.2022
         const types = await ticketTypeSchema.getTypes();
         content.data.ticketTypes = _.sortBy(types, (o) => o.name);

@@ -21,15 +21,22 @@ var apiBlackList = {};
 
 apiBlackList.get = function (req, res) {
   var blacklist = [];
-
+  const limit = req.body.limit;
+  const itemsLength = req.body.skip;
   async.parallel(
     [
       function (done) {
-        settingSchema.find({ name: 'blacklist:array' }, function (err, b) {
-          if (err) return done(err);
-          blacklist = b.value;
-          return done();
-        });
+        blacklistSchema
+          .find(function (err, b) {
+            if (err) return done(err);
+            return done();
+          })
+          .sort({ createdAt: -1 })
+          .skip(itemsLength)
+          .limit(limit)
+          .then((emails) => {
+            blacklist = emails;
+          });
       },
     ],
     function (err) {

@@ -30,6 +30,19 @@ function* fetchBlackList({ payload }) {
   }
 }
 
+function* addEmail({ payload }) {
+  try {
+    const response = yield call(api.blacklist.addEmail, payload);
+    yield put({ type: ADD_EMAIL.SUCCESS, response });
+    helpers.UI.showSnackbar('Account created successfully');
+  } catch (error) {
+    const errorText = error.response.data.error;
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true);
+    Log.error(errorText, error.response || error);
+    yield put({ type: ADD_EMAIL.ERROR, error });
+  }
+}
+
 function* updateBlackList({ payload }) {
   try {
     const response = yield call(api.blacklist.update, payload);
