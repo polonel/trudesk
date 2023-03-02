@@ -21,8 +21,8 @@ var apiBlackList = {};
 
 apiBlackList.get = function (req, res) {
   var blacklist = [];
-  const limit = req.body.limit;
-  const itemsLength = req.body.skip;
+  const limit = req.query.limit;
+  const skip = req.query.skip;
   async.parallel(
     [
       function (done) {
@@ -32,7 +32,7 @@ apiBlackList.get = function (req, res) {
             return done();
           })
           .sort({ createdAt: -1 })
-          .skip(itemsLength)
+          .skip(skip)
           .limit(limit)
           .then((emails) => {
             blacklist = emails;

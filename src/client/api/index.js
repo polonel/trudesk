@@ -203,7 +203,9 @@ api.tSortings.tSortingUpdated = (payload) => {
 api.blacklist = {};
 api.blacklist.fetch = (payload) => {
   console.log('blacklist');
-  return axios.get('/api/v2/blacklist').then((res) => {
+  const limit = payload.limit;
+  const skip = payload.skip;
+  return axios.get(`/api/v2/blacklist?limit=${limit}&skip=${skip}`).then((res) => {
     return res.data;
   });
 };
