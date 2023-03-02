@@ -37,6 +37,9 @@ class BlackListModal extends React.Component {
 
   componentDidMount() {
     console.log('fetchBlackList');
+    axios.get(`/api/v2/blacklist`).then((response) => {
+      console.log(JSON.stringify(response.data));
+    });
     this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length });
     //   .then(({ response }) => {
     //   this.hasMore = response.count >= 5;
