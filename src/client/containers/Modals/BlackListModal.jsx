@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import Button from 'components/Button';
 import BaseModal from 'containers/Modals/BaseModal';
 import { updateSetting } from 'actions/settings';
-import { fetchBlackList, addEmail } from 'actions/blacklist';
+//import { fetchBlackList, addEmail } from 'actions/blacklist';
+import { fetchAccounts } from 'actions/accounts';
 import InfiniteScroll from 'react-infinite-scroller';
 import Log from '../../logger';
 import axios from 'axios';
@@ -21,11 +22,11 @@ class BlackListModal extends React.Component {
   @observable pageStart = -1;
   @observable hasMore = true;
   @observable initialLoad = true;
+  @observable blacklist = [];
   constructor(props) {
     super(props);
 
     makeObservable(this);
-    this.getUsersWithPage = this.getUsersWithPage.bind(this);
   }
 
   getSetting(stateName) {
@@ -36,7 +37,11 @@ class BlackListModal extends React.Component {
 
   componentDidMount() {
     this.props
-      .fetchBlackList({ limit: 10, skip: this.props.blacklist, type: this.props.view, showDeleted: true })
+      // .fetchBlackList({ limit: 10, skip: this.props.blacklist, type: this.props.view, showDeleted: true })
+      // .then(({ response }) => {
+      //   this.hasMore = response.count >= 5;
+      // });
+      .fetchAccounts({ limit: 10, type: this.props.view, showDeleted: true })
       .then(({ response }) => {
         this.hasMore = response.count >= 5;
       });

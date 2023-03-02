@@ -13,7 +13,7 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { FETCH_BLACKLIST, BLACKLIST_UPDATED } from 'actions/types';
+import { FETCH_BLACKLIST, ADD_EMAIL } from 'actions/types';
 
 import api from '../../api';
 import Log from '../../logger';
@@ -43,19 +43,19 @@ function* addEmail({ payload }) {
   }
 }
 
-function* updateBlackList({ payload }) {
-  try {
-    const response = yield call(api.blacklist.update, payload);
-    yield put({ type: BLACKLIST_UPDATED.SUCCESS, response });
-  } catch (error) {
-    const errorText = error.response ? error.response.data.error : error;
-    helpers.UI.showSnackbar(`Error: ${errorText}`, true);
-    yield put({ type: BLACKLIST_UPDATED.ERROR, error });
-    Log.error(errorText, error);
-  }
-}
+// function* updateBlackList({ payload }) {
+//   try {
+//     const response = yield call(api.blacklist.update, payload);
+//     yield put({ type: BLACKLIST_UPDATED.SUCCESS, response });
+//   } catch (error) {
+//     const errorText = error.response ? error.response.data.error : error;
+//     helpers.UI.showSnackbar(`Error: ${errorText}`, true);
+//     yield put({ type: BLACKLIST_UPDATED.ERROR, error });
+//     Log.error(errorText, error);
+//   }
+// }
 
 export default function* watcher() {
   yield takeLatest(FETCH_BLACKLIST.ACTION, fetchBlackList);
-  yield takeLatest(BLACKLIST_UPDATED.ACTION, updateBlackList);
+  yield takeLatest(ADD_EMAIL.ACTION, addEmail);
 }
