@@ -146,20 +146,22 @@ class BlackListModal extends React.Component {
                       stickyHeader={true}
                       striped={true}
                       headers={[
-                        <TableHeader key={0} width={'5%'} height={50} />,
-                        <TableHeader key={1} width={'20%'} text={'Username'} />,
-                        <TableHeader key={2} width={'20%'} text={'Name'} />,
-                        <TableHeader key={3} width={'20%'} text={'Email'} />,
-                        <TableHeader key={4} width={'10%'} text={'Group'} />,
+                        <TableHeader key={1} width={'20%'} text={'Email'} />,
+                        <TableHeader key={2} width={'20%'} text={'Reason'} />,
                       ]}
                     >
-                      {this.blacklist &&
-                        this.blacklist.map((email) => {
+                      {this.props.blacklist &&
+                        this.props.blacklist.map((value) => {
                           return (
-                            <TableRow key={this.blacklist.indexOf(email) + 1} clickable={true}>
+                            <TableRow key={this.props.blacklist.indexOf(email) + 1} clickable={true}>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.blacklist.indexOf(email) + 1} className={'uk-float-left'}>
-                                  {email}
+                                <div key={this.props.blacklist.indexOf(email) + 1} className={'uk-float-left'}>
+                                  {value.email}
+                                </div>
+                              </TableCell>
+                              <TableCell className={'vam nbb'}>
+                                <div key={this.props.blacklist.indexOf(email) + 1} className={'uk-float-left'}>
+                                  {value.reason}
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>{email}</TableCell>

@@ -17,6 +17,7 @@ var async = require('async');
 var blacklistSchema = require('../../../models/blacklist');
 var settingSchema = require('../../../models/setting');
 var emitter = require('../../../emitter');
+const winston = require('../../../logger');
 var apiBlackList = {};
 const apiUtil = require('../apiUtils');
 
@@ -53,10 +54,15 @@ apiBlackList.post = function (req, res) {
   async.parallel(
     [
       function (done) {
-        blacklistSchema.create(email, (err, email) => {
-          if (err) throw err;
-          return done();
-        });
+        try {
+          blacklistSchema.create(email, (err, email) => {
+            if (err) throw err;
+            return done();
+          });
+        } catch {
+          winston.warn(e);
+          return apiUtil.sendApiError(res, 500, e.message);
+        }
       },
     ],
     function (err) {
