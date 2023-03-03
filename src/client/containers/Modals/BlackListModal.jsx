@@ -29,18 +29,7 @@ class BlackListModal extends React.Component {
     makeObservable(this);
   }
 
-  getSetting(stateName) {
-    return this.props.settings.getIn(['settings', stateName, 'value'])
-      ? this.props.settings.getIn(['settings', stateName, 'value'])
-      : '';
-  }
-
   componentDidMount() {
-    console.log('fetchBlackList');
-
-    this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
-      this.hasMore = response.count >= 5;
-    });
     this.initialLoad = false;
   }
 
@@ -60,15 +49,12 @@ class BlackListModal extends React.Component {
 
   getEmailsWithPage(page) {
     this.hasMore = false;
-    this.props
-      .fetchBlackList({ page, limit: 5, skip: this.blacklist.length, type: this.props.view, showDeleted: true })
-      .then(({ response }) => {
-        this.hasMore = response.count >= 5;
-      });
+    this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
+      this.hasMore = response.count >= 5;
+    });
   }
 
   onFormSubmit() {
-    console.log('onFormSubmit');
     const payload = {
       email: 'email@email.com',
       reason: 'Причина блокировки',
@@ -82,102 +68,104 @@ class BlackListModal extends React.Component {
   }
 
   render() {
-    console.log('this.props.blacklist');
-    console.log(this.props.blacklist);
-    return (
-      <BaseModal options={{}}>
-        <div className="setting-item-wrap uk-margin-medium-bottom">
-          <div style={{ minHeight: '60px', height: 'auto' }}>
-            <div>
-              <div className="uk-position-relative">
-                <div>
+    if (this.props.blacklist.size !== 0) {
+      console.log('this.props.blacklist');
+      console.log(this.props.blacklist);
+      return (
+        <BaseModal options={{}}>
+          <div className="setting-item-wrap uk-margin-medium-bottom">
+            <div style={{ minHeight: '60px', height: 'auto' }}>
+              <div>
+                <div className="uk-position-relative">
                   <div>
-                    <h2 className="uk-text-muted uk-text-center">Black list</h2>
+                    <div>
+                      <h2 className="uk-text-muted uk-text-center">Black list</h2>
+                    </div>
                   </div>
-                </div>
 
-                <table className="uk-table mt-0 mb-5">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th></th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* {deletedTickets.map((ticket) => ( */}
+                  <table className="uk-table mt-0 mb-5">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* {deletedTickets.map((ticket) => ( */}
 
-                    <tr>
-                      <td className="valign-middle" style={{ width: '5%', height: '30px' }}>
-                        1
-                      </td>
-                      <td className="valign-middle" style={{ width: '95%' }}>
-                        Email@email.ru
-                      </td>
+                      <tr>
+                        <td className="valign-middle" style={{ width: '5%', height: '30px' }}>
+                          1
+                        </td>
+                        <td className="valign-middle" style={{ width: '95%' }}>
+                          Email@email.ru
+                        </td>
 
-                      <td className="uk-text-right valign-middle">
-                        <div className="md-btn-group">
-                          <button className="md-btn md-btn-small md-btn-wave" onClick={() => this.onFormSubmit()}>
-                            Add
-                          </button>
+                        <td className="uk-text-right valign-middle">
+                          <div className="md-btn-group">
+                            <button className="md-btn md-btn-small md-btn-wave" onClick={() => this.onFormSubmit()}>
+                              Add
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {/* ))} */}
+                    </tbody>
+                  </table>
+                  <PageContent id={'mapping-page-content'} padding={0}>
+                    <InfiniteScroll
+                      pageStart={this.pageStart}
+                      loadMore={this.getEmailsWithPage}
+                      hasMore={true}
+                      initialLoad={this.initialLoad}
+                      threshold={5}
+                      loader={
+                        <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                          <i className={'uk-icon-refresh uk-icon-spin'} />
                         </div>
-                      </td>
-                    </tr>
-                    {/* ))} */}
-                  </tbody>
-                </table>
-                <PageContent id={'mapping-page-content'} padding={0}>
-                  <InfiniteScroll
-                    pageStart={this.pageStart}
-                    loadMore={this.getEmailsWithPage}
-                    hasMore={true}
-                    initialLoad={this.initialLoad}
-                    threshold={5}
-                    loader={
-                      <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                        <i className={'uk-icon-refresh uk-icon-spin'} />
-                      </div>
-                    }
-                    useWindow={false}
-                    getScrollParent={() => document.getElementById('mapping-page-content')}
-                  >
-                    <Table
-                      style={{ margin: 0 }}
-                      extraClass={'pDataTable'}
-                      stickyHeader={true}
-                      striped={true}
-                      headers={[
-                        <TableHeader key={1} width={'20%'} text={'Email'} />,
-                        <TableHeader key={2} width={'20%'} text={'Reason'} />,
-                      ]}
+                      }
+                      useWindow={false}
+                      getScrollParent={() => document.getElementById('mapping-page-content')}
                     >
-                      {this.blacklist.length !== 0 &&
-                        this.blacklist.map((value) => {
-                          return (
-                            <TableRow key={this.blacklist.indexOf(value) + 1} clickable={true}>
-                              <TableCell className={'vam nbb'}>
-                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
-                                  {value.email}
-                                </div>
-                              </TableCell>
-                              <TableCell className={'vam nbb'}>
-                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
-                                  {value.reason}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                    </Table>
-                  </InfiniteScroll>
-                </PageContent>
-                <div className="uk-pagination deletedTicketPagination"></div>
+                      <Table
+                        style={{ margin: 0 }}
+                        extraClass={'pDataTable'}
+                        stickyHeader={true}
+                        striped={true}
+                        headers={[
+                          <TableHeader key={1} width={'20%'} text={'Email'} />,
+                          <TableHeader key={2} width={'20%'} text={'Reason'} />,
+                        ]}
+                      >
+                        {this.props.blacklist.size !== 0 &&
+                          this.props.blacklist?.map((value) => {
+                            return (
+                              <TableRow key={this.props.blacklist.indexOf(value) + 1} clickable={true}>
+                                <TableCell className={'vam nbb'}>
+                                  <div key={this.props.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                    {value.email}
+                                  </div>
+                                </TableCell>
+                                <TableCell className={'vam nbb'}>
+                                  <div key={this.props.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                    {value.reason}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </Table>
+                    </InfiniteScroll>
+                  </PageContent>
+                  <div className="uk-pagination deletedTicketPagination"></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </BaseModal>
-    );
+        </BaseModal>
+      );
+    }
   }
 }
 
