@@ -30,6 +30,7 @@ class BlackListModal extends React.Component {
 
     makeObservable(this);
     this.getEmailsWithPage = this.getEmailsWithPage.bind(this);
+    this.onBlackListFetch = this.onBlackListFetch.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +40,7 @@ class BlackListModal extends React.Component {
         return { email: email.get('email'), reason: email.get('reason') };
       });
     });
+    this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.initialLoad = false;
   }
 
@@ -46,11 +48,19 @@ class BlackListModal extends React.Component {
     // helpers.UI.reRenderInputs()
   }
 
+  componentWillUnmount() {
+    this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
+  }
+
   addEmail(email) {
     this.blacklist.push(email);
 
     this.props.addEmail(payload);
   }
+
+  onBlackListFetch = (data) => {
+    this.blacklist = data.blacklist;
+  };
 
   removeEmail(email) {
     this.blacklist.splice(email);
@@ -77,124 +87,127 @@ class BlackListModal extends React.Component {
   }
 
   render() {
-    console.log('this.props.blacklistState');
-    console.log(this.props.blacklistState.blacklist);
     if (this.props.blacklistState.blacklist) {
-      this.blacklist = this.props.blacklistState.blacklist.map((value) => {
-        return { email: value.get('email'), reason: value.get('reason') };
-      });
+      console.log('Условие пройдено');
+      console.log(this.props.blacklistState.blacklist.size);
+      if (this.props.blacklistState.blacklist.size !== 0) {
+        this.blacklist = this.props.blacklistState.blacklist.map((value) => {
+          console.log('map in blacklist');
+          return { email: value.get('email'), reason: value.get('reason') };
+        });
 
-      return (
-        <BaseModal options={{}}>
-          <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
-            <div className="setting-item-wrap">
-              <div style={{ minHeight: '60px', height: 'auto' }}>
-                <div>
-                  <div className="uk-position-relative">
-                    <div>
+        return (
+          <BaseModal options={{}}>
+            <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
+              <div className="setting-item-wrap">
+                <div style={{ minHeight: '60px', height: 'auto' }}>
+                  <div>
+                    <div className="uk-position-relative">
                       <div>
-                        <h2 className="uk-text-muted uk-text-center">Black list</h2>
+                        <div>
+                          <h2 className="uk-text-muted uk-text-center">Black list</h2>
+                        </div>
                       </div>
-                    </div>
-                    <InfiniteScroll
-                      pageStart={this.pageStart}
-                      loadMore={this.getEmailsWithPage}
-                      hasMore={this.hasMore}
-                      initialLoad={this.initialLoad}
-                      threshold={10}
-                      // loader={
-                      //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                      //     <i className={'uk-icon-refresh uk-icon-spin'} />
-                      //   </div>
-                      // }
-                      useWindow={false}
-                      getScrollParent={() => document.getElementById('mapping-page-content')}
-                    >
-                      <Table
-                        style={{ margin: 0 }}
-                        extraClass={'pDataTable'}
-                        stickyHeader={true}
-                        striped={true}
-                        headers={[
-                          <TableHeader key={1} width={'20%'} text={'Email'} />,
-                          <TableHeader key={2} width={'40%'} text={'Reason'} />,
-                          <TableHeader key={2} width={'20%'} text={'Action'} />,
-                        ]}
+                      <InfiniteScroll
+                        pageStart={this.pageStart}
+                        loadMore={this.getEmailsWithPage}
+                        hasMore={this.hasMore}
+                        initialLoad={this.initialLoad}
+                        threshold={10}
+                        // loader={
+                        //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                        //     <i className={'uk-icon-refresh uk-icon-spin'} />
+                        //   </div>
+                        // }
+                        useWindow={false}
+                        getScrollParent={() => document.getElementById('mapping-page-content')}
                       >
-                        {this.props.blacklistState.blacklist &&
-                          this.props.blacklistState.blacklist.map((value) => {
-                            return (
-                              <TableRow key={this.props.blacklistState.blacklist.indexOf(value) + 1} clickable={true}>
-                                <TableCell className={'vam nbb'}>
-                                  <div
-                                    key={this.props.blacklistState.blacklist.indexOf(value) + 1}
-                                    className={'uk-float-left'}
-                                  >
-                                    <input
-                                      name={'subject'}
-                                      type="text"
-                                      className={'md-input'}
-                                      defaultValue={value.get('email')}
-                                      style={{ borderWidth: 0 }}
-                                    />
-                                  </div>
-                                </TableCell>
-                                <TableCell className={'vam nbb'}>
-                                  <div
-                                    key={this.props.blacklistState.blacklist.indexOf(value) + 1}
-                                    className={'uk-float-left'}
-                                  >
-                                    <input
-                                      name={'subject'}
-                                      type="text"
-                                      className={'md-input'}
-                                      defaultValue={value.get('reason')}
-                                      style={{ borderWidth: 0 }}
-                                    />
-                                  </div>
-                                </TableCell>
-                                <TableCell className={'vam nbb'}>
-                                  <span
-                                    className="material-icons"
-                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
-                                  >
-                                    delete
-                                  </span>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                      </Table>
-                    </InfiniteScroll>
-                    {/* </PageContent> */}
-                    <div
-                      className="uk-pagination deletedTicketPagination"
-                      style={{ paddingTop: 10, marginBottom: -10 }}
-                    >
-                      <button
-                        class="md-btn md-btn-small"
-                        onClick={() => {
-                          this.onFormSubmit();
-                        }}
+                        <Table
+                          style={{ margin: 0 }}
+                          extraClass={'pDataTable'}
+                          stickyHeader={true}
+                          striped={true}
+                          headers={[
+                            <TableHeader key={1} width={'20%'} text={'Email'} />,
+                            <TableHeader key={2} width={'40%'} text={'Reason'} />,
+                            <TableHeader key={2} width={'20%'} text={'Action'} />,
+                          ]}
+                        >
+                          {this.props.blacklistState.blacklist &&
+                            this.props.blacklistState.blacklist.map((value) => {
+                              return (
+                                <TableRow key={this.props.blacklistState.blacklist.indexOf(value) + 1} clickable={true}>
+                                  <TableCell className={'vam nbb'}>
+                                    <div
+                                      key={this.props.blacklistState.blacklist.indexOf(value) + 1}
+                                      className={'uk-float-left'}
+                                    >
+                                      <input
+                                        name={'subject'}
+                                        type="text"
+                                        className={'md-input'}
+                                        defaultValue={value.get('email')}
+                                        style={{ borderWidth: 0 }}
+                                      />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className={'vam nbb'}>
+                                    <div
+                                      key={this.props.blacklistState.blacklist.indexOf(value) + 1}
+                                      className={'uk-float-left'}
+                                    >
+                                      <input
+                                        name={'subject'}
+                                        type="text"
+                                        className={'md-input'}
+                                        defaultValue={value.get('reason')}
+                                        style={{ borderWidth: 0 }}
+                                      />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className={'vam nbb'}>
+                                    <span
+                                      className="material-icons"
+                                      style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                    >
+                                      delete
+                                    </span>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                        </Table>
+                      </InfiniteScroll>
+                      {/* </PageContent> */}
+                      <div
+                        className="uk-pagination deletedTicketPagination"
+                        style={{ paddingTop: 10, marginBottom: -10 }}
                       >
-                        Add
-                      </button>
-                      <button
-                        class="md-btn md-btn-small"
-                        onClick={() => {
-                          this.onFormSubmit();
-                        }}
-                      >
-                        Save
-                      </button>
+                        <button
+                          class="md-btn md-btn-small"
+                          onClick={() => {
+                            this.onFormSubmit();
+                          }}
+                        >
+                          Add
+                        </button>
+                        <button
+                          class="md-btn md-btn-small"
+                          onClick={() => {
+                            this.onFormSubmit();
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </form>
-        </BaseModal>
-      );
+            </form>
+          </BaseModal>
+        );
+      }
     }
   }
 }
