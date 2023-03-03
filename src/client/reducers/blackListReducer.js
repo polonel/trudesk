@@ -26,7 +26,7 @@ const reducer = handleActions(
     [FETCH_BLACKLIST.SUCCESS]: (state, action) => {
       return {
         ...state,
-        blacklist: fromJS(action.response.blacklist.toArray()),
+        blacklist: fromJS(action.response.blacklist),
       };
     },
 
