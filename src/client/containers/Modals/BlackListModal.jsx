@@ -139,16 +139,16 @@ class BlackListModal extends React.Component {
                         ]}
                       >
                         {this.props.blacklist.size !== 0 &&
-                          this.props.blacklist?.map((value) => {
+                          this.blacklist?.map((value) => {
                             return (
-                              <TableRow key={this.props.blacklist.indexOf(value) + 1} clickable={true}>
+                              <TableRow key={this.blacklist.indexOf(value) + 1} clickable={true}>
                                 <TableCell className={'vam nbb'}>
-                                  <div key={this.props.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                  <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                     {value.email}
                                   </div>
                                 </TableCell>
                                 <TableCell className={'vam nbb'}>
-                                  <div key={this.props.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                  <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                     {value.reason}
                                   </div>
                                 </TableCell>
