@@ -92,123 +92,108 @@ class BlackListModal extends React.Component {
   }
 
   render() {
-    if (this.props.blacklistState.blacklist) {
-      console.log('Условие пройдено');
-      console.log(this.props.blacklistState.blacklist.size);
-      if (this.props.blacklistState.blacklist) {
-        return (
-          <BaseModal options={{}}>
-            <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
-              <div className="setting-item-wrap">
-                <div style={{ minHeight: '60px', height: 'auto' }}>
+    return (
+      <BaseModal options={{}}>
+        <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
+          <div className="setting-item-wrap">
+            <div style={{ minHeight: '60px', height: 'auto' }}>
+              <div>
+                <div className="uk-position-relative">
                   <div>
-                    <div className="uk-position-relative">
-                      <div>
-                        <div>
-                          <h2 className="uk-text-muted uk-text-center">Black list</h2>
-                        </div>
-                      </div>
-                      <InfiniteScroll
-                        pageStart={this.pageStart}
-                        loadMore={this.getEmailsWithPage}
-                        hasMore={this.hasMore}
-                        initialLoad={this.initialLoad}
-                        threshold={10}
-                        // loader={
-                        //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                        //     <i className={'uk-icon-refresh uk-icon-spin'} />
-                        //   </div>
-                        // }
-                        useWindow={false}
-                        getScrollParent={() => document.getElementById('mapping-page-content')}
-                      >
-                        <Table
-                          style={{ margin: 0 }}
-                          extraClass={'pDataTable'}
-                          stickyHeader={true}
-                          striped={true}
-                          headers={[
-                            <TableHeader key={1} width={'20%'} text={'Email'} />,
-                            <TableHeader key={2} width={'40%'} text={'Reason'} />,
-                            <TableHeader key={2} width={'20%'} text={'Action'} />,
-                          ]}
-                        >
-                          {this.props.blacklistState.blacklist &&
-                            this.props.blacklistState.blacklist.map((value) => {
-                              return (
-                                <TableRow key={this.props.blacklistState.blacklist.indexOf(value) + 1} clickable={true}>
-                                  <TableCell className={'vam nbb'}>
-                                    <div
-                                      key={this.props.blacklistState.blacklist.indexOf(value) + 1}
-                                      className={'uk-float-left'}
-                                    >
-                                      <input
-                                        name={'subject'}
-                                        type="text"
-                                        className={'md-input'}
-                                        defaultValue={value.get('email')}
-                                        style={{ borderWidth: 0 }}
-                                      />
-                                    </div>
-                                  </TableCell>
-                                  <TableCell className={'vam nbb'}>
-                                    <div
-                                      key={this.props.blacklistState.blacklist.indexOf(value) + 1}
-                                      className={'uk-float-left'}
-                                    >
-                                      <input
-                                        name={'subject'}
-                                        type="text"
-                                        className={'md-input'}
-                                        defaultValue={value.get('reason')}
-                                        style={{ borderWidth: 0 }}
-                                      />
-                                    </div>
-                                  </TableCell>
-                                  <TableCell className={'vam nbb'}>
-                                    <span
-                                      className="material-icons"
-                                      style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
-                                    >
-                                      delete
-                                    </span>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                        </Table>
-                      </InfiniteScroll>
-                      {/* </PageContent> */}
-                      <div
-                        className="uk-pagination deletedTicketPagination"
-                        style={{ paddingTop: 10, marginBottom: -10 }}
-                      >
-                        <button
-                          class="md-btn md-btn-small"
-                          onClick={() => {
-                            this.onFormSubmit();
-                          }}
-                        >
-                          Add
-                        </button>
-                        <button
-                          class="md-btn md-btn-small"
-                          onClick={() => {
-                            this.onFormSubmit();
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
+                    <div>
+                      <h2 className="uk-text-muted uk-text-center">Black list</h2>
                     </div>
+                  </div>
+                  <InfiniteScroll
+                    pageStart={this.pageStart}
+                    loadMore={this.getEmailsWithPage}
+                    hasMore={this.hasMore}
+                    initialLoad={this.initialLoad}
+                    threshold={10}
+                    // loader={
+                    //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                    //     <i className={'uk-icon-refresh uk-icon-spin'} />
+                    //   </div>
+                    // }
+                    useWindow={false}
+                    getScrollParent={() => document.getElementById('mapping-page-content')}
+                  >
+                    <Table
+                      style={{ margin: 0 }}
+                      extraClass={'pDataTable'}
+                      stickyHeader={true}
+                      striped={true}
+                      headers={[
+                        <TableHeader key={1} width={'20%'} text={'Email'} />,
+                        <TableHeader key={2} width={'40%'} text={'Reason'} />,
+                        <TableHeader key={2} width={'20%'} text={'Action'} />,
+                      ]}
+                    >
+                      {this.state.blacklist &&
+                        this.state.blacklist.map((value) => {
+                          return (
+                            <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
+                              <TableCell className={'vam nbb'}>
+                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                  <input
+                                    name={'subject'}
+                                    type="text"
+                                    className={'md-input'}
+                                    defaultValue={value.email}
+                                    style={{ borderWidth: 0 }}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell className={'vam nbb'}>
+                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                  <input
+                                    name={'subject'}
+                                    type="text"
+                                    className={'md-input'}
+                                    defaultValue={value.reason}
+                                    style={{ borderWidth: 0 }}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell className={'vam nbb'}>
+                                <span
+                                  className="material-icons"
+                                  style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                >
+                                  delete
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </Table>
+                  </InfiniteScroll>
+                  {/* </PageContent> */}
+                  <div className="uk-pagination deletedTicketPagination" style={{ paddingTop: 10, marginBottom: -10 }}>
+                    <button
+                      class="md-btn md-btn-small"
+                      onClick={() => {
+                        this.onFormSubmit();
+                      }}
+                    >
+                      Add
+                    </button>
+                    <button
+                      class="md-btn md-btn-small"
+                      onClick={() => {
+                        this.onFormSubmit();
+                      }}
+                    >
+                      Save
+                    </button>
                   </div>
                 </div>
               </div>
-            </form>
-          </BaseModal>
-        );
-      }
-    }
+            </div>
+          </div>
+        </form>
+      </BaseModal>
+    );
   }
 }
 
