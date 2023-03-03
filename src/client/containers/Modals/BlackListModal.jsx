@@ -16,6 +16,7 @@ import TableHeader from 'components/Table/TableHeader';
 import TableRow from 'components/Table/TableRow';
 import PageContent from 'components/PageContent';
 import TableCell from 'components/Table/TableCell';
+import { convertNodeToElement } from 'react-html-parser';
 @observer
 class BlackListModal extends React.Component {
   @observable privacyPolicy = '';
@@ -27,18 +28,19 @@ class BlackListModal extends React.Component {
   @observable initialState = [];
   constructor(props) {
     super(props);
-
+    this.state = {
+      blacklist: [],
+    };
     makeObservable(this);
-    this.getEmailsWithPage = this.getEmailsWithPage.bind(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
   }
 
   componentDidMount() {
     this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
       this.hasMore = response.count >= 5;
-      this.blacklist = this.props.blacklistState.blacklist.map((email) => {
-        return { email: email.get('email'), reason: email.get('reason') };
-      });
+      //this.blacklist = this.props.blacklistState.blacklist.map((email) => {
+      //  return { email: email.get('email'), reason: email.get('reason') };
+      // });
     });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.initialLoad = false;
@@ -53,24 +55,27 @@ class BlackListModal extends React.Component {
   }
 
   addEmail(email) {
-    this.blacklist.push(email);
+    // this.blacklist.push(email);
 
     this.props.addEmail(payload);
   }
 
   onBlackListFetch = (data) => {
-    this.blacklist = data.blacklist;
+    this.setState({
+      blacklist: data.blacklist,
+    });
+    console.log(this.state.blacklist);
   };
 
   removeEmail(email) {
-    this.blacklist.splice(email);
+    // this.blacklist.splice(email);
   }
 
   getEmailsWithPage(page) {
     this.hasMore = false;
-    this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
-      this.hasMore = response.count >= 5;
-    });
+    // this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
+    //  this.hasMore = response.count >= 5;
+    // });
   }
 
   onFormSubmit() {
@@ -90,12 +95,7 @@ class BlackListModal extends React.Component {
     if (this.props.blacklistState.blacklist) {
       console.log('Условие пройдено');
       console.log(this.props.blacklistState.blacklist.size);
-      if (this.props.blacklistState.blacklist.size !== 0) {
-        this.blacklist = this.props.blacklistState.blacklist.map((value) => {
-          console.log('map in blacklist');
-          return { email: value.get('email'), reason: value.get('reason') };
-        });
-
+      if (this.props.blacklistState.blacklist) {
         return (
           <BaseModal options={{}}>
             <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
@@ -218,6 +218,7 @@ BlackListModal.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
+  socket: state.shared.socket,
   settings: state.settings.settings,
   blacklistState: state.blacklistState,
 });
