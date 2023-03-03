@@ -39,16 +39,16 @@ const reducer = handleActions(
       };
     },
 
-    [BLACKLIST_UPDATED.SUCCESS]: (state, action) => {
-      const resEmail = action.response.email;
-      const emailIndex = state.blacklist.findIndex((e) => {
-        return e.get('_id') === resEmail._id;
-      });
-      return {
-        ...state,
-        blacklist: state.blacklist.set(emailIndex, fromJS(resEmail)),
-      };
-    },
+    // [BLACKLIST_UPDATED.SUCCESS]: (state, action) => {
+    //   const resEmail = action.response.email;
+    //   const emailIndex = state.blacklist.findIndex((e) => {
+    //     return e.get('_id') === resEmail._id;
+    //   });
+    //   return {
+    //     ...state,
+    //     blacklist: state.blacklist.set(emailIndex, fromJS(resEmail)),
+    //   };
+    // },
   },
 
   initialState
