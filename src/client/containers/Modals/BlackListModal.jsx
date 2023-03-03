@@ -92,6 +92,7 @@ class BlackListModal extends React.Component {
   }
 
   render() {
+    console.log(this.state.blacklist);
     return (
       <BaseModal options={{}}>
         <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
