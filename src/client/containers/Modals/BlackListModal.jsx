@@ -82,6 +82,8 @@ class BlackListModal extends React.Component {
   }
 
   render() {
+    console.log('this.props.blacklist');
+    console.log(this.props.blacklist);
     return (
       <BaseModal options={{}}>
         <div className="setting-item-wrap uk-margin-medium-bottom">
@@ -149,21 +151,20 @@ class BlackListModal extends React.Component {
                         <TableHeader key={2} width={'20%'} text={'Reason'} />,
                       ]}
                     >
-                      {this.props.blacklist.length !== 0 &&
-                        this.props.blacklist.map((value) => {
+                      {this.blacklist.length !== 0 &&
+                        this.blacklist.map((value) => {
                           return (
-                            <TableRow key={this.props.blacklist.indexOf(email) + 1} clickable={true}>
+                            <TableRow key={this.blacklist.indexOf(value) + 1} clickable={true}>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.props.blacklist.indexOf(email) + 1} className={'uk-float-left'}>
+                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                   {value.email}
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.props.blacklist.indexOf(email) + 1} className={'uk-float-left'}>
+                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                   {value.reason}
                                 </div>
                               </TableCell>
-                              <TableCell className={'vam nbb'}>{email}</TableCell>
                             </TableRow>
                           );
                         })}
