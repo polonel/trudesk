@@ -79,7 +79,7 @@ class BlackListModal extends React.Component {
     return (
       <BaseModal options={{}}>
         <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
-          <div className="setting-item-wrap uk-margin-medium-bottom">
+          <div className="setting-item-wrap">
             <div style={{ minHeight: '60px', height: 'auto' }}>
               <div>
                 <div className="uk-position-relative">
@@ -94,11 +94,11 @@ class BlackListModal extends React.Component {
                     hasMore={this.hasMore}
                     initialLoad={this.initialLoad}
                     threshold={10}
-                    loader={
-                      <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                        <i className={'uk-icon-refresh uk-icon-spin'} />
-                      </div>
-                    }
+                    // loader={
+                    //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                    //     <i className={'uk-icon-refresh uk-icon-spin'} />
+                    //   </div>
+                    // }
                     useWindow={false}
                     getScrollParent={() => document.getElementById('mapping-page-content')}
                   >
@@ -146,21 +146,20 @@ class BlackListModal extends React.Component {
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                  <button
-                                    className={'uk-clearfix md-btn'}
+                                <span
+                                  className="material-icons"
+                                  style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20, paddingRight: 20 }}
+                                  onClick={() => {}}
+                                >
+                                  save
+                                </span>
 
-                                    // onClick={onClick}
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    className={'uk-clearfix md-btn'}
-                                    // onClick={onClick}
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
+                                <span
+                                  className="material-icons"
+                                  style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                >
+                                  delete
+                                </span>
                               </TableCell>
                             </TableRow>
                           );
@@ -168,7 +167,16 @@ class BlackListModal extends React.Component {
                     </Table>
                   </InfiniteScroll>
                   {/* </PageContent> */}
-                  <div className="uk-pagination deletedTicketPagination"></div>
+                  <div className="uk-pagination deletedTicketPagination" style={{ paddingTop: 10, marginBottom: -10 }}>
+                    <button
+                      class="md-btn md-btn-small"
+                      onClick={() => {
+                        this.onFormSubmit();
+                      }}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
