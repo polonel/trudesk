@@ -29,15 +29,15 @@ apiBlackList.get = function (req, res) {
     [
       function (done) {
         blacklistSchema
-          .find(function (err, b) {
-            if (err) return done(err);
-            return done();
-          })
-          .sort({ createdAt: -1 })
+          .find()
           .skip(skip)
           .limit(limit)
           .then((emails) => {
             blacklist = emails;
+            return done();
+          })
+          .catch((err) => {
+            return done(err);
           });
       },
     ],

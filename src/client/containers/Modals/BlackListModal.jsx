@@ -38,10 +38,9 @@ class BlackListModal extends React.Component {
   componentDidMount() {
     console.log('fetchBlackList');
 
-    this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length });
-    //   .then(({ response }) => {
-    //   this.hasMore = response.count >= 5;
-    // });
+    this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
+      this.hasMore = response.count >= 5;
+    });
     this.initialLoad = false;
   }
 
@@ -150,7 +149,7 @@ class BlackListModal extends React.Component {
                         <TableHeader key={2} width={'20%'} text={'Reason'} />,
                       ]}
                     >
-                      {this.props.blacklist &&
+                      {this.props.blacklist.length !== 0 &&
                         this.props.blacklist.map((value) => {
                           return (
                             <TableRow key={this.props.blacklist.indexOf(email) + 1} clickable={true}>
