@@ -109,7 +109,7 @@ class BlackListModal extends React.Component {
                       striped={true}
                       headers={[
                         <TableHeader key={1} width={'20%'} text={'Email'} />,
-                        <TableHeader key={2} width={'20%'} text={'Reason'} />,
+                        <TableHeader key={2} width={'40%'} text={'Reason'} />,
                         <TableHeader key={2} width={'20%'} text={'Action'} />,
                       ]}
                     >
@@ -146,18 +146,21 @@ class BlackListModal extends React.Component {
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>
-                                <button
-                                  className={'uk-clearfix md-btn'}
-                                  // onClick={onClick}
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  className={'uk-clearfix md-btn'}
-                                  // onClick={onClick}
-                                >
-                                  Delete
-                                </button>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                  <button
+                                    className={'uk-clearfix md-btn'}
+
+                                    // onClick={onClick}
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    className={'uk-clearfix md-btn'}
+                                    // onClick={onClick}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           );
