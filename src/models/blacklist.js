@@ -4,7 +4,8 @@
 let mongoose = require('mongoose');
 let COLLECTION = 'blacklist';
 let blacklistSchema = mongoose.Schema({
-  email: String,
+  email: { type: String, unique: true },
+  reason: String,
 });
 
 //Hi

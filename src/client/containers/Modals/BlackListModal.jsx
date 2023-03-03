@@ -51,10 +51,7 @@ class BlackListModal extends React.Component {
 
   addEmail(email) {
     this.blacklist.push(email);
-    const payload = {
-      email: email,
-      reason: 'Причина блокировки',
-    };
+
     this.props.addEmail(payload);
   }
 
@@ -73,11 +70,16 @@ class BlackListModal extends React.Component {
 
   onFormSubmit() {
     console.log('onFormSubmit');
-    this.props.updateSetting({
-      name: 'mailer:blacklist',
-      value: this.blacklist,
-      stateName: 'milerBlacklist',
-    });
+    const payload = {
+      email: 'email@email.com',
+      reason: 'Причина блокировки',
+    };
+    this.props.addEmail(payload);
+    // this.props.updateSetting({
+    //   name: 'mailer:blacklist',
+    //   value: this.blacklist,
+    //   stateName: 'milerBlacklist',
+    // });
   }
 
   render() {

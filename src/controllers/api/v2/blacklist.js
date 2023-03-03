@@ -18,6 +18,7 @@ var blacklistSchema = require('../../../models/blacklist');
 var settingSchema = require('../../../models/setting');
 var emitter = require('../../../emitter');
 var apiBlackList = {};
+const apiUtil = require('../apiUtils');
 
 apiBlackList.get = function (req, res) {
   var blacklist = [];
@@ -60,7 +61,7 @@ apiBlackList.post = function (req, res) {
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err });
-      return apiUtil.sendApiSuccess(res, { account: user });
+      return apiUtil.sendApiSuccess(res);
     }
   );
 };
