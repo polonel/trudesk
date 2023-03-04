@@ -17,6 +17,7 @@ import TableRow from 'components/Table/TableRow';
 import PageContent from 'components/PageContent';
 import TableCell from 'components/Table/TableCell';
 import { convertNodeToElement } from 'react-html-parser';
+import Chance from 'chance';
 @observer
 class BlackListModal extends React.Component {
   @observable privacyPolicy = '';
@@ -26,6 +27,7 @@ class BlackListModal extends React.Component {
   @observable blacklist = [];
   @observable pageStart = -1;
   @observable initialState = [];
+  @observable chance = new Chance();
   constructor(props) {
     super(props);
     this.state = {
@@ -56,11 +58,36 @@ class BlackListModal extends React.Component {
     this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
   }
 
-  addEmail(value) {
+  addEmail(e, value) {
+    console.log('value');
+    console.log(value);
+    e.preventDefault();
     let list = [...this.state.blacklist];
+    let email;
+    let reason;
+    let indexRecord = list.indexOf(value);
+
+    if (e.target.id == 'email') {
+      email = e.target.defaultValue;
+      if (email !== e.target.value) {
+        email = e.target.value;
+        value.email = email;
+        list[indexRecord] = list.push(value);
+      }
+    }
+
+    if (e.target.id == 'reason') {
+      reason = e.target.defaultValue;
+      if (reason !== e.target.value) {
+        reason = e.target.value;
+        value.reason = reason;
+        list[indexRecord] = list.push(value);
+      }
+    }
+
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
-    list.push(value);
+
     listAdd.push(value);
     if (this.state.recordsRemove.find((record) => record.email === value.email) != -1) {
       listRemove = [
@@ -82,18 +109,40 @@ class BlackListModal extends React.Component {
     });
   };
 
+  addLine() {
+    let value = {
+      email: '',
+      reason: '',
+      key: '',
+    };
+    let list = [...this.state.blacklist];
+    let key = this.chance.string({
+      length: 8,
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+      alpha: true,
+      numeric: true,
+      casing: 'lower',
+    });
+    value.key = key;
+    list.push(value);
+    this.setState({
+      blacklist: list,
+    });
+  }
+
   removeEmail(value) {
     let list = [
       ...this.state.blacklist.filter((record) => {
-        return record.email !== value.email;
+        if (record._id) return record._id !== value._id;
+        else return record.key !== value.key;
       }),
     ];
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
-    if (this.state.recordsAdd.find((record) => record.email === data.email) != -1) {
+    if (this.state.recordsAdd.find((record) => record.key === value.key) != -1) {
       listAdd = [
         ...listAdd.filter((record) => {
-          return record.email !== value.email;
+          return record.key !== value.key;
         }),
       ];
     }
@@ -110,6 +159,14 @@ class BlackListModal extends React.Component {
   }
 
   onFormSubmit() {
+    const data = {
+      blacklist: this.state.blacklist,
+      recordsAdd: this.state.recordsAdd,
+      recordsRemove: this.state.recordsRemove,
+    };
+    axios.put('/api/v2/blacklist/save', payload).then((res) => {
+      return res.data;
+    });
     const payload = {
       email: 'email@email.com',
       reason: 'Причина блокировки',
@@ -163,9 +220,13 @@ class BlackListModal extends React.Component {
                                   <input
                                     name={'subject'}
                                     type="text"
+                                    id="email"
                                     className={'md-input'}
                                     defaultValue={value.email}
                                     style={{ borderWidth: 0 }}
+                                    onBlur={(e) => {
+                                      this.addEmail(e, value);
+                                    }}
                                   />
                                 </div>
                               </TableCell>
@@ -174,6 +235,7 @@ class BlackListModal extends React.Component {
                                   <input
                                     name={'subject'}
                                     type="text"
+                                    id="reason"
                                     className={'md-input'}
                                     defaultValue={value.reason}
                                     style={{ borderWidth: 0 }}
@@ -201,7 +263,7 @@ class BlackListModal extends React.Component {
                     <div
                       class="md-btn md-btn-small"
                       onClick={() => {
-                        this.addEmail('new email');
+                        this.addLine();
                       }}
                     >
                       Add
