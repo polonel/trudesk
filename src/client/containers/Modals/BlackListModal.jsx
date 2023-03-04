@@ -30,6 +30,8 @@ class BlackListModal extends React.Component {
     super(props);
     this.state = {
       blacklist: [],
+      recordsRemove: [],
+      recordsAdd: [],
     };
     makeObservable(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
@@ -54,15 +56,24 @@ class BlackListModal extends React.Component {
     this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
   }
 
-  addEmail(email) {
-    // this.blacklist.push(email);
-    let data = { email: email, reason: 'Причина блокировки 2' };
+  addEmail(value) {
     let list = [...this.state.blacklist];
-    list.push(data);
+    let listAdd = [...this.state.recordsAdd];
+    let listRemove = [...this.state.recordsRemove];
+    list.push(value);
+    listAdd.push(value);
+    if (this.state.recordsRemove.find((record) => record.email === value.email) != -1) {
+      listRemove = [
+        ...listRemove.filter((record) => {
+          return record.email !== value.email;
+        }),
+      ];
+    }
     this.setState({
       blacklist: list,
+      recordsAdd: listAdd,
+      recordsRemove: listRemove,
     });
-    //this.props.addEmail(payload);
   }
 
   onBlackListFetch = (data) => {
@@ -74,13 +85,23 @@ class BlackListModal extends React.Component {
   removeEmail(value) {
     let list = [
       ...this.state.blacklist.filter((record) => {
-        return record !== value;
+        return record.email !== value.email;
       }),
     ];
-    console.log('emailArr');
-    console.log(list);
+    let listAdd = [...this.state.recordsAdd];
+    let listRemove = [...this.state.recordsRemove];
+    if (this.state.recordsAdd.find((record) => record.email === data.email) != -1) {
+      listAdd = [
+        ...listAdd.filter((record) => {
+          return record.email !== value.email;
+        }),
+      ];
+    }
+    listRemove.push(value);
     this.setState({
       blacklist: list,
+      recordsAdd: listAdd,
+      recordsRemove: listRemove,
     });
   }
 
