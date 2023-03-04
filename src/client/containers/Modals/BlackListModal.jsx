@@ -57,10 +57,10 @@ class BlackListModal extends React.Component {
   addEmail(email) {
     // this.blacklist.push(email);
     let data = { email: email, reason: 'Причина блокировки 2' };
-    let emailArr = [...this.state.blacklist];
-    emailArr.push(data);
+    let list = [...this.state.blacklist];
+    list.push(data);
     this.setState({
-      blacklist: emailArr,
+      blacklist: list,
     });
     //this.props.addEmail(payload);
   }
@@ -71,11 +71,16 @@ class BlackListModal extends React.Component {
     });
   };
 
-  removeEmail(email) {
-    let emailArr = [...this.state.blacklist];
-    emailArr.splice(value);
+  removeEmail(value) {
+    let list = [
+      ...this.state.blacklist.filter((record) => {
+        return record !== value;
+      }),
+    ];
+    console.log('emailArr');
+    console.log(list);
     this.setState({
-      blacklist: emailArr,
+      blacklist: list,
     });
   }
 
@@ -158,7 +163,7 @@ class BlackListModal extends React.Component {
                                 <span
                                   className="material-icons"
                                   style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
-                                  onClick={(value) => {
+                                  onClick={() => {
                                     this.removeEmail(value);
                                   }}
                                 >
