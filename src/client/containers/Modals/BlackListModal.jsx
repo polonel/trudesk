@@ -57,11 +57,8 @@ class BlackListModal extends React.Component {
   addEmail(email) {
     // this.blacklist.push(email);
     let data = { email: email, reason: 'Причина блокировки 2' };
-    console.log('addEmail');
-    let emailArr = [...this.blacklist];
+    let emailArr = [...this.state.blacklist];
     emailArr.push(data);
-
-    console.log(emailArr);
     this.setState({
       blacklist: emailArr,
     });
@@ -69,22 +66,21 @@ class BlackListModal extends React.Component {
   }
 
   onBlackListFetch = (data) => {
-    // this.setState({
-    //   blacklist: data.blacklist,
-    // });
-    this.blacklist = data.blacklist;
-    console.log(this.blacklist);
+    this.setState({
+      blacklist: data.blacklist,
+    });
   };
 
   removeEmail(email) {
-    // this.blacklist.splice(email);
+    let emailArr = [...this.state.blacklist];
+    emailArr.splice(value);
+    this.setState({
+      blacklist: emailArr,
+    });
   }
 
   getEmailsWithPage(page) {
     this.hasMore = false;
-    // this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
-    //  this.hasMore = response.count >= 5;
-    // });
   }
 
   onFormSubmit() {
@@ -92,16 +88,9 @@ class BlackListModal extends React.Component {
       email: 'email@email.com',
       reason: 'Причина блокировки',
     };
-    //this.props.addEmail(payload);
-    // this.props.updateSetting({
-    //   name: 'mailer:blacklist',
-    //   value: this.blacklist,
-    //   stateName: 'milerBlacklist',
-    // });
   }
 
   render() {
-    console.log(this.blacklist);
     return (
       <BaseModal options={{}}>
         <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
@@ -139,12 +128,12 @@ class BlackListModal extends React.Component {
                         <TableHeader key={2} width={'20%'} text={'Action'} />,
                       ]}
                     >
-                      {this.blacklist &&
-                        this.blacklist.map((value) => {
+                      {this.state.blacklist &&
+                        this.state.blacklist.map((value) => {
                           return (
-                            <TableRow key={this.blacklist.indexOf(value) + 1} clickable={true}>
+                            <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                   <input
                                     name={'subject'}
                                     type="text"
@@ -155,7 +144,7 @@ class BlackListModal extends React.Component {
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                   <input
                                     name={'subject'}
                                     type="text"
@@ -169,6 +158,9 @@ class BlackListModal extends React.Component {
                                 <span
                                   className="material-icons"
                                   style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                  onClick={(value) => {
+                                    this.removeEmail(value);
+                                  }}
                                 >
                                   delete
                                 </span>
@@ -180,22 +172,22 @@ class BlackListModal extends React.Component {
                   </InfiniteScroll>
                   {/* </PageContent> */}
                   <div className="uk-pagination deletedTicketPagination" style={{ paddingTop: 10, marginBottom: -10 }}>
-                    <button
+                    <div
                       class="md-btn md-btn-small"
                       onClick={() => {
                         this.addEmail('new email');
                       }}
                     >
                       Add
-                    </button>
-                    <button
+                    </div>
+                    <div
                       class="md-btn md-btn-small"
                       onClick={() => {
                         this.onFormSubmit();
                       }}
                     >
                       Save
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
