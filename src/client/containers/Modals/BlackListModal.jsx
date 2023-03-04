@@ -68,6 +68,7 @@ class BlackListModal extends React.Component {
     let indexRecord = list.indexOf(value);
 
     if (e.target.id == 'email') {
+      console.log('Изменение email');
       email = e.target.defaultValue;
       if (email !== e.target.value) {
         email = e.target.value;
@@ -77,6 +78,7 @@ class BlackListModal extends React.Component {
     }
 
     if (e.target.id == 'reason') {
+      console.log('Изменение reason');
       reason = e.target.defaultValue;
       if (reason !== e.target.value) {
         reason = e.target.value;
