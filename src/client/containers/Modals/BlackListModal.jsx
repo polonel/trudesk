@@ -56,8 +56,11 @@ class BlackListModal extends React.Component {
 
   addEmail(email) {
     // this.blacklist.push(email);
-
-    this.props.addEmail(payload);
+    const email = 'new email';
+    this.setState({
+      blacklist: this.state.blacklist.push(email),
+    });
+    //this.props.addEmail(payload);
   }
 
   onBlackListFetch = (data) => {
