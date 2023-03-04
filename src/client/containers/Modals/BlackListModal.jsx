@@ -57,17 +57,23 @@ class BlackListModal extends React.Component {
   addEmail(email) {
     // this.blacklist.push(email);
     let data = { email: email, reason: 'Причина блокировки 2' };
+    console.log('addEmail');
+    let emailArr = [...this.blacklist];
+    emailArr.push(data);
+
+    console.log(emailArr);
     this.setState({
-      blacklist: this.state.blacklist.push(email),
+      blacklist: emailArr,
     });
     //this.props.addEmail(payload);
   }
 
   onBlackListFetch = (data) => {
-    this.setState({
-      blacklist: data.blacklist,
-    });
-    console.log(this.state.blacklist);
+    // this.setState({
+    //   blacklist: data.blacklist,
+    // });
+    this.blacklist = data.blacklist;
+    console.log(this.blacklist);
   };
 
   removeEmail(email) {
@@ -95,7 +101,7 @@ class BlackListModal extends React.Component {
   }
 
   render() {
-    console.log(this.state.blacklist);
+    console.log(this.blacklist);
     return (
       <BaseModal options={{}}>
         <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
@@ -133,12 +139,12 @@ class BlackListModal extends React.Component {
                         <TableHeader key={2} width={'20%'} text={'Action'} />,
                       ]}
                     >
-                      {this.state.blacklist &&
-                        this.state.blacklist.map((value) => {
+                      {this.blacklist &&
+                        this.blacklist.map((value) => {
                           return (
-                            <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
+                            <TableRow key={this.blacklist.indexOf(value) + 1} clickable={true}>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                   <input
                                     name={'subject'}
                                     type="text"
@@ -149,7 +155,7 @@ class BlackListModal extends React.Component {
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>
-                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                <div key={this.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
                                   <input
                                     name={'subject'}
                                     type="text"
@@ -177,7 +183,7 @@ class BlackListModal extends React.Component {
                     <button
                       class="md-btn md-btn-small"
                       onClick={() => {
-                        this.onFormSubmit();
+                        this.addEmail('new email');
                       }}
                     >
                       Add
