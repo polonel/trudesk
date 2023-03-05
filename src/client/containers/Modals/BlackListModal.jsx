@@ -170,16 +170,26 @@ class BlackListModal extends React.Component {
   }
 
   removeEmail(value) {
+    console.log('value.key');
+    console.log(value.key);
     let list = [
       ...this.state.blacklist.filter((record) => {
-        if (record._id && value._id) return record._id !== value._id;
-        else return record.key !== value.key;
+        if (record._id && value._id) {
+          return record._id !== value._id;
+        } else {
+          console.log('record.key');
+          console.log(record?.key);
+          return record.key !== value.key;
+        }
       }),
     ];
     let listUpdate = [
       ...this.state.recordsUpdate.filter((record) => {
-        if (record._id && value._id) return record._id !== value._id;
-        else return record.key !== value.key;
+        if (record._id && value._id) {
+          return record._id !== value._id;
+        } else {
+          return record.key !== value.key;
+        }
       }),
     ];
     let listAdd = [...this.state.recordsAdd];
@@ -187,20 +197,23 @@ class BlackListModal extends React.Component {
     if (this.state.recordsAdd.find((record) => record.key === value.key) != -1) {
       listAdd = [
         ...listAdd.filter((record) => {
-          if (record._id && value._id) return record._id !== value._id;
-          return record.key !== value.key;
+          if (record._id && value._id) {
+            return record._id !== value._id;
+          } else {
+            return record.key !== value.key;
+          }
         }),
       ];
     }
     if (value._id) {
       listRemove.push(value._id);
-      this.setState({
-        blacklist: list,
-        recordsAdd: listAdd,
-        recordsUpdate: listUpdate,
-        recordsRemove: listRemove,
-      });
     }
+    this.setState({
+      blacklist: list,
+      recordsAdd: listAdd,
+      recordsUpdate: listUpdate,
+      recordsRemove: listRemove,
+    });
   }
 
   getEmailsWithPage(page) {

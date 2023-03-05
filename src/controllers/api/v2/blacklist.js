@@ -108,11 +108,11 @@ apiBlackList.delete = function (req, res) {
     [
       function (done) {
         try {
-          blacklistSchema.delete({ _id: { $in: recordsRemove } }, (err) => {
+          blacklistSchema.deleteMany({ _id: { $in: recordsRemove } }, (err) => {
             if (err) throw err;
             return done();
           });
-        } catch {
+        } catch (e) {
           winston.warn(e);
           return apiUtil.sendApiError(res, 500, e.message);
         }
