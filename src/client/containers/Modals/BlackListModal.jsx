@@ -73,7 +73,7 @@ class BlackListModal extends React.Component {
       if (email !== e.target.value) {
         email = e.target.value;
         value.email = email;
-        list[indexRecord] = list.push(value);
+        list[indexRecord] = value;
       }
     }
 
@@ -83,14 +83,14 @@ class BlackListModal extends React.Component {
       if (reason !== e.target.value) {
         reason = e.target.value;
         value.reason = reason;
-        list[indexRecord] = list.push(value);
+        list[indexRecord] = value;
       }
     }
 
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
 
-    listAdd.push(value);
+    listAdd.push(list[indexRecord]);
     if (this.state.recordsRemove.find((record) => record.email === value.email) != -1) {
       listRemove = [
         ...listRemove.filter((record) => {
