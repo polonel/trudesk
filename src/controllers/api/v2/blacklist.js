@@ -50,7 +50,20 @@ apiBlackList.get = function (req, res) {
 };
 
 apiBlackList.add = function (req, res) {
-  const recordsAdd = req.body;
+  let recordsAdd = req.body;
+  const recordsForFind = recordsAdd.map((record) => record.email);
+  try {
+    blacklistSchema.findOne({ email: { $in: recordsForFind } }).then((items) => {
+      for (let item of items) {
+        recordsAdd = recordsAdd.filter((record) => {
+          return record.email !== item.email;
+        });
+      }
+    });
+  } catch (e) {
+    winston.warn(e);
+    return apiUtil.sendApiError(res, 500, e.message);
+  }
   async.parallel(
     [
       function (done) {
