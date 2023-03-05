@@ -73,21 +73,25 @@ apiBlackList.add = function (req, res) {
 };
 
 apiBlackList.update = function (req, res) {
-  const data = req.body;
   const recordsUpdate = req.body.recordsUpdate;
   async.parallel(
     [
       function (done) {
-        const operations = recordsUpdate.map((record) => ({
-          updateOne: {
-            filter: { _id: record._id },
-            update: record,
-          },
-        }));
-        blacklistSchema.bulkWrite(operations, (err, result) => {
-          if (err) throw err;
-          return done();
-        });
+        try {
+          const operations = recordsUpdate.map((record) => ({
+            updateOne: {
+              filter: { _id: record._id },
+              update: record,
+            },
+          }));
+          blacklistSchema.bulkWrite(operations, (err, result) => {
+            if (err) throw err;
+            return done();
+          });
+        } catch {
+          winston.warn(e);
+          return apiUtil.sendApiError(res, 500, e.message);
+        }
       },
     ],
     function (err) {
@@ -98,7 +102,6 @@ apiBlackList.update = function (req, res) {
 };
 
 apiBlackList.delete = function (req, res) {
-  const data = req.body;
   const recordsRemove = req.body.recordsRemove;
 
   async.parallel(
