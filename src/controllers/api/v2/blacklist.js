@@ -74,35 +74,20 @@ apiBlackList.add = function (req, res) {
 
 apiBlackList.update = function (req, res) {
   const data = req.body;
-  const recordsAdd = req.body.recordsAdd;
+  const recordsUpdate = req.body.recordsUpdate;
   async.parallel(
     [
       function (done) {
-        blacklistSchema.insetMany(recordsAdd, (err) => {
+        const operations = recordsUpdate.map((record) => ({
+          updateOne: {
+            filter: { _id: record._id },
+            update: record,
+          },
+        }));
+        blacklistSchema.bulkWrite(operations, (err, result) => {
           if (err) throw err;
           return done();
         });
-        // blacklistSchema.findOne({ email: record.email }, (err, email) => {
-        //   if (err) console.log(err);
-        //   if (!email) {
-        //     const email = {
-        //       email: data.email,
-        //     };
-        //     blacklistSchema.create(email, (err, email) => {
-        //       if (err) throw err;
-        //       return done();
-        //     });
-        //   } else {
-        //     blacklistSchema.updateMany(
-        //       { emailId: data.emailId },
-        //       { email: data.sorting, reason: data.reason },
-        //       (err, email) => {
-        //         if (err) console.log(err);
-        //         return done();
-        //       }
-        //     );
-        //   }
-        // });
       },
     ],
     function (err) {
