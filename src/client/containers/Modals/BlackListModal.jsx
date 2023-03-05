@@ -16,7 +16,7 @@ import TableHeader from 'components/Table/TableHeader';
 import TableRow from 'components/Table/TableRow';
 import PageContent from 'components/PageContent';
 import TableCell from 'components/Table/TableCell';
-import { convertNodeToElement } from 'react-html-parser';
+import { hideModal } from 'actions/common';
 import Chance from 'chance';
 @observer
 class BlackListModal extends React.Component {
@@ -222,6 +222,7 @@ class BlackListModal extends React.Component {
     await axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
       return res.data;
     });
+    this.props.hideModal();
   }
 
   render() {
@@ -352,4 +353,4 @@ const mapStateToProps = (state) => ({
   blacklistState: state.blacklistState,
 });
 
-export default connect(mapStateToProps, { updateSetting, fetchBlackList, addEmail })(BlackListModal);
+export default connect(mapStateToProps, { updateSetting, fetchBlackList, addEmail, hideModal })(BlackListModal);
