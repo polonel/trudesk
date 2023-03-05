@@ -89,8 +89,15 @@ class BlackListModal extends React.Component {
 
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
-
-    listAdd.push(list[indexRecord]);
+    list[indexRecord].email = list[indexRecord].email.replace(' ', '');
+    if (list[indexRecord].email !== '') {
+      if (listAdd.findIndex((record) => record.email === value.email) != -1) {
+        const index = listAdd.findIndex((record) => record.email === value.email);
+        listAdd[index] = list[indexRecord];
+      } else {
+        listAdd.push(list[indexRecord]);
+      }
+    }
     if (this.state.recordsRemove.find((record) => record.email === value.email) != -1) {
       listRemove = [
         ...listRemove.filter((record) => {
@@ -135,7 +142,7 @@ class BlackListModal extends React.Component {
   removeEmail(value) {
     let list = [
       ...this.state.blacklist.filter((record) => {
-        if (record._id) return record._id !== value._id;
+        if (record._id && value._id) return record._id !== value._id;
         else return record.key !== value.key;
       }),
     ];
@@ -144,6 +151,7 @@ class BlackListModal extends React.Component {
     if (this.state.recordsAdd.find((record) => record.key === value.key) != -1) {
       listAdd = [
         ...listAdd.filter((record) => {
+          if (record._id && value._id) return record._id !== value._id;
           return record.key !== value.key;
         }),
       ];
@@ -166,13 +174,9 @@ class BlackListModal extends React.Component {
       recordsAdd: this.state.recordsAdd,
       recordsRemove: this.state.recordsRemove,
     };
-    axios.put('/api/v2/blacklist/save', payload).then((res) => {
+    axios.post('/api/v2/blacklist/save', data).then((res) => {
       return res.data;
     });
-    const payload = {
-      email: 'email@email.com',
-      reason: 'Причина блокировки',
-    };
   }
 
   render() {
@@ -241,6 +245,9 @@ class BlackListModal extends React.Component {
                                     className={'md-input'}
                                     defaultValue={value.reason}
                                     style={{ borderWidth: 0 }}
+                                    onBlur={(e) => {
+                                      this.addEmail(e, value);
+                                    }}
                                   />
                                 </div>
                               </TableCell>

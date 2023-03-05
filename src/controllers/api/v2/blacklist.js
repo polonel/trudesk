@@ -72,7 +72,7 @@ apiBlackList.post = function (req, res) {
   );
 };
 
-apiBlackList.put = function (req, res) {
+apiBlackList.save = function (req, res) {
   const data = req.body;
 
   async.parallel(
