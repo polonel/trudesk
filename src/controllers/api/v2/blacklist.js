@@ -50,7 +50,7 @@ apiBlackList.get = function (req, res) {
 };
 
 apiBlackList.add = function (req, res) {
-  const recordsAdd = req.body.recordsAdd;
+  const recordsAdd = req.body;
   async.parallel(
     [
       function (done) {
@@ -73,7 +73,7 @@ apiBlackList.add = function (req, res) {
 };
 
 apiBlackList.update = function (req, res) {
-  const recordsUpdate = req.body.recordsUpdate;
+  const recordsUpdate = req.body;
   async.parallel(
     [
       function (done) {
@@ -102,7 +102,7 @@ apiBlackList.update = function (req, res) {
 };
 
 apiBlackList.delete = function (req, res) {
-  const recordsRemove = req.body.recordsRemove;
+  const recordsRemove = req.body;
 
   async.parallel(
     [

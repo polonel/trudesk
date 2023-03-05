@@ -63,15 +63,12 @@ class BlackListModal extends React.Component {
   }
 
   addEmail(e, value) {
-    console.log('value');
-    console.log(value);
     e.preventDefault();
     let list = [...this.state.blacklist];
-    let listUpdate = [...this.state.listUpdate];
+    let listUpdate = [...this.state.recordsUpdate];
     let email;
     let reason;
     let indexRecord = list.indexOf(value);
-
     if (e.target.id == 'email') {
       console.log('Изменение email');
       email = e.target.defaultValue;
@@ -210,19 +207,19 @@ class BlackListModal extends React.Component {
     this.hasMore = false;
   }
 
-  onFormSubmit() {
+  async onFormSubmit() {
     const data = {
       recordsUpdate: this.state.recordsUpdate,
       recordsAdd: this.state.recordsAdd,
       recordsRemove: this.state.recordsRemove,
     };
-    axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
+    await axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
       return res.data;
     });
-    axios.post('/api/v2/blacklist/update', data.blacklist).then((res) => {
+    await axios.post('/api/v2/blacklist/update', data.blacklist).then((res) => {
       return res.data;
     });
-    axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
+    await axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
       return res.data;
     });
   }
