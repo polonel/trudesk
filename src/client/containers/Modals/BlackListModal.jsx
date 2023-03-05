@@ -93,9 +93,9 @@ class BlackListModal extends React.Component {
     if (list[indexRecord].email !== '') {
       if (listAdd.findIndex((record) => record.email === value.email) != -1) {
         const index = listAdd.findIndex((record) => record.email === value.email);
-        listAdd[index] = list[indexRecord];
+        if (!list[indexRecord]._id) listAdd[index] = list[indexRecord];
       } else {
-        listAdd.push(list[indexRecord]);
+        if (!list[indexRecord]._id) listAdd.push(list[indexRecord]);
       }
     }
     if (this.state.recordsRemove.find((record) => record.email === value.email) != -1) {
