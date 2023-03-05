@@ -216,7 +216,7 @@ class BlackListModal extends React.Component {
     await axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
       return res.data;
     });
-    await axios.post('/api/v2/blacklist/update', data.blacklist).then((res) => {
+    await axios.post('/api/v2/blacklist/update', data.recordsUpdate).then((res) => {
       return res.data;
     });
     await axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {

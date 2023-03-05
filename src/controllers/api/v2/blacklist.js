@@ -55,11 +55,11 @@ apiBlackList.add = function (req, res) {
     [
       function (done) {
         try {
-          blacklistSchema.insetMany(recordsAdd, (err, record) => {
+          blacklistSchema.insertMany(recordsAdd, (err, record) => {
             if (err) throw err;
             return done();
           });
-        } catch {
+        } catch (e) {
           winston.warn(e);
           return apiUtil.sendApiError(res, 500, e.message);
         }
