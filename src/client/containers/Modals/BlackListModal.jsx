@@ -34,9 +34,11 @@ class BlackListModal extends React.Component {
       blacklist: [],
       recordsRemove: [],
       recordsAdd: [],
+      recordsUpdate: [],
     };
     makeObservable(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
+    this.onBlackListSave = this.onBlackListSave.bind(this);
   }
 
   componentDidMount() {
@@ -47,6 +49,7 @@ class BlackListModal extends React.Component {
       // });
     });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
+    this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
     this.initialLoad = false;
   }
 
@@ -56,6 +59,7 @@ class BlackListModal extends React.Component {
 
   componentWillUnmount() {
     this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
+    this.props.socket.off('$trudesk:client:blacklist:save', this.onBlackListSave);
   }
 
   addEmail(e, value) {
@@ -63,6 +67,7 @@ class BlackListModal extends React.Component {
     console.log(value);
     e.preventDefault();
     let list = [...this.state.blacklist];
+    let listUpdate = [...this.state.listUpdate];
     let email;
     let reason;
     let indexRecord = list.indexOf(value);
@@ -72,8 +77,18 @@ class BlackListModal extends React.Component {
       email = e.target.defaultValue;
       if (email !== e.target.value) {
         email = e.target.value;
-        value.email = email;
-        list[indexRecord] = value;
+        if (value.email != email) {
+          value.email = email;
+          list[indexRecord] = value;
+          if (list[indexRecord]._id) {
+            if (listUpdate.findIndex((record) => record._id === value._id) != -1) {
+              listUpdate.push(list[indexRecord]);
+            } else {
+              const index = listUpdate.findIndex((record) => record._id === value._id);
+              listUpdate[index] = value;
+            }
+          }
+        }
       }
     }
 
@@ -82,13 +97,24 @@ class BlackListModal extends React.Component {
       reason = e.target.defaultValue;
       if (reason !== e.target.value) {
         reason = e.target.value;
-        value.reason = reason;
-        list[indexRecord] = value;
+        if (value.reason != reason) {
+          value.reason = reason;
+          list[indexRecord] = value;
+          if (list[indexRecord]._id) {
+            if (listUpdate.findIndex((record) => record._id === value._id) != -1) {
+              listUpdate.push(list[indexRecord]);
+            } else {
+              const index = listUpdate.findIndex((record) => record._id === value._id);
+              listUpdate[index] = value;
+            }
+          }
+        }
       }
     }
 
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
+
     list[indexRecord].email = list[indexRecord].email.replace(' ', '');
     if (list[indexRecord].email !== '') {
       if (listAdd.findIndex((record) => record.email === value.email) != -1) {
@@ -108,9 +134,16 @@ class BlackListModal extends React.Component {
     this.setState({
       blacklist: list,
       recordsAdd: listAdd,
+      recordsUpdate: listUpdate,
       recordsRemove: listRemove,
     });
   }
+
+  onBlackListSave = (data) => {
+    this.setState({
+      blacklist: data.blacklist,
+    });
+  };
 
   onBlackListFetch = (data) => {
     this.setState({
@@ -146,6 +179,12 @@ class BlackListModal extends React.Component {
         else return record.key !== value.key;
       }),
     ];
+    let listUpdate = [
+      ...this.state.recordsUpdate.filter((record) => {
+        if (record._id && value._id) return record._id !== value._id;
+        else return record.key !== value.key;
+      }),
+    ];
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
     if (this.state.recordsAdd.find((record) => record.key === value.key) != -1) {
@@ -156,12 +195,15 @@ class BlackListModal extends React.Component {
         }),
       ];
     }
-    listRemove.push(value);
-    this.setState({
-      blacklist: list,
-      recordsAdd: listAdd,
-      recordsRemove: listRemove,
-    });
+    if (value._id) {
+      listRemove.push(value._id);
+      this.setState({
+        blacklist: list,
+        recordsAdd: listAdd,
+        recordsUpdate: listUpdate,
+        recordsRemove: listRemove,
+      });
+    }
   }
 
   getEmailsWithPage(page) {
@@ -170,11 +212,17 @@ class BlackListModal extends React.Component {
 
   onFormSubmit() {
     const data = {
-      blacklist: this.state.blacklist,
+      recordsUpdate: this.state.recordsUpdate,
       recordsAdd: this.state.recordsAdd,
       recordsRemove: this.state.recordsRemove,
     };
-    axios.post('/api/v2/blacklist/save', data).then((res) => {
+    axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
+      return res.data;
+    });
+    axios.post('/api/v2/blacklist/update', data.blacklist).then((res) => {
+      return res.data;
+    });
+    axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
       return res.data;
     });
   }

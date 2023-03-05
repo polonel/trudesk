@@ -49,13 +49,13 @@ apiBlackList.get = function (req, res) {
   );
 };
 
-apiBlackList.post = function (req, res) {
-  const email = req.body;
+apiBlackList.add = function (req, res) {
+  const recordsAdd = req.body.recordsAdd;
   async.parallel(
     [
       function (done) {
         try {
-          blacklistSchema.create(email, (err, email) => {
+          blacklistSchema.insetMany(recordsAdd, (err, record) => {
             if (err) throw err;
             return done();
           });
@@ -72,39 +72,67 @@ apiBlackList.post = function (req, res) {
   );
 };
 
-apiBlackList.save = function (req, res) {
+apiBlackList.update = function (req, res) {
   const data = req.body;
-
+  const recordsAdd = req.body.recordsAdd;
   async.parallel(
     [
       function (done) {
-        blacklistSchema.findOne({ email: data.email }, (err, email) => {
-          if (err) console.log(err);
-          if (!email) {
-            const email = {
-              email: data.email,
-            };
-            blacklistSchema.create(email, (err, email) => {
-              if (err) throw err;
-              return done();
-            });
-          } else {
-            blacklistSchema.updateMany(
-              { emailId: data.emailId },
-              { email: data.sorting, reason: data.reason },
-              (err, email) => {
-                if (err) console.log(err);
-                return done();
-              }
-            );
-          }
+        blacklistSchema.insetMany(recordsAdd, (err) => {
+          if (err) throw err;
+          return done();
         });
+        // blacklistSchema.findOne({ email: record.email }, (err, email) => {
+        //   if (err) console.log(err);
+        //   if (!email) {
+        //     const email = {
+        //       email: data.email,
+        //     };
+        //     blacklistSchema.create(email, (err, email) => {
+        //       if (err) throw err;
+        //       return done();
+        //     });
+        //   } else {
+        //     blacklistSchema.updateMany(
+        //       { emailId: data.emailId },
+        //       { email: data.sorting, reason: data.reason },
+        //       (err, email) => {
+        //         if (err) console.log(err);
+        //         return done();
+        //       }
+        //     );
+        //   }
+        // });
       },
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err });
-
       return res.json({ success: true });
+    }
+  );
+};
+
+apiBlackList.delete = function (req, res) {
+  const data = req.body;
+  const recordsRemove = req.body.recordsRemove;
+
+  async.parallel(
+    [
+      function (done) {
+        try {
+          blacklistSchema.delete({ _id: { $in: recordsRemove } }, (err) => {
+            if (err) throw err;
+            return done();
+          });
+        } catch {
+          winston.warn(e);
+          return apiUtil.sendApiError(res, 500, e.message);
+        }
+      },
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err });
+      return apiUtil.sendApiSuccess(res);
     }
   );
 };
