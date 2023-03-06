@@ -91,19 +91,19 @@ class BlackListModal extends React.Component {
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
 
-    list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
-    if (list[indexRecord].regex !== '') {
-      if (listAdd.findIndex((record) => record.regex === value.regex) != -1) {
-        const index = listAdd.findIndex((record) => record.regex === value.regex);
+    list[indexRecord].regex = new RegExp(list[indexRecord].regex.replace(' ', ''));
+    if (list[indexRecord].regex != '') {
+      if (listAdd.findIndex((record) => record.regex == value.regex) != -1) {
+        const index = listAdd.findIndex((record) => record.regex == value.regex);
         if (!list[indexRecord]._id) listAdd[index] = list[indexRecord];
       } else {
         if (!list[indexRecord]._id) listAdd.push(list[indexRecord]);
       }
     }
-    if (this.state.recordsRemove.find((record) => record.regex === value.regex) != -1) {
+    if (this.state.recordsRemove.find((record) => record.regex == value.regex) != -1) {
       listRemove = [
         ...listRemove.filter((record) => {
-          return record.regex !== value.regex;
+          return record.regex != value.regex;
         }),
       ];
     }
@@ -129,7 +129,7 @@ class BlackListModal extends React.Component {
 
   addLine() {
     let value = {
-      regex: '',
+      regex: new RegExp(),
       reason: '',
       key: '',
     };
@@ -152,9 +152,9 @@ class BlackListModal extends React.Component {
     let list = [
       ...this.state.blacklist.filter((record) => {
         if (record._id && value._id) {
-          return record._id !== value._id;
+          return record._id != value._id;
         } else {
-          return record.key !== value.key;
+          return record.key != value.key;
         }
       }),
     ];
