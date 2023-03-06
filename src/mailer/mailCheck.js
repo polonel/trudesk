@@ -214,17 +214,8 @@ function bindImapReady() {
                                 }, '')
                                 .slice(1);
 
-                              const mergedRegex = new RegExp(regexStr);
+                              const mergedRegex = new RegExp(regexStr, 'g');
                               const mergedRegexValidate = mergedRegex.test(message.from);
-
-                              const stringToCheck = 'fraxium1999@yandex.ru';
-                              const regex = /^((?!yandex\\.ru).)*$/;
-
-                              if (regex.test(stringToCheck)) {
-                                console.log('String is valid');
-                              } else {
-                                console.log('String contains yandex domain');
-                              }
 
                               if (mergedRegexValidate) {
                                 return next();

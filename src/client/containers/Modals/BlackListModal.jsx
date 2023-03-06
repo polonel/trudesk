@@ -91,7 +91,7 @@ class BlackListModal extends React.Component {
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
 
-    list[indexRecord].regex = new RegExp(list[indexRecord].regex.replace(' ', ''));
+    list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
     if (list[indexRecord].regex != '') {
       if (listAdd.findIndex((record) => record.regex == value.regex) != -1) {
         const index = listAdd.findIndex((record) => record.regex == value.regex);
@@ -129,7 +129,7 @@ class BlackListModal extends React.Component {
 
   addLine() {
     let value = {
-      regex: new RegExp(),
+      regex: '',
       reason: '',
       key: '',
     };
@@ -263,7 +263,7 @@ class BlackListModal extends React.Component {
                       stickyHeader={true}
                       striped={true}
                       headers={[
-                        <TableHeader key={1} width={'20%'} text={'Regex'} />,
+                        <TableHeader key={1} width={'30%'} text={'Regex'} />,
                         <TableHeader key={2} width={'60%'} text={'Reason'} />,
                         <TableHeader key={2} width={'10%'} text={'Action'} />,
                       ]}
