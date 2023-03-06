@@ -8,16 +8,17 @@
             "name": "Launch Chrome",
             "request": "launch",
             "type": "chrome",
-            "url": "http://localhost:8080",
+            "url": "http://trudesk-dev.shatura.pro",
             "webRoot": "${workspaceFolder}"
         },
-    {
-        "name": "Attach to Chrome",
-        "port": 9222,
-        "request": "attach",
-        "type": "chrome",
-        "webRoot": "${workspaceFolder}"
-    },
+        
+        {
+            "name": "Launch Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8118",
+            "webRoot": "${workspaceFolder}"
+        },
         {
             "name": "Launch Program",
             "program": "${workspaceFolder}/app.js",
@@ -29,12 +30,12 @@
         },
         
 
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://trudesk-dev.shatura.pro",
-            "webRoot": "${workspaceFolder}"
-        }
+        // {
+        //     "type": "chrome",
+        //     "request": "launch",
+        //     "name": "Launch Chrome against localhost",
+        //     "url": "http://trudesk-dev.shatura.pro",
+        //     "webRoot": "${workspaceFolder}"
+        // }
     ]
 }

@@ -49,15 +49,17 @@ apiBlackList.get = function (req, res) {
   );
 };
 
-apiBlackList.add = function (req, res) {
+apiBlackList.add = async function (req, res) {
   let recordsAdd = req.body;
   const recordsForFind = recordsAdd.map((record) => record.email);
   try {
-    blacklistSchema.findOne({ email: { $in: recordsForFind } }).then((items) => {
-      for (let item of items) {
-        recordsAdd = recordsAdd.filter((record) => {
-          return record.email !== item.email;
-        });
+    await blacklistSchema.findOne({ email: { $in: recordsForFind } }).then((items) => {
+      if (items) {
+        for (let item of items) {
+          recordsAdd = recordsAdd.filter((record) => {
+            return record.email !== item.email;
+          });
+        }
       }
     });
   } catch (e) {
