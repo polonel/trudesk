@@ -103,8 +103,6 @@ class BlackListModal extends React.Component {
         const index = listAdd.findIndex((record) => record.email === value.email);
         if (!list[indexRecord]._id) listAdd[index] = list[indexRecord];
       } else {
-        console.log('list[indexRecord]');
-        console.log(list[indexRecord]);
         if (!list[indexRecord]._id) listAdd.push(list[indexRecord]);
       }
     }
@@ -301,8 +299,9 @@ class BlackListModal extends React.Component {
                                     type="text"
                                     id="reason"
                                     className={'md-input'}
-                                    defaultValue={value.reason}
+                                    value={value.reason}
                                     style={{ borderWidth: 0 }}
+                                    onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
                                       this.addEmail(e, value);
                                     }}
