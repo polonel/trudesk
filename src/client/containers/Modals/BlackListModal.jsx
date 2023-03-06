@@ -18,6 +18,7 @@ import PageContent from 'components/PageContent';
 import TableCell from 'components/Table/TableCell';
 import { hideModal } from 'actions/common';
 import Chance from 'chance';
+import Input from 'components/Input';
 @observer
 class BlackListModal extends React.Component {
   @observable privacyPolicy = '';
@@ -210,6 +211,8 @@ class BlackListModal extends React.Component {
     if (value._id) {
       listRemove.push(value._id);
     }
+    console.log('list');
+    console.log(list);
     this.setState({
       blacklist: list,
       recordsAdd: listAdd,
@@ -217,6 +220,13 @@ class BlackListModal extends React.Component {
       recordsRemove: listRemove,
     });
   }
+
+  handleChange = (event, key, property) => {
+    const newItems = [...this.state.blacklist];
+    const index = newItems.findIndex((record) => record.key === key);
+    newItems[index][property] = event.target.value;
+    this.setState({ blacklist: newItems });
+  };
 
   getEmailsWithPage(page) {
     this.hasMore = false;
@@ -276,6 +286,8 @@ class BlackListModal extends React.Component {
                         <TableHeader key={1} width={'20%'} text={'Email'} />,
                         <TableHeader key={2} width={'40%'} text={'Reason'} />,
                         <TableHeader key={2} width={'20%'} text={'Action'} />,
+                        <TableHeader key={2} width={'20%'} text={'Key'} />,
+                        <TableHeader key={2} width={'20%'} text={'Id'} />,
                       ]}
                     >
                       {this.state.blacklist &&
@@ -289,8 +301,9 @@ class BlackListModal extends React.Component {
                                     type="text"
                                     id="email"
                                     className={'md-input'}
-                                    defaultValue={value.email}
+                                    value={value.email}
                                     style={{ borderWidth: 0 }}
+                                    onChange={(event) => this.handleChange(event, value.key, id)}
                                     onBlur={(e) => {
                                       this.addEmail(e, value);
                                     }}
@@ -322,6 +335,16 @@ class BlackListModal extends React.Component {
                                 >
                                   delete
                                 </span>
+                              </TableCell>
+                              <TableCell className={'vam nbb'}>
+                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                  {value.key}
+                                </div>
+                              </TableCell>
+                              <TableCell className={'vam nbb'}>
+                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
+                                  {value?._id}
+                                </div>
                               </TableCell>
                             </TableRow>
                           );
