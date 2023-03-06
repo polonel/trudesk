@@ -67,14 +67,13 @@ class BlackListModal extends React.Component {
     e.preventDefault();
     let list = [...this.state.blacklist];
     let listUpdate = [...this.state.recordsUpdate];
-    let email;
+    let email = e.target.value;
     let reason;
     let indexRecord = list.indexOf(value);
     if (e.target.id == 'email') {
       console.log('Изменение email');
-      email = e.target.defaultValue;
-      if (email !== e.target.value) {
-        email = e.target.value;
+      console.log('value.email: ' + value.email);
+      console.log('email: ' + email);
         if (value.email != email) {
           value.email = email;
           list[indexRecord] = value;
@@ -87,8 +86,7 @@ class BlackListModal extends React.Component {
             }
           }
         }
-      }
-    }
+
 
     if (e.target.id == 'reason') {
       console.log('Изменение reason');
