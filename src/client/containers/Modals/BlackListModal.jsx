@@ -67,38 +67,29 @@ class BlackListModal extends React.Component {
     e.preventDefault();
     let list = [...this.state.blacklist];
     let listUpdate = [...this.state.recordsUpdate];
-    let email = e.target.value;
-    let reason;
+
     let indexRecord = list.indexOf(value);
     if (e.target.id == 'email') {
       console.log('Изменение email');
-
       if (list[indexRecord]._id) {
-        if (listUpdate.findIndex((record) => record._id === value._id) != -1) {
+        if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
           listUpdate.push(list[indexRecord]);
         } else {
           const index = listUpdate.findIndex((record) => record._id === value._id);
           listUpdate[index] = value;
         }
       }
+      console.log('listUpdate: ' + listUpdate);
     }
 
     if (e.target.id == 'reason') {
       console.log('Изменение reason');
-      reason = e.target.defaultValue;
-      if (reason !== e.target.value) {
-        reason = e.target.value;
-        if (value.reason != reason) {
-          value.reason = reason;
-          list[indexRecord] = value;
-          if (list[indexRecord]._id) {
-            if (listUpdate.findIndex((record) => record._id === value._id) != -1) {
-              listUpdate.push(list[indexRecord]);
-            } else {
-              const index = listUpdate.findIndex((record) => record._id === value._id);
-              listUpdate[index] = value;
-            }
-          }
+      if (list[indexRecord]._id) {
+        if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
+          listUpdate.push(list[indexRecord]);
+        } else {
+          const index = listUpdate.findIndex((record) => record._id === value._id);
+          listUpdate[index] = value;
         }
       }
     }
