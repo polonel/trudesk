@@ -303,7 +303,7 @@ class BlackListModal extends React.Component {
                                     className={'md-input'}
                                     value={value.email}
                                     style={{ borderWidth: 0 }}
-                                    onChange={(event) => this.handleChange(event, value.key, id)}
+                                    onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
                                       this.addEmail(e, value);
                                     }}
