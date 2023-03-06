@@ -58,5 +58,5 @@ function* addRegex({ payload }) {
 
 export default function* watcher() {
   yield takeLatest(FETCH_BLACKLIST.ACTION, fetchBlackList);
-  yield takeLatest(ADD_EMAIL.ACTION, addEmail);
+  yield takeLatest(ADD_REGEX.ACTION, addRegex);
 }

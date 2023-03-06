@@ -209,15 +209,24 @@ class BlackListModal extends React.Component {
       recordsAdd: this.state.recordsAdd,
       recordsRemove: this.state.recordsRemove,
     };
-    await axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
-      return res.data;
-    });
-    await axios.post('/api/v2/blacklist/update', data.recordsUpdate).then((res) => {
-      return res.data;
-    });
-    await axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
-      return res.data;
-    });
+
+    if (data.recordsAdd.length !== 0) {
+      await axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
+        return res.data;
+      });
+    }
+
+    if (data.recordsUpdate.length !== 0) {
+      await axios.post('/api/v2/blacklist/update', data.recordsUpdate).then((res) => {
+        return res.data;
+      });
+    }
+
+    if (data.recordsRemove.length !== 0) {
+      await axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
+        return res.data;
+      });
+    }
     this.props.hideModal();
   }
 
