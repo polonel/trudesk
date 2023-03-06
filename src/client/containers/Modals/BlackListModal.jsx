@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Button from 'components/Button';
 import BaseModal from 'containers/Modals/BaseModal';
 import { updateSetting } from 'actions/settings';
-import { fetchBlackList, addEmail } from 'actions/blacklist';
+import { fetchBlackList, addRegex } from 'actions/blacklist';
 import { fetchAccounts } from 'actions/accounts';
 import InfiniteScroll from 'react-infinite-scroller';
 import Log from '../../logger';
@@ -45,9 +45,6 @@ class BlackListModal extends React.Component {
   componentDidMount() {
     this.props.fetchBlackList({ limit: 10, skip: this.blacklist.length }).then(({ response }) => {
       this.hasMore = response.count >= 5;
-      //this.blacklist = this.props.blacklistState.blacklist.map((email) => {
-      //  return { email: email.get('email'), reason: email.get('reason') };
-      // });
     });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
@@ -63,13 +60,13 @@ class BlackListModal extends React.Component {
     this.props.socket.off('$trudesk:client:blacklist:save', this.onBlackListSave);
   }
 
-  addEmail(e, value) {
+  addRegex(e, value) {
     e.preventDefault();
     let list = [...this.state.blacklist];
     let listUpdate = [...this.state.recordsUpdate];
 
     let indexRecord = list.indexOf(value);
-    if (e.target.id == 'email') {
+    if (e.target.id == 'regex') {
       if (list[indexRecord]._id) {
         if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
           listUpdate.push(list[indexRecord]);
@@ -94,19 +91,19 @@ class BlackListModal extends React.Component {
     let listAdd = [...this.state.recordsAdd];
     let listRemove = [...this.state.recordsRemove];
 
-    list[indexRecord].email = list[indexRecord].email.replace(' ', '');
-    if (list[indexRecord].email !== '') {
-      if (listAdd.findIndex((record) => record.email === value.email) != -1) {
-        const index = listAdd.findIndex((record) => record.email === value.email);
+    list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
+    if (list[indexRecord].regex !== '') {
+      if (listAdd.findIndex((record) => record.regex === value.regex) != -1) {
+        const index = listAdd.findIndex((record) => record.regex === value.regex);
         if (!list[indexRecord]._id) listAdd[index] = list[indexRecord];
       } else {
         if (!list[indexRecord]._id) listAdd.push(list[indexRecord]);
       }
     }
-    if (this.state.recordsRemove.find((record) => record.email === value.email) != -1) {
+    if (this.state.recordsRemove.find((record) => record.regex === value.regex) != -1) {
       listRemove = [
         ...listRemove.filter((record) => {
-          return record.email !== value.email;
+          return record.regex !== value.regex;
         }),
       ];
     }
@@ -132,7 +129,7 @@ class BlackListModal extends React.Component {
 
   addLine() {
     let value = {
-      email: '',
+      regex: '',
       reason: '',
       key: '',
     };
@@ -151,7 +148,7 @@ class BlackListModal extends React.Component {
     });
   }
 
-  removeEmail(value) {
+  removeRegex(value) {
     let list = [
       ...this.state.blacklist.filter((record) => {
         if (record._id && value._id) {
@@ -202,7 +199,7 @@ class BlackListModal extends React.Component {
     this.setState({ blacklist: newItems });
   };
 
-  getEmailsWithPage(page) {
+  getRegexsWithPage(page) {
     this.hasMore = false;
   }
 
@@ -239,7 +236,7 @@ class BlackListModal extends React.Component {
                   </div>
                   <InfiniteScroll
                     pageStart={this.pageStart}
-                    loadMore={this.getEmailsWithPage}
+                    loadMore={this.getRegexsWithPage}
                     hasMore={this.hasMore}
                     initialLoad={this.initialLoad}
                     threshold={10}
@@ -257,9 +254,9 @@ class BlackListModal extends React.Component {
                       stickyHeader={true}
                       striped={true}
                       headers={[
-                        <TableHeader key={1} width={'20%'} text={'Email'} />,
-                        <TableHeader key={2} width={'40%'} text={'Reason'} />,
-                        <TableHeader key={2} width={'20%'} text={'Action'} />,
+                        <TableHeader key={1} width={'20%'} text={'Regex'} />,
+                        <TableHeader key={2} width={'60%'} text={'Reason'} />,
+                        <TableHeader key={2} width={'10%'} text={'Action'} />,
                       ]}
                     >
                       {this.state.blacklist &&
@@ -271,13 +268,13 @@ class BlackListModal extends React.Component {
                                   <input
                                     name={'subject'}
                                     type="text"
-                                    id="email"
+                                    id="regex"
                                     className={'md-input'}
-                                    value={value.email}
+                                    value={value.regex}
                                     style={{ borderWidth: 0 }}
                                     onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
-                                      this.addEmail(e, value);
+                                      this.addRegex(e, value);
                                     }}
                                   />
                                 </div>
@@ -293,7 +290,7 @@ class BlackListModal extends React.Component {
                                     style={{ borderWidth: 0 }}
                                     onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
-                                      this.addEmail(e, value);
+                                      this.addRegex(e, value);
                                     }}
                                   />
                                 </div>
@@ -303,7 +300,7 @@ class BlackListModal extends React.Component {
                                   className="material-icons"
                                   style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
                                   onClick={() => {
-                                    this.removeEmail(value);
+                                    this.removeRegex(value);
                                   }}
                                 >
                                   delete
@@ -354,4 +351,4 @@ const mapStateToProps = (state) => ({
   blacklistState: state.blacklistState,
 });
 
-export default connect(mapStateToProps, { updateSetting, fetchBlackList, addEmail, hideModal })(BlackListModal);
+export default connect(mapStateToProps, { updateSetting, fetchBlackList, addRegex, hideModal })(BlackListModal);

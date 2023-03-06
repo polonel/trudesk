@@ -74,7 +74,7 @@ export const TSORTING_UPDATED = defineAction('TSORTING_UPDATED', [SUCCESS]);
 
 //blacklist
 export const FETCH_BLACKLIST = defineAction('FETCH_BLACKLIST', [SUCCESS, PENDING, ERROR]);
-export const ADD_EMAIL = defineAction('ADD_EMAIL', [PENDING, SUCCESS, ERROR]);
+export const ADD_REGEX = defineAction('ADD_REGEX', [PENDING, SUCCESS, ERROR]);
 
 // Accounts
 export const FETCH_ACCOUNTS = defineAction('FETCH_ACCOUNTS', [PENDING, SUCCESS, ERROR]);
