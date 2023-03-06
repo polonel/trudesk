@@ -15,7 +15,7 @@
 import { fromJS, List } from 'immutable';
 import { handleActions } from 'redux-actions';
 import isUndefined from 'lodash/isUndefined';
-import { FETCH_BLACKLIST, ADD_EMAIL } from 'actions/types';
+import { FETCH_BLACKLIST, ADD_REGEX } from 'actions/types';
 
 const initialState = {
   blacklist: List([]),
@@ -30,7 +30,7 @@ const reducer = handleActions(
       };
     },
 
-    [ADD_EMAIL.SUCCESS]: (state, action) => {
+    [ADD_REGEX.SUCCESS]: (state, action) => {
       const resBlackList = action.response.blacklist;
       state.blacklist = resBlackList;
       return {

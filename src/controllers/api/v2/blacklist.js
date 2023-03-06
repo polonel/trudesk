@@ -32,8 +32,8 @@ apiBlackList.get = function (req, res) {
           .find()
           .skip(skip)
           .limit(limit)
-          .then((emails) => {
-            blacklist = emails;
+          .then((regexs) => {
+            blacklist = regexs;
             return done();
           })
           .catch((err) => {
@@ -51,13 +51,13 @@ apiBlackList.get = function (req, res) {
 
 apiBlackList.add = async function (req, res) {
   let recordsAdd = req.body;
-  const recordsForFind = recordsAdd.map((record) => record.email);
+  const recordsForFind = recordsAdd.map((record) => record.regex);
   try {
-    await blacklistSchema.findOne({ email: { $in: recordsForFind } }).then((items) => {
+    await blacklistSchema.findOne({ regex: { $in: recordsForFind } }).then((items) => {
       if (items) {
         for (let item of items) {
           recordsAdd = recordsAdd.filter((record) => {
-            return record.email !== item.email;
+            return record.regex !== item.regex;
           });
         }
       }

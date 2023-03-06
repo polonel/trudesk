@@ -13,7 +13,7 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { FETCH_BLACKLIST, ADD_EMAIL } from 'actions/types';
+import { FETCH_BLACKLIST, ADD_REGEX } from 'actions/types';
 
 import api from '../../api';
 import Log from '../../logger';
@@ -31,16 +31,16 @@ function* fetchBlackList({ payload }) {
   }
 }
 
-function* addEmail({ payload }) {
+function* addRegex({ payload }) {
   try {
     const response = yield call(api.blacklist.add, payload);
-    yield put({ type: ADD_EMAIL.SUCCESS, response });
+    yield put({ type: ADD_REGEX.SUCCESS, response });
     helpers.UI.showSnackbar('Account created successfully');
   } catch (error) {
     const errorText = error.response.data.error;
     helpers.UI.showSnackbar(`Error: ${errorText}`, true);
     Log.error(errorText, error.response || error);
-    yield put({ type: ADD_EMAIL.ERROR, error });
+    yield put({ type: ADD_REGEX.ERROR, error });
   }
 }
 
