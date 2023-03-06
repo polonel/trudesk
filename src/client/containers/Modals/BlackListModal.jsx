@@ -70,7 +70,6 @@ class BlackListModal extends React.Component {
 
     let indexRecord = list.indexOf(value);
     if (e.target.id == 'email') {
-      console.log('Изменение email');
       if (list[indexRecord]._id) {
         if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
           listUpdate.push(list[indexRecord]);
@@ -79,11 +78,9 @@ class BlackListModal extends React.Component {
           listUpdate[index] = value;
         }
       }
-      console.log('listUpdate: ' + listUpdate);
     }
 
     if (e.target.id == 'reason') {
-      console.log('Изменение reason');
       if (list[indexRecord]._id) {
         if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
           listUpdate.push(list[indexRecord]);
@@ -155,15 +152,11 @@ class BlackListModal extends React.Component {
   }
 
   removeEmail(value) {
-    console.log('value.key');
-    console.log(value.key);
     let list = [
       ...this.state.blacklist.filter((record) => {
         if (record._id && value._id) {
           return record._id !== value._id;
         } else {
-          console.log('record.key');
-          console.log(record?.key);
           return record.key !== value.key;
         }
       }),
@@ -193,8 +186,7 @@ class BlackListModal extends React.Component {
     if (value._id) {
       listRemove.push(value._id);
     }
-    console.log('list');
-    console.log(list);
+
     this.setState({
       blacklist: list,
       recordsAdd: listAdd,
@@ -268,8 +260,6 @@ class BlackListModal extends React.Component {
                         <TableHeader key={1} width={'20%'} text={'Email'} />,
                         <TableHeader key={2} width={'40%'} text={'Reason'} />,
                         <TableHeader key={2} width={'20%'} text={'Action'} />,
-                        <TableHeader key={2} width={'20%'} text={'Key'} />,
-                        <TableHeader key={2} width={'20%'} text={'Id'} />,
                       ]}
                     >
                       {this.state.blacklist &&
@@ -318,16 +308,6 @@ class BlackListModal extends React.Component {
                                 >
                                   delete
                                 </span>
-                              </TableCell>
-                              <TableCell className={'vam nbb'}>
-                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
-                                  {value.key}
-                                </div>
-                              </TableCell>
-                              <TableCell className={'vam nbb'}>
-                                <div key={this.state.blacklist.indexOf(value) + 1} className={'uk-float-left'}>
-                                  {value?._id}
-                                </div>
                               </TableCell>
                             </TableRow>
                           );
