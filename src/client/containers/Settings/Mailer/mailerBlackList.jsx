@@ -47,7 +47,7 @@ const templateBody = ({ template, handleSaveSubject, handleOpenEditor }) => (
           <input name={'subject'} type="text" className={'md-input'} defaultValue={template.subject} />
         </div>
         <span className="uk-input-group-addon">
-          <Button type={'submit'} text={'Save'} small={true} />
+          <div type={'submit'} text={'Save'} className="md-btn md-btn-small" />
         </span>
       </div>
     </form>
