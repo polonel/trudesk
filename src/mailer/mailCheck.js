@@ -215,11 +215,15 @@ function bindImapReady() {
                                 .slice(1);
 
                               const mergedRegex = new RegExp(regexStr, 'g');
-                              const mergedRegexValidate = mergedRegex.test(message.from);
+                              let mergedRegexValidate;
+                              if (String(mergedRegex) != '/(?:)/g') {
+                                mergedRegexValidate = mergedRegex.test(message.from);
+                              }
 
                               if (mergedRegexValidate) {
                                 return next();
                               }
+
                               message.fromName = mail.headers.get('from').value[0].name;
 
                               if (mail?.attachments.length !== 0) {
@@ -440,7 +444,7 @@ function handleMessages(messages, done) {
               try {
                 for (const attachmentFromMessage of message.attachments) {
                   let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase();
-
+                  sanitizedFilename = sanitizedFilename.replace('/', '').replace('..', '.');
                   await fs.writeFileSync(
                     `${pathUploadsTickets}/${t._id}/comments/${commentId}/${sanitizedFilename}`,
                     attachmentFromMessage.content
@@ -709,7 +713,7 @@ function handleMessages(messages, done) {
                           let sanitizedFilename = attachmentFromMessage.filename
                             .replace(/[^а-яa-z0-9.]/gi, '_')
                             .toLowerCase();
-
+                          sanitizedFilename = sanitizedFilename.replace('/', '').replace('..', '.');
                           try {
                             await fs.writeFileSync(
                               `${pathUploadsTickets}/${ticket._id}/${sanitizedFilename}`,

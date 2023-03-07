@@ -184,7 +184,7 @@ ticketsV2.batchUpdate = function (req, res) {
       Models.Ticket.getTicketById(batchTicket.id, function (err, ticket) {
         if (err) return next(err);
 
-        if (!_.isUndefined(batchTicket.status)) {
+        if (!_.isUndefined(batchTicket.status) && ticket) {
           ticket.status = batchTicket.status;
           const HistoryItem = {
             action: 'ticket:set:status',
@@ -193,9 +193,9 @@ ticketsV2.batchUpdate = function (req, res) {
           };
 
           ticket.history.push(HistoryItem);
-        }
 
-        return ticket.save(next);
+          return ticket.save(next);
+        }
       });
     },
     function (err) {

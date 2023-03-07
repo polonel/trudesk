@@ -170,9 +170,7 @@ class MailerSettingsBlackList extends React.Component {
         <SettingItem
           title={'Blacklist email'}
           subtitle={
-            <div>
-              Adding an email to the blacklist so that trudesk does not process emails from these email addresses
-            </div>
+            <div>Adding regex to the blacklist so that trudesk does not process emails that comply with this rule</div>
           }
           component={
             <div className={'right uk-width-1-3'} style={{ position: 'relative', paddingTop: 5 }}>
@@ -186,7 +184,7 @@ class MailerSettingsBlackList extends React.Component {
                   style={{ maxHeight: 27 }}
                   onClick={() => this.props.showModal('SHOW_BLACKLIST')}
                 >
-                  <div className={`uk-float-left uk-width-1-1 uk-text-center`}> Open list </div>
+                  <div className={`uk-float-left uk-width-1-1 uk-text-center`}> List </div>
                 </button>
               </div>
             </div>
