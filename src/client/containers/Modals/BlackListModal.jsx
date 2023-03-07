@@ -254,8 +254,8 @@ class BlackListModal extends React.Component {
                       striped={true}
                       headers={[
                         <TableHeader key={1} width={'30%'} text={'Regex'} />,
-                        <TableHeader key={2} width={'60%'} text={'Reason'} />,
                         <TableHeader key={2} width={'12%'} text={'Flags'} />,
+                        <TableHeader key={2} width={'60%'} text={'Reason'} />,
                         <TableHeader key={2} width={'12%'} />,
                       ]}
                     >

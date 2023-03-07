@@ -204,19 +204,9 @@ function bindImapReady() {
                                 return;
                               }
 
-                              // Merge all regex fields into one RegExp variable
-                              const regexStr = docs
-                                .reduce((acc, doc) => {
-                                  if (doc.regex) {
-                                    return acc + '|' + doc.regex;
-                                  }
-                                  return acc;
-                                }, '')
-                                .slice(1);
-
-                              const mergedRegex = new RegExp(regexStr, 'g');
                               let mergedRegexValidate;
-                              if (String(mergedRegex) != '/(?:)/g') {
+                              for (let doc of docs) {
+                                const docRegex = new RegExp(doc.regex, doc.flags);
                                 mergedRegexValidate = mergedRegex.test(message.from);
                               }
 
