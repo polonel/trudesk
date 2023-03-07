@@ -207,7 +207,7 @@ function bindImapReady() {
                               let mergedRegexValidate;
                               for (let doc of docs) {
                                 const docRegex = new RegExp(doc.regex, doc.flags);
-                                mergedRegexValidate = mergedRegex.test(message.from);
+                                mergedRegexValidate = docRegex.test(message.from);
                               }
 
                               if (mergedRegexValidate) {
