@@ -414,15 +414,15 @@ userSchema.statics.getUserWithObject = function (object, callback) {
   if (!_.isEmpty(search)) {
     q.where({
       $or: [
-        // {
-        //   fullname: new RegExp('^' + search.toLowerCase(), 'i'),
-        // },
+        {
+          fullname: new RegExp('^' + search.toLowerCase(), 'i'),
+        },
         {
           email: new RegExp('^' + search.toLowerCase(), 'i'),
         },
-        // {
-        //   username: new RegExp('^' + search.toLowerCase(), 'i'),
-        // },
+        {
+          username: new RegExp('^' + search.toLowerCase(), 'i'),
+        },
         {
           deleted: !object.showDeleted,
         },
@@ -702,6 +702,7 @@ userSchema.statics.getCustomers = function (obj, callback) {
   var limit = obj.limit || 10;
   var page = obj.page || 0;
   var self = this;
+  var search = object.search === null ? '' : object.search;
   return self
     .model(COLLECTION)
     .find({}, '-password -resetPassHash -resetPassExpire')
@@ -720,7 +721,23 @@ userSchema.statics.getCustomers = function (obj, callback) {
         .skip(page * limit)
         .limit(limit);
 
-      if (!obj.showDeleted) q.where({ deleted: false });
+      if (!obj.showDeleted)
+        q.where({
+          $or: [
+            {
+              fullname: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              email: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              username: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              deleted: !object.showDeleted,
+            },
+          ],
+        });
 
       q.exec(callback);
     });
