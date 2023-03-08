@@ -158,7 +158,7 @@ class PDropDownAccount extends React.Component {
         data-override={override}
         data-top-offset={topOffset}
         data-left-offset={leftOffset}
-        style={{ minHeight, minWidth }}
+        style={{ minHeight, minWidth, paddingTop: -119 }}
       >
         {showTitlebar && (
           <div className="actions">
