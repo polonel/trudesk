@@ -748,6 +748,7 @@ userSchema.statics.getAgents = function (obj, callback) {
   var limit = obj.limit || 10;
   var page = obj.page || 0;
   var self = this;
+  var search = obj.search === null ? '' : obj.search;
 
   return self
     .model(COLLECTION)
@@ -795,6 +796,7 @@ userSchema.statics.getAdmins = function (obj, callback) {
   var limit = obj.limit || 10;
   var page = obj.page || 0;
   var self = this;
+  var search = obj.search === null ? '' : obj.search;
 
   return self
     .model(COLLECTION)
