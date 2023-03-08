@@ -40,11 +40,16 @@ class OwnerDropdownPartial extends React.Component {
   componentWillUnmount() {}
 
   render() {
-    let topOffset;
-    if (this.props.topOffset) {
-      topOffset = this.props.topOffset;
-    } else topOffset = 75;
-
+    // let topOffset;
+    // if (this.props.topOffset) {
+    //   topOffset = this.props.topOffset;
+    // } else topOffset = 75;
+    const isAdmin = this.props.user.role.name == 'Admin' || false;
+    const isAgent = this.props.user.role.name == 'Support' || false;
+    const customer = !isAdmin && !isAgent;
+    console.log('this.props');
+    console.log(this.props.user._id);
+    console.log(this.props.user.fullname);
     return (
       <PDropDown
         ref={this.props.forwardedRef}
@@ -53,97 +58,83 @@ class OwnerDropdownPartial extends React.Component {
         className={'opt-ignore-notice'}
         override={true}
         leftArrow={true}
-        topOffset={topOffset}
+        // topOffset={topOffset}
         leftOffset={35}
         minHeight={215}
       >
-        <GridItem key={this.props.user._id} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
-          <TruCard
-            loaderActive={this.props.user.loading}
-            menu={actionMenu}
-            extraHeadClass={
-              (isAdmin ? 'tru-card-head-admin' : '') +
-              (!isAdmin && isAgent ? 'tru-card-head-agent' : '') +
-              (isDeleted ? ' tru-card-head-deleted' : '')
-            }
-            header={
-              <div>
-                <div className="account-image relative uk-display-inline-block">
-                  <Avatar
-                    size={82}
-                    userId={this.props.user._id}
-                    style={{ marginTop: 10 }}
-                    showBorder={true}
-                    borderColor={'#ffffff'}
-                    showLargerBubble={true}
-                  />
+        {this.props.user && (
+          <GridItem key={this.props.user._id} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
+            <TruCard
+              loaderActive={this.props.user.loading}
+              header={
+                <div>
+                  <h3 className="tru-card-head-text uk-text-center">
+                    {this.props.user.fullname}
+                    <span className="uk-text-truncate">{this.props.user.title}</span>
+                  </h3>
                 </div>
-                <h3 className="tru-card-head-text uk-text-center">
-                  {this.props.user.fullname}
-                  <span className="uk-text-truncate">{this.props.user.title}</span>
-                </h3>
-              </div>
-            }
-            content={
-              <ul className="tru-list">
-                <li>
-                  <div className="tru-list-content">
-                    <span className="tru-list-heading">Role</span>
-                    <span className="uk-text-small uk-text-muted">{this.props.user.role.name}</span>
-                  </div>
-                </li>
-                <li>
-                  <div className="tru-list-content">
-                    <span className="tru-list-heading">Email</span>
-                    <span className="uk-text-small uk-text-muted">
-                      <a href={`mailto:${this.props.user.email}`}>{user.email}</a>
-                    </span>
-                  </div>
-                </li>
-                <li>
-                  <div className="tru-list-content">
-                    <span className="tru-list-heading">Phone</span>
-                    <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
-                  </div>
-                </li>
-                <li>
-                  {customer && this.props.user.groups && (
-                    <div className="tru-list-content">
-                      <span className="tru-list-heading">Groups</span>
-                      <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {this.props.user.groups.map((group) => {
-                          return group.name + (this.props.user.groups.toArray().length > 1 ? ', ' : '');
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  {!customer && this.props.user.teams && (
-                    <div className="tru-list-content">
-                      <span className="tru-list-heading">Teams</span>
-                      <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {this.props.user.teams.map((team) => {
-                          return team.name + (this.props.user.teams.toArray().length > 1 ? ', ' : '');
-                        })}
-                      </span>
-                    </div>
-                  )}
-                </li>
-                {!customer && this.props.user.departments && (
+              }
+              content={
+                <ul className="tru-list">
                   <li>
                     <div className="tru-list-content">
-                      <span className="tru-list-heading">Departments</span>
-                      <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {this.props.user.departments.map((department) => {
-                          return department.name + (this.props.user.departments.toArray().length > 1 ? ', ' : '');
-                        })}
+                      <span className="tru-list-heading">Role</span>
+                      <span className="uk-text-small uk-text-muted">{this.props.user.role.name}</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="tru-list-content">
+                      <span className="tru-list-heading">Email</span>
+                      <span className="uk-text-small uk-text-muted">
+                        <a href={`mailto:${this.props.user.email}`}>{this.props.user.email}</a>
                       </span>
                     </div>
                   </li>
-                )}
-              </ul>
-            }
-          />
-        </GridItem>
+                  <li>
+                    <div className="tru-list-content">
+                      <span className="tru-list-heading">Phone</span>
+                      <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
+                    </div>
+                  </li>
+                  <li>
+                    {customer && this.props.user.groups && (
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Groups</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                          {this.props.user.groups.map((group) => {
+                            return group.name + (this.props.user.groups.toArray().length > 1 ? ', ' : '');
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    {!customer && this.props.user.teams && (
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Teams</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                          {this.props.user.teams.map((team) => {
+                            return team.name + (this.props.user.teams.toArray().length > 1 ? ', ' : '');
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                  {!customer && this.props.user.departments && (
+                    <li>
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Departments</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                          {this.props.user.departments.map((department) => {
+                            return department.name + (this.props.user.departments.toArray().length > 1 ? ', ' : '');
+                          })}
+                        </span>
+                      </div>
+                    </li>
+                  )}
+                </ul>
+              }
+            />
+          </GridItem>
+        )}
       </PDropDown>
     );
   }
