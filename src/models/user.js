@@ -721,7 +721,7 @@ userSchema.statics.getCustomers = function (obj, callback) {
         .skip(page * limit)
         .limit(limit);
 
-      if (!obj.showDeleted)
+      if (!obj.showDeleted) {
         q.where({
           $or: [
             {
@@ -738,6 +738,7 @@ userSchema.statics.getCustomers = function (obj, callback) {
             },
           ],
         });
+      }
 
       q.exec(callback);
     });
@@ -767,7 +768,24 @@ userSchema.statics.getAgents = function (obj, callback) {
         .skip(page * limit)
         .limit(limit);
 
-      if (!obj.showDeleted) q.where({ deleted: false });
+      if (!obj.showDeleted) {
+        q.where({
+          $or: [
+            {
+              fullname: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              email: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              username: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              deleted: !obj.showDeleted,
+            },
+          ],
+        });
+      }
 
       q.exec(callback);
     });
@@ -797,7 +815,24 @@ userSchema.statics.getAdmins = function (obj, callback) {
         .skip(page * limit)
         .limit(limit);
 
-      if (!obj.showDeleted) q.where({ deleted: false });
+      if (!obj.showDeleted) {
+        q.where({
+          $or: [
+            {
+              fullname: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              email: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              username: new RegExp('^' + search.toLowerCase(), 'i'),
+            },
+            {
+              deleted: !obj.showDeleted,
+            },
+          ],
+        });
+      }
 
       q.exec(callback);
     });

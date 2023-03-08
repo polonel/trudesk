@@ -36,7 +36,7 @@ class OwnerDropdownPartial extends React.Component {
     if (this.props.user.role.name == 'Admin') {
       this.props.fetchAccounts({ limit: -1, type: 'admins', search: this.props.user.email, showDeleted: false });
     } else if (this.props.user.role.name == 'Support') {
-      this.props.fetchAccounts({ limit: -1, type: 'supports', search: this.props.user.email, showDeleted: false });
+      this.props.fetchAccounts({ limit: -1, type: 'agents', search: this.props.user.email, showDeleted: false });
     } else {
       console.log('customers');
       this.props.fetchAccounts({ limit: -1, type: 'customers', search: this.props.user.email, showDeleted: false });
