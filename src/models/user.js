@@ -734,7 +734,7 @@ userSchema.statics.getCustomers = function (obj, callback) {
               username: new RegExp('^' + search.toLowerCase(), 'i'),
             },
             {
-              deleted: !object.showDeleted,
+              deleted: !obj.showDeleted,
             },
           ],
         });
