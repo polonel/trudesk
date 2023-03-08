@@ -92,18 +92,6 @@ class PDropDownAccount extends React.Component {
 
         left = left + 'px';
 
-        const topOffset = pTriggerOffsetTop - window.scrollY + pageOffsetTop;
-        let top = pTriggerHeight + topOffset;
-
-        if (this.props.topOffset) top += Number(this.props.topOffset);
-
-        const noticeFrame = document.getElementById('notice-banner');
-        let hasNotice = false;
-        if (noticeFrame) hasNotice = !noticeFrame.classList.contains('uk-hidden');
-        if (hasNotice && !ref.classList.contains('opt-ignore-notice')) top -= 30;
-
-        top = top + 'px';
-
         const aLinks = ref.querySelectorAll('a');
         // eslint-disable-next-line no-unused-vars
         for (const link of aLinks) {
@@ -120,7 +108,6 @@ class PDropDownAccount extends React.Component {
 
         ref.style.position = 'absolute';
         ref.style.left = left;
-        ref.style.top = top;
         ref.classList.add('pDropOpen');
 
         this.props.onShow();
@@ -158,7 +145,7 @@ class PDropDownAccount extends React.Component {
         data-override={override}
         data-top-offset={topOffset}
         data-left-offset={leftOffset}
-        style={{ minHeight, minWidth, paddingTop: -119 }}
+        style={{ minHeight, minWidth }}
       >
         {showTitlebar && (
           <div className="actions">
