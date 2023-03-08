@@ -68,7 +68,6 @@ class OwnerDropdownPartial extends React.Component {
             <GridItem key={user.get('_id')}>
               <TruCard
                 loaderActive={user.get('loading')}
-                menu={actionMenu}
                 extraHeadClass={
                   (isAdmin ? 'tru-card-head-admin' : '') +
                   (!isAdmin && isAgent ? 'tru-card-head-agent' : '') +
@@ -80,7 +79,7 @@ class OwnerDropdownPartial extends React.Component {
                       <Avatar
                         size={82}
                         userId={user.get('_id')}
-                        image={userImage}
+                        image={user.get('image') || 'defaultProfile.jpg'}
                         style={{ marginTop: 10 }}
                         showBorder={true}
                         borderColor={'#ffffff'}
@@ -98,21 +97,21 @@ class OwnerDropdownPartial extends React.Component {
                     <li>
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Role</span>
-                        <span className="uk-text-small uk-text-muted">{user.getIn(['role', 'name'])}</span>
+                        <span className="uk-text-small uk-text-muted">{this.props.user.role.name}</span>
                       </div>
                     </li>
                     <li>
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Email</span>
                         <span className="uk-text-small uk-text-muted">
-                          <a href={`mailto:${user.get('email')}`}>{user.get('email')}</a>
+                          <a href={`mailto:${this.props.user.email}`}>{this.props.user.email}</a>
                         </span>
                       </div>
                     </li>
                     <li>
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Phone</span>
-                        <a href={`tel:${user.get('phone')}`}>{user.get('phone')}</a>
+                        <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
                       </div>
                     </li>
                     <li>
