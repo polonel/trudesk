@@ -57,9 +57,9 @@ class OwnerDropdownPartial extends React.Component {
         leftOffset={35}
         minHeight={215}
       >
-        <GridItem key={this.props.user.get('_id')} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
+        <GridItem key={this.props.user._id} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
           <TruCard
-            loaderActive={this.props.user.get('loading')}
+            loaderActive={this.props.user.loading}
             menu={actionMenu}
             extraHeadClass={
               (isAdmin ? 'tru-card-head-admin' : '') +
@@ -71,7 +71,7 @@ class OwnerDropdownPartial extends React.Component {
                 <div className="account-image relative uk-display-inline-block">
                   <Avatar
                     size={82}
-                    userId={this.props.user.get('_id')}
+                    userId={this.props.user._id}
                     style={{ marginTop: 10 }}
                     showBorder={true}
                     borderColor={'#ffffff'}
@@ -79,8 +79,8 @@ class OwnerDropdownPartial extends React.Component {
                   />
                 </div>
                 <h3 className="tru-card-head-text uk-text-center">
-                  {this.props.user.get('fullname')}
-                  <span className="uk-text-truncate">{this.props.user.get('title')}</span>
+                  {this.props.user.fullname}
+                  <span className="uk-text-truncate">{this.props.user.title}</span>
                 </h3>
               </div>
             }
@@ -89,55 +89,52 @@ class OwnerDropdownPartial extends React.Component {
                 <li>
                   <div className="tru-list-content">
                     <span className="tru-list-heading">Role</span>
-                    <span className="uk-text-small uk-text-muted">{this.props.user.getIn(['role', 'name'])}</span>
+                    <span className="uk-text-small uk-text-muted">{this.props.user.role.name}</span>
                   </div>
                 </li>
                 <li>
                   <div className="tru-list-content">
                     <span className="tru-list-heading">Email</span>
                     <span className="uk-text-small uk-text-muted">
-                      <a href={`mailto:${this.props.user.get('email')}`}>{user.get('email')}</a>
+                      <a href={`mailto:${this.props.user.email}`}>{user.email}</a>
                     </span>
                   </div>
                 </li>
                 <li>
                   <div className="tru-list-content">
                     <span className="tru-list-heading">Phone</span>
-                    <a href={`tel:${this.props.user.get('phone')}`}>{this.props.user.get('phone')}</a>
+                    <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
                   </div>
                 </li>
                 <li>
-                  {customer && this.props.user.get('groups') && (
+                  {customer && this.props.user.groups && (
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Groups</span>
                       <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {this.props.user.get('groups').map((group) => {
-                          return group.get('name') + (this.props.user.get('groups').toArray().length > 1 ? ', ' : '');
+                        {this.props.user.groups.map((group) => {
+                          return group.name + (this.props.user.groups.toArray().length > 1 ? ', ' : '');
                         })}
                       </span>
                     </div>
                   )}
-                  {!customer && this.props.user.get('teams') && (
+                  {!customer && this.props.user.teams && (
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Teams</span>
                       <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {this.props.user.get('teams').map((team) => {
-                          return team.get('name') + (this.props.user.get('teams').toArray().length > 1 ? ', ' : '');
+                        {this.props.user.teams.map((team) => {
+                          return team.name + (this.props.user.teams.toArray().length > 1 ? ', ' : '');
                         })}
                       </span>
                     </div>
                   )}
                 </li>
-                {!customer && this.props.user.get('departments') && (
+                {!customer && this.props.user.departments && (
                   <li>
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Departments</span>
                       <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {this.props.user.get('departments').map((department) => {
-                          return (
-                            department.get('name') +
-                            (this.props.user.get('departments').toArray().length > 1 ? ', ' : '')
-                          );
+                        {this.props.user.departments.map((department) => {
+                          return department.name + (this.props.user.departments.toArray().length > 1 ? ', ' : '');
                         })}
                       </span>
                     </div>
