@@ -46,6 +46,7 @@ class OwnerDropdownPartial extends React.Component {
     // } else topOffset = 75;
     const isAdmin = this.props.user.role.name == 'Admin' || false;
     const isAgent = this.props.user.role.name == 'Support' || false;
+    const isDeleted = this.props.deleted || false;
     const customer = !isAdmin && !isAgent;
     console.log('this.props');
     console.log(this.props.user._id);
@@ -66,6 +67,11 @@ class OwnerDropdownPartial extends React.Component {
           <GridItem key={this.props.user._id} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
             <TruCard
               loaderActive={this.props.user.loading}
+              extraHeadClass={
+                (isAdmin ? 'tru-card-head-admin' : '') +
+                (!isAdmin && isAgent ? 'tru-card-head-agent' : '') +
+                (isDeleted ? ' tru-card-head-deleted' : '')
+              }
               header={
                 <div>
                   <h3 className="tru-card-head-text uk-text-center">
