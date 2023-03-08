@@ -55,7 +55,6 @@ class OwnerDropdownPartial extends React.Component {
     return (
       <PDropDownAccount
         ref={this.props.forwardedRef}
-        title={'Select Assignee'}
         id={'assigneeDropdown'}
         override={true}
         leftArrow={true}

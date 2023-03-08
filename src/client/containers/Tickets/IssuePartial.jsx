@@ -140,6 +140,7 @@ class IssuePartial extends React.Component {
               {this.owner.fullname} &lt;{this.owner.email}&gt;
             </a>
           </PDropdownTrigger>
+          <OwnerDropdownPartial forwardedRef={this.ownerDropdownPartial} user={this.owner} />
           <br />
           <time dateTime={helpers.formatDate(this.props.date, 'YYYY-MM-DD HH:mm')}>
             {helpers.formatDate(this.props.date, this.props.dateFormat)}
@@ -169,7 +170,6 @@ class IssuePartial extends React.Component {
             {ReactHtmlParser(this.issue)}
           </div>
         </div>
-        <OwnerDropdownPartial forwardedRef={this.ownerDropdownPartial} user={this.owner} />
         {/* Permissions on Fragment for edit */}
         {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
