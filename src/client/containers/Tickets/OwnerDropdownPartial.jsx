@@ -40,17 +40,18 @@ class OwnerDropdownPartial extends React.Component {
   componentWillUnmount() {}
 
   render() {
-    // let topOffset;
-    // if (this.props.topOffset) {
-    //   topOffset = this.props.topOffset;
-    // } else topOffset = 75;
+    let topOffset;
+    if (this.props.topOffset) {
+      topOffset = this.props.topOffset;
+    } else topOffset = 75;
+    const userImage = this.props.user.image || 'defaultProfile.jpg';
     const isAdmin = this.props.user.role.name == 'Admin' || false;
     const isAgent = this.props.user.role.name == 'Support' || false;
     const isDeleted = this.props.deleted || false;
     const customer = !isAdmin && !isAgent;
-    console.log('this.props');
-    console.log(this.props.user._id);
-    console.log(this.props.user.fullname);
+    console.log('this.props.user.role.name');
+    console.log(this.props.user.role.name);
+
     return (
       <PDropDown
         ref={this.props.forwardedRef}
@@ -74,9 +75,20 @@ class OwnerDropdownPartial extends React.Component {
               }
               header={
                 <div>
+                  <div className="account-image relative uk-display-inline-block">
+                    <Avatar
+                      size={82}
+                      userId={this.props.user._id}
+                      image={userImage}
+                      style={{ marginTop: 10 }}
+                      showBorder={true}
+                      borderColor={'#ffffff'}
+                      showLargerBubble={true}
+                    />
+                  </div>
                   <h3 className="tru-card-head-text uk-text-center">
-                    {this.props.user.fullname}
-                    <span className="uk-text-truncate">{this.props.user.title}</span>
+                    {user.get('fullname')}
+                    <span className="uk-text-truncate">{user.get('title')}</span>
                   </h3>
                 </div>
               }
