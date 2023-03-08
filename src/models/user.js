@@ -409,20 +409,20 @@ userSchema.statics.getUserWithObject = function (object, callback) {
     q.limit(limit);
   }
 
-  if (!object.showDeleted) q.where({ deleted: false });
+  // if (!object.showDeleted) q.where({ deleted: false });
 
   if (!_.isEmpty(search)) {
     q.where({
       $or: [
-        {
-          fullname: new RegExp('^' + search.toLowerCase(), 'i'),
-        },
+        // {
+        //   fullname: new RegExp('^' + search.toLowerCase(), 'i'),
+        // },
         {
           email: new RegExp('^' + search.toLowerCase(), 'i'),
         },
-        {
-          username: new RegExp('^' + search.toLowerCase(), 'i'),
-        },
+        // {
+        //   username: new RegExp('^' + search.toLowerCase(), 'i'),
+        // },
         {
           deleted: !object.showDeleted,
         },

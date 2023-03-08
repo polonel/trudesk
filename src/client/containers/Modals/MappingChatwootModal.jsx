@@ -112,6 +112,8 @@ class MappingChatwootContainer extends React.Component {
     this.props
       .fetchAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true })
       .then(({ response }) => {
+        console.log('response');
+        console.log(response);
         this.hasMore = response.count >= 5;
       });
   }
@@ -338,7 +340,11 @@ class MappingChatwootContainer extends React.Component {
                           groupUser = group.get('name');
                         }
                       });
-                      if (user.get('fullname').toLowerCase().includes(this.search.toLowerCase()))
+                      if (
+                        user.get('fullname').toLowerCase().includes(this.search.toLowerCase()) ||
+                        user.get('email').toLowerCase().includes(this.search.toLowerCase()) ||
+                        user.get('username').toLowerCase().includes(this.search.toLowerCase())
+                      ) {
                         return (
                           <TableRow key={user.get('_id')} clickable={true}>
                             <TableCell className={'vam nbb'}>
@@ -366,6 +372,7 @@ class MappingChatwootContainer extends React.Component {
                             <TableCell className={'vam nbb'}>{groupUser}</TableCell>
                           </TableRow>
                         );
+                      }
                     })}
                 </Table>
               </InfiniteScroll>
