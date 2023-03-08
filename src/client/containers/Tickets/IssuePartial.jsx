@@ -135,7 +135,7 @@ class IssuePartial extends React.Component {
         {/* Issue */}
         <div className="issue-text">
           <h3 className="subject-text">{this.subject}</h3>
-          <PDropdownTrigger target={this.ownerDropdownPartial} mouseEnter={true}>
+          <PDropdownTrigger href={`mailto:${this.owner.email}`} target={this.ownerDropdownPartial} mouseEnter={true}>
             <a href={`mailto:${this.owner.email}`}>
               {this.owner.fullname} &lt;{this.owner.email}&gt;
             </a>

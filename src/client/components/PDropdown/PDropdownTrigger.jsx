@@ -43,7 +43,12 @@ class PDropdownTrigger extends React.Component {
         id="assigneeDropdown"
         ref={this.containerRef}
         className={'uk-clearfix'}
-        onClick={(e) => this.onTargetClick(e)}
+        onClick={(e) => {
+          if (!this.props.mouseEnter) {
+            this.onTargetClick(e);
+          }
+        }}
+        onMouse
         onMouseEnter={(e) => {
           if (this.props.mouseEnter) {
             this.onTargetClick(e);
