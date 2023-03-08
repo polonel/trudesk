@@ -10,13 +10,13 @@
  *  Updated:    6/24/19 5:32 PM
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
-
-import React, { Fragment } from 'react';
+import React, { Fragment, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
 
 import Avatar from 'components/Avatar/Avatar';
+import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import ReactHtmlParser from 'react-html-parser';
 
 import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts';
@@ -126,6 +126,18 @@ class IssuePartial extends React.Component {
   }
 
   render() {
+    const hasTicketStatusUpdate = () => {
+      const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
+      const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
+      if (isAgent || isAdmin) {
+        return helpers.canUser('tickets:update');
+      } else {
+        if (!this.ticket || !this.props.sessionUser) return false;
+        // return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false);
+        return false;
+      }
+    };
+    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && hasTicketStatusUpdate();
     return (
       <div className="initial-issue uk-clearfix">
         <Avatar image={this.owner.image} userId={this.owner._id} />
@@ -221,4 +233,8 @@ IssuePartial.propTypes = {
   socket: PropTypes.object.isRequired,
 };
 
-export default IssuePartial;
+const mapStateToProps = (state) => ({
+  sessionUser: state.shared.sessionUser,
+});
+
+export default connect(mapStateToProps, {})(IssuePartial);
