@@ -33,10 +33,7 @@ class OwnerDropdownPartial extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchAccounts({ limit: -1, search: this.props.user.email }).then(({ response }) => {
-      console.log(response);
-      this.props.user = response[0];
-    });
+    this.props.fetchAccounts({ limit: -1, search: this.props.user.email });
     console.log('this.props');
     console.log(this.props);
   }
@@ -53,12 +50,8 @@ class OwnerDropdownPartial extends React.Component {
     const isAgent = this.props.user.role.name == 'Support' || false;
     const isDeleted = this.props.deleted || false;
     const customer = !isAdmin && !isAgent;
-    console.log('this.props.user.role.name');
-    console.log(this.props.user.role.name);
-    console.log('this.props.user.phone');
-    console.log(this.props.user.phone);
-    console.log('this.props.user.groups');
-    console.log(this.props.user.groups);
+    console.log('this.props.accountsState');
+    console.log(this.props.accountsState);
 
     return (
       <PDropDownAccount
@@ -174,6 +167,7 @@ OwnerDropdownPartial.propTypes = {
 
 const mapStateToProps = (state) => ({
   socket: state.shared.socket,
+  accountsState: state.accountsState,
 });
 
 export default connect(mapStateToProps, { fetchAccounts }, null, { forwardRef: true })(OwnerDropdownPartial);
