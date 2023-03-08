@@ -75,7 +75,7 @@ class MappingChatwootContainer extends React.Component {
 
   componentDidMount() {
     this.props.fetchGroups({ type: 'all' });
-    this.props.fetchAccounts({ limit: 5, type: this.props.view, showDeleted: true }).then(({ response }) => {
+    this.props.fetchAccounts({ limit: 5, type: 'customers', showDeleted: true }).then(({ response }) => {
       this.hasMore = response.count >= 5;
     });
     helpers.UI.inputs();
@@ -110,7 +110,7 @@ class MappingChatwootContainer extends React.Component {
     this.hasMore = false;
     this.search = e.target.value;
     this.props
-      .fetchAccounts({ limit: 5, type: this.props.view, search: this.search, showDeleted: true })
+      .fetchAccounts({ limit: 5, type: 'customers', search: this.search, showDeleted: true })
       .then(({ response }) => {
         console.log('response');
         console.log(response);
@@ -121,7 +121,7 @@ class MappingChatwootContainer extends React.Component {
   getUsersWithPage(page) {
     this.hasMore = false;
     this.props
-      .fetchAccounts({ page, limit: 5, search: this.search, type: this.props.view, showDeleted: true })
+      .fetchAccounts({ page, limit: 5, search: this.search, type: 'customers', showDeleted: true })
       .then(({ response }) => {
         this.hasMore = response.count >= 5;
       });

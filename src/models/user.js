@@ -702,7 +702,7 @@ userSchema.statics.getCustomers = function (obj, callback) {
   var limit = obj.limit || 10;
   var page = obj.page || 0;
   var self = this;
-  var search = object.search === null ? '' : object.search;
+  var search = obj.search === null ? '' : obj.search;
   return self
     .model(COLLECTION)
     .find({}, '-password -resetPassHash -resetPassExpire')
