@@ -50,97 +50,104 @@ class OwnerDropdownPartial extends React.Component {
     const isAgent = this.props.user.role.name == 'Support' || false;
     const isDeleted = this.props.deleted || false;
     const customer = !isAdmin && !isAgent;
+
+    let account;
     const item =
       this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map((user) => {
-        console.log('usdfjaslkdjflk;ajslkdjfs');
-        <GridItem key={user.get('_id')}>
-          <TruCard
-            loaderActive={user.get('loading')}
-            extraHeadClass={
-              (isAdmin ? 'tru-card-head-admin' : '') +
-              (!isAdmin && isAgent ? 'tru-card-head-agent' : '') +
-              (isDeleted ? ' tru-card-head-deleted' : '')
-            }
-            header={
-              <div>
-                <div className="account-image relative uk-display-inline-block">
-                  <Avatar
-                    size={82}
-                    userId={user.get('_id')}
-                    image={user.get('image') || 'defaultProfile.jpg'}
-                    style={{ marginTop: 10 }}
-                    showBorder={true}
-                    borderColor={'#ffffff'}
-                    showLargerBubble={true}
-                  />
+        user.get('groups').map((group) => {
+          console.log(group.get('name'));
+          return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '');
+        });
+        account = (
+          <GridItem key={user.get('_id')}>
+            <TruCard
+              loaderActive={user.get('loading')}
+              extraHeadClass={
+                (isAdmin ? 'tru-card-head-admin' : '') +
+                (!isAdmin && isAgent ? 'tru-card-head-agent' : '') +
+                (isDeleted ? ' tru-card-head-deleted' : '')
+              }
+              header={
+                <div>
+                  <div className="account-image relative uk-display-inline-block">
+                    <Avatar
+                      size={82}
+                      userId={user.get('_id')}
+                      image={user.get('image') || 'defaultProfile.jpg'}
+                      style={{ marginTop: 10 }}
+                      showBorder={true}
+                      borderColor={'#ffffff'}
+                      showLargerBubble={true}
+                    />
+                  </div>
+                  <h3 className="tru-card-head-text uk-text-center">
+                    {user.get('fullname')}
+                    <span className="uk-text-truncate">{user.get('title')}</span>
+                  </h3>
                 </div>
-                <h3 className="tru-card-head-text uk-text-center">
-                  {user.get('fullname')}
-                  <span className="uk-text-truncate">{user.get('title')}</span>
-                </h3>
-              </div>
-            }
-            content={
-              <ul className="tru-list">
-                <li>
-                  <div className="tru-list-content">
-                    <span className="tru-list-heading">Role</span>
-                    <span className="uk-text-small uk-text-muted">{this.props.user.role.name}</span>
-                  </div>
-                </li>
-                <li>
-                  <div className="tru-list-content">
-                    <span className="tru-list-heading">Email</span>
-                    <span className="uk-text-small uk-text-muted">
-                      <a href={`mailto:${this.props.user.email}`}>{this.props.user.email}</a>
-                    </span>
-                  </div>
-                </li>
-                <li>
-                  <div className="tru-list-content">
-                    <span className="tru-list-heading">Phone</span>
-                    <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
-                  </div>
-                </li>
-                <li>
-                  {customer && user.get('groups') && (
-                    <div className="tru-list-content">
-                      <span className="tru-list-heading">Groups</span>
-                      <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {user.get('groups').map((group) => {
-                          return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '');
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  {!customer && user.get('teams') && (
-                    <div className="tru-list-content">
-                      <span className="tru-list-heading">Teams</span>
-                      <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {user.get('teams').map((team) => {
-                          return team.get('name') + (user.get('teams').toArray().length > 1 ? ', ' : '');
-                        })}
-                      </span>
-                    </div>
-                  )}
-                </li>
-                {!customer && user.get('departments') && (
+              }
+              content={
+                <ul className="tru-list">
                   <li>
                     <div className="tru-list-content">
-                      <span className="tru-list-heading">Departments</span>
-                      <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {user.get('departments').map((department) => {
-                          return department.get('name') + (user.get('departments').toArray().length > 1 ? ', ' : '');
-                        })}
+                      <span className="tru-list-heading">Role</span>
+                      <span className="uk-text-small uk-text-muted">{this.props.user.role.name}</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="tru-list-content">
+                      <span className="tru-list-heading">Email</span>
+                      <span className="uk-text-small uk-text-muted">
+                        <a href={`mailto:${this.props.user.email}`}>{this.props.user.email}</a>
                       </span>
                     </div>
                   </li>
-                )}
-              </ul>
-            }
-          />
-        </GridItem>;
+                  <li>
+                    <div className="tru-list-content">
+                      <span className="tru-list-heading">Phone</span>
+                      <a href={`tel:${user.get('phone')}`}>{user.get('phone')}</a>
+                    </div>
+                  </li>
+                  <li>
+                    {customer && user.get('groups') && (
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Groups</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                          {user.get('groups').map((group) => {
+                            return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '');
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    {!customer && user.get('teams') && (
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Teams</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                          {user.get('teams').map((team) => {
+                            return team.get('name') + (user.get('teams').toArray().length > 1 ? ', ' : '');
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                  {!customer && user.get('departments') && (
+                    <li>
+                      <div className="tru-list-content">
+                        <span className="tru-list-heading">Departments</span>
+                        <span className="uk-text-small uk-text-muted uk-text-truncate">
+                          {user.get('departments').map((department) => {
+                            return department.get('name') + (user.get('departments').toArray().length > 1 ? ', ' : '');
+                          })}
+                        </span>
+                      </div>
+                    </li>
+                  )}
+                </ul>
+              }
+            />
+          </GridItem>
+        );
       });
 
     return (
@@ -153,7 +160,8 @@ class OwnerDropdownPartial extends React.Component {
         // leftOffset={35}
         // minHeight={215}
       >
-        <Grid gutterSize={'medium'}>{item}</Grid>
+        {account}
+        {/* <Grid gutterSize={'medium'}>{item}</Grid> */}
       </PDropDownAccount>
     );
   }
