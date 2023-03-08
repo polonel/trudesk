@@ -21,7 +21,7 @@ import GridItem from 'components/Grid/GridItem';
 import { TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
 
 import Avatar from 'components/Avatar/Avatar';
-import PDropDown from 'components/PDropdown';
+import PDropDownAccount from 'components/PDropdown/PDropDownAccount';
 
 import helpers from 'lib/helpers';
 
@@ -53,19 +53,18 @@ class OwnerDropdownPartial extends React.Component {
     console.log(this.props.user.role.name);
 
     return (
-      <PDropDown
+      <PDropDownAccount
         ref={this.props.forwardedRef}
         title={'Select Assignee'}
         id={'assigneeDropdown'}
-        className={'opt-ignore-notice'}
         override={true}
         leftArrow={true}
         // topOffset={topOffset}
-        leftOffset={35}
-        minHeight={215}
+        // leftOffset={35}
+        // minHeight={215}
       >
         {this.props.user && (
-          <GridItem key={this.props.user._id} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
+          <GridItem key={this.props.user._id}>
             <TruCard
               loaderActive={this.props.user.loading}
               extraHeadClass={
@@ -87,8 +86,8 @@ class OwnerDropdownPartial extends React.Component {
                     />
                   </div>
                   <h3 className="tru-card-head-text uk-text-center">
-                    {user.get('fullname')}
-                    <span className="uk-text-truncate">{user.get('title')}</span>
+                    {this.props.user.fullname}
+                    <span className="uk-text-truncate">{this.props.user.title}</span>
                   </h3>
                 </div>
               }
@@ -153,7 +152,7 @@ class OwnerDropdownPartial extends React.Component {
             />
           </GridItem>
         )}
-      </PDropDown>
+      </PDropDownAccount>
     );
   }
 }

@@ -148,21 +148,21 @@ class PDropDownAccount extends React.Component {
     } = this.props;
     return (
       <div
-        id={this.props.id}
         ref={this.dropRef}
-        className={clsx('p-dropdown', leftArrow && 'p-dropdown-left', !showArrow && 'p-dropdown-hide-arrow', className)}
+        className={clsx(
+          'p-dropdown-account',
+          leftArrow && 'p-dropdown-left',
+          !showArrow && 'p-dropdown-hide-arrow',
+          className
+        )}
         data-override={override}
         data-top-offset={topOffset}
         data-left-offset={leftOffset}
         style={{ minHeight, minWidth }}
       >
         {showTitlebar && (
-          <div id="assigneeDropdown" className="actions">
-            {titleHref && (
-              <a id="assigneeDropdown" href={titleHref}>
-                {title}
-              </a>
-            )}
+          <div className="actions">
+            {titleHref && <a href={titleHref}>{title}</a>}
             {!titleHref && <span style={{ paddingLeft: '5px' }}>{title}</span>}
             {rightComponent && (
               <div id="assigneeDropdown" className="uk-float-right">
@@ -172,8 +172,8 @@ class PDropDownAccount extends React.Component {
           </div>
         )}
         {isListItems && (
-          <div id="assigneeDropdown">
-            <ul id="assigneeDropdown">{children}</ul>
+          <div>
+            <ul>{children}</ul>
           </div>
         )}
         {!isListItems && <div>{children}</div>}

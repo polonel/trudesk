@@ -227,6 +227,100 @@
       margin-left: 8px
 
 //Message Notification
+
+.p-dropdown-account
+  position: absolute
+  left: -9999px
+
+  .mail-Messages,
+  .notifications-Messages,
+  .online-Users-List,
+  .items
+    float: left
+    width: 100%
+    max-height: 320px
+    overflow-x: hidden
+    overflow-y: auto
+    ul
+      float: left
+      height: 100%
+
+  li
+    width: 100%
+    background: lighten($page_content_right_bg, 10%) !important
+    border-bottom: 1px solid rgba(0,0,0,0.2)
+    height: 70px !important
+    max-height: 80px
+    line-height: normal
+    &:hover
+      background: darken(lighten($page_content_right_bg, 10%), 4%) !important
+    &:last-child
+      border-bottom: none
+
+    .messageNotification,
+    .item
+      display: block
+      width: 100%
+      height: 69px
+      padding: 10px !important
+      background: lighten($page_content_right_bg, 10%) !important
+      line-height: normal !important
+      font-size: 12px
+      color: $text_color !important
+      position: relative
+
+      &:hover
+        color: $text_color !important
+        background: transparent !important
+
+      .messageUnread
+        width: 16px
+        height: 16px
+        font-size: 12px
+        font-family: "FontAwesome"
+        color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+        position: absolute
+        top: 8px
+        right: 3px
+        &:before
+          content: "\f111"
+        &.read
+          &:before
+            content: "\f10c"
+
+      div.messageAuthor,
+      div.messageSnippet,
+      div.messageDate
+        margin-left: 60px
+        margin-bottom: 3px
+
+      div.messageDate
+        color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted') !important
+
+      div.messageSnippet
+        width: 218px
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
+
+      i
+        display: block
+        width: 50px
+        font-size: 25px
+        line-height: 59px
+        text-align: center
+        color: automatic-text-color(lighten($page_content_right_bg, 10%))
+        background: transparent !important
+        &.warn
+          color: #e7a13c
+        &.green
+          color: #29b955
+        &.red
+          color: #b92929
+        &.blue
+          color: #017ebc
+
+
 .p-dropdown
   max-height: 400px
   position: absolute
