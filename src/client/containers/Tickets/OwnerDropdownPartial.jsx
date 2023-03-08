@@ -33,7 +33,11 @@ class OwnerDropdownPartial extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchAccounts({ limit: -1, search: this.props.user.email });
+    if (this.props.user.role.name == 'Admin' || 'Support') {
+      this.props.fetchAccounts({ limit: -1, search: this.props.user.email });
+    } else {
+      this.props.fetchAccounts({ limit: -1, type: 'customers', search: this.props.user.email });
+    }
     console.log('this.props');
     console.log(this.props);
   }
@@ -55,10 +59,6 @@ class OwnerDropdownPartial extends React.Component {
     const item =
       this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map((user) => {
-        user.get('groups').map((group) => {
-          console.log(group.get('name'));
-          return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '');
-        });
         account = (
           <GridItem key={user.get('_id')}>
             <TruCard
