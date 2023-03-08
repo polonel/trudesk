@@ -19,7 +19,7 @@ import { makeObservable, observable } from 'mobx';
 import TruCard from 'components/TruCard';
 import GridItem from 'components/Grid/GridItem';
 import { TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
-
+import { fetchAccounts } from 'actions/accounts';
 import Avatar from 'components/Avatar/Avatar';
 import PDropDownAccount from 'components/PDropdown/PDropDownAccount';
 
@@ -33,6 +33,10 @@ class OwnerDropdownPartial extends React.Component {
   }
 
   componentDidMount() {
+    this.props.fetchAccounts({ limit: -1, search: this.props.user.email }).then(({ response }) => {
+      console.log(response);
+      this.props.user = response[0];
+    });
     console.log('this.props');
     console.log(this.props);
   }
@@ -113,7 +117,7 @@ class OwnerDropdownPartial extends React.Component {
                   <li>
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Phone</span>
-                      <a href={`tel:${this.props.user.get('phone')}`}>{this.props.user.get('phone')}</a>
+                      <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
                     </div>
                   </li>
                   <li>
@@ -121,8 +125,8 @@ class OwnerDropdownPartial extends React.Component {
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Groups</span>
                         <span className="uk-text-small uk-text-muted uk-text-truncate">
-                          {this.props.user.get('groups').map((group) => {
-                            return group.get('name') + (this.props.user.get('groups').toArray().length > 1 ? ', ' : '');
+                          {this.props.user.groups.map((group) => {
+                            return group.name + (this.props.user.groups.toArray().length > 1 ? ', ' : '');
                           })}
                         </span>
                       </div>
@@ -131,8 +135,8 @@ class OwnerDropdownPartial extends React.Component {
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Teams</span>
                         <span className="uk-text-small uk-text-muted uk-text-truncate">
-                          {this.props.user.get('teams').map((team) => {
-                            return team.get('name') + (this.props.user.get('teams').toArray().length > 1 ? ', ' : '');
+                          {this.props.user.teams.map((team) => {
+                            return team.name + (this.props.user.teams.toArray().length > 1 ? ', ' : '');
                           })}
                         </span>
                       </div>
@@ -172,4 +176,4 @@ const mapStateToProps = (state) => ({
   socket: state.shared.socket,
 });
 
-export default connect(mapStateToProps, {}, null, { forwardRef: true })(OwnerDropdownPartial);
+export default connect(mapStateToProps, { fetchAccounts }, null, { forwardRef: true })(OwnerDropdownPartial);
