@@ -51,6 +51,10 @@ class OwnerDropdownPartial extends React.Component {
     const customer = !isAdmin && !isAgent;
     console.log('this.props.user.role.name');
     console.log(this.props.user.role.name);
+    console.log('this.props.user.phone');
+    console.log(this.props.user.phone);
+    console.log('this.props.user.groups');
+    console.log(this.props.user.groups);
 
     return (
       <PDropDownAccount
@@ -109,7 +113,7 @@ class OwnerDropdownPartial extends React.Component {
                   <li>
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Phone</span>
-                      <a href={`tel:${this.props.user.phone}`}>{this.props.user.phone}</a>
+                      <a href={`tel:${this.props.user.get('phone')}`}>{this.props.user.get('phone')}</a>
                     </div>
                   </li>
                   <li>
@@ -117,8 +121,8 @@ class OwnerDropdownPartial extends React.Component {
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Groups</span>
                         <span className="uk-text-small uk-text-muted uk-text-truncate">
-                          {this.props.user.groups.map((group) => {
-                            return group.name + (this.props.user.groups.toArray().length > 1 ? ', ' : '');
+                          {this.props.user.get('groups').map((group) => {
+                            return group.get('name') + (this.props.user.get('groups').toArray().length > 1 ? ', ' : '');
                           })}
                         </span>
                       </div>
@@ -127,8 +131,8 @@ class OwnerDropdownPartial extends React.Component {
                       <div className="tru-list-content">
                         <span className="tru-list-heading">Teams</span>
                         <span className="uk-text-small uk-text-muted uk-text-truncate">
-                          {this.props.user.teams.map((team) => {
-                            return team.name + (this.props.user.teams.toArray().length > 1 ? ', ' : '');
+                          {this.props.user.get('teams').map((team) => {
+                            return team.get('name') + (this.props.user.get('teams').toArray().length > 1 ? ', ' : '');
                           })}
                         </span>
                       </div>
