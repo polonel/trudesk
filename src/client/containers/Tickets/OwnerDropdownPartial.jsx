@@ -16,7 +16,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
-
+import TruCard from 'components/TruCard';
+import GridItem from 'components/Grid/GridItem';
 import { TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
 
 import Avatar from 'components/Avatar/Avatar';
@@ -32,8 +33,8 @@ class OwnerDropdownPartial extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.user);
-    console.log('this.props.user');
+    console.log('this.props');
+    console.log(this.props);
   }
 
   componentWillUnmount() {}
@@ -56,9 +57,9 @@ class OwnerDropdownPartial extends React.Component {
         leftOffset={35}
         minHeight={215}
       >
-        <GridItem key={user.get('_id')} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
+        <GridItem key={this.props.user.get('_id')} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
           <TruCard
-            loaderActive={user.get('loading')}
+            loaderActive={this.props.user.get('loading')}
             menu={actionMenu}
             extraHeadClass={
               (isAdmin ? 'tru-card-head-admin' : '') +
@@ -70,8 +71,7 @@ class OwnerDropdownPartial extends React.Component {
                 <div className="account-image relative uk-display-inline-block">
                   <Avatar
                     size={82}
-                    userId={user.get('_id')}
-                    image={userImage}
+                    userId={this.props.user.get('_id')}
                     style={{ marginTop: 10 }}
                     showBorder={true}
                     borderColor={'#ffffff'}
@@ -79,8 +79,8 @@ class OwnerDropdownPartial extends React.Component {
                   />
                 </div>
                 <h3 className="tru-card-head-text uk-text-center">
-                  {user.get('fullname')}
-                  <span className="uk-text-truncate">{user.get('title')}</span>
+                  {this.props.user.get('fullname')}
+                  <span className="uk-text-truncate">{this.props.user.get('title')}</span>
                 </h3>
               </div>
             }
@@ -89,52 +89,55 @@ class OwnerDropdownPartial extends React.Component {
                 <li>
                   <div className="tru-list-content">
                     <span className="tru-list-heading">Role</span>
-                    <span className="uk-text-small uk-text-muted">{user.getIn(['role', 'name'])}</span>
+                    <span className="uk-text-small uk-text-muted">{this.props.user.getIn(['role', 'name'])}</span>
                   </div>
                 </li>
                 <li>
                   <div className="tru-list-content">
                     <span className="tru-list-heading">Email</span>
                     <span className="uk-text-small uk-text-muted">
-                      <a href={`mailto:${user.get('email')}`}>{user.get('email')}</a>
+                      <a href={`mailto:${this.props.user.get('email')}`}>{user.get('email')}</a>
                     </span>
                   </div>
                 </li>
                 <li>
                   <div className="tru-list-content">
                     <span className="tru-list-heading">Phone</span>
-                    <a href={`tel:${user.get('phone')}`}>{user.get('phone')}</a>
+                    <a href={`tel:${this.props.user.get('phone')}`}>{this.props.user.get('phone')}</a>
                   </div>
                 </li>
                 <li>
-                  {customer && user.get('groups') && (
+                  {customer && this.props.user.get('groups') && (
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Groups</span>
                       <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {user.get('groups').map((group) => {
-                          return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '');
+                        {this.props.user.get('groups').map((group) => {
+                          return group.get('name') + (this.props.user.get('groups').toArray().length > 1 ? ', ' : '');
                         })}
                       </span>
                     </div>
                   )}
-                  {!customer && user.get('teams') && (
+                  {!customer && this.props.user.get('teams') && (
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Teams</span>
                       <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {user.get('teams').map((team) => {
-                          return team.get('name') + (user.get('teams').toArray().length > 1 ? ', ' : '');
+                        {this.props.user.get('teams').map((team) => {
+                          return team.get('name') + (this.props.user.get('teams').toArray().length > 1 ? ', ' : '');
                         })}
                       </span>
                     </div>
                   )}
                 </li>
-                {!customer && user.get('departments') && (
+                {!customer && this.props.user.get('departments') && (
                   <li>
                     <div className="tru-list-content">
                       <span className="tru-list-heading">Departments</span>
                       <span className="uk-text-small uk-text-muted uk-text-truncate">
-                        {user.get('departments').map((department) => {
-                          return department.get('name') + (user.get('departments').toArray().length > 1 ? ', ' : '');
+                        {this.props.user.get('departments').map((department) => {
+                          return (
+                            department.get('name') +
+                            (this.props.user.get('departments').toArray().length > 1 ? ', ' : '')
+                          );
                         })}
                       </span>
                     </div>

@@ -11,12 +11,15 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 import React, { Fragment, createRef } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
 
 import Avatar from 'components/Avatar/Avatar';
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
+import OwnerDropdownPartial from 'containers/Tickets/OwnerDropdownPartial';
+
 import ReactHtmlParser from 'react-html-parser';
 
 import { TICKETS_ISSUE_SET, TICKETS_UI_ATTACHMENTS_UPDATE } from 'serverSocket/socketEventConsts';
@@ -126,18 +129,6 @@ class IssuePartial extends React.Component {
   }
 
   render() {
-    const hasTicketStatusUpdate = () => {
-      const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false;
-      const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false;
-      if (isAgent || isAdmin) {
-        return helpers.canUser('tickets:update');
-      } else {
-        if (!this.ticket || !this.props.sessionUser) return false;
-        // return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false);
-        return false;
-      }
-    };
-    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && hasTicketStatusUpdate();
     return (
       <div className="initial-issue uk-clearfix">
         <Avatar image={this.owner.image} userId={this.owner._id} />
@@ -178,7 +169,7 @@ class IssuePartial extends React.Component {
             {ReactHtmlParser(this.issue)}
           </div>
         </div>
-        {hasTicketUpdate && <OwnerDropdownPartial forwardedRef={this.ownerDropdownPartial} user={this.ticket.owner} />}
+        <OwnerDropdownPartial forwardedRef={this.ownerDropdownPartial} user={this.owner} />
         {/* Permissions on Fragment for edit */}
         {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
           <Fragment>
