@@ -53,6 +53,7 @@ class OwnerDropdownPartial extends React.Component {
     const item =
       this.props.accountsState.accounts &&
       this.props.accountsState.accounts.map((user) => {
+        console.log('usdfjaslkdjflk;ajslkdjfs');
         <GridItem key={user.get('_id')}>
           <TruCard
             loaderActive={user.get('loading')}
