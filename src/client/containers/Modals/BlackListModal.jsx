@@ -245,14 +245,13 @@ class BlackListModal extends React.Component {
                     useWindow={false}
                     getScrollParent={() => document.getElementById('mapping-page-content')}
                   >
-                    <input
-                      type="text"
-                      className={'md-input md-input-width-medium'}
-                      name={'mailerHost'}
-                      // disabled={!this.getSetting('mailerEnabled')}
-                      value={this.state.mailerHost}
-                      // onChange={(e) => this.onInputValueChanged(e, 'mailerHost')}
-                    />
+                    <div className="uk-margin-medium-bottom">
+                      <div className="md-input-wrapper md-input-filled">
+                        <label>Port</label>
+                        <input type="text" className="md-input md-input-width-medium" name="mailerPort" value="465" />
+                        <span className="md-input-bar"></span>
+                      </div>
+                    </div>
                     <Table
                       style={{ margin: 0 }}
                       extraClass={'pDataTable'}
