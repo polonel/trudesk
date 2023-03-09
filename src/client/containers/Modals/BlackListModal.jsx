@@ -36,6 +36,8 @@ class BlackListModal extends React.Component {
       recordsRemove: [],
       recordsAdd: [],
       recordsUpdate: [],
+      blacklistMatched: true,
+      matchString: '',
     };
     makeObservable(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
@@ -256,12 +258,22 @@ class BlackListModal extends React.Component {
                             type="button"
                             style={{ maxHeight: 27 }}
                           >
-                            <div className="uk-float-left uk-width-1-1 uk-text-center"> List </div>
+                            <div className="uk-float-left uk-width-1-1 uk-text-center"> Check </div>
                           </button>
                         </div>
                       </div>
                       <div className="md-input-wrapper md-input-filled">
-                        <label>Status: Blacklist Matched</label>
+                        <label>
+                          {() => {
+                            if (this.state.matchString == '') {
+                              return 'Enter the line';
+                            } else if (this.state.blacklistMatched) {
+                              return 'Status: Blacklist Matched';
+                            } else {
+                              return 'Status: Blacklist Not Matched';
+                            }
+                          }}
+                        </label>
                         <input type="text" className="md-input md-input-width-medium" />
                         <span className="md-input-bar"></span>
                       </div>
