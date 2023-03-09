@@ -25,7 +25,6 @@ class BlackListModal extends React.Component {
   @observable pageStart = -1;
   @observable hasMore = true;
   @observable initialLoad = true;
-  @observable blacklist = [];
   @observable pageStart = -1;
   @observable initialState = [];
   @observable chance = new Chance();
@@ -210,12 +209,13 @@ class BlackListModal extends React.Component {
     } else {
       try {
         // Merge all regex fields into one RegExp variable
-        const regexStr = this.state.blacklist.join('|');
+        const regexStr = this.state.blacklist.map((record) => record.regex).join('|');
         const mergedRegex = new RegExp(regexStr, 'g');
-
+        console.log('regexStr');
+        console.log(regexStr);
         if (String(mergedRegex) !== '/(?:)/g') {
           const resultCheck = mergedRegex.test(matchString);
-          onCheckBlacklistMatched(resultCheck);
+          this.onCheckBlacklistMatched(resultCheck);
         }
         return false;
       } catch (err) {
