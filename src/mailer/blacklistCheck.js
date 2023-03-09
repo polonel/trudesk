@@ -1,6 +1,6 @@
 const blacklistSchema = require('../models/blacklist');
 
-async function blacklistCheck(message) {
+async function blacklistCheck(payload) {
   try {
     const docs = await blacklistSchema.find({});
 
@@ -12,9 +12,9 @@ async function blacklistCheck(message) {
 
     const mergedRegex = new RegExp(regexStr, 'g');
     let mergedRegexValidate;
-    if (docs.length === 0) {
+    if (docs.length !== 0) {
       if (String(mergedRegex) !== '/(?:)/g') {
-        mergedRegexValidate = mergedRegex.test(message.from);
+        mergedRegexValidate = mergedRegex.test(payload);
       }
     } else return false;
 

@@ -199,7 +199,7 @@ function bindImapReady() {
                           message.from = mail.headers.get('from').value[0].address;
 
                           if (message.from && message.from != '') {
-                            const blacklistResult = await blacklistCheck(message);
+                            const blacklistResult = await blacklistCheck(message.from);
                             if (blacklistResult) {
                               return next();
                             }
