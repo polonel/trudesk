@@ -253,7 +253,7 @@ class BlackListModal extends React.Component {
 
   render() {
     return (
-      <BaseModal options={{}}>
+      <BaseModal options={{ bgclose: false }}>
         <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
           <div className="setting-item-wrap">
             <div style={{ minHeight: '60px', height: 'auto' }}>
