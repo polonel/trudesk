@@ -249,7 +249,7 @@ class BlackListModal extends React.Component {
                       <div className="uk-right">
                         <div
                           className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
-                          style={{ margin: 0, position: 'absolute', top: 5, right: -5, zIndex: 99 }}
+                          style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
                         >
                           <button
                             className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
