@@ -31,6 +31,7 @@ const settingSchema = require('../models/setting');
 const path = require('path');
 const pathUploads = path.join(__dirname, `../../public/uploads`);
 const pathUploadsTickets = path.join(__dirname, `../../public/uploads/tickets`);
+const blacklistCheck = require('./blacklistCheck');
 
 const mailCheck = {};
 mailCheck.inbox = [];
@@ -181,7 +182,7 @@ function bindImapReady() {
                     });
                     stream.once('end', function () {
                       mailsCount++;
-                      simpleParser(buffer, function (err, mail) {
+                      simpleParser(buffer, async function (err, mail) {
                         messagesCount++;
                         if (err) winston.warn(err);
                         let message = {};
@@ -198,83 +199,86 @@ function bindImapReady() {
                           message.from = mail.headers.get('from').value[0].address;
 
                           if (message.from && message.from != '') {
-                            blacklistSchema.find({}, (err, docs) => {
-                              if (err) {
-                                console.error(err);
-                                return;
-                              }
+                            const blacklistResult = await blacklistCheck(message);
+                            if (blacklistResult) {
+                              return next();
+                            }
+                            // blacklistSchema.find({}, (err, docs) => {
+                            //   if (err) {
+                            //     console.error(err);
+                            //     return;
+                            //   }
 
-                              // Merge all regex fields into one RegExp variable
-                              const regexStr = docs
-                                .reduce((acc, doc) => {
-                                  if (doc.regex) {
-                                    return acc + '|' + doc.regex;
-                                  }
-                                  return acc;
-                                }, '')
-                                .slice(1);
+                            //   // Merge all regex fields into one RegExp variable
+                            //   const regexStr = docs
+                            //     .reduce((acc, doc) => {
+                            //       if (doc.regex) {
+                            //         return acc + '|' + doc.regex;
+                            //       }
+                            //       return acc;
+                            //     }, '')
+                            //     .slice(1);
 
-                              const mergedRegex = new RegExp(regexStr, 'g');
-                              let mergedRegexValidate;
-                              if (String(mergedRegex) != '/(?:)/g') {
-                                mergedRegexValidate = mergedRegex.test(message.from);
-                              }
+                            //   const mergedRegex = new RegExp(regexStr, 'g');
+                            //   let mergedRegexValidate;
+                            //   if (String(mergedRegex) != '/(?:)/g') {
+                            //     mergedRegexValidate = mergedRegex.test(message.from);
+                            //   }
 
-                              if (mergedRegexValidate) {
-                                return next();
-                              }
+                            //   if (mergedRegexValidate) {
+                            //     return next();
+                            //   }
+                            // });
+                            message.fromName = mail.headers.get('from').value[0].name;
 
-                              message.fromName = mail.headers.get('from').value[0].name;
+                            if (mail?.attachments.length !== 0) {
+                              message.attachments = mail.attachments;
+                              attachmentsInMail = true;
+                            }
 
-                              if (mail?.attachments.length !== 0) {
-                                message.attachments = mail.attachments;
-                                attachmentsInMail = true;
-                              }
+                            if (mail.subject) {
+                              message.subject = mail.subject;
+                            } else {
+                              message.subject = message.from;
+                            }
 
-                              if (mail.subject) {
-                                message.subject = mail.subject;
-                              } else {
-                                message.subject = message.from;
-                              }
+                            if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
+                              message.responseToComment = mail.text;
+                            }
+                            // else {
+                            //   message.responseToComment = message.from
+                            // }
 
-                              if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
-                                message.responseToComment = mail.text;
-                              }
-                              // else {
-                              //   message.responseToComment = message.from
-                              // }
+                            // if (mail.subject) {
+                            //   message.subject = mail.subject
+                            // } else {
+                            //   message.subject = message.from
+                            // }
+                            if (
+                              _.isUndefined(mail.text) &&
+                              (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))
+                            ) {
+                              var $ = cheerio.load(mail.html);
+                              var $body = $('body');
+                              message.responseToComment = $body.length > 0 ? $body.html() : mail.html;
+                            } else {
+                              if (mail?.inReplyTo) message.responseToComment = mail.text;
+                              message.mailText = true;
+                            }
 
-                              // if (mail.subject) {
-                              //   message.subject = mail.subject
-                              // } else {
-                              //   message.subject = message.from
-                              // }
-                              if (
-                                _.isUndefined(mail.text) &&
-                                (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))
-                              ) {
-                                var $ = cheerio.load(mail.html);
-                                var $body = $('body');
-                                message.responseToComment = $body.length > 0 ? $body.html() : mail.html;
-                              } else {
-                                if (mail?.inReplyTo) message.responseToComment = mail.text;
-                                message.mailText = true;
-                              }
-
-                              if (_.isUndefined(mail.textAsHtml)) {
-                                var $ = cheerio.load(mail.html);
-                                var $body = $('body');
-                                message.body = $body.length > 0 ? $body.html() : mail.html;
-                              } else {
-                                message.body = mail.textAsHtml;
-                              }
-                              mailCheck.messages.push(message);
-                              if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
-                                handleMessages(mailCheck.messages, function () {
-                                  mailCheck.Imap.destroy();
-                                });
-                              }
-                            });
+                            if (_.isUndefined(mail.textAsHtml)) {
+                              var $ = cheerio.load(mail.html);
+                              var $body = $('body');
+                              message.body = $body.length > 0 ? $body.html() : mail.html;
+                            } else {
+                              message.body = mail.textAsHtml;
+                            }
+                            mailCheck.messages.push(message);
+                            if (mail?.attachments.length !== 0 && messagesCount == mailsCount) {
+                              handleMessages(mailCheck.messages, function () {
+                                mailCheck.Imap.destroy();
+                              });
+                            }
                           }
                         }
                       }); //////////
