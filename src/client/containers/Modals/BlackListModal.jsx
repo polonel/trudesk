@@ -207,24 +207,24 @@ class BlackListModal extends React.Component {
         });
       }
     } else {
-      // try {
-      //   // Merge all regex fields into one RegExp variable
-      //   const regexStr = this.state.blacklist
-      //     .filter((record) => record.regex.replace(' ', '') != '')
-      //     .map((record) => record.regex)
-      //     .join('|');
-      //   const mergedRegex = new RegExp(regexStr, 'g');
-      //   console.log('regexStr');
-      //   console.log(regexStr);
-      //   if (String(mergedRegex) !== '/(?:)/g') {
-      //     const resultCheck = mergedRegex.test(matchString);
-      //     this.onCheckBlacklistMatched(resultCheck);
-      //   }
-      //   return false;
-      // } catch (err) {
-      //   console.error(err);
-      //   return false;
-      // }
+      try {
+        // Merge all regex fields into one RegExp variable
+        const regexStr = this.state.blacklist
+          .filter((record) => record.regex.replace(' ', '') != '')
+          .map((record) => record.regex)
+          .join('|');
+        const mergedRegex = new RegExp(regexStr, 'g');
+        console.log('regexStr');
+        console.log(regexStr);
+        if (String(mergedRegex) !== '/(?:)/g') {
+          const resultCheck = mergedRegex.test(matchString);
+          this.onCheckBlacklistMatched(resultCheck);
+        }
+        return false;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
     }
   }
 
