@@ -301,6 +301,7 @@ class BlackListModal extends React.Component {
                           className="md-input md-input-width-medium"
                           onChange={(event) => this.inputChange(event)}
                           value={this.state.matchString}
+                          placeholder="example@email.com"
                         />
                         <span className="md-input-bar"></span>
                       </div>
@@ -378,6 +379,15 @@ class BlackListModal extends React.Component {
                   </InfiniteScroll>
                   {/* </PageContent> */}
                   <div className="uk-pagination deletedTicketPagination" style={{ paddingTop: 10, marginBottom: -10 }}>
+                    <div
+                      class="md-btn md-btn-small"
+                      onClick={() => {
+                        this.props.hideModal();
+                      }}
+                      style={{ backgroundColor: '#e53935', color: 'white' }}
+                    >
+                      Cancel
+                    </div>
                     <div
                       class="md-btn md-btn-small"
                       onClick={() => {
