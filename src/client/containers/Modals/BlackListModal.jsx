@@ -36,7 +36,7 @@ class BlackListModal extends React.Component {
       recordsRemove: [],
       recordsAdd: [],
       recordsUpdate: [],
-      blacklistMatched: true,
+      blacklistMatchedLable: 'Enter the line',
       matchString: '',
     };
     makeObservable(this);
@@ -104,6 +104,23 @@ class BlackListModal extends React.Component {
       recordsRemove: listRemove,
     });
   }
+
+  async checkBlacklistMatched() {
+    e.preventDefault();
+    const matchString = this.state.matchString;
+    if (matchString == '') {
+      this.setState({
+        blacklistMatchedLable: 'Enter the line',
+      });
+    } else {
+      await axios.post('/api/v2/blacklist/check', matchString).then((res) => {
+        console.log('/api/v2/blacklist/check');
+        return res.data;
+      });
+    }
+  }
+
+  onCheckBlacklistMatched = (data) => {};
 
   onBlackListSave = (data) => {
     this.setState({
@@ -189,6 +206,11 @@ class BlackListModal extends React.Component {
     this.setState({ blacklist: newItems });
   };
 
+  inputChange = (event) => {
+    const matchString = event.target.value.replace(' ', '');
+    if (matchString != '') this.setState({ matchString: matchString });
+  };
+
   getRegexsWithPage(page) {
     this.hasMore = false;
   }
@@ -258,23 +280,23 @@ class BlackListModal extends React.Component {
                             type="button"
                             style={{ maxHeight: 27 }}
                           >
-                            <div className="uk-float-left uk-width-1-1 uk-text-center"> Check </div>
+                            <div
+                              className="uk-float-left uk-width-1-1 uk-text-center"
+                              onClick={this.checkBlacklistMatched()}
+                            >
+                              Check
+                            </div>
                           </button>
                         </div>
                       </div>
                       <div className="md-input-wrapper md-input-filled">
-                        <label>
-                          {() => {
-                            if (this.state.matchString == '') {
-                              return 'Enter the line';
-                            } else if (this.state.blacklistMatched) {
-                              return 'Status: Blacklist Matched';
-                            } else {
-                              return 'Status: Blacklist Not Matched';
-                            }
-                          }}
-                        </label>
-                        <input type="text" className="md-input md-input-width-medium" />
+                        <label>{this.state.blacklistMatchedLable}</label>
+                        <input
+                          type="text"
+                          className="md-input md-input-width-medium"
+                          onChange={(event) => this.inputChange(event)}
+                          value={this.state.matchString}
+                        />
                         <span className="md-input-bar"></span>
                       </div>
                     </div>

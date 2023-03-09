@@ -16,6 +16,7 @@ var _ = require('lodash');
 var async = require('async');
 var blacklistSchema = require('../../../models/blacklist');
 var settingSchema = require('../../../models/setting');
+var blacklistCheck = require('../../../mailer/blacklistCheck');
 var emitter = require('../../../emitter');
 const winston = require('../../../logger');
 var apiBlackList = {};
@@ -114,6 +115,12 @@ apiBlackList.update = function (req, res) {
       return res.json({ success: true });
     }
   );
+};
+
+apiBlackList.check = function (req, res) {
+  const matchString = req.body;
+  resultCheck = blacklistCheck(matchString);
+  return resultCheck;
 };
 
 apiBlackList.delete = function (req, res) {
