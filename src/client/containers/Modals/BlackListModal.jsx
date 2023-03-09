@@ -41,7 +41,6 @@ class BlackListModal extends React.Component {
     makeObservable(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
     this.onBlackListSave = this.onBlackListSave.bind(this);
-    this.onCheckBlacklistMatched = this.onCheckBlacklistMatched.bind(this);
   }
 
   componentDidMount() {
@@ -50,7 +49,6 @@ class BlackListModal extends React.Component {
     });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
-    this.props.socket.on('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
     this.initialLoad = false;
   }
 
@@ -61,7 +59,6 @@ class BlackListModal extends React.Component {
   componentWillUnmount() {
     this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.off('$trudesk:client:blacklist:save', this.onBlackListSave);
-    this.props.socket.off('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
   }
 
   addRegex(e, value) {
@@ -214,8 +211,6 @@ class BlackListModal extends React.Component {
           .map((record) => record.regex)
           .join('|');
         const mergedRegex = new RegExp(regexStr, 'g');
-        console.log('regexStr');
-        console.log(regexStr);
         if (String(mergedRegex) !== '/(?:)/g') {
           const resultCheck = mergedRegex.test(matchString);
           this.onCheckBlacklistMatched(resultCheck);

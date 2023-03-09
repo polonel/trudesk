@@ -117,13 +117,6 @@ apiBlackList.update = function (req, res) {
   );
 };
 
-apiBlackList.check = async function (req, res) {
-  const matchString = req.body.matchString;
-  resultCheck = await blacklistCheck(matchString);
-  emitter.emit('blacklist:check', { resultCheck: resultCheck });
-  return resultCheck;
-};
-
 apiBlackList.delete = function (req, res) {
   const recordsRemove = req.body;
 
