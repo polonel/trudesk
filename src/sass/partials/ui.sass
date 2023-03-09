@@ -135,6 +135,68 @@ textarea.md-input
   transition: height 200ms ease-out
   line-height: 24px
 
+
+
+.md-input-wrapper-blacklist
+  position: relative
+  padding-top: 4px
+  width: 100%
+  display: block
+  .md-input-bar
+    display: block
+    position: absolute
+    bottom: 0
+    left: 0
+    width: 100%
+    &:before, &:after
+      content: ''
+      display: block
+      position: absolute
+      bottom: 0
+      width: 0
+      height: 2px
+      background: $accent_color
+      -webkit-transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
+      transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
+    &:before
+      left: 50%
+    &:after
+      right: 50%
+  > label
+    color: automatic-text-color($page_content_bg, 'muted')
+    position: absolute
+    top: 16px
+    left: 4px
+    right: 0
+    pointer-events: none
+    -webkit-transition: all 150ms ease-out
+    transition: all 150ms ease-out
+  + *
+    margin-top: 10px
+  &.md-input-wrapper-disabled > label
+    color: rgba(0, 0, 0, 0.26)
+  &.has-error
+    > label
+      color: $accent_danger
+    .md-input-bar
+      bottom: 20px
+  &.has-error
+    .md-input-bar
+      &.bottom-fix
+        bottom: 0
+      &.error-color
+        &:before,
+        &:after
+          background: $accent_danger !important
+  .search-icon
+    position: absolute
+    top: 20px
+    right: 0
+    display: block
+    color: #727272
+    line-height: 26px
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12)
+
 .md-input-wrapper
   position: relative
   padding-top: 4px

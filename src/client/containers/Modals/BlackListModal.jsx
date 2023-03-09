@@ -198,7 +198,7 @@ class BlackListModal extends React.Component {
     this.setState({ matchString: matchString });
   };
 
-  async checkBlacklistMatched(e) {
+  checkBlacklistMatched(e) {
     e.preventDefault();
     const matchString = this.state.matchString;
     if (matchString == '') {
@@ -208,12 +208,25 @@ class BlackListModal extends React.Component {
         });
       }
     } else {
-      await axios.post('/api/v2/blacklist/check', { matchString });
+      try {
+        // Merge all regex fields into one RegExp variable
+        const regexStr = this.state.blacklist.join('|');
+        const mergedRegex = new RegExp(regexStr, 'g');
+
+        if (String(mergedRegex) !== '/(?:)/g') {
+          const resultCheck = mergedRegex.test(matchString);
+          onCheckBlacklistMatched(resultCheck);
+        }
+        return false;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
     }
   }
 
-  onCheckBlacklistMatched = (data) => {
-    if (data.resultCheck) {
+  onCheckBlacklistMatched = (resultCheck) => {
+    if (resultCheck) {
       this.setState({ blacklistMatchedLable: 'Status: Blacklist Matched' });
     } else {
       this.setState({ blacklistMatchedLable: 'Status: Blacklist Not Matched' });
@@ -294,8 +307,8 @@ class BlackListModal extends React.Component {
                           </button>
                         </div>
                       </div>
-                      <div className="md-input-wrapper md-input-filled md-input-focus">
-                        <label>{this.state.blacklistMatchedLable}</label>
+                      <div className="md-input-wrapper md-input-filled">
+                        <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
                         <input
                           type="text"
                           className="md-input md-input-width-medium"
