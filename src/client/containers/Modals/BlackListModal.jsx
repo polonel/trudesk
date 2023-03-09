@@ -80,7 +80,6 @@ class BlackListModal extends React.Component {
     let listRemove = [...this.state.recordsRemove];
 
     list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
-    list[indexRecord].flags = list[indexRecord].flags.replace(' ', '');
     if (list[indexRecord].regex != '') {
       if (listAdd.findIndex((record) => record.regex == value.regex) != -1) {
         const index = listAdd.findIndex((record) => record.regex == value.regex);
@@ -119,7 +118,6 @@ class BlackListModal extends React.Component {
   addLine() {
     let value = {
       regex: '',
-      flags: '',
       reason: '',
       key: '',
     };
@@ -254,7 +252,6 @@ class BlackListModal extends React.Component {
                       striped={true}
                       headers={[
                         <TableHeader key={1} width={'30%'} text={'Regex'} />,
-                        <TableHeader key={2} width={'12%'} text={'Flags'} />,
                         <TableHeader key={2} width={'60%'} text={'Reason'} />,
                         <TableHeader key={2} width={'12%'} />,
                       ]}
@@ -275,26 +272,6 @@ class BlackListModal extends React.Component {
                                     id="regex"
                                     className={'md-input'}
                                     value={value.regex}
-                                    style={{ borderWidth: 0 }}
-                                    onChange={(event) => this.handleChange(event, value.key, event.target.id)}
-                                    onBlur={(e) => {
-                                      this.addRegex(e, value);
-                                    }}
-                                  />
-                                </div>
-                              </TableCell>
-                              <TableCell className={'vam nbb'}>
-                                <div
-                                  key={this.state.blacklist.indexOf(value) + 1}
-                                  className={'uk-float-left'}
-                                  style={{ marginLeft: -5 }}
-                                >
-                                  <input
-                                    name={'subject'}
-                                    type="text"
-                                    id="flags"
-                                    className={'md-input'}
-                                    value={value.flags}
                                     style={{ borderWidth: 0 }}
                                     onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
