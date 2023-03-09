@@ -245,25 +245,25 @@ class BlackListModal extends React.Component {
                     useWindow={false}
                     getScrollParent={() => document.getElementById('mapping-page-content')}
                   >
-                    <div class="uk-margin-medium-bottom">
-                      <div class="uk-right">
+                    <div className="uk-margin-medium-bottom">
+                      <div className="uk-right">
                         <div
-                          class="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
+                          className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
                           style={{ margin: 0, position: 'absolute', top: 5, right: -5, zIndex: 99 }}
                         >
                           <button
-                            class="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+                            className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
                             type="button"
                             style={{ maxHeight: 27 }}
                           >
-                            <div class="uk-float-left uk-width-1-1 uk-text-center"> List </div>
+                            <div className="uk-float-left uk-width-1-1 uk-text-center"> List </div>
                           </button>
                         </div>
                       </div>
-                      <div class="md-input-wrapper md-input-filled">
+                      <div className="md-input-wrapper md-input-filled">
                         <label>Status: Blacklist Matched</label>
-                        <input type="text" class="md-input md-input-width-medium" />
-                        <span class="md-input-bar"></span>
+                        <input type="text" className="md-input md-input-width-medium" />
+                        <span className="md-input-bar"></span>
                       </div>
                     </div>
                     <Table
