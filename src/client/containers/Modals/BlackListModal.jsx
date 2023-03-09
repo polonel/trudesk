@@ -149,10 +149,12 @@ class BlackListModal extends React.Component {
     ];
     let listUpdate = [
       ...this.state.recordsUpdate.filter((record) => {
-        if (record._id && value._id) {
-          return record._id !== value._id;
-        } else {
-          return record.key !== value.key;
+        if (record._id) {
+          if (record._id && value._id) {
+            return record._id !== value._id;
+          } else {
+            return record.key !== value.key;
+          }
         }
       }),
     ];

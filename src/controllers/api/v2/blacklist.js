@@ -52,7 +52,9 @@ apiBlackList.get = function (req, res) {
 
 apiBlackList.add = async function (req, res) {
   let recordsAdd = req.body;
-  const recordsForFind = recordsAdd.map((record) => record.regex.replace(' ', '') != '');
+  const recordsForFind = recordsAdd
+    .filter((record) => record.regex.replace(' ', '') != '' && record.regex != '')
+    .map((record) => record.regex);
   try {
     await blacklistSchema.findOne({ regex: { $in: recordsForFind } }).then((items) => {
       if (items) {
@@ -89,7 +91,7 @@ apiBlackList.add = async function (req, res) {
 };
 
 apiBlackList.update = function (req, res) {
-  const recordsUpdate = req.body;
+  const recordsUpdate = req.body.filter((record) => record.regex.replace(' ', '') != '' && record.regex != '');
   async.parallel(
     [
       function (done) {
