@@ -294,7 +294,7 @@ class BlackListModal extends React.Component {
                           </button>
                         </div>
                       </div>
-                      <div className="md-input-wrapper md-input-filled">
+                      <div className="md-input-wrapper md-input-filled md-input-focus">
                         <label>{this.state.blacklistMatchedLable}</label>
                         <input
                           type="text"
