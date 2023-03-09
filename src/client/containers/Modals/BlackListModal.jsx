@@ -201,10 +201,12 @@ class BlackListModal extends React.Component {
   async checkBlacklistMatched(e) {
     e.preventDefault();
     const matchString = this.state.matchString;
-    if (matchString == '' && this.state.blacklistMatchedLable !== 'Enter the line') {
-      this.setState({
-        blacklistMatchedLable: 'Enter the line',
-      });
+    if (matchString == '') {
+      if (this.state.blacklistMatchedLable !== 'Enter the line') {
+        this.setState({
+          blacklistMatchedLable: 'Enter the line',
+        });
+      }
     } else {
       await axios.post('/api/v2/blacklist/check', { matchString });
     }
