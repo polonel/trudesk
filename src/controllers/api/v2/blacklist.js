@@ -52,7 +52,7 @@ apiBlackList.get = function (req, res) {
 
 apiBlackList.add = async function (req, res) {
   let recordsAdd = req.body;
-  const recordsForFind = recordsAdd.map((record) => record.regex);
+  const recordsForFind = recordsAdd.map((record) => record.regex.replace(' ', '') != '');
   try {
     await blacklistSchema.findOne({ regex: { $in: recordsForFind } }).then((items) => {
       if (items) {
