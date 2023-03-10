@@ -378,7 +378,7 @@ class BlackListModal extends React.Component {
                                     className={'uk-float-left'}
                                     style={{ marginLeft: -5 }}
                                   >
-                                    <input
+                                    {/* <input
                                       name={'subject'}
                                       type="text"
                                       id="regex"
@@ -389,7 +389,7 @@ class BlackListModal extends React.Component {
                                       onBlur={(e) => {
                                         this.updateRegex(e, value);
                                       }}
-                                    />
+                                    /> */}
                                   </div>
                                 </TableCell>
                                 <TableCell className={'vam nbb'}>
@@ -398,7 +398,7 @@ class BlackListModal extends React.Component {
                                     className={'uk-float-left'}
                                     style={{ marginLeft: -5 }}
                                   >
-                                    <input
+                                    {/* <input
                                       name={'subject'}
                                       type="text"
                                       id="reason"
@@ -409,11 +409,11 @@ class BlackListModal extends React.Component {
                                       onBlur={(e) => {
                                         this.updateRegex(e, value);
                                       }}
-                                    />
+                                    /> */}
                                   </div>
                                 </TableCell>
                                 <TableCell className={'vam nbb'}>
-                                  <div style={{ position: 'relative' }}>
+                                  {/* <div style={{ position: 'relative' }}>
                                     <span
                                       className="material-icons"
                                       style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
@@ -458,7 +458,7 @@ class BlackListModal extends React.Component {
                                     >
                                       close
                                     </span>
-                                  </div>
+                                  </div> */}
                                 </TableCell>
                               </TableRow>
                             );
