@@ -115,14 +115,14 @@ apiBlackList.update = function (req, res) {
   );
 };
 
-apiBlackList.delete = function (req, res) {
-  const recordsRemove = req.body;
+apiBlackList.remove = function (req, res) {
+  const recordsRemove = req.params.id;
 
   async.parallel(
     [
       function (done) {
         try {
-          blacklistSchema.deleteMany({ _id: { $in: recordsRemove } }, (err) => {
+          blacklistSchema.deleteMany({ _id: recordsRemove }, (err) => {
             if (err) throw err;
             return done();
           });

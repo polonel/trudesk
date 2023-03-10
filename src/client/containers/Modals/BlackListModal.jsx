@@ -145,8 +145,8 @@ class BlackListModal extends React.Component {
       recordsUpdate: listUpdate,
     });
 
-    if (value) {
-      await axios.post('/api/v2/blacklist/remove', value).then((res) => {
+    if (value && value._id) {
+      await axios.delete(`/api/v2/blacklist/remove/${value._id}`).then((res) => {
         return res.data;
       });
     }
@@ -225,7 +225,7 @@ class BlackListModal extends React.Component {
 
   render() {
     return (
-      <BaseModal options={{ bgclose: false }}>
+      <BaseModal options={{ bgclose: false }} style={{ top: 150 }}>
         <form className="uk-form-stacked" onSubmit={(e) => this.onFormSubmit(e)} style={{ position: 'center' }}>
           <div className="setting-item-wrap">
             <div style={{ minHeight: '60px', height: 'auto' }}>
