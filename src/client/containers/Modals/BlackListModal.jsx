@@ -217,6 +217,7 @@ class BlackListModal extends React.Component {
 
     if (data.recordsUpdate.length !== 0) {
       await axios.post('/api/v2/blacklist/update', data.recordsUpdate).then((res) => {
+        console.log('update succsess');
         return res.data;
       });
     }
@@ -234,7 +235,7 @@ class BlackListModal extends React.Component {
                 <div className="uk-position-relative">
                   <div>
                     <div>
-                      <h2 className="uk-text-muted uk-text-center">Black list</h2>
+                      <h2 className="uk-text-muted uk-text-center">Blacklist</h2>
                     </div>
                   </div>
                   <InfiniteScroll
@@ -357,7 +358,7 @@ class BlackListModal extends React.Component {
                                     style={{ borderWidth: 0 }}
                                     onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
-                                      this.addRegex(e, value);
+                                      this.updateRegex(e, value);
                                     }}
                                   />
                                 </div>
