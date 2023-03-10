@@ -32,11 +32,11 @@ class BlackListModal extends React.Component {
     super(props);
     this.state = {
       blacklist: [],
-      recordsRemove: [],
-      recordsAdd: [],
       recordsUpdate: [],
       blacklistMatchedLable: 'Enter the line',
       matchString: '',
+      regex: '',
+      reason: '',
     };
     makeObservable(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
@@ -153,8 +153,11 @@ class BlackListModal extends React.Component {
 
   inputChange = (event) => {
     event.preventDefault();
-    const matchString = event.target.value.replace(' ', '');
-    this.setState({ matchString: matchString });
+
+    const stateString = event.target.value.replace(' ', '');
+    if (event.target.id == 'matchString') this.setState({ matchString: stateString });
+    else if (event.target.id == 'regex') this.setState({ regex: stateString });
+    else if (event.target.id == 'reason') this.setState({ reason: stateString });
   };
 
   checkBlacklistMatched(e) {
@@ -259,6 +262,7 @@ class BlackListModal extends React.Component {
                         <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
                         <input
                           type="text"
+                          id="matchString"
                           className="md-input md-input-width-medium"
                           onChange={(event) => this.inputChange(event)}
                           value={this.state.matchString}
@@ -278,7 +282,7 @@ class BlackListModal extends React.Component {
                             className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
                             type="button"
                             style={{ maxHeight: 27 }}
-                            onClick={(e) => this.checkBlacklistMatched(e)}
+                            onClick={(e) => this.addRegex(e)}
                           >
                             <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
                           </button>
@@ -287,7 +291,14 @@ class BlackListModal extends React.Component {
                       <div style={{ display: 'flex' }}>
                         <div className="md-input-wrapper md-input-filled" style={{ flex: 1, width: '60%' }}>
                           <label style={{ top: -6, fontSize: 12 }}>Regex</label>
-                          <input type="text" className="md-input md-input-width-medium" style={{ width: '60%' }} />
+                          <input
+                            type="text"
+                            className="md-input md-input-width-medium"
+                            style={{ width: '60%' }}
+                            id="regex"
+                            onChange={(event) => this.inputChange(event)}
+                            value={this.state.regex}
+                          />
                           <span className="md-input-bar" style={{ width: '60%' }}></span>
                         </div>
                         <div
@@ -295,7 +306,14 @@ class BlackListModal extends React.Component {
                           style={{ flex: 1, marginTop: 0, marginLeft: -100 }}
                         >
                           <label style={{ top: -6, fontSize: 12 }}>Reason</label>
-                          <input type="text" className="md-input md-input-width-medium" style={{ width: '80%' }} />
+                          <input
+                            type="text"
+                            id="reason"
+                            className="md-input md-input-width-medium"
+                            style={{ width: '80%' }}
+                            onChange={(event) => this.inputChange(event)}
+                            value={this.state.reason}
+                          />
                           <span className="md-input-bar"></span>
                         </div>
                       </div>
