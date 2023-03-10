@@ -430,11 +430,11 @@ class BlackListModal extends React.Component {
                                       color: '#c8d6e6',
                                       fontSize: 20,
                                       display: 'none',
-                                      marginLeft: -10,
+                                      marginLeft: -13,
                                     }}
-                                    // onClick={() => {
-                                    //   this.hideTickCross();
-                                    // }}
+                                    onClick={() => {
+                                      this.removeRegex(value);
+                                    }}
                                     id={`tick-${value._id}`}
                                   >
                                     check
