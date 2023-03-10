@@ -95,7 +95,8 @@ class BlackListModal extends React.Component {
     });
   };
 
-  async addRegex() {
+  async addRegex(e) {
+    e.preventDefault();
     let list = [...this.state.blacklist];
     let key = this.chance.string({
       length: 8,
@@ -290,7 +291,7 @@ class BlackListModal extends React.Component {
                             className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
                             type="button"
                             style={{ maxHeight: 27 }}
-                            onClick={() => this.addRegex()}
+                            onClick={(e) => this.addRegex(e)}
                           >
                             <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
                           </button>
@@ -376,7 +377,7 @@ class BlackListModal extends React.Component {
                                     style={{ borderWidth: 0, width: '180%' }}
                                     onChange={(event) => this.handleChange(event, value.key, event.target.id)}
                                     onBlur={(e) => {
-                                      this.addRegex(e, value);
+                                      this.updateRegex(e, value);
                                     }}
                                   />
                                 </div>
@@ -408,14 +409,7 @@ class BlackListModal extends React.Component {
                     >
                       Cancel
                     </div>
-                    <div
-                      class="md-btn md-btn-small"
-                      onClick={() => {
-                        this.addLine();
-                      }}
-                    >
-                      Add
-                    </div>
+                    <div class="md-btn md-btn-small">Add</div>
                     <div
                       class="md-btn md-btn-small"
                       onClick={() => {
