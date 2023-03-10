@@ -20,9 +20,10 @@ import Log from '../../logger';
 import helpers from 'lib/helpers';
 
 function* fetchBlackList({ payload }) {
+  console.log('fetchBlackList');
   try {
     const response = yield call(api.blacklist.fetch, payload);
-    yield put({ type: FETCH_BLACKLIST.SUCCESS, payload: { response, payload } });
+    yield put({ type: FETCH_BLACKLIST.SUCCESS, response });
   } catch (error) {
     const errorText = error.response.data.error;
     helpers.UI.showSnackbar(`Error: ${errorText}`, true);
