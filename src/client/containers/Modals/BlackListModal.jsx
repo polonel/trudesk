@@ -44,7 +44,7 @@ class BlackListModal extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchBlackList({ limit: 10, skip: this.state.blacklist.length }).then(({ response }) => {
+    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length }).then(({ response }) => {
       this.hasMore = response.count >= 5;
     });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
