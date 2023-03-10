@@ -44,9 +44,9 @@ apiBlackList.get = function (req, res) {
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err });
-      //emitter.emit('blacklist:fetch', { blacklist: blacklist });
-      return res.json(res, { blacklist: blacklist, count: blacklist.length });
-      // return apiUtil.sendApiSuccess(res, { blacklist: blacklist, count: blacklist.length });
+      emitter.emit('blacklist:fetch', { blacklist: blacklist });
+      // return res.json(res, { blacklist: blacklist, count: blacklist.length });
+      return apiUtil.sendApiSuccess(res, { blacklist: blacklist, count: blacklist.length });
     }
   );
 };

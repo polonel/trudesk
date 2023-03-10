@@ -20,7 +20,6 @@ import Log from '../../logger';
 import helpers from 'lib/helpers';
 
 function* fetchBlackList({ payload }) {
-  console.log('fetchBlackList');
   try {
     const response = yield call(api.blacklist.fetch, payload);
     yield put({ type: FETCH_BLACKLIST.SUCCESS, response });

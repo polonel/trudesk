@@ -44,9 +44,7 @@ class BlackListModal extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length }).then(({ response }) => {
-      this.hasMore = response.count >= 5;
-    });
+    this.props.fetchBlackList({ limit: 10, skip: this.state.blacklist.length });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
     this.initialLoad = false;
@@ -90,6 +88,7 @@ class BlackListModal extends React.Component {
   };
 
   onBlackListFetch = (data) => {
+    this.hasMore = data.blacklist.length >= 5;
     this.setState({
       blacklist: data.blacklist,
     });
@@ -235,9 +234,7 @@ class BlackListModal extends React.Component {
 
   getRegexsWithPage(page) {
     this.hasMore = false;
-    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length }).then(({ response }) => {
-      this.hasMore = response.count >= 5;
-    });
+    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
   }
 
   async onFormSubmit() {
