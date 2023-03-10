@@ -265,204 +265,206 @@ class BlackListModal extends React.Component {
                       <h2 className="uk-text-muted uk-text-center">Blacklist</h2>
                     </div>
                   </div>
-                  <InfiniteScroll
-                    pageStart={this.pageStart}
-                    loadMore={this.getRegexsWithPage}
-                    hasMore={this.hasMore}
-                    initialLoad={this.initialLoad}
-                    threshold={10}
-                    // loader={
-                    //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                    //     <i className={'uk-icon-refresh uk-icon-spin'} />
-                    //   </div>
-                    // }
-                    useWindow={false}
-                    getScrollParent={() => document.getElementById('mapping-page-content')}
-                  >
-                    <div className="uk-margin-medium-bottom">
-                      <div className="uk-right">
-                        <div
-                          className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
-                          style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
-                        >
-                          <button
-                            className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
-                            type="button"
-                            style={{ maxHeight: 27 }}
-                            onClick={(e) => this.checkBlacklistMatched(e)}
+                  <PageContent id={'mapping-page-content'} padding={0}>
+                    <InfiniteScroll
+                      pageStart={this.pageStart}
+                      loadMore={this.getRegexsWithPage}
+                      hasMore={this.hasMore}
+                      initialLoad={this.initialLoad}
+                      threshold={10}
+                      // loader={
+                      //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                      //     <i className={'uk-icon-refresh uk-icon-spin'} />
+                      //   </div>
+                      // }
+                      useWindow={false}
+                      getScrollParent={() => document.getElementById('mapping-page-content')}
+                    >
+                      <div className="uk-margin-medium-bottom">
+                        <div className="uk-right">
+                          <div
+                            className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
+                            style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
                           >
-                            <div className="uk-float-left uk-width-1-1 uk-text-center">Check</div>
-                          </button>
+                            <button
+                              className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+                              type="button"
+                              style={{ maxHeight: 27 }}
+                              onClick={(e) => this.checkBlacklistMatched(e)}
+                            >
+                              <div className="uk-float-left uk-width-1-1 uk-text-center">Check</div>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="md-input-wrapper md-input-filled">
-                        <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
-                        <input
-                          type="text"
-                          id="matchString"
-                          className="md-input md-input-width-medium"
-                          onChange={(event) => this.inputChange(event)}
-                          value={this.state.matchString}
-                          placeholder="example@email.com"
-                          style={{ width: '88%' }}
-                        />
-                        <span className="md-input-bar"></span>
-                      </div>
-                    </div>
-                    <div className="uk-margin-medium-bottom">
-                      <div className="uk-right">
-                        <div
-                          className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
-                          style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
-                        >
-                          <button
-                            className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
-                            type="button"
-                            style={{ maxHeight: 27 }}
-                            onClick={(e) => this.addRegex(e)}
-                          >
-                            <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
-                          </button>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex' }}>
-                        <div className="md-input-wrapper md-input-filled" style={{ flex: 1, width: '60%' }}>
-                          <label style={{ top: -6, fontSize: 12 }}>Regex</label>
+                        <div className="md-input-wrapper md-input-filled">
+                          <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
                           <input
                             type="text"
+                            id="matchString"
                             className="md-input md-input-width-medium"
-                            style={{ width: '60%' }}
-                            id="regex"
                             onChange={(event) => this.inputChange(event)}
-                            value={this.state.regex}
-                          />
-                          <span className="md-input-bar" style={{ width: '60%' }}></span>
-                        </div>
-                        <div
-                          className="md-input-wrapper md-input-filled"
-                          style={{ flex: 1, marginTop: 0, marginLeft: -100 }}
-                        >
-                          <label style={{ top: -6, fontSize: 12 }}>Reason</label>
-                          <input
-                            type="text"
-                            id="reason"
-                            className="md-input md-input-width-medium"
-                            style={{ width: '80%' }}
-                            onChange={(event) => this.inputChange(event)}
-                            value={this.state.reason}
+                            value={this.state.matchString}
+                            placeholder="example@email.com"
+                            style={{ width: '88%' }}
                           />
                           <span className="md-input-bar"></span>
                         </div>
                       </div>
-                    </div>
-                    <Table
-                      style={{ margin: 0 }}
-                      extraClass={'pDataTable'}
-                      stickyHeader={true}
-                      striped={true}
-                      headers={[
-                        <TableHeader key={1} width={'30%'} text={'Regex'} />,
-                        <TableHeader key={2} width={'60%'} text={'Reason'} />,
-                        <TableHeader key={2} width={'12%'} />,
-                      ]}
-                    >
-                      {this.state.blacklist &&
-                        this.state.blacklist.map((value) => {
-                          return (
-                            <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
-                              <TableCell className={'vam nbb'}>
-                                <div
-                                  key={this.state.blacklist.indexOf(value) + 1}
-                                  className={'uk-float-left'}
-                                  style={{ marginLeft: -5 }}
-                                >
-                                  <input
-                                    name={'subject'}
-                                    type="text"
-                                    id="regex"
-                                    className={'md-input'}
-                                    value={value.regex}
-                                    style={{ borderWidth: 0 }}
-                                    onChange={(event) => this.handleChange(event, value.key, event.target.id)}
-                                    onBlur={(e) => {
-                                      this.updateRegex(e, value);
-                                    }}
-                                  />
-                                </div>
-                              </TableCell>
-                              <TableCell className={'vam nbb'}>
-                                <div
-                                  key={this.state.blacklist.indexOf(value) + 1}
-                                  className={'uk-float-left'}
-                                  style={{ marginLeft: -5 }}
-                                >
-                                  <input
-                                    name={'subject'}
-                                    type="text"
-                                    id="reason"
-                                    className={'md-input'}
-                                    value={value.reason}
-                                    style={{ borderWidth: 0, width: '180%' }}
-                                    onChange={(event) => this.handleChange(event, value.key, event.target.id)}
-                                    onBlur={(e) => {
-                                      this.updateRegex(e, value);
-                                    }}
-                                  />
-                                </div>
-                              </TableCell>
-                              <TableCell className={'vam nbb'}>
-                                <div style={{ position: 'relative' }}>
-                                  <span
-                                    className="material-icons"
-                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
-                                    onClick={() => {
-                                      this.showTickCross(value._id);
-                                    }}
-                                    id={`delete-${value._id}`}
+                      <div className="uk-margin-medium-bottom">
+                        <div className="uk-right">
+                          <div
+                            className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
+                            style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
+                          >
+                            <button
+                              className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+                              type="button"
+                              style={{ maxHeight: 27 }}
+                              onClick={(e) => this.addRegex(e)}
+                            >
+                              <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
+                            </button>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex' }}>
+                          <div className="md-input-wrapper md-input-filled" style={{ flex: 1, width: '60%' }}>
+                            <label style={{ top: -6, fontSize: 12 }}>Regex</label>
+                            <input
+                              type="text"
+                              className="md-input md-input-width-medium"
+                              style={{ width: '60%' }}
+                              id="regex"
+                              onChange={(event) => this.inputChange(event)}
+                              value={this.state.regex}
+                            />
+                            <span className="md-input-bar" style={{ width: '60%' }}></span>
+                          </div>
+                          <div
+                            className="md-input-wrapper md-input-filled"
+                            style={{ flex: 1, marginTop: 0, marginLeft: -100 }}
+                          >
+                            <label style={{ top: -6, fontSize: 12 }}>Reason</label>
+                            <input
+                              type="text"
+                              id="reason"
+                              className="md-input md-input-width-medium"
+                              style={{ width: '80%' }}
+                              onChange={(event) => this.inputChange(event)}
+                              value={this.state.reason}
+                            />
+                            <span className="md-input-bar"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <Table
+                        style={{ margin: 0 }}
+                        extraClass={'pDataTable'}
+                        stickyHeader={true}
+                        striped={true}
+                        headers={[
+                          <TableHeader key={1} width={'30%'} text={'Regex'} />,
+                          <TableHeader key={2} width={'60%'} text={'Reason'} />,
+                          <TableHeader key={2} width={'12%'} />,
+                        ]}
+                      >
+                        {this.state.blacklist &&
+                          this.state.blacklist.map((value) => {
+                            return (
+                              <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
+                                <TableCell className={'vam nbb'}>
+                                  <div
+                                    key={this.state.blacklist.indexOf(value) + 1}
+                                    className={'uk-float-left'}
+                                    style={{ marginLeft: -5 }}
                                   >
-                                    delete
-                                  </span>
-                                  <span
-                                    className="material-icons"
-                                    style={{
-                                      top: 15,
-                                      left: 'auto',
-                                      color: '#c8d6e6',
-                                      fontSize: 20,
-                                      display: 'none',
-                                      marginLeft: -13,
-                                    }}
-                                    onClick={() => {
-                                      this.removeRegex(value);
-                                    }}
-                                    id={`tick-${value._id}`}
+                                    <input
+                                      name={'subject'}
+                                      type="text"
+                                      id="regex"
+                                      className={'md-input'}
+                                      value={value.regex}
+                                      style={{ borderWidth: 0 }}
+                                      onChange={(event) => this.handleChange(event, value.key, event.target.id)}
+                                      onBlur={(e) => {
+                                        this.updateRegex(e, value);
+                                      }}
+                                    />
+                                  </div>
+                                </TableCell>
+                                <TableCell className={'vam nbb'}>
+                                  <div
+                                    key={this.state.blacklist.indexOf(value) + 1}
+                                    className={'uk-float-left'}
+                                    style={{ marginLeft: -5 }}
                                   >
-                                    check
-                                  </span>
-                                  <span
-                                    className="material-icons"
-                                    style={{
-                                      top: 15,
-                                      left: 'auto',
-                                      color: '#c8d6e6',
-                                      fontSize: 20,
-                                      display: 'none',
-                                      paddingLeft: 5,
-                                    }}
-                                    onClick={() => {
-                                      this.hideTickCross(value._id);
-                                    }}
-                                    id={`cross-${value._id}`}
-                                  >
-                                    close
-                                  </span>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                    </Table>
-                  </InfiniteScroll>
+                                    <input
+                                      name={'subject'}
+                                      type="text"
+                                      id="reason"
+                                      className={'md-input'}
+                                      value={value.reason}
+                                      style={{ borderWidth: 0, width: '180%' }}
+                                      onChange={(event) => this.handleChange(event, value.key, event.target.id)}
+                                      onBlur={(e) => {
+                                        this.updateRegex(e, value);
+                                      }}
+                                    />
+                                  </div>
+                                </TableCell>
+                                <TableCell className={'vam nbb'}>
+                                  <div style={{ position: 'relative' }}>
+                                    <span
+                                      className="material-icons"
+                                      style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                      onClick={() => {
+                                        this.showTickCross(value._id);
+                                      }}
+                                      id={`delete-${value._id}`}
+                                    >
+                                      delete
+                                    </span>
+                                    <span
+                                      className="material-icons"
+                                      style={{
+                                        top: 15,
+                                        left: 'auto',
+                                        color: '#c8d6e6',
+                                        fontSize: 20,
+                                        display: 'none',
+                                        marginLeft: -13,
+                                      }}
+                                      onClick={() => {
+                                        this.removeRegex(value);
+                                      }}
+                                      id={`tick-${value._id}`}
+                                    >
+                                      check
+                                    </span>
+                                    <span
+                                      className="material-icons"
+                                      style={{
+                                        top: 15,
+                                        left: 'auto',
+                                        color: '#c8d6e6',
+                                        fontSize: 20,
+                                        display: 'none',
+                                        paddingLeft: 5,
+                                      }}
+                                      onClick={() => {
+                                        this.hideTickCross(value._id);
+                                      }}
+                                      id={`cross-${value._id}`}
+                                    >
+                                      close
+                                    </span>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </Table>
+                    </InfiniteScroll>
+                  </PageContent>
                   {/* </PageContent> */}
                   <div className="uk-modal-footer uk-text-right">
                     {/* <div
