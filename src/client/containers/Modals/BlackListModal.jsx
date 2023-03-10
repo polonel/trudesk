@@ -109,15 +109,15 @@ class BlackListModal extends React.Component {
     value.regex = this.state.regex.replace(' ', '');
     value.reason = this.state.reason;
     value.key = key;
-    list.push(value);
-    this.setState({
-      blacklist: list,
-    });
 
     if (value.regex != '') {
       await axios.post('/api/v2/blacklist/add', value).then((res) => {
-        console.log(res.data);
-        return res.data;
+        const record = res.data.record;
+        list.push(record);
+        this.setState({
+          blacklist: list,
+        });
+        return true;
       });
     }
   }

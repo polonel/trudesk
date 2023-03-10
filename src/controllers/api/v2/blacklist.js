@@ -82,7 +82,7 @@ apiBlackList.add = async function (req, res) {
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err });
-      return res.json({ success: true, record: resRecord });
+      return res.json({ success: true, record: resRecord[0] });
     }
   );
 };
