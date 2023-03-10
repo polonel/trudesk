@@ -401,7 +401,7 @@ class BlackListModal extends React.Component {
                   </InfiniteScroll>
                   {/* </PageContent> */}
                   <div className="uk-pagination deletedTicketPagination" style={{ paddingTop: 10, marginBottom: -10 }}>
-                    <div
+                    {/* <div
                       class="md-btn md-btn-small"
                       onClick={() => {
                         this.props.hideModal();
@@ -417,7 +417,21 @@ class BlackListModal extends React.Component {
                         this.onFormSubmit();
                       }}
                     >
-                      Save
+                      Apply
+                    </div> */}
+
+                    <div className="uk-modal-footer uk-text-right">
+                      <Button text={'Close'} extraClass={'uk-modal-close'} flat={true} waves={true} />
+                      <Button
+                        text={'Create'}
+                        type={'button'}
+                        flat={true}
+                        waves={true}
+                        style={'success'}
+                        onClick={() => {
+                          this.onFormSubmit();
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
