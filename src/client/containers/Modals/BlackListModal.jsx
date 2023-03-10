@@ -116,6 +116,7 @@ class BlackListModal extends React.Component {
 
     if (value.regex != '') {
       await axios.post('/api/v2/blacklist/add', value).then((res) => {
+        console.log(res.data);
         return res.data;
       });
     }
@@ -400,7 +401,7 @@ class BlackListModal extends React.Component {
                     </Table>
                   </InfiniteScroll>
                   {/* </PageContent> */}
-                  <div className="uk-pagination deletedTicketPagination" style={{ paddingTop: 10, marginBottom: -10 }}>
+                  <div className="uk-modal-footer uk-text-right">
                     {/* <div
                       class="md-btn md-btn-small"
                       onClick={() => {
@@ -420,19 +421,17 @@ class BlackListModal extends React.Component {
                       Apply
                     </div> */}
 
-                    <div className="uk-modal-footer uk-text-right">
-                      <Button text={'Close'} extraClass={'uk-modal-close'} flat={true} waves={true} />
-                      <Button
-                        text={'Create'}
-                        type={'button'}
-                        flat={true}
-                        waves={true}
-                        style={'success'}
-                        onClick={() => {
-                          this.onFormSubmit();
-                        }}
-                      />
-                    </div>
+                    <Button text={'Close'} extraClass={'uk-modal-close'} flat={true} waves={true} />
+                    <Button
+                      text={'Apply'}
+                      type={'button'}
+                      flat={true}
+                      waves={true}
+                      style={'success'}
+                      onClick={() => {
+                        this.onFormSubmit();
+                      }}
+                    />
                   </div>
                 </div>
               </div>

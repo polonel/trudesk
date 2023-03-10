@@ -52,7 +52,7 @@ apiBlackList.get = function (req, res) {
 
 apiBlackList.add = async function (req, res) {
   let recordAdd = req.body;
-
+  let resRecord;
   try {
     await blacklistSchema.findOne({ regex: recordAdd.regex }).then((item) => {
       if (item) {
@@ -70,6 +70,7 @@ apiBlackList.add = async function (req, res) {
           try {
             blacklistSchema.insertMany(recordAdd, (err, record) => {
               if (err) throw err;
+              resRecord = record;
               return done();
             });
           } catch (e) {
@@ -81,7 +82,7 @@ apiBlackList.add = async function (req, res) {
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err });
-      return apiUtil.sendApiSuccess(res);
+      return res.json({ success: true, record: resRecord });
     }
   );
 };
