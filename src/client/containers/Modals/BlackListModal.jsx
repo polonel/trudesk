@@ -25,7 +25,6 @@ class BlackListModal extends React.Component {
   @observable pageStart = -1;
   @observable hasMore = true;
   @observable initialLoad = true;
-  @observable pageStart = -1;
   @observable initialState = [];
   @observable chance = new Chance();
   constructor(props) {
@@ -44,7 +43,7 @@ class BlackListModal extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchBlackList({ limit: 10, skip: this.state.blacklist.length });
+    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
     this.initialLoad = false;
@@ -88,6 +87,8 @@ class BlackListModal extends React.Component {
   };
 
   onBlackListFetch = (data) => {
+    console.log('onBlackListFetch');
+    console.log(data);
     this.hasMore = data.blacklist.length >= 5;
     this.setState({
       blacklist: data.blacklist,
@@ -265,6 +266,82 @@ class BlackListModal extends React.Component {
                       <h2 className="uk-text-muted uk-text-center">Blacklist</h2>
                     </div>
                   </div>
+                  <div className="uk-margin-medium-bottom">
+                    <div className="uk-right">
+                      <div
+                        className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
+                        style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
+                      >
+                        <button
+                          className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+                          type="button"
+                          style={{ maxHeight: 27 }}
+                          onClick={(e) => this.checkBlacklistMatched(e)}
+                        >
+                          <div className="uk-float-left uk-width-1-1 uk-text-center">Check</div>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="md-input-wrapper md-input-filled">
+                      <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
+                      <input
+                        type="text"
+                        id="matchString"
+                        className="md-input md-input-width-medium"
+                        onChange={(event) => this.inputChange(event)}
+                        value={this.state.matchString}
+                        placeholder="example@email.com"
+                        style={{ width: '88%' }}
+                      />
+                      <span className="md-input-bar"></span>
+                    </div>
+                  </div>
+                  <div className="uk-margin-medium-bottom">
+                    <div className="uk-right">
+                      <div
+                        className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
+                        style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
+                      >
+                        <button
+                          className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+                          type="button"
+                          style={{ maxHeight: 27 }}
+                          onClick={(e) => this.addRegex(e)}
+                        >
+                          <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
+                        </button>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                      <div className="md-input-wrapper md-input-filled" style={{ flex: 1, width: '60%' }}>
+                        <label style={{ top: -6, fontSize: 12 }}>Regex</label>
+                        <input
+                          type="text"
+                          className="md-input md-input-width-medium"
+                          style={{ width: '60%' }}
+                          id="regex"
+                          onChange={(event) => this.inputChange(event)}
+                          value={this.state.regex}
+                        />
+                        <span className="md-input-bar" style={{ width: '60%' }}></span>
+                      </div>
+                      <div
+                        className="md-input-wrapper md-input-filled"
+                        style={{ flex: 1, marginTop: 0, marginLeft: -100 }}
+                      >
+                        <label style={{ top: -6, fontSize: 12 }}>Reason</label>
+                        <input
+                          type="text"
+                          id="reason"
+                          className="md-input md-input-width-medium"
+                          style={{ width: '80%' }}
+                          onChange={(event) => this.inputChange(event)}
+                          value={this.state.reason}
+                        />
+                        <span className="md-input-bar"></span>
+                      </div>
+                    </div>
+                  </div>
                   <PageContent id={'mapping-page-content'} padding={0}>
                     <InfiniteScroll
                       pageStart={this.pageStart}
@@ -280,82 +357,6 @@ class BlackListModal extends React.Component {
                       useWindow={false}
                       getScrollParent={() => document.getElementById('mapping-page-content')}
                     >
-                      <div className="uk-margin-medium-bottom">
-                        <div className="uk-right">
-                          <div
-                            className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
-                            style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
-                          >
-                            <button
-                              className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
-                              type="button"
-                              style={{ maxHeight: 27 }}
-                              onClick={(e) => this.checkBlacklistMatched(e)}
-                            >
-                              <div className="uk-float-left uk-width-1-1 uk-text-center">Check</div>
-                            </button>
-                          </div>
-                        </div>
-                        <div className="md-input-wrapper md-input-filled">
-                          <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
-                          <input
-                            type="text"
-                            id="matchString"
-                            className="md-input md-input-width-medium"
-                            onChange={(event) => this.inputChange(event)}
-                            value={this.state.matchString}
-                            placeholder="example@email.com"
-                            style={{ width: '88%' }}
-                          />
-                          <span className="md-input-bar"></span>
-                        </div>
-                      </div>
-                      <div className="uk-margin-medium-bottom">
-                        <div className="uk-right">
-                          <div
-                            className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
-                            style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
-                          >
-                            <button
-                              className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
-                              type="button"
-                              style={{ maxHeight: 27 }}
-                              onClick={(e) => this.addRegex(e)}
-                            >
-                              <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
-                            </button>
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex' }}>
-                          <div className="md-input-wrapper md-input-filled" style={{ flex: 1, width: '60%' }}>
-                            <label style={{ top: -6, fontSize: 12 }}>Regex</label>
-                            <input
-                              type="text"
-                              className="md-input md-input-width-medium"
-                              style={{ width: '60%' }}
-                              id="regex"
-                              onChange={(event) => this.inputChange(event)}
-                              value={this.state.regex}
-                            />
-                            <span className="md-input-bar" style={{ width: '60%' }}></span>
-                          </div>
-                          <div
-                            className="md-input-wrapper md-input-filled"
-                            style={{ flex: 1, marginTop: 0, marginLeft: -100 }}
-                          >
-                            <label style={{ top: -6, fontSize: 12 }}>Reason</label>
-                            <input
-                              type="text"
-                              id="reason"
-                              className="md-input md-input-width-medium"
-                              style={{ width: '80%' }}
-                              onChange={(event) => this.inputChange(event)}
-                              value={this.state.reason}
-                            />
-                            <span className="md-input-bar"></span>
-                          </div>
-                        </div>
-                      </div>
                       <Table
                         style={{ margin: 0 }}
                         extraClass={'pDataTable'}
