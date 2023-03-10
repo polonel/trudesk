@@ -268,7 +268,7 @@ class BlackListModal extends React.Component {
                       </div>
                     </div>
                     <div className="uk-margin-medium-bottom">
-                      <div className="uk-right">
+                      {/* <div className="uk-right">
                         <div
                           className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
                           style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
@@ -282,17 +282,18 @@ class BlackListModal extends React.Component {
                             <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
                           </button>
                         </div>
-                      </div>
-                      <div className="md-input-wrapper md-input-filled">
-                        <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
-                        <input
-                          type="text"
-                          className="md-input md-input-width-medium"
-                          onChange={(event) => this.inputChange(event)}
-                          value={this.state.matchString}
-                          placeholder="example@email.com"
-                        />
-                        <span className="md-input-bar"></span>
+                      </div> */}
+                      <div style={{ display: 'flex' }}>
+                        <div className="md-input-wrapper md-input-filled" style={{ flex: 1 }}>
+                          <label style={{ top: -6, fontSize: 12 }}>Regex</label>
+                          <input type="text" className="md-input md-input-width-medium" />
+                          <span className="md-input-bar"></span>
+                        </div>
+                        <div className="md-input-wrapper md-input-filled" style={{ flex: 1, marginTop: 0 }}>
+                          <label style={{ top: -6, fontSize: 12 }}>Reason</label>
+                          <input type="text" className="md-input md-input-width-medium" style={{ width: '90%' }} />
+                          <span className="md-input-bar"></span>
+                        </div>
                       </div>
                     </div>
                     <Table
