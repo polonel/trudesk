@@ -212,6 +212,8 @@ class BlackListModal extends React.Component {
   }
 
   hideTickCross(id) {
+    console.log('hideTickCross');
+    console.log(id);
     const deleteIcon = document.getElementById(`delete-${id}`);
     const tickIcon = document.getElementById(`tick-${id}`);
     const crossIcon = document.getElementById(`cross-${id}`);
@@ -422,7 +424,14 @@ class BlackListModal extends React.Component {
                                   </span>
                                   <span
                                     className="material-icons"
-                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20, display: 'none' }}
+                                    style={{
+                                      top: 15,
+                                      left: 'auto',
+                                      color: '#c8d6e6',
+                                      fontSize: 20,
+                                      display: 'none',
+                                      marginLeft: -10,
+                                    }}
                                     // onClick={() => {
                                     //   this.hideTickCross();
                                     // }}
@@ -432,9 +441,16 @@ class BlackListModal extends React.Component {
                                   </span>
                                   <span
                                     className="material-icons"
-                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20, display: 'none' }}
+                                    style={{
+                                      top: 15,
+                                      left: 'auto',
+                                      color: '#c8d6e6',
+                                      fontSize: 20,
+                                      display: 'none',
+                                      paddingLeft: 5,
+                                    }}
                                     onClick={() => {
-                                      this.hideTickCross(value);
+                                      this.hideTickCross(value._id);
                                     }}
                                     id={`cross-${value._id}`}
                                   >
