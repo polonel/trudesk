@@ -95,7 +95,7 @@ class BlackListModal extends React.Component {
     });
   };
 
-  async addRegex(value) {
+  async addRegex() {
     let list = [...this.state.blacklist];
     let key = this.chance.string({
       length: 8,
@@ -104,7 +104,7 @@ class BlackListModal extends React.Component {
       numeric: true,
       casing: 'lower',
     });
-
+    let value = {};
     value.regex = this.state.regex.replace(' ', '');
     value.reason = this.state.reason;
     value.key = key;
@@ -120,7 +120,7 @@ class BlackListModal extends React.Component {
     }
   }
 
-  removeRegex(value) {
+  async removeRegex(value) {
     let list = [
       ...this.state.blacklist.filter((record) => {
         if (record._id && value._id) {
@@ -144,6 +144,12 @@ class BlackListModal extends React.Component {
       blacklist: list,
       recordsUpdate: listUpdate,
     });
+
+    if (value) {
+      await axios.post('/api/v2/blacklist/remove', value).then((res) => {
+        return res.data;
+      });
+    }
   }
 
   handleChange = (event, key, property) => {
@@ -156,9 +162,9 @@ class BlackListModal extends React.Component {
   inputChange = (event) => {
     event.preventDefault();
 
-    const stateString = event.target.value.replace(' ', '');
+    const stateString = event.target.value;
     if (event.target.id == 'matchString') this.setState({ matchString: stateString });
-    else if (event.target.id == 'regex') this.setState({ regex: stateString });
+    else if (event.target.id == 'regex') this.setState({ regex: stateString.replace(' ', '') });
     else if (event.target.id == 'reason') this.setState({ reason: stateString });
   };
 
