@@ -61,14 +61,14 @@ class BlackListModal extends React.Component {
     this.props.socket.off('$trudesk:client:blacklist:save', this.onBlackListSave);
   }
 
-  addRegex(e, value) {
+  updateRegex(e, value) {
     e.preventDefault();
     let list = [...this.state.blacklist];
     let listUpdate = [...this.state.recordsUpdate];
 
     let indexRecord = list.indexOf(value);
-
-    if (list[indexRecord]._id) {
+    list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
+    if (list[indexRecord]._id && list[indexRecord].regex != '') {
       if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
         listUpdate.push(list[indexRecord]);
       } else {
@@ -77,30 +77,9 @@ class BlackListModal extends React.Component {
       }
     }
 
-    let listAdd = [...this.state.recordsAdd];
-    let listRemove = [...this.state.recordsRemove];
-
-    list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
-    if (list[indexRecord].regex != '') {
-      if (listAdd.findIndex((record) => record.regex == value.regex) != -1) {
-        const index = listAdd.findIndex((record) => record.regex == value.regex);
-        if (!list[indexRecord]._id) listAdd[index] = list[indexRecord];
-      } else {
-        if (!list[indexRecord]._id) listAdd.push(list[indexRecord]);
-      }
-    }
-    if (this.state.recordsRemove.find((record) => record.regex == value.regex) != -1) {
-      listRemove = [
-        ...listRemove.filter((record) => {
-          return record.regex != value.regex;
-        }),
-      ];
-    }
     this.setState({
       blacklist: list,
-      recordsAdd: listAdd,
       recordsUpdate: listUpdate,
-      recordsRemove: listRemove,
     });
   }
 
@@ -116,12 +95,7 @@ class BlackListModal extends React.Component {
     });
   };
 
-  addLine() {
-    let value = {
-      regex: '',
-      reason: '',
-      key: '',
-    };
+  async addRegex(e, value) {
     let list = [...this.state.blacklist];
     let key = this.chance.string({
       length: 8,
@@ -130,11 +104,18 @@ class BlackListModal extends React.Component {
       numeric: true,
       casing: 'lower',
     });
+    value.regex = value.regex.replace(' ', '');
     value.key = key;
     list.push(value);
     this.setState({
       blacklist: list,
     });
+
+    if (value.regex != '') {
+      await axios.post('/api/v2/blacklist/add', value).then((res) => {
+        return res.data;
+      });
+    }
   }
 
   removeRegex(value) {
@@ -149,37 +130,17 @@ class BlackListModal extends React.Component {
     ];
     let listUpdate = [
       ...this.state.recordsUpdate.filter((record) => {
-        if (record._id) {
-          if (record._id && value._id) {
-            return record._id !== value._id;
-          } else {
-            return record.key !== value.key;
-          }
+        if (record._id && value._id) {
+          return record._id !== value._id;
+        } else {
+          return record.key !== value.key;
         }
       }),
     ];
-    let listAdd = [...this.state.recordsAdd];
-    let listRemove = [...this.state.recordsRemove];
-    if (this.state.recordsAdd.find((record) => record.key === value.key) != -1) {
-      listAdd = [
-        ...listAdd.filter((record) => {
-          if (record._id && value._id) {
-            return record._id !== value._id;
-          } else {
-            return record.key !== value.key;
-          }
-        }),
-      ];
-    }
-    if (value._id) {
-      listRemove.push(value._id);
-    }
 
     this.setState({
       blacklist: list,
-      recordsAdd: listAdd,
       recordsUpdate: listUpdate,
-      recordsRemove: listRemove,
     });
   }
 
@@ -240,15 +201,7 @@ class BlackListModal extends React.Component {
   async onFormSubmit() {
     const data = {
       recordsUpdate: this.state.recordsUpdate,
-      recordsAdd: this.state.recordsAdd,
-      recordsRemove: this.state.recordsRemove,
     };
-
-    if (data.recordsAdd.length !== 0) {
-      await axios.post('/api/v2/blacklist/add', data.recordsAdd).then((res) => {
-        return res.data;
-      });
-    }
 
     if (data.recordsUpdate.length !== 0) {
       await axios.post('/api/v2/blacklist/update', data.recordsUpdate).then((res) => {
@@ -256,11 +209,6 @@ class BlackListModal extends React.Component {
       });
     }
 
-    if (data.recordsRemove.length !== 0) {
-      await axios.post('/api/v2/blacklist/delete', data.recordsRemove).then((res) => {
-        return res.data;
-      });
-    }
     this.props.hideModal();
   }
 
@@ -304,6 +252,34 @@ class BlackListModal extends React.Component {
                             onClick={(e) => this.checkBlacklistMatched(e)}
                           >
                             <div className="uk-float-left uk-width-1-1 uk-text-center">Check</div>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="md-input-wrapper md-input-filled">
+                        <label style={{ top: -6, fontSize: 12 }}>{this.state.blacklistMatchedLable}</label>
+                        <input
+                          type="text"
+                          className="md-input md-input-width-medium"
+                          onChange={(event) => this.inputChange(event)}
+                          value={this.state.matchString}
+                          placeholder="example@email.com"
+                        />
+                        <span className="md-input-bar"></span>
+                      </div>
+                    </div>
+                    <div className="uk-margin-medium-bottom">
+                      <div className="uk-right">
+                        <div
+                          className="md-switch-wrapper md-switch md-green uk-float-right uk-clearfix"
+                          style={{ margin: 0, position: 'absolute', right: -5, zIndex: 99 }}
+                        >
+                          <button
+                            className="uk-float-right md-btn md-btn-small  md-btn-wave  undefined waves-effect waves-button"
+                            type="button"
+                            style={{ maxHeight: 27 }}
+                            onClick={(e) => this.checkBlacklistMatched(e)}
+                          >
+                            <div className="uk-float-left uk-width-1-1 uk-text-center">Add</div>
                           </button>
                         </div>
                       </div>

@@ -51,18 +51,12 @@ apiBlackList.get = function (req, res) {
 };
 
 apiBlackList.add = async function (req, res) {
-  let recordsAdd = req.body;
-  const recordsForFind = recordsAdd
-    .filter((record) => record.regex.replace(' ', '') != '' && record.regex != '')
-    .map((record) => record.regex);
+  let recordAdd = req.body;
+
   try {
-    await blacklistSchema.findOne({ regex: { $in: recordsForFind } }).then((items) => {
-      if (items) {
-        for (let item of items) {
-          recordsAdd = recordsAdd.filter((record) => {
-            return record.regex !== item.regex;
-          });
-        }
+    await blacklistSchema.findOne({ regex: recordAdd.regex }).then((item) => {
+      if (item) {
+        recordAdd = false;
       }
     });
   } catch (e) {
@@ -72,14 +66,16 @@ apiBlackList.add = async function (req, res) {
   async.parallel(
     [
       function (done) {
-        try {
-          blacklistSchema.insertMany(recordsAdd, (err, record) => {
-            if (err) throw err;
-            return done();
-          });
-        } catch (e) {
-          winston.warn(e);
-          return apiUtil.sendApiError(res, 500, e.message);
+        if (recordAdd) {
+          try {
+            blacklistSchema.insertMany(recordAdd, (err, record) => {
+              if (err) throw err;
+              return done();
+            });
+          } catch (e) {
+            winston.warn(e);
+            return apiUtil.sendApiError(res, 500, e.message);
+          }
         }
       },
     ],
