@@ -199,6 +199,30 @@ class BlackListModal extends React.Component {
     }
   }
 
+  showTickCross() {
+    const deleteIcon = document.getElementById(`delete`);
+    const tickIcon = document.getElementById(`tick`);
+    const crossIcon = document.getElementById(`cross`);
+
+    if (deleteIcon && tickIcon && crossIcon) {
+      deleteIcon.style.display = 'none';
+      tickIcon.style.display = 'block';
+      crossIcon.style.display = 'block';
+    }
+  }
+
+  hideTickCross() {
+    const deleteIcon = document.getElementById(`delete`);
+    const tickIcon = document.getElementById(`tick`);
+    const crossIcon = document.getElementById(`cross`);
+
+    if (deleteIcon && tickIcon && crossIcon) {
+      deleteIcon.style.display = 'block';
+      tickIcon.style.display = 'none';
+      crossIcon.style.display = 'none';
+    }
+  }
+
   onCheckBlacklistMatched = (resultCheck) => {
     if (resultCheck) {
       this.setState({ blacklistMatchedLable: 'Status: Blacklist Matched' });
@@ -385,15 +409,52 @@ class BlackListModal extends React.Component {
                                 </div>
                               </TableCell>
                               <TableCell className={'vam nbb'}>
-                                <span
-                                  className="material-icons"
-                                  style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
-                                  onClick={() => {
-                                    this.removeRegex(value);
-                                  }}
-                                >
-                                  delete
-                                </span>
+                                <div style={{ position: 'relative' }}>
+                                  <span
+                                    className="material-icons"
+                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                    onClick={() => {
+                                      this.showTickCross();
+                                    }}
+                                    id={`delete`}
+                                  >
+                                    delete
+                                  </span>
+                                  <span
+                                    className="material-icons"
+                                    style={{
+                                      position: 'absolute',
+                                      top: 0,
+                                      left: 0,
+                                      display: 'none',
+                                      color: 'green',
+                                      fontSize: 24,
+                                    }}
+                                    // onClick={() => {
+                                    //   this.hideTickCross();
+                                    // }}
+                                    id={`tick`}
+                                  >
+                                    check
+                                  </span>
+                                  <span
+                                    className="material-icons"
+                                    style={{
+                                      position: 'absolute',
+                                      top: 0,
+                                      left: 0,
+                                      display: 'none',
+                                      color: 'red',
+                                      fontSize: 24,
+                                    }}
+                                    onClick={() => {
+                                      this.hideTickCross();
+                                    }}
+                                    id={`cross`}
+                                  >
+                                    close
+                                  </span>
+                                </div>
                               </TableCell>
                             </TableRow>
                           );
