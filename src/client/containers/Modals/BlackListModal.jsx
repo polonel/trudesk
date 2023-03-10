@@ -199,22 +199,22 @@ class BlackListModal extends React.Component {
     }
   }
 
-  showTickCross() {
-    const deleteIcon = document.getElementById(`delete`);
-    const tickIcon = document.getElementById(`tick`);
-    const crossIcon = document.getElementById(`cross`);
+  showTickCross(id) {
+    const deleteIcon = document.getElementById(`delete-${id}`);
+    const tickIcon = document.getElementById(`tick-${id}`);
+    const crossIcon = document.getElementById(`cross-${id}`);
 
     if (deleteIcon && tickIcon && crossIcon) {
       deleteIcon.style.display = 'none';
-      tickIcon.style.display = 'block';
-      crossIcon.style.display = 'block';
+      tickIcon.style.display = 'inline-block';
+      crossIcon.style.display = 'inline-block';
     }
   }
 
-  hideTickCross() {
-    const deleteIcon = document.getElementById(`delete`);
-    const tickIcon = document.getElementById(`tick`);
-    const crossIcon = document.getElementById(`cross`);
+  hideTickCross(id) {
+    const deleteIcon = document.getElementById(`delete-${id}`);
+    const tickIcon = document.getElementById(`tick-${id}`);
+    const crossIcon = document.getElementById(`cross-${id}`);
 
     if (deleteIcon && tickIcon && crossIcon) {
       deleteIcon.style.display = 'block';
@@ -414,29 +414,29 @@ class BlackListModal extends React.Component {
                                     className="material-icons"
                                     style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
                                     onClick={() => {
-                                      this.showTickCross();
+                                      this.showTickCross(value._id);
                                     }}
-                                    id={`delete`}
+                                    id={`delete-${value._id}`}
                                   >
                                     delete
                                   </span>
                                   <span
                                     className="material-icons"
-                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20, display: 'none' }}
                                     // onClick={() => {
                                     //   this.hideTickCross();
                                     // }}
-                                    id={`tick`}
+                                    id={`tick-${value._id}`}
                                   >
                                     check
                                   </span>
                                   <span
                                     className="material-icons"
-                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20, display: 'none' }}
                                     onClick={() => {
-                                      this.hideTickCross();
+                                      this.hideTickCross(value);
                                     }}
-                                    id={`cross`}
+                                    id={`cross-${value._id}`}
                                   >
                                     close
                                   </span>
