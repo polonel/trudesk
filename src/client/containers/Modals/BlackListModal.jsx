@@ -349,11 +349,11 @@ class BlackListModal extends React.Component {
                       hasMore={this.hasMore}
                       initialLoad={this.initialLoad}
                       threshold={5}
-                      // loader={
-                      //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
-                      //     <i className={'uk-icon-refresh uk-icon-spin'} />
-                      //   </div>
-                      // }
+                      loader={
+                        <div className={'uk-width-1-1 uk-text-center'} key={0}>
+                          <i className={'uk-icon-refresh uk-icon-spin'} />
+                        </div>
+                      }
                       useWindow={false}
                       getScrollParent={() => document.getElementById('blacklist-page-content')}
                     >
