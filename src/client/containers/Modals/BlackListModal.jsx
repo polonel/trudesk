@@ -235,6 +235,9 @@ class BlackListModal extends React.Component {
 
   getRegexsWithPage(page) {
     this.hasMore = false;
+    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length }).then(({ response }) => {
+      this.hasMore = response.count >= 5;
+    });
   }
 
   async onFormSubmit() {
@@ -271,7 +274,7 @@ class BlackListModal extends React.Component {
                       loadMore={this.getRegexsWithPage}
                       hasMore={this.hasMore}
                       initialLoad={this.initialLoad}
-                      threshold={10}
+                      threshold={5}
                       // loader={
                       //   <div className={'uk-width-1-1 uk-text-center'} key={0}>
                       //     <i className={'uk-icon-refresh uk-icon-spin'} />
