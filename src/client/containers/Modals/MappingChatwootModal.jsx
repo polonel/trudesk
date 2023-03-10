@@ -323,57 +323,216 @@ class MappingChatwootContainer extends React.Component {
                     <TableHeader key={4} width={'10%'} text={'Group'} />,
                   ]}
                 >
-                  {this.props.accountsState.accounts &&
-                    this.props.accountsState.accounts.map((user) => {
-                      let groupUser;
-                      this.props.groups.map((group) => {
-                        let members = group.get('members').toArray();
-                        let member;
-                        members.map((userGroup) => {
-                          if (userGroup.get('_id') == user.get('_id')) {
-                            if (userGroup.get('_id') !== undefined) {
-                              member = userGroup.get('_id');
-                            }
-                          }
-                        });
-                        if (member !== undefined) {
-                          groupUser = group.get('name');
-                        }
-                      });
-                      if (
-                        user.get('fullname').toLowerCase().includes(this.search.toLowerCase()) ||
-                        user.get('email').toLowerCase().includes(this.search.toLowerCase()) ||
-                        user.get('username').toLowerCase().includes(this.search.toLowerCase())
-                      ) {
-                        return (
-                          <TableRow key={user.get('_id')} clickable={true}>
-                            <TableCell className={'vam nbb'}>
-                              <div key={user.get('_id')} className={'uk-float-left'}>
-                                <span className={'icheck-inline'}>
-                                  <input
-                                    id={'u___' + user.get('_id')}
-                                    name={'user'}
-                                    type="radio"
-                                    className={'with-gap'}
-                                    value={user.get('_id')}
-                                    onChange={(e) => {
-                                      this.onUserRadioChange(e);
-                                    }}
-                                    checked={this.selectedUser === user.get('_id')}
-                                    data-md-icheck
-                                  />
-                                  <label htmlFor={'u___' + user.get('_id')} className={'mb-10 inline-label'}></label>
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className={'vam nbb'}>{user.get('username')}</TableCell>
-                            <TableCell className={'vam nbb'}>{user.get('fullname')}</TableCell>
-                            <TableCell className={'vam nbb'}>{user.get('email')}</TableCell>
-                            <TableCell className={'vam nbb'}>{groupUser}</TableCell>
-                          </TableRow>
-                        );
-                      }
-                    })}
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
+                  <TableRow clickable={true}>
+                    <TableCell className={'vam nbb'}>
+                      <div className={'uk-float-left'}>
+                        <span className={'icheck-inline'}>
+                          <input name={'user'} type="radio" className={'with-gap'} data-md-icheck />
+                          <label htmlFor={'u___'} className={'mb-10 inline-label'}></label>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>фывафываывфаыфва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфв</TableCell>
+                    <TableCell className={'vam nbb'}>ываыфвафыва</TableCell>
+                    <TableCell className={'vam nbb'}>ыфваыфваыфвавыа</TableCell>
+                  </TableRow>
                 </Table>
               </InfiniteScroll>
             </PageContent>
