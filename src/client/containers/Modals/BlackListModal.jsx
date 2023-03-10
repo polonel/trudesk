@@ -422,14 +422,7 @@ class BlackListModal extends React.Component {
                                   </span>
                                   <span
                                     className="material-icons"
-                                    style={{
-                                      position: 'absolute',
-                                      top: 0,
-                                      left: 0,
-                                      display: 'none',
-                                      color: 'green',
-                                      fontSize: 24,
-                                    }}
+                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
                                     // onClick={() => {
                                     //   this.hideTickCross();
                                     // }}
@@ -439,14 +432,7 @@ class BlackListModal extends React.Component {
                                   </span>
                                   <span
                                     className="material-icons"
-                                    style={{
-                                      position: 'absolute',
-                                      top: 0,
-                                      left: 0,
-                                      display: 'none',
-                                      color: 'red',
-                                      fontSize: 24,
-                                    }}
+                                    style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
                                     onClick={() => {
                                       this.hideTickCross();
                                     }}
