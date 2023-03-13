@@ -33,22 +33,22 @@ class BlackListModal extends React.Component {
       blacklist: [],
       recordsUpdate: [],
       blacklistMatchedLable: 'Enter the line',
+      recordsAdd: [],
       matchString: '',
       regex: '',
       reason: '',
     };
     makeObservable(this);
-    this.onCheckBlacklistMatched = this.onCheckBlacklistMatched(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
     this.onBlackListSave = this.onBlackListSave.bind(this);
+    this.onCheckBlacklistMatched = this.onCheckBlacklistMatched.bind(this);
   }
 
   componentDidMount() {
     this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
-    this.props.socket.on('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
-
+    this.props.socket.on('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
     this.initialLoad = false;
   }
 
@@ -111,6 +111,7 @@ class BlackListModal extends React.Component {
   async addRegex(e) {
     e.preventDefault();
     let list = [...this.state.blacklist];
+    let listAdd = [...this.state.recordsAdd];
     let key = this.chance.string({
       length: 8,
       pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
@@ -127,8 +128,10 @@ class BlackListModal extends React.Component {
       await axios.post('/api/v2/blacklist/add', value).then((res) => {
         const record = res.data.record;
         list.push(record);
+        listAdd.push(record);
         this.setState({
           blacklist: list,
+          recordsAdd: listAdd,
         });
         return true;
       });
@@ -154,10 +157,20 @@ class BlackListModal extends React.Component {
         }
       }),
     ];
+    let listAdd = [
+      ...this.state.recordsAdd.filter((record) => {
+        if (record._id && value._id) {
+          return record._id !== value._id;
+        } else {
+          return record.key !== value.key;
+        }
+      }),
+    ];
 
     this.setState({
       blacklist: list,
       recordsUpdate: listUpdate,
+      recordsAdd: listAdd,
     });
 
     if (value && value._id) {
