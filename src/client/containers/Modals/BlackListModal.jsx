@@ -345,14 +345,14 @@ class BlackListModal extends React.Component {
                       </div>
                     </div>
                   </div>
-                  <PageContent id={'blacklist-page-content'} padding={0}>
+                  <PageContent id={'blacklist-page-content'} style={{ all: 'unset' }} padding={0}>
                     <InfiniteScroll
                       pageStart={this.pageStart}
                       loadMore={this.getRegexsWithPage}
                       hasMore={this.hasMore}
                       initialLoad={this.initialLoad}
                       threshold={5}
-                      className={styles['infinite-scroll-container']}
+                      style={{ all: 'unset' }}
                       loader={
                         <div className={'uk-width-1-1 uk-text-center'} key={0}>
                           <i className={'uk-icon-refresh uk-icon-spin'} />
@@ -361,7 +361,7 @@ class BlackListModal extends React.Component {
                       useWindow={false}
                       getScrollParent={() => document.getElementById('blacklist-page-content')}
                     >
-                      <div className={styles['infinite-scroll-item']}>
+                      <div>
                         <Table
                           style={{ margin: 0 }}
                           extraClass={'pDataTable'}
