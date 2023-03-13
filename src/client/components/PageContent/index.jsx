@@ -12,18 +12,18 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import helpers from 'lib/helpers'
+import helpers from 'lib/helpers';
 
 class PageContent extends React.Component {
-  componentDidMount () {
-    helpers.resizeFullHeight()
-    helpers.setupScrollers()
+  componentDidMount() {
+    helpers.resizeFullHeight();
+    helpers.setupScrollers();
   }
 
-  render () {
+  render() {
     return (
       <div
         id={this.props.id}
@@ -32,7 +32,7 @@ class PageContent extends React.Component {
       >
         <div style={{ paddingBottom: this.props.paddingBottom }}>{this.props.children}</div>
       </div>
-    )
+    );
   }
 }
 
@@ -41,12 +41,12 @@ PageContent.propTypes = {
   padding: PropTypes.number,
   paddingBottom: PropTypes.number,
   extraClass: PropTypes.string,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
-}
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+};
 
 PageContent.defaultProps = {
   padding: 25,
-  paddingBottom: 100
-}
+  paddingBottom: 100,
+};
 
-export default PageContent
+export default PageContent;
