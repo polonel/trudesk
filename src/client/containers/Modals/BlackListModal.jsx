@@ -92,8 +92,12 @@ class BlackListModal extends React.Component {
     this.hasMore = data.blacklist.length >= 5;
     console.log('hasMore');
     console.log(data.blacklist.length >= 5);
+    let blacklistState = [...this.state.blacklist];
+    blacklistState.push(...data.blacklist);
+    console.log('blacklistState');
+    console.log(blacklistState);
     this.setState({
-      blacklist: data.blacklist,
+      blacklist: blacklistState,
     });
   };
 
@@ -235,11 +239,11 @@ class BlackListModal extends React.Component {
     }
   };
 
-  getRegexsWithPage(page) {
+  getRegexsWithPage = (page) => {
     this.hasMore = false;
     console.log('getRegexWithPage');
     this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
-  }
+  };
 
   async onFormSubmit() {
     const data = {
