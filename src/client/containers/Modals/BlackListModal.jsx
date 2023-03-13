@@ -87,15 +87,9 @@ class BlackListModal extends React.Component {
   };
 
   onBlackListFetch = (data) => {
-    console.log('onBlackListFetch');
-    console.log(data);
     this.hasMore = data.blacklist.length >= 5;
-    console.log('hasMore');
-    console.log(data.blacklist.length >= 5);
     let blacklistState = [...this.state.blacklist];
     blacklistState.push(...data.blacklist);
-    console.log('blacklistState');
-    console.log(blacklistState);
     this.setState({
       blacklist: blacklistState,
     });
