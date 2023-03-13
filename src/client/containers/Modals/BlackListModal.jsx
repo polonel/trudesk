@@ -8,7 +8,8 @@ import BaseModal from 'containers/Modals/BaseModal';
 import { updateSetting } from 'actions/settings';
 import { fetchBlackList, addRegex } from 'actions/blacklist';
 import { fetchAccounts } from 'actions/accounts';
-import InfiniteScroll from 'react-infinite-scroller';
+// import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Log from '../../logger';
 import axios from 'axios';
 import Table from 'components/Table';
@@ -347,18 +348,20 @@ class BlackListModal extends React.Component {
                   </div>
                   <PageContent id={'blacklist-page-content'} style={{ all: 'unset' }} padding={0}>
                     <InfiniteScroll
-                      pageStart={this.pageStart}
-                      loadMore={this.getRegexsWithPage}
+                      //pageStart={this.pageStart}
+                      //loadMore={this.getRegexsWithPage}
+                      next={this.getRegexsWithPage}
                       hasMore={this.hasMore}
-                      initialLoad={this.initialLoad}
-                      threshold={5}
-                      style={{ all: 'unset' }}
+                      //initialLoad={this.initialLoad}
+                      //threshold={5}
                       loader={
                         <div className={'uk-width-1-1 uk-text-center'} key={0}>
                           <i className={'uk-icon-refresh uk-icon-spin'} />
                         </div>
                       }
-                      useWindow={false}
+                      // useWindow={false}
+                      hasChildren={true}
+                      scrollableTarget={'blacklist-page-content'}
                       getScrollParent={() => document.getElementById('blacklist-page-content')}
                     >
                       <div>
