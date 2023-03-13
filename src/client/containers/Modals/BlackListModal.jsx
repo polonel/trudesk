@@ -14,7 +14,7 @@ import axios from 'axios';
 import Table from 'components/Table';
 import TableHeader from 'components/Table/TableHeader';
 import TableRow from 'components/Table/TableRow';
-import PageContent from 'components/PageContent';
+import PageContentBlackList from 'components/PageContentBlackList';
 import TableCell from 'components/Table/TableCell';
 import { hideModal } from 'actions/common';
 import Chance from 'chance';
@@ -343,7 +343,7 @@ class BlackListModal extends React.Component {
                       </div>
                     </div>
                   </div>
-                  <PageContent id={'blacklist-page-content'} padding={0} style={{ height: 300 }}>
+                  <PageContentBlackList id={'blacklist-page-content'} padding={0} style={{ height: 300 }}>
                     <InfiniteScroll
                       pageStart={this.pageStart}
                       loadMore={this.getRegexsWithPage}
@@ -466,7 +466,7 @@ class BlackListModal extends React.Component {
                           })}
                       </Table>
                     </InfiniteScroll>
-                  </PageContent>
+                  </PageContentBlackList>
                   <div className="uk-modal-footer uk-text-right">
                     <Button text={'Close'} extraClass={'uk-modal-close'} flat={true} waves={true} />
                     <Button
