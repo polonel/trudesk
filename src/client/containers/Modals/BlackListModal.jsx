@@ -40,12 +40,14 @@ class BlackListModal extends React.Component {
     makeObservable(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
     this.onBlackListSave = this.onBlackListSave.bind(this);
+    this.onCheckBlacklistMatched = this.onCheckBlacklistMatched(this);
   }
 
   componentDidMount() {
     this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
+    this.props.socket.on('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
     this.initialLoad = false;
   }
 
@@ -56,6 +58,7 @@ class BlackListModal extends React.Component {
   componentWillUnmount() {
     this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.off('$trudesk:client:blacklist:save', this.onBlackListSave);
+    this.props.socket.off('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
   }
 
   updateRegex(e, value) {
@@ -170,7 +173,7 @@ class BlackListModal extends React.Component {
     else if (event.target.id == 'reason') this.setState({ reason: stateString });
   };
 
-  checkBlacklistMatched(e) {
+  async checkBlacklistMatched(e) {
     e.preventDefault();
     const matchString = this.state.matchString;
     if (matchString == '') {
@@ -181,17 +184,10 @@ class BlackListModal extends React.Component {
       }
     } else {
       try {
-        // Merge all regex fields into one RegExp variable
-        const regexStr = this.state.blacklist
-          .filter((record) => record.regex.replace(' ', '') != '')
-          .map((record) => record.regex)
-          .join('|');
-        const mergedRegex = new RegExp(regexStr, 'g');
-        if (String(mergedRegex) !== '/(?:)/g') {
-          const resultCheck = mergedRegex.test(matchString);
-          this.onCheckBlacklistMatched(resultCheck);
-        }
-        return false;
+        await axios.post('/api/v2/blacklist/check', matchString).then((res) => {
+          console.log('check succsess');
+          return res.data;
+        });
       } catch (err) {
         console.error(err);
         return false;
