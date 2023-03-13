@@ -30,7 +30,6 @@ import NotificationsDropdownPartial from './notificationsDropdown';
 import ProfileDropdownPartial from 'containers/Topbar/profileDropdown';
 import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown';
 import OnlineUserListPartial from 'containers/Topbar/onlineUserList';
-import Mailer_BlackList from '../Settings/Mailer/mailerBlackList';
 
 import helpers from 'lib/helpers';
 import Cookies from 'jscookie';
@@ -144,7 +143,6 @@ class TopbarContainer extends React.Component {
     if (loadingViewData || !sessionUser) return <div />;
     return (
       <div>
-        <Mailer_BlackList />
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
         <div className={'uk-grid top-nav'}>
           <div className="uk-width-1-1">
