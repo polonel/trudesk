@@ -28,7 +28,7 @@ class PageContentBlackList extends React.Component {
       <div
         id={this.props.id}
         className={'page-content no-border-top scrollable ' + (this.props.extraClass || '')}
-        style={{ padding: this.props.padding }}
+        style={{ padding: this.props.padding, height: 400 }}
       >
         <div style={{ paddingBottom: this.props.paddingBottom }}>{this.props.children}</div>
       </div>
