@@ -19,6 +19,7 @@ import TableCell from 'components/Table/TableCell';
 import { hideModal } from 'actions/common';
 import Chance from 'chance';
 import Input from 'components/Input';
+import styles from './styles.css';
 @observer
 class BlackListModal extends React.Component {
   @observable privacyPolicy = '';
@@ -351,6 +352,7 @@ class BlackListModal extends React.Component {
                       hasMore={this.hasMore}
                       initialLoad={this.initialLoad}
                       threshold={5}
+                      className={styles['infinite-scroll-container']}
                       loader={
                         <div className={'uk-width-1-1 uk-text-center'} key={0}>
                           <i className={'uk-icon-refresh uk-icon-spin'} />
@@ -359,113 +361,115 @@ class BlackListModal extends React.Component {
                       useWindow={false}
                       getScrollParent={() => document.getElementById('blacklist-page-content')}
                     >
-                      <Table
-                        style={{ margin: 0 }}
-                        extraClass={'pDataTable'}
-                        stickyHeader={true}
-                        striped={true}
-                        headers={[
-                          <TableHeader key={1} width={'30%'} text={'Regex'} />,
-                          <TableHeader key={2} width={'60%'} text={'Reason'} />,
-                          <TableHeader key={2} width={'12%'} />,
-                        ]}
-                      >
-                        {this.state.blacklist &&
-                          this.state.blacklist.map((value) => {
-                            return (
-                              <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
-                                <TableCell className={'vam nbb'}>
-                                  <div
-                                    key={this.state.blacklist.indexOf(value) + 1}
-                                    className={'uk-float-left'}
-                                    style={{ marginLeft: -5 }}
-                                  >
-                                    <input
-                                      name={'subject'}
-                                      type="text"
-                                      id="regex"
-                                      className={'md-input'}
-                                      value={value.regex}
-                                      style={{ borderWidth: 0 }}
-                                      onChange={(event) => this.handleChange(event, value.key, event.target.id)}
-                                      onBlur={(e) => {
-                                        this.updateRegex(e, value);
-                                      }}
-                                    />
-                                  </div>
-                                </TableCell>
-                                <TableCell className={'vam nbb'}>
-                                  <div
-                                    key={this.state.blacklist.indexOf(value) + 1}
-                                    className={'uk-float-left'}
-                                    style={{ marginLeft: -5 }}
-                                  >
-                                    <input
-                                      name={'subject'}
-                                      type="text"
-                                      id="reason"
-                                      className={'md-input'}
-                                      value={value.reason}
-                                      style={{ borderWidth: 0, width: '180%' }}
-                                      onChange={(event) => this.handleChange(event, value.key, event.target.id)}
-                                      onBlur={(e) => {
-                                        this.updateRegex(e, value);
-                                      }}
-                                    />
-                                  </div>
-                                </TableCell>
-                                <TableCell className={'vam nbb'}>
-                                  <div style={{ position: 'relative' }}>
-                                    <span
-                                      className="material-icons"
-                                      style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
-                                      onClick={() => {
-                                        this.showTickCross(value._id);
-                                      }}
-                                      id={`delete-${value._id}`}
+                      <div className={styles['infinite-scroll-item']}>
+                        <Table
+                          style={{ margin: 0 }}
+                          extraClass={'pDataTable'}
+                          stickyHeader={true}
+                          striped={true}
+                          headers={[
+                            <TableHeader key={1} width={'30%'} text={'Regex'} />,
+                            <TableHeader key={2} width={'60%'} text={'Reason'} />,
+                            <TableHeader key={2} width={'12%'} />,
+                          ]}
+                        >
+                          {this.state.blacklist &&
+                            this.state.blacklist.map((value) => {
+                              return (
+                                <TableRow key={this.state.blacklist.indexOf(value) + 1} clickable={true}>
+                                  <TableCell className={'vam nbb'}>
+                                    <div
+                                      key={this.state.blacklist.indexOf(value) + 1}
+                                      className={'uk-float-left'}
+                                      style={{ marginLeft: -5 }}
                                     >
-                                      delete
-                                    </span>
-                                    <span
-                                      className="material-icons"
-                                      style={{
-                                        top: 15,
-                                        left: 'auto',
-                                        color: '#c8d6e6',
-                                        fontSize: 20,
-                                        display: 'none',
-                                        marginLeft: -13,
-                                      }}
-                                      onClick={() => {
-                                        this.removeRegex(value);
-                                      }}
-                                      id={`tick-${value._id}`}
+                                      <input
+                                        name={'subject'}
+                                        type="text"
+                                        id="regex"
+                                        className={'md-input'}
+                                        value={value.regex}
+                                        style={{ borderWidth: 0 }}
+                                        onChange={(event) => this.handleChange(event, value.key, event.target.id)}
+                                        onBlur={(e) => {
+                                          this.updateRegex(e, value);
+                                        }}
+                                      />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className={'vam nbb'}>
+                                    <div
+                                      key={this.state.blacklist.indexOf(value) + 1}
+                                      className={'uk-float-left'}
+                                      style={{ marginLeft: -5 }}
                                     >
-                                      check
-                                    </span>
-                                    <span
-                                      className="material-icons"
-                                      style={{
-                                        top: 15,
-                                        left: 'auto',
-                                        color: '#c8d6e6',
-                                        fontSize: 20,
-                                        display: 'none',
-                                        paddingLeft: 5,
-                                      }}
-                                      onClick={() => {
-                                        this.hideTickCross(value._id);
-                                      }}
-                                      id={`cross-${value._id}`}
-                                    >
-                                      close
-                                    </span>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                      </Table>
+                                      <input
+                                        name={'subject'}
+                                        type="text"
+                                        id="reason"
+                                        className={'md-input'}
+                                        value={value.reason}
+                                        style={{ borderWidth: 0, width: '180%' }}
+                                        onChange={(event) => this.handleChange(event, value.key, event.target.id)}
+                                        onBlur={(e) => {
+                                          this.updateRegex(e, value);
+                                        }}
+                                      />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className={'vam nbb'}>
+                                    <div style={{ position: 'relative' }}>
+                                      <span
+                                        className="material-icons"
+                                        style={{ top: 15, left: 'auto', color: '#c8d6e6', fontSize: 20 }}
+                                        onClick={() => {
+                                          this.showTickCross(value._id);
+                                        }}
+                                        id={`delete-${value._id}`}
+                                      >
+                                        delete
+                                      </span>
+                                      <span
+                                        className="material-icons"
+                                        style={{
+                                          top: 15,
+                                          left: 'auto',
+                                          color: '#c8d6e6',
+                                          fontSize: 20,
+                                          display: 'none',
+                                          marginLeft: -13,
+                                        }}
+                                        onClick={() => {
+                                          this.removeRegex(value);
+                                        }}
+                                        id={`tick-${value._id}`}
+                                      >
+                                        check
+                                      </span>
+                                      <span
+                                        className="material-icons"
+                                        style={{
+                                          top: 15,
+                                          left: 'auto',
+                                          color: '#c8d6e6',
+                                          fontSize: 20,
+                                          display: 'none',
+                                          paddingLeft: 5,
+                                        }}
+                                        onClick={() => {
+                                          this.hideTickCross(value._id);
+                                        }}
+                                        id={`cross-${value._id}`}
+                                      >
+                                        close
+                                      </span>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                        </Table>
+                      </div>
                     </InfiniteScroll>
                   </PageContent>
                   <div className="uk-modal-footer uk-text-right">

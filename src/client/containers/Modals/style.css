@@ -1,0 +1,9 @@
+/* styles.css */
+:local(.infinite-scroll-container) {
+  height: 500px;
+  overflow: auto;
+}
+
+:local(.infinite-scroll-item) {
+  margin-bottom: 20px;
+}
