@@ -69,7 +69,7 @@ module.exports = function (middleware, router, controllers) {
   router.put('/api/v2/tSortings', apiv2Auth, apiv2.tSortings.put);
 
   //blacklist
-  router.get('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.get);
+  router.post('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.get);
   //router.put('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.put);
   //router.post('/api/v2/blacklist', apiv2Auth, apiv2.blacklist.post);
   router.post('/api/v2/blacklist/check', apiv2Auth, apiv2.blacklist.check);
