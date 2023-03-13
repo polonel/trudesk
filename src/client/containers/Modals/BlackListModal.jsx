@@ -247,7 +247,7 @@ class BlackListModal extends React.Component {
   getRegexsWithPage = (page) => {
     this.hasMore = false;
     console.log('getRegexWithPage');
-    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
+    this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length, excludedIds: this.state.recordsAdd });
   };
 
   async onFormSubmit() {

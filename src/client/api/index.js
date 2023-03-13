@@ -205,7 +205,9 @@ api.blacklist.fetch = (payload) => {
   console.log('blacklist');
   const limit = payload.limit;
   const skip = payload.skip;
-  return axios.get(`/api/v2/blacklist?limit=${limit}&skip=${skip}`).then((res) => {
+  const excludedIds = payload.excludedIds;
+  const data = { excludedIds };
+  return axios.post(`/api/v2/blacklist?limit=${limit}&skip=${skip}`, data).then((res) => {
     return res.data;
   });
 };

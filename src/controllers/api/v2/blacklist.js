@@ -26,11 +26,12 @@ apiBlackList.get = function (req, res) {
   var blacklist = [];
   const limit = req.query.limit;
   const skip = req.query.skip;
+  const excludedId = req.body.excludedId;
   async.parallel(
     [
       function (done) {
         blacklistSchema
-          .find()
+          .find({ _id: { $nin: excludedId } })
           .skip(skip)
           .limit(limit)
           .then((regexs) => {
