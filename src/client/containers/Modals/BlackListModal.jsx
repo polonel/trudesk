@@ -38,16 +38,17 @@ class BlackListModal extends React.Component {
       reason: '',
     };
     makeObservable(this);
+    this.onCheckBlacklistMatched = this.onCheckBlacklistMatched(this);
     this.onBlackListFetch = this.onBlackListFetch.bind(this);
     this.onBlackListSave = this.onBlackListSave.bind(this);
-    this.onCheckBlacklistMatched = this.onCheckBlacklistMatched(this);
   }
 
   componentDidMount() {
     this.props.fetchBlackList({ limit: 5, skip: this.state.blacklist.length });
+    this.props.socket.on('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
     this.props.socket.on('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.on('$trudesk:client:blacklist:save', this.onBlackListSave);
-    this.props.socket.on('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
+
     this.initialLoad = false;
   }
 
@@ -56,9 +57,9 @@ class BlackListModal extends React.Component {
   }
 
   componentWillUnmount() {
+    this.props.socket.off('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
     this.props.socket.off('$trudesk:client:blacklist:fetch', this.onBlackListFetch);
     this.props.socket.off('$trudesk:client:blacklist:save', this.onBlackListSave);
-    this.props.socket.off('$trudesk:client:blacklist:check', this.onCheckBlacklistMatched);
   }
 
   updateRegex(e, value) {
@@ -96,6 +97,15 @@ class BlackListModal extends React.Component {
     this.setState({
       blacklist: blacklistState,
     });
+  };
+
+  onCheckBlacklistMatched = (data) => {
+    console.log('onCheckBlacklistMatched');
+    if (data.resultCheck) {
+      this.setState({ blacklistMatchedLable: 'Status: Blacklist Matched' });
+    } else {
+      this.setState({ blacklistMatchedLable: 'Status: Blacklist Not Matched' });
+    }
   };
 
   async addRegex(e) {
@@ -184,7 +194,7 @@ class BlackListModal extends React.Component {
       }
     } else {
       try {
-        await axios.post('/api/v2/blacklist/check', matchString).then((res) => {
+        await axios.post('/api/v2/blacklist/check', { matchString }).then((res) => {
           console.log('check succsess');
           return res.data;
         });
@@ -220,14 +230,6 @@ class BlackListModal extends React.Component {
       crossIcon.style.display = 'none';
     }
   }
-
-  onCheckBlacklistMatched = (resultCheck) => {
-    if (resultCheck) {
-      this.setState({ blacklistMatchedLable: 'Status: Blacklist Matched' });
-    } else {
-      this.setState({ blacklistMatchedLable: 'Status: Blacklist Not Matched' });
-    }
-  };
 
   getRegexsWithPage = (page) => {
     this.hasMore = false;

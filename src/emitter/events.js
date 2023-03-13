@@ -163,19 +163,16 @@ const eventTicketCommentAdded = require('./events/event_ticket_comment_added');
   emitter.on('blacklist:fetch', async function (data) {
     // Goes to client
     io.sockets.emit('$trudesk:client:blacklist:fetch', data);
-    //await eventTicketCommentAdded(ticket,comment,hostname)
   });
 
   emitter.on('blacklist:check', async function (data) {
     // Goes to client
     io.sockets.emit('$trudesk:client:blacklist:check', data);
-    //await eventTicketCommentAdded(ticket,comment,hostname)
   });
 
   emitter.on('blacklist:save', async function (data) {
     // Goes to client
     io.sockets.emit('$trudesk:client:blacklist:save', data);
-    //await eventTicketCommentAdded(ticket,comment,hostname)
   });
 
   emitter.on('ticket:note:added', function (ticket) {
