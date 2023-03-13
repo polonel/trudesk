@@ -12,182 +12,184 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React, { createRef } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { observer } from 'mobx-react'
-import { makeObservable, observable } from 'mobx'
-import { size } from 'lodash'
+import React, { createRef } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { observer } from 'mobx-react';
+import { makeObservable, observable } from 'mobx';
+import { size } from 'lodash';
 
-import { fetchViewData, showModal, hideModal, showNotice, clearNotice } from 'actions/common'
+import { fetchViewData, showModal, hideModal, showNotice, clearNotice } from 'actions/common';
 
-import Avatar from 'components/Avatar/Avatar'
-import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
-import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger'
-import NoticeBanner from 'components/NoticeBanner'
-import NotificationsDropdownPartial from './notificationsDropdown'
+import Avatar from 'components/Avatar/Avatar';
+import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
+import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger';
+import NoticeBanner from 'components/NoticeBanner';
+import NotificationsDropdownPartial from './notificationsDropdown';
 
-import ProfileDropdownPartial from 'containers/Topbar/profileDropdown'
-import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown'
-import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
+import ProfileDropdownPartial from 'containers/Topbar/profileDropdown';
+import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown';
+import OnlineUserListPartial from 'containers/Topbar/onlineUserList';
+import Mailer_BlackList from '../Settings/Mailer/mailerBlackList';
 
-import helpers from 'lib/helpers'
-import Cookies from 'jscookie'
-import { NOTIFICATIONS_UPDATE, USERS_UPDATE, NOTICE_UI_SHOW, NOTICE_UI_CLEAR } from 'serverSocket/socketEventConsts'
+import helpers from 'lib/helpers';
+import Cookies from 'jscookie';
+import { NOTIFICATIONS_UPDATE, USERS_UPDATE, NOTICE_UI_SHOW, NOTICE_UI_CLEAR } from 'serverSocket/socketEventConsts';
 
 @observer
 class TopbarContainer extends React.Component {
-  conversationsDropdownPartial = createRef()
-  notificationsDropdownPartial = createRef()
-  profileDropdownPartial = createRef()
+  conversationsDropdownPartial = createRef();
+  notificationsDropdownPartial = createRef();
+  profileDropdownPartial = createRef();
 
-  @observable notificationCount = 0
-  @observable activeUserCount = 0
+  @observable notificationCount = 0;
+  @observable activeUserCount = 0;
 
-  @observable showInfoBanner = true
+  @observable showInfoBanner = true;
 
-  constructor (props) {
-    super(props)
-    makeObservable(this)
+  constructor(props) {
+    super(props);
+    makeObservable(this);
 
-    this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this)
-    this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this)
+    this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this);
+    this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this);
 
-    this.onSocketShowNotice = this.onSocketShowNotice.bind(this)
-    this.onSocketClearNotice = this.onSocketClearNotice.bind(this)
+    this.onSocketShowNotice = this.onSocketShowNotice.bind(this);
+    this.onSocketClearNotice = this.onSocketClearNotice.bind(this);
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.fetchViewData().then(() => {
       if (this.props.viewdata.get('notice'))
-        this.showNotice(this.props.viewdata.get('notice').toJS(), this.props.viewdata.get('noticeCookieName'))
-    })
+        this.showNotice(this.props.viewdata.get('notice').toJS(), this.props.viewdata.get('noticeCookieName'));
+    });
 
-    this.props.socket.on(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
-    this.props.socket.on(USERS_UPDATE, this.onSocketUpdateUsers)
-    this.props.socket.on(NOTICE_UI_SHOW, this.onSocketShowNotice)
-    this.props.socket.on(NOTICE_UI_CLEAR, this.onSocketClearNotice)
+    this.props.socket.on(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications);
+    this.props.socket.on(USERS_UPDATE, this.onSocketUpdateUsers);
+    this.props.socket.on(NOTICE_UI_SHOW, this.onSocketShowNotice);
+    this.props.socket.on(NOTICE_UI_CLEAR, this.onSocketClearNotice);
 
     // Call for an update on Mount
-    this.props.socket.emit(NOTIFICATIONS_UPDATE)
-    this.props.socket.emit(USERS_UPDATE)
+    this.props.socket.emit(NOTIFICATIONS_UPDATE);
+    this.props.socket.emit(USERS_UPDATE);
 
     // this.shouldShowBanner()
   }
 
-  componentWillUnmount () {
-    this.props.socket.off(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications)
-    this.props.socket.off(USERS_UPDATE, this.onSocketUpdateUsers)
-    this.props.socket.off(NOTICE_UI_SHOW, this.onSocketShowNotice)
-    this.props.socket.off(NOTICE_UI_CLEAR, this.onSocketClearNotice)
+  componentWillUnmount() {
+    this.props.socket.off(NOTIFICATIONS_UPDATE, this.onSocketUpdateNotifications);
+    this.props.socket.off(USERS_UPDATE, this.onSocketUpdateUsers);
+    this.props.socket.off(NOTICE_UI_SHOW, this.onSocketShowNotice);
+    this.props.socket.off(NOTICE_UI_CLEAR, this.onSocketClearNotice);
   }
 
-  shouldShowBanner () {
-    const hasSeen = Cookies.get('trudesk_info_banner_closed') === 'true'
-    if (hasSeen) this.showInfoBanner = false
+  shouldShowBanner() {
+    const hasSeen = Cookies.get('trudesk_info_banner_closed') === 'true';
+    if (hasSeen) this.showInfoBanner = false;
   }
 
-  closeInfo () {
-    Cookies.set('trudesk_info_banner_closed', 'true')
-    this.showInfoBanner = false
+  closeInfo() {
+    Cookies.set('trudesk_info_banner_closed', 'true');
+    this.showInfoBanner = false;
   }
 
-  showNotice (notice, cookieName) {
+  showNotice(notice, cookieName) {
     // We Will move this sooner or later to somewhere more appropriate
-    this.props.showNotice(notice)
+    this.props.showNotice(notice);
 
     if (cookieName) {
-      const showNoticeWindow = Cookies.get(cookieName) !== 'false'
+      const showNoticeWindow = Cookies.get(cookieName) !== 'false';
       if (showNoticeWindow)
         this.props.showModal('NOTICE_ALERT', {
           modalTag: 'NOTICE_ALERT',
           notice,
           noticeCookieName: cookieName,
           shortDateFormat: this.props.viewdata.get('shortDateFormat'),
-          timeFormat: this.props.viewdata.get('timeFormat')
-        })
+          timeFormat: this.props.viewdata.get('timeFormat'),
+        });
     }
   }
 
-  onSocketShowNotice (data) {
-    this.props.showNotice(data)
-    const cookieName = data.name + '_' + helpers.formatDate(data.activeDate, 'MMMDDYYYY_HHmmss')
-    this.showNotice(data, cookieName)
+  onSocketShowNotice(data) {
+    this.props.showNotice(data);
+    const cookieName = data.name + '_' + helpers.formatDate(data.activeDate, 'MMMDDYYYY_HHmmss');
+    this.showNotice(data, cookieName);
 
-    helpers.resizeAll()
+    helpers.resizeAll();
   }
 
-  onSocketClearNotice () {
-    this.props.clearNotice()
-    this.props.hideModal('NOTICE_ALERT')
+  onSocketClearNotice() {
+    this.props.clearNotice();
+    this.props.hideModal('NOTICE_ALERT');
 
-    helpers.resizeAll()
+    helpers.resizeAll();
   }
 
-  onSocketUpdateNotifications (data) {
-    if (data.count !== this.notificationCount) this.notificationCount = data.count
+  onSocketUpdateNotifications(data) {
+    if (data.count !== this.notificationCount) this.notificationCount = data.count;
   }
 
-  onSocketUpdateUsers (data) {
-    delete data[this.props.sessionUser.username]
-    const count = size(data)
-    if (count !== this.activeUserCount) this.activeUserCount = count
+  onSocketUpdateUsers(data) {
+    delete data[this.props.sessionUser.username];
+    const count = size(data);
+    if (count !== this.activeUserCount) this.activeUserCount = count;
   }
 
-  static onConversationsClicked (e) {
-    e.preventDefault()
+  static onConversationsClicked(e) {
+    e.preventDefault();
   }
 
-  render () {
-    const { loadingViewData, viewdata, sessionUser } = this.props
-    if (loadingViewData || !sessionUser) return <div />
+  render() {
+    const { loadingViewData, viewdata, sessionUser } = this.props;
+    if (loadingViewData || !sessionUser) return <div />;
     return (
       <div>
+        <Mailer_BlackList />
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
         <div className={'uk-grid top-nav'}>
-          <div className='uk-width-1-1'>
-            <div className='top-bar' data-topbar>
-              <div className='title-area uk-float-left'>
-                <div className='logo'>
-                  <img src={viewdata.get('logoImage')} alt='Logo' className={'site-logo'} />
+          <div className="uk-width-1-1">
+            <div className="top-bar" data-topbar>
+              <div className="title-area uk-float-left">
+                <div className="logo">
+                  <img src={viewdata.get('logoImage')} alt="Logo" className={'site-logo'} />
                 </div>
               </div>
-              <section className='top-bar-section uk-clearfix'>
-                <div className='top-menu uk-float-right'>
-                  <ul className='uk-subnav uk-margin-bottom-remove'>
+              <section className="top-bar-section uk-clearfix">
+                <div className="top-menu uk-float-right">
+                  <ul className="uk-subnav uk-margin-bottom-remove">
                     {/* Start Create Ticket Perm */}
                     {sessionUser && helpers.canUser('tickets:create') && (
-                      <li className='top-bar-icon nopadding'>
+                      <li className="top-bar-icon nopadding">
                         <button
                           title={'Create Ticket'}
                           className={'anchor'}
                           onClick={() => this.props.showModal('CREATE_TICKET')}
                         >
-                          <i className='material-icons'>&#xE145;</i>
+                          <i className="material-icons">&#xE145;</i>
                         </button>
                       </li>
                     )}
                     {sessionUser && helpers.canUser('tickets:create') && (
-                      <li className='top-bar-icon nopadding nohover'>
-                        <i className='material-icons separator'>remove</i>
+                      <li className="top-bar-icon nopadding nohover">
+                        <i className="material-icons separator">remove</i>
                       </li>
                     )}
                     {/* End Create Ticket Perm */}
-                    <li className='top-bar-icon'>
+                    <li className="top-bar-icon">
                       <PDropdownTrigger target={this.conversationsDropdownPartial}>
                         <a
                           title={'Conversations'}
-                          className='no-ajaxy uk-vertical-align'
-                          onClick={e => TopbarContainer.onConversationsClicked(e)}
+                          className="no-ajaxy uk-vertical-align"
+                          onClick={(e) => TopbarContainer.onConversationsClicked(e)}
                         >
-                          <i className='material-icons'>question_answer</i>
+                          <i className="material-icons">question_answer</i>
                         </a>
                       </PDropdownTrigger>
                     </li>
-                    <li className='top-bar-icon'>
+                    <li className="top-bar-icon">
                       <PDropdownTrigger target={this.notificationsDropdownPartial}>
                         <a title={'Notifications'} className={'no-ajaxy uk-vertical-align'}>
-                          <i className='material-icons'>notifications</i>
+                          <i className="material-icons">notifications</i>
                           <span
                             className={'alert uk-border-circle label ' + (this.notificationCount < 1 ? 'hide' : '')}
                           >
@@ -211,16 +213,16 @@ class TopbarContainer extends React.Component {
                     {/*    </a>*/}
                     {/*  </OffCanvasTrigger>*/}
                     {/*</li>*/}
-                    <li className='top-bar-icon nopadding nohover'>
-                      <i className='material-icons separator'>remove</i>
+                    <li className="top-bar-icon nopadding nohover">
+                      <i className="material-icons separator">remove</i>
                     </li>
 
-                    <li className='profile-area profile-name'>
+                    <li className="profile-area profile-name">
                       <span style={{ fontSize: 16 }}>{sessionUser.fullname}</span>
-                      <div className='uk-position-relative uk-display-inline-block'>
+                      <div className="uk-position-relative uk-display-inline-block">
                         <PDropdownTrigger target={this.profileDropdownPartial}>
                           <a
-                            href='#'
+                            href="#"
                             title={sessionUser.fullname}
                             className={'profile-pic no-ajaxy uk-vertical-align-middle'}
                           >
@@ -262,7 +264,7 @@ class TopbarContainer extends React.Component {
           />
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -276,17 +278,17 @@ TopbarContainer.propTypes = {
   hideModal: PropTypes.func.isRequired,
   showNotice: PropTypes.func.isRequired,
   clearNotice: PropTypes.func.isRequired,
-  notice: PropTypes.object
-}
+  notice: PropTypes.object,
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   socket: state.shared.socket,
   sessionUser: state.shared.sessionUser,
   notice: state.shared.notice,
   loadingViewData: state.common.loadingViewData,
-  viewdata: state.common.viewdata
-})
+  viewdata: state.common.viewdata,
+});
 
 export default connect(mapStateToProps, { fetchViewData, showModal, hideModal, showNotice, clearNotice })(
   TopbarContainer
-)
+);
