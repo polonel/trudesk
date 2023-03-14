@@ -20,6 +20,10 @@ class PDropdownTrigger extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      isHovered: false,
+      timeoutId: null,
+    };
   }
 
   componentDidMount() {}
@@ -30,12 +34,24 @@ class PDropdownTrigger extends React.Component {
 
   onTargetClick(e) {
     e.preventDefault();
-    console.log('this.props.target');
-    console.log(this.props.target);
+
     if (this.props.target && this.props.target.current && typeof this.props.target.current.show === 'function') {
       this.props.target.current.show(this.containerRef.current);
     }
   }
+
+  handleMouseOver = (e) => {
+    const timeoutId = setTimeout(() => {
+      this.onTargetClick(e);
+    }, 1000);
+
+    this.setState({ timeoutId, isHovered: true });
+  };
+
+  handleMouseOut = (e) => {
+    clearTimeout(this.state.timeoutId);
+    this.setState({ isHovered: false });
+  };
 
   render() {
     return (
@@ -46,11 +62,8 @@ class PDropdownTrigger extends React.Component {
         onClick={(e) => {
           this.onTargetClick(e);
         }}
-        // onMouseOver={(e) => {
-        //   if (this.props.mouseEnter) {
-        //     this.onTargetClick(e);
-        //   }
-        // }}
+        onMouseOver={this.handleMouseOver(e)}
+        onMouseOut={this.handleMouseOut(e)}
       >
         {this.props.children}
       </div>

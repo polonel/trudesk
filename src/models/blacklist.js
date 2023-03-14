@@ -3,12 +3,14 @@
 // tcm - ticket checked mapping
 let mongoose = require('mongoose');
 let COLLECTION = 'blacklist';
-let blacklistSchema = mongoose.Schema({
-  regex: { type: String, unique: true },
-  reason: String,
-  key: { type: String, unique: true },
-  timesamps: true,
-});
+let blacklistSchema = mongoose.Schema(
+  {
+    regex: { type: String, unique: true },
+    reason: String,
+    key: { type: String, unique: true },
+  },
+  { timestamps: true }
+);
 
 //Hi
 
