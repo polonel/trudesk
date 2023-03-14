@@ -43,7 +43,7 @@ class PDropdownTrigger extends React.Component {
   handleMouseOver = (e) => {
     const timeoutId = setTimeout(() => {
       this.onTargetClick(e);
-    }, 1000);
+    }, 500);
 
     this.setState({ timeoutId, isHovered: true });
   };
