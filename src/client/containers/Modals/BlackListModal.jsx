@@ -71,7 +71,7 @@ class BlackListModal extends React.Component {
     list[indexRecord].regex = list[indexRecord].regex.replace(' ', '');
     if (list[indexRecord]._id && list[indexRecord].regex != '') {
       if (listUpdate.findIndex((record) => record._id == value._id) == -1) {
-        listUpdate.push(list[indexRecord]);
+        listUpdate.unshift(list[indexRecord]);
       } else {
         const index = listUpdate.findIndex((record) => record._id === value._id);
         listUpdate[index] = value;
@@ -127,8 +127,8 @@ class BlackListModal extends React.Component {
     if (value.regex != '') {
       await axios.post('/api/v2/blacklist/add', value).then((res) => {
         const record = res.data.record;
-        list.push(record);
-        listAdd.push(record);
+        list.unshift(record);
+        listAdd.unshift(record);
         this.setState({
           blacklist: list,
           recordsAdd: listAdd,

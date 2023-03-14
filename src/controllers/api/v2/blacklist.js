@@ -32,6 +32,7 @@ apiBlackList.get = function (req, res) {
       function (done) {
         blacklistSchema
           .find({ _id: { $nin: excludedId } })
+          .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
           .then((regexs) => {

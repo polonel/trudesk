@@ -7,6 +7,7 @@ let blacklistSchema = mongoose.Schema({
   regex: { type: String, unique: true },
   reason: String,
   key: { type: String, unique: true },
+  timesamps: true,
 });
 
 //Hi
