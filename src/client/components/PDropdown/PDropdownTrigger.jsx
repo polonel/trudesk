@@ -62,8 +62,8 @@ class PDropdownTrigger extends React.Component {
         onClick={(e) => {
           this.onTargetClick(e);
         }}
-        onMouseOver={this.handleMouseOver(e)}
-        onMouseOut={this.handleMouseOut(e)}
+        onMouseOver={(e) => this.handleMouseOver(e)}
+        onMouseOut={(e) => this.handleMouseOut(e)}
       >
         {this.props.children}
       </div>
