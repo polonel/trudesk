@@ -372,7 +372,8 @@ function handleMessages(messages, done) {
             if (err) return winston.warn('Invalid Post Data');
             if (!t) return winston.warn('Ticket not found');
             if (onSetStatus(t.status) == 'Closed') {
-              emitter.emit('ticket:warning', t);
+              await emitter.emit('ticket:warning', { ticket: t, email: message.from });
+              return winston.warn('Ticket not found or closed');
             }
             if (_.isUndefined(comment)) return winston.warn('Invalid Post Data');
 

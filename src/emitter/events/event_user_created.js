@@ -12,93 +12,91 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-const path = require('path')
-const { head, filter } = require('lodash')
-const logger = require('../../logger')
-const User = require('../../models/user')
-const Setting = require('../../models/setting')
-const Template = require('../../models/template')
-const Mailer = require('../../mailer')
+const path = require('path');
+const { head, filter } = require('lodash');
+const logger = require('../../logger');
+const User = require('../../models/user');
+const Setting = require('../../models/setting');
+const Template = require('../../models/template');
+const Mailer = require('../../mailer');
 
-const Email = require('email-templates')
-const templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates')
+const Email = require('email-templates');
+const templateDir = path.resolve(__dirname, '../..', 'mailer', 'templates');
 
 const sendMail = async (user, userPassword, emails, baseUrl, betaEnabled) => {
-    let email = null
+  let email = null;
 
-    if (betaEnabled) {
-        email = new Email({
-            render: (view, locals) => {
-                return new Promise((resolve, reject) => {
-                    ; (async () => {
-                        try {
-                            if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
-                            const template = await Template.findOne({ name: view })
-                            if (!template) return reject(new Error('Invalid Template'))
-                            const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
-                            const results = await email.juiceResources(html)
-                            return resolve(results)
-                        } catch (e) {
-                            return reject(e)
-                        }
-                    })()
-                })
+  if (betaEnabled) {
+    email = new Email({
+      render: (view, locals) => {
+        return new Promise((resolve, reject) => {
+          (async () => {
+            try {
+              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'));
+              const template = await Template.findOne({ name: view });
+              if (!template) return reject(new Error('Invalid Template'));
+              const html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals);
+              const results = await email.juiceResources(html);
+              return resolve(results);
+            } catch (e) {
+              return reject(e);
             }
-        })
-    } else {
-        email = new Email({
-            views: {
-                root: templateDir,
-                options: {
-                    extension: 'handlebars'
-                }
-            }
-        })
+          })();
+        });
+      },
+    });
+  } else {
+    email = new Email({
+      views: {
+        root: templateDir,
+        options: {
+          extension: 'handlebars',
+        },
+      },
+    });
+  }
+
+  const template = await Template.findOne({ name: 'user-created' });
+  if (template) {
+    const userJSON = user.toJSON();
+
+    const context = { base_url: baseUrl, user: userJSON, userPassword: userPassword };
+
+    const html = await email.render('user-created', context);
+    const subjectParsed = global.Handlebars.compile(template.subject)(context);
+    const mailOptions = {
+      to: emails.join(),
+      subject: subjectParsed,
+      html,
+      generateTextFromHTML: true,
+    };
+
+    await Mailer.sendMail(mailOptions);
+
+    logger.debug(`Sent [${emails.length}] emails.`);
+  }
+};
+
+module.exports = async (data) => {
+  const userPassword = data.userPassword;
+
+  try {
+    const user = data.user;
+    const settings = await Setting.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email']);
+    const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value;
+    let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']));
+    mailerEnabled = !mailerEnabled ? false : mailerEnabled.value;
+    let betaEnabled = head(filter(settings, ['name', 'beta:email']));
+    betaEnabled = !betaEnabled ? false : betaEnabled.value;
+
+    //++ ShaturaPro LIN 14.10.2022
+    const emails = [];
+    if (user.email && user.email !== '') {
+      emails.push(user.email);
     }
 
-    const template = await Template.findOne({ name: 'user-created' })
-    if (template) {
-
-        const userJSON = user.toJSON()
-
-        const context = { base_url: baseUrl, user: userJSON, userPassword: userPassword }
-
-        const html = await email.render('user-created', context)
-        const subjectParsed = global.Handlebars.compile(template.subject)(context)
-        const mailOptions = {
-            to: emails.join(),
-            subject: subjectParsed,
-            html,
-            generateTextFromHTML: true
-        }
-
-        await Mailer.sendMail(mailOptions)
-
-        logger.debug(`Sent [${emails.length}] emails.`)
-    }
-}
-
-module.exports = async data => {
-    const userPassword = data.userPassword
-
-    try {
-        const user = data.user;
-        const settings = await Setting.getSettingsByName(['gen:siteurl', 'mailer:enable', 'beta:email'])
-        const baseUrl = head(filter(settings, ['name', 'gen:siteurl'])).value
-        let mailerEnabled = head(filter(settings, ['name', 'mailer:enable']))
-        mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
-        let betaEnabled = head(filter(settings, ['name', 'beta:email']))
-        betaEnabled = !betaEnabled ? false : betaEnabled.value
-
-        //++ ShaturaPro LIN 14.10.2022
-        const emails = []
-        if (user.email && user.email !== '') {
-            emails.push(user.email)
-        }
-
-        if (mailerEnabled) await sendMail(user, userPassword, emails, baseUrl, betaEnabled)
-
-    } catch (e) {
-        logger.warn(`[trudesk:events:ticket:created] - Error: ${e}`)
-    }
-}
+    if (mailerEnabled) await sendMail(user, userPassword, emails, baseUrl, betaEnabled);
+  } catch (e) {
+    logger.warn(`[trudesk:events:ticket:created] - Error: ${e}`);
+  }
+};
