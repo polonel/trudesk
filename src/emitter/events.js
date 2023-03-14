@@ -21,12 +21,17 @@ const eventTicketCreated = require('./events/event_ticket_created');
 const eventUserCreated = require('./events/event_user_created');
 const eventTicketAssigneChanged = require('./events/event_ticket_assignee_changed');
 const eventTicketCommentAdded = require('./events/event_ticket_comment_added');
+const eventTicketWarning = require('./events/event_ticket_warning');
 
 (function () {
   notifications.init(emitter);
 
   emitter.on('ticket:created', async function (data) {
     await eventTicketCreated(data);
+  });
+
+  emitter.on('ticket:warning', async function (ticket, comment, hostname) {
+    await eventTicketWarning(ticket);
   });
 
   emitter.on('ticket:assignee:changed', async function (data) {

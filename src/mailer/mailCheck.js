@@ -134,6 +134,24 @@ mailCheck.refetch = function () {
   mailCheck.fetchMail();
 };
 
+function onSetStatus(status) {
+  let statusText = '';
+  switch (status) {
+    case 0:
+      statusText = 'New';
+      break;
+    case 1:
+      statusText = 'Open';
+      break;
+    case 2:
+      statusText = 'Pending';
+      break;
+    case 3:
+      statusText = 'Closed';
+  }
+  return statusText;
+}
+
 function bindImapError() {
   mailCheck.Imap.on('error', function (err) {
     winston.error(err);
@@ -203,32 +221,7 @@ function bindImapReady() {
                             if (blacklistResult) {
                               return next();
                             }
-                            // blacklistSchema.find({}, (err, docs) => {
-                            //   if (err) {
-                            //     console.error(err);
-                            //     return;
-                            //   }
 
-                            //   // Merge all regex fields into one RegExp variable
-                            //   const regexStr = docs
-                            //     .reduce((acc, doc) => {
-                            //       if (doc.regex) {
-                            //         return acc + '|' + doc.regex;
-                            //       }
-                            //       return acc;
-                            //     }, '')
-                            //     .slice(1);
-
-                            //   const mergedRegex = new RegExp(regexStr, 'g');
-                            //   let mergedRegexValidate;
-                            //   if (String(mergedRegex) != '/(?:)/g') {
-                            //     mergedRegexValidate = mergedRegex.test(message.from);
-                            //   }
-
-                            //   if (mergedRegexValidate) {
-                            //     return next();
-                            //   }
-                            // });
                             message.fromName = mail.headers.get('from').value[0].name;
 
                             if (mail?.attachments.length !== 0) {
@@ -245,15 +238,7 @@ function bindImapReady() {
                             if (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs)) {
                               message.responseToComment = mail.text;
                             }
-                            // else {
-                            //   message.responseToComment = message.from
-                            // }
 
-                            // if (mail.subject) {
-                            //   message.subject = mail.subject
-                            // } else {
-                            //   message.subject = message.from
-                            // }
                             if (
                               _.isUndefined(mail.text) &&
                               (mail?.inReplyTo || mail.subject.toLowerCase().match(/re:/gs))
@@ -386,7 +371,9 @@ function handleMessages(messages, done) {
           Ticket.findOne({ uid: ticketUID }, async function (err, t) {
             if (err) return winston.warn('Invalid Post Data');
             if (!t) return winston.warn('Ticket not found');
-
+            if (onSetStatus(t.status) == 'Closed') {
+              emitter.emit('ticket:warning', t);
+            }
             if (_.isUndefined(comment)) return winston.warn('Invalid Post Data');
 
             var marked = require('marked');
@@ -444,7 +431,6 @@ function handleMessages(messages, done) {
                 }
               }
 
-              let countAttachments = 0;
               try {
                 for (const attachmentFromMessage of message.attachments) {
                   let sanitizedFilename = attachmentFromMessage.filename.replace(/[^а-яa-z0-9.]/gi, '_').toLowerCase();
