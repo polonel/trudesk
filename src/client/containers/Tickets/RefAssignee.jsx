@@ -15,7 +15,7 @@ import React, { Fragment, createRef } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
-import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
+import PDropdownTriggerList from 'components/PDropdown/PDropdownTriggerList';
 import { makeObservable, observable } from 'mobx';
 import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
 
@@ -45,7 +45,7 @@ class RefAssignee extends React.Component {
     const ticket = this.props.ticket;
     return (
       <div className="ticket-details-wrap uk-position-relative uk-clearfix">
-        <div className="ticket-assignee-wrap-list uk-clearfix" style={{ paddingRight: 30 }}>
+        <div className="uk-clearfix" style={{ paddingRight: 30 }}>
           <div className="ticket-assignee uk-clearfix">
             {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
               <span
@@ -55,11 +55,11 @@ class RefAssignee extends React.Component {
                 className="relative no-ajaxy"
                 onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
               >
-                <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                <PDropdownTriggerList target={this.assigneeDropdownPartial}>
                   <div style={{ minWidth: 200, minHeight: 36 }}>
                     <div style={{ paddingTop: 12 }}>{this.props.assignee}</div>
                   </div>
-                </PDropdownTrigger>
+                </PDropdownTriggerList>
               </span>
             )}
           </div>

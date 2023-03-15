@@ -50,7 +50,7 @@ import EasyMDE from 'components/EasyMDE';
 import IssuePartial from 'containers/Tickets/IssuePartial';
 import AttachFilesToComment from 'containers/Tickets/AttachFilesToComment';
 import OffCanvasEditor from 'components/OffCanvasEditor';
-import PDropdownTriggerList from 'components/PDropdown/PDropdownTriggerList';
+import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
 import StatusSelector from 'containers/Tickets/StatusSelector';
 import TruTabSection from 'components/TruTabs/TruTabSection';
 import TruTabSelector from 'components/TruTabs/TruTabSelector';
@@ -443,14 +443,14 @@ class SingleTicketContainer extends React.Component {
                             className="relative no-ajaxy"
                             onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                           >
-                            <PDropdownTriggerList target={this.assigneeDropdownPartial}>
+                            <PDropdownTrigger target={this.assigneeDropdownPartial}>
                               <Avatar
                                 image={this.ticket.assignee && this.ticket.assignee.image}
                                 showOnlineBubble={this.ticket.assignee !== undefined}
                                 userId={this.ticket.assignee && this.ticket.assignee._id}
                               />
                               <span className="drop-icon material-icons">keyboard_arrow_down</span>
-                            </PDropdownTriggerList>
+                            </PDropdownTrigger>
                           </a>
                         )}
                         {!hasTicketUpdate && (
