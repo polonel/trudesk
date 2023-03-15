@@ -15,6 +15,7 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import helpers from 'lib/helpers';
 
 class PDropDownAccount extends React.Component {
   dropRef = createRef();
@@ -22,7 +23,9 @@ class PDropDownAccount extends React.Component {
 
   constructor(props) {
     super(props);
-
+    this.state = {
+      isHovering: false,
+    };
     this.hideDropdownOnMouseUp = this.hideDropdownOnMouseUp.bind(this);
     this.closeOnClick = this.closeOnClick.bind(this);
   }
@@ -146,6 +149,15 @@ class PDropDownAccount extends React.Component {
         data-top-offset={topOffset}
         data-left-offset={leftOffset}
         style={{ minHeight, minWidth }}
+        onMouseEnter={() => this.setState({ isHovering: true })}
+        onMouseLeave={() => {
+          this.setState({ isHovering: false });
+          setTimeout(() => {
+            if (!this.state.isHovering) {
+              helpers.hideAllpDropDowns();
+            }
+          }, 4000);
+        }}
       >
         {showTitlebar && (
           <div className="actions">
