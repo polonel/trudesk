@@ -1156,6 +1156,10 @@ define([
       const $drop = $(this);
       if ($drop.hasClass('pDropOpen')) $drop.removeClass('pDropOpen');
     });
+    $('.p-dropdown-account').each(function () {
+      const $drop = $(this);
+      if ($drop.hasClass('pDropOpen')) $drop.removeClass('pDropOpen');
+    });
   };
 
   helpers.hideAllUiKitDropdowns = function () {
