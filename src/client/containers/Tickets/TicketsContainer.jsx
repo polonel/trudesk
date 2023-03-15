@@ -510,7 +510,7 @@ class TicketsContainer extends React.Component {
               <TableHeader sortData={this.sortData} key={5} width={170} text={'Requester'} />,
               <TableHeader sortData={this.sortData} key={6} width={175} text={'Customer'} />,
               <TableHeader sortData={this.sortData} key={7} text={'Assignee'} />,
-              <TableHeader sortData={this.sortData} key={8} />,
+              <TableHeader sortData={this.sortData} key={8} width={39} />,
               <TableHeader sortData={this.sortData} key={9} width={110} text={'Due Date'} />,
               <TableHeader sortData={this.sortData} key={10} text={'Updated'} />,
             ]}
