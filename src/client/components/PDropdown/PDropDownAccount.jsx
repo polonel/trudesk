@@ -119,7 +119,6 @@ class PDropDownAccount extends React.Component {
   }
 
   render() {
-    console.log('pdaccount');
     const {
       title,
       titleHref,
@@ -152,11 +151,9 @@ class PDropDownAccount extends React.Component {
         style={{ minHeight, minWidth }}
         onMouseEnter={() => this.setState({ isHovering: true })}
         onMouseLeave={() => {
-          console.log('leave');
           this.setState({ isHovering: false });
           setTimeout(() => {
             if (!this.state.isHovering) {
-              console.log('hovering');
               helpers.hideAllpDropDowns();
             }
           }, 4000);

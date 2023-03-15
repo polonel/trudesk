@@ -381,6 +381,7 @@ class TicketsContainer extends React.Component {
 
   changeAssignee(ticketId, assignee) {
     // if (!this.props.hasPerm) return;
+    console.log('change');
     this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: assignee, ticketId: ticketId });
     //this.forceClose();
   }
@@ -726,7 +727,9 @@ class TicketsContainer extends React.Component {
                               fontSize: 16,
                             }}
                             onClick={() => {
-                              this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                              if (this.props.sessionUser._id != assigneeId()) {
+                                this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                              }
                             }}
                             hasPerm={hasTicketElementUpdate(ticket)}
                           >

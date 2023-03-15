@@ -87,7 +87,9 @@ class AssigneeDropdownPartial extends React.Component {
               id="assigneeDropdown"
               key={agent._id}
               onClick={() => {
-                if (this.props.onAssigneeClick) this.props.onAssigneeClick({ agent });
+                if (this.props.onAssigneeClick) {
+                  if (this.props.sessionUserId == agent._id) this.props.onAssigneeClick({ agent });
+                }
                 helpers.hideAllpDropDowns();
                 this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
               }}
