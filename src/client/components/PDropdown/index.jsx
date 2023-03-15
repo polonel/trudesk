@@ -161,11 +161,10 @@ class PDropDown extends React.Component {
         onMouseLeave={() => {
           this.setState({ isHovering: false });
           setTimeout(() => {
-            console.log('setTimout');
             if (!this.state.isHovering) {
               helpers.hideAllpDropDowns();
             }
-          }, 3000);
+          }, 4000);
         }}
       >
         {showTitlebar && (

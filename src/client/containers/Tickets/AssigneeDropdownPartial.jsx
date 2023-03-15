@@ -52,7 +52,6 @@ class AssigneeDropdownPartial extends React.Component {
   }
 
   render() {
-    console.log('setTimout');
     let topOffset;
     if (this.props.topOffset) {
       topOffset = this.props.topOffset;
