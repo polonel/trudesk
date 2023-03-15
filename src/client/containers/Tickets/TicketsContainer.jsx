@@ -714,6 +714,8 @@ class TicketsContainer extends React.Component {
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       <RefAssignee ticket={ticket} assignee={assignee()} />
+                    </TableCell>
+                    <TableCell>
                       {hasTicketElementUpdate(ticket) && (
                         <div style={{ position: 'absolute', right: 50, top: 0 }}>
                           <span
@@ -722,12 +724,6 @@ class TicketsContainer extends React.Component {
                               top: 15,
                               left: 'auto',
                               fontSize: 16,
-                              top: 15,
-                              left: 'auto',
-                              fontSize: 16,
-                              backgroundColor: 'red',
-                              height: 30,
-                              width: 50,
                             }}
                             onClick={() => {
                               this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
