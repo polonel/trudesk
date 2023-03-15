@@ -52,6 +52,7 @@ class AssigneeDropdownPartial extends React.Component {
   }
 
   render() {
+    console.log('setTimout');
     let topOffset;
     if (this.props.topOffset) {
       topOffset = this.props.topOffset;
@@ -68,15 +69,6 @@ class AssigneeDropdownPartial extends React.Component {
         topOffset={topOffset}
         leftOffset={35}
         minHeight={215}
-        onMouseEnter={() => this.setState({ isHovering: true })}
-        onMouseLeave={() => {
-          this.setState({ isHovering: false });
-          setTimeout(() => {
-            if (!this.state.isHovering) {
-              helpers.hideAllpDropDowns();
-            }
-          }, 3000);
-        }}
         rightComponent={
           <a
             className={'hoverUnderline no-ajaxy'}
