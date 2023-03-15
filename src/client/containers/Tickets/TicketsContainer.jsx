@@ -718,7 +718,17 @@ class TicketsContainer extends React.Component {
                         <div style={{ position: 'absolute', right: 50, top: 0 }}>
                           <span
                             className="drop-icon material-icons"
-                            style={{ top: 15, left: 'auto', fontSize: 16 }}
+                            style={{
+                              top: 15,
+                              left: 'auto',
+                              fontSize: 16,
+                              top: 15,
+                              left: 'auto',
+                              fontSize: 16,
+                              backgroundColor: 'red',
+                              height: 30,
+                              width: 50,
+                            }}
                             onClick={() => {
                               this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
                             }}
