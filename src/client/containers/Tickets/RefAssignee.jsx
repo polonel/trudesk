@@ -50,7 +50,7 @@ class RefAssignee extends React.Component {
             {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
               <span
                 role="button"
-                title="Set Assignee"
+                title={this.props.assignee}
                 style={{ float: 'left' }}
                 className="relative no-ajaxy"
                 onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
