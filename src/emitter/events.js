@@ -22,6 +22,7 @@ const eventUserCreated = require('./events/event_user_created');
 const eventTicketAssigneChanged = require('./events/event_ticket_assignee_changed');
 const eventTicketCommentAdded = require('./events/event_ticket_comment_added');
 const eventTicketWarning = require('./events/event_ticket_warning');
+const eventNewPassword = require('./events/event_new_password');
 
 (function () {
   notifications.init(emitter);
@@ -40,6 +41,10 @@ const eventTicketWarning = require('./events/event_ticket_warning');
 
   emitter.on('user:created', async function (data) {
     await eventUserCreated(data);
+  });
+
+  emitter.on('password:new', async function (data) {
+    await eventNewPassword(data);
   });
 
   function sendPushNotification(tpsObj, data) {

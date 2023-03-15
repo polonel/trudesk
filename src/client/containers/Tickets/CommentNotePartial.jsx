@@ -57,8 +57,9 @@ class CommentNotePartial extends React.Component {
   render() {
     const { ticketSubject, comment, isNote, dateFormat, onEditClick, onRemoveClick } = this.props;
     const dateFormatted = helpers.formatDate(comment.date, dateFormat);
+    let backgroundColorNote = '';
     if (isNote) {
-      const backgroundColorNote = '#fff1ce';
+      backgroundColorNote = '#fff1ce';
     }
 
     return (

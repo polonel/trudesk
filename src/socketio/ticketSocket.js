@@ -238,51 +238,55 @@ events.onSetAssignee = function (socket) {
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return true;
 
-      async.parallel(
-        {
-          setAssignee: function (callback) {
-            ticket.setAssignee(ownerId, userId, function (err, ticket) {
-              callback(err, ticket);
-            });
+      try {
+        async.parallel(
+          {
+            setAssignee: function (callback) {
+              ticket.setAssignee(ownerId, userId, function (err, ticket) {
+                callback(err, ticket);
+              });
+            },
+            subscriber: function (callback) {
+              ticket.addSubscriber(userId, function (err, ticket) {
+                callback(err, ticket);
+              });
+            },
           },
-          subscriber: function (callback) {
-            ticket.addSubscriber(userId, function (err, ticket) {
-              callback(err, ticket);
-            });
-          },
-        },
-        function (err, results) {
-          if (err) return true;
-
-          ticket = results.subscriber;
-          ticket.save(function (err, ticket) {
+          function (err, results) {
             if (err) return true;
-            ticket.populate('assignee', function (err, ticket) {
+
+            ticket = results.subscriber;
+            ticket.save(function (err, ticket) {
               if (err) return true;
+              ticket.populate('assignee', function (err, ticket) {
+                if (err) return true;
 
-              emitter.emit('ticket:subscriber:update', {
-                user: userId,
-                subscribe: true,
+                emitter.emit('ticket:subscriber:update', {
+                  user: userId,
+                  subscribe: true,
+                });
+
+                emitter.emit(socketEvents.TICKETS_ASSIGNEE_SET, {
+                  assigneeId: ticket.assignee._id,
+                  ticketId: ticket._id,
+                  ticketUid: ticket.uid,
+                  hostname: socket.handshake.headers.host,
+                });
+
+                emitter.emit('ticket:assignee:changed', {
+                  ticket: ticket,
+                  hostname: socket.handshake.headers.host,
+                });
+
+                // emitter.emit('ticket:updated', ticket)
+                utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, ticket);
               });
-
-              emitter.emit(socketEvents.TICKETS_ASSIGNEE_SET, {
-                assigneeId: ticket.assignee._id,
-                ticketId: ticket._id,
-                ticketUid: ticket.uid,
-                hostname: socket.handshake.headers.host,
-              });
-
-              emitter.emit('ticket:assignee:changed', {
-                ticket: ticket,
-                hostname: socket.handshake.headers.host,
-              });
-
-              // emitter.emit('ticket:updated', ticket)
-              utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, ticket);
             });
-          });
-        }
-      );
+          }
+        );
+      } catch (err) {
+        if (err) return true;
+      }
     });
   });
 };
