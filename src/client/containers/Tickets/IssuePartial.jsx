@@ -17,7 +17,7 @@ import { observer } from 'mobx-react';
 import { makeObservable, observable } from 'mobx';
 
 import Avatar from 'components/Avatar/Avatar';
-import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger';
+import PDropdownTriggerSingleTicket from 'components/PDropdown/PDropdownTriggerSingleTicket';
 import OwnerDropdownPartial from 'containers/Tickets/OwnerDropdownPartial';
 
 import ReactHtmlParser from 'react-html-parser';
