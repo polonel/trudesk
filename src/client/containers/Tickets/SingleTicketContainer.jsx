@@ -465,11 +465,15 @@ class SingleTicketContainer extends React.Component {
                             </PDropdownTrigger>
                             <span
                               onClick={() => {
-                                if (this.props.sessionUser._id != assigneeId()) {
-                                  this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                                if (this.props.sessionUser._id != this.ticket.assignee._id) {
+                                  this.changeAssignee(this.ticket._id, this.props.sessionUser._id);
                                 }
                               }}
                               className="drop-icon material-icons"
+                              style={{
+                                top: 5,
+                                fontSize: 16,
+                              }}
                             >
                               back_hand
                             </span>
