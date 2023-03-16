@@ -256,6 +256,7 @@ class SingleTicketContainer extends React.Component {
       });
   }
   changeSection = (type) => {
+    console.log('changeSection');
     this.setState({ section: type });
   };
   attachingFileToComment = async (commentId) => {
