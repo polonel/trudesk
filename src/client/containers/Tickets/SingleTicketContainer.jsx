@@ -111,7 +111,7 @@ class SingleTicketContainer extends React.Component {
   constructor(props) {
     super(props);
     makeObservable(this);
-    this.state = { section: 'comment' };
+    this.state = { section: 0 };
     this.onUpdateTicket = this.onUpdateTicket.bind(this);
     this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this);
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this);
@@ -951,13 +951,19 @@ class SingleTicketContainer extends React.Component {
                           <TruTabWrapper style={{ paddingLeft: 85 }}>
                             <TruTabSelectors showTrack={false}>
                               {helpers.canUser('comments:create', true) && (
-                                <TruTabSelector selectorId={0} label={'Comment'} active={true} />
+                                <TruTabSelector
+                                  selectorId={0}
+                                  label={'Comment'}
+                                  active={true}
+                                  changeSection={this.changeSection}
+                                />
                               )}
                               {helpers.canUser('tickets:notes', true) && (
                                 <TruTabSelector
                                   selectorId={1}
                                   label={'Internal Note'}
                                   active={!helpers.canUser('comments:create', true)}
+                                  changeSection={this.changeSection}
                                 />
                               )}
                             </TruTabSelectors>
@@ -965,8 +971,6 @@ class SingleTicketContainer extends React.Component {
                               sectionId={0}
                               style={{ paddingTop: 0 }}
                               active={helpers.canUser('comments:create', true)}
-                              changeSection={this.changeSection}
-                              type={'comment'}
                             >
                               <form id="comment" onSubmit={(e) => this.onCommentNoteSubmit(e, 'comment')}>
                                 <EasyMDE
@@ -1005,8 +1009,6 @@ class SingleTicketContainer extends React.Component {
                               sectionId={1}
                               style={{ paddingTop: 0 }}
                               active={!helpers.canUser('comments:create') && helpers.canUser('tickets:notes', true)}
-                              changeSection={this.changeSection}
-                              type={'note'}
                             >
                               <form
                                 id="note"
