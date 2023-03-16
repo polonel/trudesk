@@ -11,7 +11,7 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment, createRef } from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { observer } from 'mobx-react';
@@ -26,10 +26,8 @@ import { showModal } from 'actions/common';
 import { fetchSettings } from 'actions/settings';
 import { fetchTCMs, tcmUpdated } from 'actions/tcms';
 import { fetchTSortings, tSortingUpdated } from 'actions/tSorting';
-import { TICKETS_ASSIGNEE_SET, TICKETS_ASSIGNEE_LOAD, TICKETS_ASSIGNEE_CLEAR } from 'serverSocket/socketEventConsts';
-import AssigneeDropdownPartial from 'containers/Tickets/AssigneeDropdownPartial';
+import { TICKETS_ASSIGNEE_SET } from 'serverSocket/socketEventConsts';
 
-import Avatar from 'components/Avatar/Avatar';
 import PageTitle from 'components/PageTitle';
 import Table from 'components/Table';
 import TableHeader from 'components/Table/TableHeader';
@@ -381,7 +379,6 @@ class TicketsContainer extends React.Component {
 
   changeAssignee(ticketId, assignee) {
     // if (!this.props.hasPerm) return;
-    console.log('change');
     this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: assignee, ticketId: ticketId });
     //this.forceClose();
   }
@@ -715,7 +712,7 @@ class TicketsContainer extends React.Component {
                       {ticket.getIn(['group', 'name'])}
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <RefAssignee ticket={ticket} assignee={assignee()} />
+                      <RefAssignee hasTicketUpdate={hasTicketElementUpdate} ticket={ticket} assignee={assignee()} />
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       {hasTicketElementUpdate(ticket) && (

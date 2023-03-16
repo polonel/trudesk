@@ -34,6 +34,7 @@ import {
   TICKETS_PRIORITY_SET,
   TICKETS_ASSIGNEE_LOAD,
   TICKETS_ASSIGNEE_UPDATE,
+  TICKETS_ASSIGNEE_SET,
   TICKETS_UI_DUEDATE_UPDATE,
   TICKETS_DUEDATE_SET,
   TICKETS_UI_TAGS_UPDATE,
@@ -315,7 +316,7 @@ class SingleTicketContainer extends React.Component {
       if (this.state.section == 0) {
         this.onCommentNoteSubmit(e, 'comment');
       } else if (this.state.section == 1) {
-        this.onCommentNoteSubmit(e, 'comment');
+        this.onCommentNoteSubmit(e, 'note');
       }
     }
   };
@@ -332,7 +333,9 @@ class SingleTicketContainer extends React.Component {
         return 'Closed';
     }
   };
-
+  changeAssignee(ticketId, assignee) {
+    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: assignee, ticketId: ticketId });
+  }
   sendNotification() {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
@@ -459,8 +462,17 @@ class SingleTicketContainer extends React.Component {
                                 showOnlineBubble={this.ticket.assignee !== undefined}
                                 userId={this.ticket.assignee && this.ticket.assignee._id}
                               />
-                              <span className="drop-icon material-icons">keyboard_arrow_down</span>
                             </PDropdownTrigger>
+                            <span
+                              onClick={() => {
+                                if (this.props.sessionUser._id != assigneeId()) {
+                                  this.changeAssignee(ticket.get('_id'), this.props.sessionUser._id);
+                                }
+                              }}
+                              className="drop-icon material-icons"
+                            >
+                              back_hand
+                            </span>
                           </a>
                         )}
                         {!hasTicketUpdate && (
@@ -1016,13 +1028,7 @@ class SingleTicketContainer extends React.Component {
                               style={{ paddingTop: 0 }}
                               active={!helpers.canUser('comments:create') && helpers.canUser('tickets:notes', true)}
                             >
-                              <form
-                                id="note"
-                                onClick={() => {
-                                  console.log('ClickForm');
-                                }}
-                                onSubmit={(e) => this.onCommentNoteSubmit(e, 'note')}
-                              >
+                              <form id="note" onSubmit={(e) => this.onCommentNoteSubmit(e, 'note')}>
                                 <EasyMDE
                                   allowImageUpload={true}
                                   inlineImageUploadUrl={'/tickets/uploadmdeimage'}

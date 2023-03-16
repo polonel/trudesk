@@ -47,7 +47,7 @@ class RefAssignee extends React.Component {
       <div className="ticket-details-wrap uk-position-relative uk-clearfix">
         <div className="uk-clearfix" style={{ paddingRight: 30 }}>
           <div className="ticket-assignee uk-clearfix">
-            {ticket && ticket.get('status') !== 3 && helpers.canUser('tickets:update') && (
+            {hasTicketElementUpdate(this.props.ticket) && (
               <span
                 role="button"
                 title={this.props.assignee}
@@ -61,6 +61,11 @@ class RefAssignee extends React.Component {
                   </div>
                 </PDropdownTriggerList>
               </span>
+            )}
+            {!hasTicketElementUpdate(this.props.ticket) && (
+              <div style={{ minWidth: 200, minHeight: 36 }}>
+                <div style={{ paddingTop: 12 }}>{this.props.assignee}</div>
+              </div>
             )}
           </div>
 
