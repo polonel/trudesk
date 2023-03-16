@@ -465,7 +465,7 @@ class SingleTicketContainer extends React.Component {
                             </PDropdownTrigger>
                             <span
                               onClick={() => {
-                                if (this.props.sessionUser._id != this.ticket.assignee._id) {
+                                if (this.props.sessionUser._id != this.ticket.assignee?._id) {
                                   this.changeAssignee(this.ticket._id, this.props.sessionUser._id);
                                 }
                               }}
