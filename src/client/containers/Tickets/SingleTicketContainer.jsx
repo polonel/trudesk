@@ -481,7 +481,9 @@ class SingleTicketContainer extends React.Component {
                         <AssigneeDropdownPartial
                           forwardedRef={this.assigneeDropdownPartial}
                           ticketId={this.ticket._id}
-                          sessionUserId={this.props.sessionUser._id}
+                          ticketAssigneeId={() => {
+                            if (this.ticket.assignee._id) this.ticket.assignee._id;
+                          }}
                           onClearClick={() => (this.ticket.assignee = undefined)}
                           onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
                         />

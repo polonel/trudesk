@@ -88,10 +88,13 @@ class AssigneeDropdownPartial extends React.Component {
               key={agent._id}
               onClick={() => {
                 if (this.props.onAssigneeClick) {
-                  if (this.props.sessionUserId == agent._id) this.props.onAssigneeClick({ agent });
+                  console.log(agent._id);
+                  if (this.props.ticketAssigneeId != agent._id) {
+                    this.props.onAssigneeClick({ agent });
+                    helpers.hideAllpDropDowns();
+                    this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
+                  }
                 }
-                helpers.hideAllpDropDowns();
-                this.props.socket.emit(TICKETS_ASSIGNEE_SET, { _id: agent._id, ticketId: this.props.ticketId });
               }}
             >
               <a id="assigneeDropdown" className="messageNotification no-ajaxy" role="button">
