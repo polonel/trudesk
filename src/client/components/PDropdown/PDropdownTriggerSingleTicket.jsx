@@ -15,7 +15,7 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 
-class PDropdownTrigger extends React.Component {
+class PDropdownTriggerSingleTicket extends React.Component {
   containerRef = createRef();
 
   constructor(props) {
@@ -55,7 +55,7 @@ class PDropdownTrigger extends React.Component {
 
   render() {
     return (
-      <div
+      <a
         id="assigneeDropdown"
         ref={this.containerRef}
         className={'uk-clearfix'}
@@ -67,15 +67,15 @@ class PDropdownTrigger extends React.Component {
         }}
         onMouseOut={(e) => this.handleMouseOut(e)}
       >
-        {this.props.children}
-      </div>
+        {this.props.owner.fullname} &lt;{this.props.owner.email}&gt;
+      </a>
     );
   }
 }
 
-PDropdownTrigger.propTypes = {
+PDropdownTriggerSingleTicket.propTypes = {
   target: PropTypes.any.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 };
 
-export default PDropdownTrigger;
+export default PDropdownTriggerSingleTicket;

@@ -135,12 +135,7 @@ class IssuePartial extends React.Component {
         {/* Issue */}
         <div className="issue-text">
           <h3 className="subject-text">{this.subject}</h3>
-          <PDropdownTrigger target={this.ownerDropdownPartial}>
-            {/* <a href={`mailto:${this.owner.email}`}> */}
-            <a>
-              {this.owner.fullname} &lt;{this.owner.email}&gt;
-            </a>
-          </PDropdownTrigger>
+          <PDropdownTriggerSingleTicket owner={this.owner} target={this.ownerDropdownPartial} />
           <OwnerDropdownPartial forwardedRef={this.ownerDropdownPartial} user={this.owner} />
           <br />
           <time dateTime={helpers.formatDate(this.props.date, 'YYYY-MM-DD HH:mm')}>

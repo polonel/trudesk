@@ -451,9 +451,9 @@ class SingleTicketContainer extends React.Component {
                         {hasTicketUpdate && (
                           <a
                             role="button"
-                            title="Set Assignee"
                             style={{ float: 'left' }}
                             className="relative no-ajaxy"
+                            onMouseOver={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                             onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
                           >
                             <PDropdownTrigger target={this.assigneeDropdownPartial}>
