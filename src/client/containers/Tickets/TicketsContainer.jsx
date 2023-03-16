@@ -326,7 +326,6 @@ class TicketsContainer extends React.Component {
   }
 
   pDropDown(ticketId) {
-    console.log('pDropDown');
     this.setState({
       pDropDownTicket: ticketId,
     });
@@ -335,9 +334,7 @@ class TicketsContainer extends React.Component {
   sendNotification(ticket) {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
-      axios.get(`/api/v1/users/${ticket.get('owner').get('username')}`).then((response) => {
-        console.log(JSON.stringify(response.data));
-      });
+      axios.get(`/api/v1/users/${ticket.get('owner').get('username')}`).then((response) => {});
     }
   }
   _selectAll() {

@@ -257,7 +257,6 @@ class SingleTicketContainer extends React.Component {
       });
   }
   changeSection = (type) => {
-    console.log('changeSection');
     this.setState({ section: type });
   };
   attachingFileToComment = async (commentId) => {
@@ -339,9 +338,7 @@ class SingleTicketContainer extends React.Component {
   sendNotification() {
     const siteURL = this.getSetting('siteUrl');
     if (this.getSetting('chatwootSettings')) {
-      axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {
-        console.log(JSON.stringify(response.data));
-      });
+      axios.get(`/api/v1/users/${this.ticket.owner.username}`).then((response) => {});
     }
   }
 
