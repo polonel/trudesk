@@ -712,7 +712,12 @@ class TicketsContainer extends React.Component {
                       {ticket.getIn(['group', 'name'])}
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
-                      <RefAssignee hasTicketUpdate={hasTicketElementUpdate} ticket={ticket} assignee={assignee()} />
+                      <RefAssignee
+                        hasTicketUpdate={hasTicketElementUpdate}
+                        ticket={ticket}
+                        assignee={assignee()}
+                        ticketAssigneeId={assigneeId()}
+                      />
                     </TableCell>
                     <TableCell id="assignee" className={'vam nbb'}>
                       {hasTicketElementUpdate(ticket) && (

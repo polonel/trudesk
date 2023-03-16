@@ -74,6 +74,7 @@ class RefAssignee extends React.Component {
               forwardedRef={this.assigneeDropdownPartial}
               ticketId={ticket.get('_id')}
               topOffset={10}
+              ticketAssigneeId={this.props.ticketAssigneeId}
               // onClearClick={() => (this.ticket.assignee = undefined)}
               // onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
             />
