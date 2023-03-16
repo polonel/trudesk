@@ -311,7 +311,13 @@ class SingleTicketContainer extends React.Component {
   }
 
   keydownHandler = (e) => {
-    if (e.keyCode === 13 && e.ctrlKey) this.onCommentNoteSubmit(e, 'comment');
+    if (e.keyCode === 13 && e.ctrlKey) {
+      if (this.state.section == 0) {
+        this.onCommentNoteSubmit(e, 'comment');
+      } else if (this.state.section == 1) {
+        this.onCommentNoteSubmit(e, 'comment');
+      }
+    }
   };
 
   statusToName = (status) => {
