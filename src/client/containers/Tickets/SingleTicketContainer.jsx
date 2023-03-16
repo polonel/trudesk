@@ -471,7 +471,7 @@ class SingleTicketContainer extends React.Component {
                               }}
                               className="drop-icon material-icons"
                               style={{
-                                top: 5,
+                                top: 55,
                                 fontSize: 16,
                               }}
                             >
