@@ -11,33 +11,39 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React from 'react'
-import PropTypes from 'prop-types'
-import clsx from 'clsx'
+import React from 'react';
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 class TruTabSection extends React.Component {
-  render () {
-    const { sectionId, active } = this.props
+  render() {
+    const { sectionId, active } = this.props;
+    function changeSection() {
+      if (this.props.changeSection && this.props.type) {
+        this.props.changeSection(this.props.type);
+      }
+    }
     return (
       <div
         className={clsx('tru-tab-section', !active && 'hidden')}
         data-tabid={sectionId}
         style={this.props.style || { paddingTop: 20 }}
+        onClick={changeSection()}
       >
         {this.props.children}
       </div>
-    )
+    );
   }
 }
 
 TruTabSection.propTypes = {
   sectionId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   active: PropTypes.bool.isRequired,
-  style: PropTypes.object
-}
+  style: PropTypes.object,
+};
 
 TruTabSection.defaultProps = {
-  active: false
-}
+  active: false,
+};
 
-export default TruTabSection
+export default TruTabSection;

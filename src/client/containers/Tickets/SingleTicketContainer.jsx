@@ -111,6 +111,7 @@ class SingleTicketContainer extends React.Component {
   constructor(props) {
     super(props);
     makeObservable(this);
+    this.state = { section: 'comment' };
     this.onUpdateTicket = this.onUpdateTicket.bind(this);
     this.onSocketUpdateComments = this.onSocketUpdateComments.bind(this);
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this);
@@ -254,7 +255,9 @@ class SingleTicketContainer extends React.Component {
         helpers.UI.showSnackbar(error, true);
       });
   }
-
+  changeSection = (type) => {
+    this.setState({ section: type });
+  };
   attachingFileToComment = async (commentId) => {
     let countAttachments = 0;
     let filesCount = 1;
@@ -961,8 +964,10 @@ class SingleTicketContainer extends React.Component {
                               sectionId={0}
                               style={{ paddingTop: 0 }}
                               active={helpers.canUser('comments:create', true)}
+                              changeSection={this.changeSection}
+                              type={'comment'}
                             >
-                              <form onSubmit={(e) => this.onCommentNoteSubmit(e, 'comment')}>
+                              <form id="comment" onSubmit={(e) => this.onCommentNoteSubmit(e, 'comment')}>
                                 <EasyMDE
                                   allowImageUpload={true}
                                   inlineImageUploadUrl={'/tickets/uploadmdeimage'}
@@ -999,8 +1004,16 @@ class SingleTicketContainer extends React.Component {
                               sectionId={1}
                               style={{ paddingTop: 0 }}
                               active={!helpers.canUser('comments:create') && helpers.canUser('tickets:notes', true)}
+                              changeSection={this.changeSection}
+                              type={'note'}
                             >
-                              <form onSubmit={(e) => this.onCommentNoteSubmit(e, 'note')}>
+                              <form
+                                id="note"
+                                onClick={() => {
+                                  console.log('ClickForm');
+                                }}
+                                onSubmit={(e) => this.onCommentNoteSubmit(e, 'note')}
+                              >
                                 <EasyMDE
                                   allowImageUpload={true}
                                   inlineImageUploadUrl={'/tickets/uploadmdeimage'}
