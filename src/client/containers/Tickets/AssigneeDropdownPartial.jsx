@@ -88,9 +88,6 @@ class AssigneeDropdownPartial extends React.Component {
               key={agent._id}
               onClick={() => {
                 if (this.props.ticketAssigneeId != agent._id) {
-                  console.log('change assignee id');
-                  console.log(this.props.ticketAssigneeId);
-                  console.log(agent._id);
                   if (this.props.onAssigneeClick) {
                     this.props.onAssigneeClick({ agent });
                     helpers.hideAllpDropDowns();
