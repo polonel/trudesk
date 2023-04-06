@@ -47,8 +47,8 @@ function * updateSocket ({ payload }) {
 
 function * setSessionUser ({ payload }) {
   try {
-    // const response = yield call(api.common.getSessionUser, payload)
-    yield put({ type: SET_SESSION_USER.SUCCESS, payload })
+    const response = yield call(api.common.getSessionUser, payload)
+    yield put({ type: SET_SESSION_USER.SUCCESS, payload: { sessionUser: response } })
   } catch (error) {
     console.log(error)
     const errorText = error.response ? error.response.data.error : error
@@ -91,6 +91,7 @@ function * fetchViewData ({ payload, meta }) {
   yield put({ type: FETCH_VIEWDATA.PENDING })
   try {
     const response = yield call(api.common.fetchViewData)
+
     yield put({ type: FETCH_VIEWDATA.SUCCESS, payload: { response, payload }, meta })
   } catch (error) {
     let errorText = ''

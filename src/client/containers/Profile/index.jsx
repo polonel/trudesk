@@ -124,6 +124,8 @@ class ProfileContainer extends React.Component {
       return
     }
 
+    if (!this.email) this.email = this.props.sessionUser.email
+
     if (!this._validateEmail(this.email)) {
       helpers.UI.showSnackbar('Invalid Email', true)
       return

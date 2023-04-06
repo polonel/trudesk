@@ -59,10 +59,9 @@ class ThemeWrapper extends React.Component {
     // const customFavicon = this.props.theme.customFavicon || false
     // const customFaviconUrl = customFavicon ? this.props.theme.customFaviconUrl : 'favicon.ico'
     const title = this.props.common.siteTitle ? `${this.props.common.siteTitle} ·` : 'Trudesk ·'
-
     return (
       <HelmetProvider>
-        <TitleContext.Provider value={{ title }}>
+        <TitleContext.Provider value={{ title }} displayName={'Title Context'}>
           <Helmet>
             <title>{title}</title>
             {/*<link rel={'shortcut icon'} href={`https://files.trudesk.io/${customFaviconUrl}`} />*/}
@@ -79,7 +78,6 @@ ThemeWrapper.propTypes = {
   theme: PropTypes.object.isRequired,
   children: PropTypes.any,
   fetchTheme: PropTypes.func.isRequired
-  // fetchViewSettings: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({

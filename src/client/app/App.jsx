@@ -31,6 +31,7 @@ import SpinLoader from 'components/SpinLoader'
 import useTrudeskReady from 'lib/useTrudeskReady'
 import helpers from 'lib/helpers'
 import DotLoader from 'components/DotLoader'
+import { Helmet } from 'react-helmet-async'
 
 const App = ({ store }) => {
   const [session, setSession] = useState(getSession())
@@ -83,8 +84,8 @@ const App = ({ store }) => {
   return (
     <Provider store={store}>
       <DotLoader active={!ready} animate={true} />
-      <SessionContext.Provider value={{ session, setSession }}>
-        <RolesContext.Provider value={{ roles, setRoles }}>
+      <SessionContext.Provider value={{ session, setSession }} displayName={'Session Context'}>
+        <RolesContext.Provider value={{ roles, setRoles }} displayName={'Role Context'}>
           <HistoryRouter history={history}>
             <Layout>
               <Routes />

@@ -13,6 +13,7 @@
 
 import { createContext } from 'react'
 import jwt_decode from 'jwt-decode'
+import axios from 'api/axios'
 
 import { store } from 'app'
 
@@ -72,6 +73,28 @@ export function clearSession () {
   store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: null } })
 
   return memory.data
+}
+
+export async function forceRefreshSession () {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const response = await axios.post('/api/v2/token')
+        const data = response.data
+        if (data && data.token) {
+          const decoded = jwt_decode(data.token)
+          if (decoded.user) {
+            const saveData = { user: decoded.user, token: data.token }
+            memory.data = saveData
+          }
+        }
+
+        return resolve(memory.data)
+      } catch (error) {
+        return reject(error)
+      }
+    })()
+  })
 }
 
 const SessionContext = createContext({

@@ -34,6 +34,7 @@ const { store } = require('app')
 const history = require('lib/lib-history').history
 const reduxStore = require('../app').store
 const getSession = require('app/SessionContext').getSession
+const forceRefreshSession = require('app/SessionContext').forceRefreshSession
 
 const helpers = {}
 const easingSwiftOut = [0.4, 0, 0.2, 1]
@@ -79,6 +80,10 @@ helpers.init = function (reload) {
   $(window).resize(layout)
 
   this.loaded = true
+}
+
+helpers.forceSessionUpdate = () => {
+  return forceRefreshSession()
 }
 
 // helpers.forceSessionUpdate = () => {

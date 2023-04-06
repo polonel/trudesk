@@ -45,7 +45,7 @@ apiUtils.generateJWTToken = async function (dbUser, session, callback) {
       delete resUser.iOSDeviceTokens
       delete resUser.tOTPKey
       delete resUser.__v
-      delete resUser.preferences
+      // delete resUser.preferences
       delete resUser.accessToken
       delete resUser.deleted
       delete resUser.hasL2Auth

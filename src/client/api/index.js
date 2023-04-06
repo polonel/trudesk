@@ -17,7 +17,9 @@ import customAxios from './axios'
 const axios = customAxios
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
-// const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+// const token = document.querySelector('meta[name="csrf-token"]')
+//   ? document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+//   : ''
 // axios.defaults.headers['CSRF-TOKEN'] = token
 
 const api = {}

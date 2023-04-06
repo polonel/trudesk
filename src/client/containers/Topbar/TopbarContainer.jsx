@@ -37,6 +37,7 @@ import Cookies from 'jscookie'
 import { NOTIFICATIONS_UPDATE, USERS_UPDATE, NOTICE_UI_SHOW, NOTICE_UI_CLEAR } from 'serverSocket/socketEventConsts'
 
 import $ from 'jquery'
+import { Helmet } from 'react-helmet-async'
 
 @observer
 class TopbarContainer extends React.Component {
@@ -148,6 +149,9 @@ class TopbarContainer extends React.Component {
     if (loadingViewData || !sessionUser) return <div className='top-nav' />
     return (
       <div>
+        <Helmet>
+          <meta name={'csrf-token'} content={viewdata.get('csrfToken')} />
+        </Helmet>
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
         <div className={'uk-grid top-nav'}>
           <div className='uk-width-1-1'>

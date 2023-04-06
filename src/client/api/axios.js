@@ -11,7 +11,7 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import { saveSession, getSession, clearSession } from 'app/SessionContext'
+import { clearSession, getSession, saveSession } from 'app/SessionContext'
 import jwt_decode from 'jwt-decode'
 // eslint-disable-next-line import/no-named-as-default
 import history from 'lib/lib-history'
@@ -55,6 +55,10 @@ customAxios.interceptors.request.use(
 
       config.headers.Authorization = `Bearer ${token}`
     }
+
+    // CSRF TOKEN
+    const metaTag = document.querySelector('meta[name="csrf-token"]')
+    config.headers['CSRF-TOKEN'] = metaTag ? metaTag.getAttribute('content') : ''
 
     return config
   },
