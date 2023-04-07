@@ -23,6 +23,8 @@ import winston from './logger'
 import mailCheck from './mailer/mailCheck'
 import migration from './migration'
 import Models from './models'
+import type { SettingModelClass } from "./models/setting"
+import type { ISetting } from "./models/setting1"
 import permissions from './permissions'
 import buildSass from './sass/buildsass'
 import { init as tdDefaultInit } from './settings/defaults'
@@ -107,14 +109,14 @@ function launchServer(db: TrudeskDatabase) {
         function (next) {
           // Start Check Mail
           const settingSchema = Models.SettingModel
-          settingSchema.getSettingByName('mailer:check:enable', function (err, mailCheckEnabled) {
+          settingSchema.getSettingByName('mailer:check:enable', function (err: Error, mailCheckEnabled: ISetting) {
             if (err) {
               winston.warn(err)
               return next(err)
             }
 
             if (mailCheckEnabled && mailCheckEnabled.value) {
-              settingSchema.getSettings(function (err, settings) {
+              settingSchema.getSettings(function (err: Error, settings: SettingModelClass) {
                 if (err) return next(err)
 
                 winston.debug('Starting MailCheck...')
@@ -134,30 +136,6 @@ function launchServer(db: TrudeskDatabase) {
           winston.debug('Building dynamic sass...')
           buildSass.build(next)
         },
-        // function (next) {
-        //   // Start Task Runners
-        //   require('./src/taskrunner')
-        //   return next()
-        // },
-        function (next) {
-          return next()
-          // let cacheEnvVars = {}
-          // if (isDocker) {
-          //   cacheEnvVars = {
-          //     TRUDESK_DOCKER: process.env['TRUDESK_DOCKER'],
-          //     TD_MONGODB_SERVER: process.env['TD_MONGODB_SERVER'],
-          //     TD_MONGODB_PORT: process.env['TD_MONGODB_PORT'],
-          //     TD_MONGODB_USERNAME: process.env['TD_MONGODB_USERNAME'],
-          //     TD_MONGODB_PASSWORD: process.env['TD_MONGODB_PASSWORD'],
-          //     TD_MONGODB_DATABASE: process.env['TD_MONGODB_DATABASE'],
-          //     TD_MONGODB_URI: process.env['TD_MONGODB_URI'],
-          //   }
-          // }
-          //
-          // cacheInit(cacheEnvVars)
-          //
-          // return next()
-        },
         function (next) {
           return taskRunner.init(next)
         },
@@ -166,7 +144,7 @@ function launchServer(db: TrudeskDatabase) {
         if (err) throw err
 
         webServerListen(function () {
-          winston.info('trudesk Ready')
+          winston.info('Trudesk Ready')
         })
       }
     )
@@ -180,7 +158,7 @@ function dbCallback(err?: Error | null, db?: TrudeskDatabase | null) {
 
   if (isDocker) {
     const s = Models.SettingModel
-    s.getSettingByName('installed', function (err, installed) {
+    s.getSettingByName('installed', function (err: Error, installed: ISetting) {
       if (err) return start()
 
       if (!installed) {

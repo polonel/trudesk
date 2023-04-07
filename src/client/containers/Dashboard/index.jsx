@@ -56,14 +56,6 @@ class DashboardContainer extends React.Component {
   }
 
   render () {
-    // const formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
-    // const tz = helpers.getTimezone()
-    // const lastUpdatedFormatted = this.props.dashboardState.lastUpdated
-    //   ? moment(this.props.dashboardState.lastUpdated, 'MM/DD/YYYY hh:mm:ssa')
-    //       .tz(tz)
-    //       .format(formatString)
-    //   : 'Cache Still Loading...'
-
     const closedPercent = this.props.dashboardState.closedCount
       ? Math.round((this.props.dashboardState.closedCount / this.props.dashboardState.ticketCount) * 100).toString()
       : '0'

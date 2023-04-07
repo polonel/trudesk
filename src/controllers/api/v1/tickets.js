@@ -24,9 +24,12 @@ const DepartmentModel = require('../../../models').DepartmentModel
 
 var apiTickets = {}
 
-function buildGraphData(arr, days, callback) {
+function buildGraphData (arr, days, callback) {
   var graphData = []
-  var today = moment().hour(23).minute(59).second(59)
+  var today = moment()
+    .hour(23)
+    .minute(59)
+    .second(59)
   var timespanArray = []
   for (var i = days; i--; ) {
     timespanArray.push(i)
@@ -38,7 +41,14 @@ function buildGraphData(arr, days, callback) {
     obj.date = d.format('YYYY-MM-DD')
 
     var $dateCount = _.filter(arr, function (v) {
-      return v.date <= d.toDate() && v.date >= d.clone().subtract(1, 'd').toDate()
+      return (
+        v.date <= d.toDate() &&
+        v.date >=
+          d
+            .clone()
+            .subtract(1, 'd')
+            .toDate()
+      )
     })
 
     $dateCount = _.size($dateCount)
@@ -53,7 +63,7 @@ function buildGraphData(arr, days, callback) {
   return graphData
 }
 
-function buildAvgResponse(ticketArray, callback) {
+function buildAvgResponse (ticketArray, callback) {
   var cbObj = {}
   var $ticketAvg = []
   _.each(ticketArray, function (ticket) {
@@ -141,7 +151,7 @@ apiTickets.get = function (req, res) {
     limit: limit,
     page: page,
     assignedSelf: assignedSelf,
-    status: status,
+    status: status
   }
 
   var ticketModel = require('../../../models/ticket')
@@ -199,7 +209,7 @@ apiTickets.get = function (req, res) {
                 _id: h._id,
                 action: h.action,
                 description: h.description,
-                owner: _.clone(h.owner),
+                owner: _.clone(h.owner)
               }
               obj.owner.role = h.owner.role._id
               return obj
@@ -210,7 +220,7 @@ apiTickets.get = function (req, res) {
 
           return callback(err, results)
         })
-      },
+      }
     ],
     function (err, results) {
       if (err) return res.send('Error: ' + err.message)
@@ -229,7 +239,7 @@ apiTickets.getByGroup = function (req, res) {
 
   var obj = {
     limit: limit,
-    page: page,
+    page: page
   }
 
   var ticketSchema = require('../../../models/ticket')
@@ -269,7 +279,7 @@ apiTickets.getCountByGroup = function (req, res) {
       break
     case 'tickettype':
       obj.filter = {
-        types: [value],
+        types: [value]
       }
       ticketSchema.getCountWithObject([groupId], obj, function (err, count) {
         if (err) return res.status(500).json({ success: false, error: err.message })
@@ -342,7 +352,7 @@ apiTickets.search = function (req, res) {
 
           return callback(err, results)
         })
-      },
+      }
     ],
     function (err, results) {
       if (err) return res.status(400).json({ success: false, error: 'Error - ' + err.message })
@@ -352,7 +362,7 @@ apiTickets.search = function (req, res) {
         error: null,
         count: _.size(results),
         totalCount: _.size(results),
-        tickets: _.sortBy(results, 'uid').reverse(),
+        tickets: _.sortBy(results, 'uid').reverse()
       })
     }
   )
@@ -424,7 +434,7 @@ apiTickets.create = function (req, res) {
         var HistoryItem = {
           action: 'ticket:created',
           description: 'Ticket was created.',
-          owner: req.user._id,
+          owner: req.user._id
         }
 
         var TicketSchema = require('../../../models/ticket')
@@ -454,14 +464,14 @@ apiTickets.create = function (req, res) {
             emitter.emit('ticket:created', {
               hostname: req.headers.host,
               socketId: socketId,
-              ticket: tt,
+              ticket: tt
             })
 
             response.ticket = tt
             res.json(response)
           })
         })
-      },
+      }
     ],
     function (err) {
       if (err) {
@@ -550,7 +560,7 @@ apiTickets.createPublicTicket = function (req, res) {
         var UserSchema = require('../../../models').UserModel
         plainTextPass = chance.string({
           length: 6,
-          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+          pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
         })
 
         var sanitizedFullname = xss(postData.user.fullname)
@@ -561,7 +571,7 @@ apiTickets.createPublicTicket = function (req, res) {
           fullname: sanitizedFullname,
           email: postData.user.email,
           accessToken: chance.hash(),
-          role: roleDefault.value,
+          role: roleDefault.value
         })
 
         user.save(function (err, savedUser) {
@@ -578,7 +588,7 @@ apiTickets.createPublicTicket = function (req, res) {
           name: savedUser.email,
           members: [savedUser._id],
           sendMailTo: [savedUser._id],
-          public: true,
+          public: true
         })
 
         group.save(function (err, group) {
@@ -611,7 +621,7 @@ apiTickets.createPublicTicket = function (req, res) {
           var HistoryItem = {
             action: 'ticket:created',
             description: 'Ticket was created.',
-            owner: savedUser._id,
+            owner: savedUser._id
           }
           ticket = new TicketSchema({
             owner: savedUser._id,
@@ -621,7 +631,7 @@ apiTickets.createPublicTicket = function (req, res) {
             subject: xss(sanitizeHtml(postData.ticket.subject).trim()),
             issue: xss(sanitizeHtml(postData.ticket.issue).trim()),
             history: [HistoryItem],
-            subscribers: [savedUser._id],
+            subscribers: [savedUser._id]
           })
 
           var marked = require('marked')
@@ -637,13 +647,13 @@ apiTickets.createPublicTicket = function (req, res) {
             emitter.emit('ticket:created', {
               hostname: req.headers.host,
               socketId: '',
-              ticket: t,
+              ticket: t
             })
 
             return next(null, { user: savedUser, group: group, ticket: t })
           })
         })
-      },
+      }
     ],
     function (err, result) {
       if (err) winston.debug(err)
@@ -655,7 +665,7 @@ apiTickets.createPublicTicket = function (req, res) {
       return res.json({
         success: true,
         userData: { savedUser: result.user, chancepass: plainTextPass },
-        ticket: result.ticket,
+        ticket: result.ticket
       })
     }
   )
@@ -771,6 +781,17 @@ apiTickets.update = function (req, res) {
             }
           },
           function (cb) {
+            if (!_.isUndefined(reqTicket.priority)) {
+              ticket.priority = reqTicket.priority._id || reqTicket.priority
+
+              ticket.populate('priority', function () {
+                return cb()
+              })
+            } else {
+              return cb()
+            }
+          },
+          function (cb) {
             if (!_.isUndefined(reqTicket.closedDate)) {
               ticket.closedDate = reqTicket.closedDate
             }
@@ -800,7 +821,7 @@ apiTickets.update = function (req, res) {
                 var HistoryItem = {
                   action: 'ticket:set:assignee',
                   description: t.assignee.fullname + ' was set as assignee',
-                  owner: req.user._id,
+                  owner: req.user._id
                 }
 
                 ticket.history.push(HistoryItem)
@@ -810,7 +831,7 @@ apiTickets.update = function (req, res) {
             } else {
               return cb()
             }
-          },
+          }
         ],
         function () {
           ticket.save(function (err, t) {
@@ -825,7 +846,7 @@ apiTickets.update = function (req, res) {
             return res.json({
               success: true,
               error: null,
-              ticket: t,
+              ticket: t
             })
           })
         }
@@ -920,7 +941,7 @@ apiTickets.postComment = function (req, res) {
 
     var marked = require('marked')
     marked.setOptions({
-      breaks: true,
+      breaks: true
     })
 
     comment = sanitizeHtml(comment).trim()
@@ -928,7 +949,7 @@ apiTickets.postComment = function (req, res) {
     var Comment = {
       owner: owner,
       date: new Date(),
-      comment: xss(marked.parse(comment)),
+      comment: xss(marked.parse(comment))
     }
 
     t.updated = Date.now()
@@ -936,7 +957,7 @@ apiTickets.postComment = function (req, res) {
     var HistoryItem = {
       action: 'ticket:comment:added',
       description: 'Comment was added',
-      owner: owner,
+      owner: owner
     }
     t.history.push(HistoryItem)
 
@@ -1000,7 +1021,7 @@ apiTickets.postInternalNote = function (req, res) {
     var Note = {
       owner: payload.owner || req.user._id,
       date: new Date(),
-      note: xss(marked.parse(payload.note)),
+      note: xss(marked.parse(payload.note))
     }
 
     ticket.updated = Date.now()
@@ -1008,7 +1029,7 @@ apiTickets.postInternalNote = function (req, res) {
     var HistoryItem = {
       action: 'ticket:note:added',
       description: 'Internal note was added',
-      owner: payload.owner || req.user._id,
+      owner: payload.owner || req.user._id
     }
     ticket.history.push(HistoryItem)
 
@@ -1236,7 +1257,7 @@ apiTickets.deleteType = function (req, res) {
           if (setting && setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase()) {
             return next({
               custom: true,
-              message: 'Type currently "Default Ticket Type" for mailer check.',
+              message: 'Type currently "Default Ticket Type" for mailer check.'
             })
           }
 
@@ -1255,7 +1276,7 @@ apiTickets.deleteType = function (req, res) {
             return next(null, result)
           })
         })
-      },
+      }
     ],
     function (err, result) {
       if (err) return res.status(400).json({ success: false, error: err })
@@ -1282,7 +1303,7 @@ apiTickets.createPriority = function (req, res) {
   var P = new TicketPrioritySchema({
     name: pName,
     overdueIn: pOverdueIn,
-    htmlColor: pHtmlColor,
+    htmlColor: pHtmlColor
   })
 
   P.save(function (err, savedPriority) {
@@ -1362,7 +1383,7 @@ apiTickets.deletePriority = function (req, res) {
 
           priority.remove(next)
         })
-      },
+      }
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err.message })
@@ -1452,14 +1473,17 @@ apiTickets.getTicketStats = function (req, res) {
     }
 
     var tz = context.settings.timezone.value
-    obj.lastUpdated = moment.utc(obj.lastUpdated).tz(tz).format('MM-DD-YYYY hh:mm:ssa')
+    obj.lastUpdated = moment
+      .utc(obj.lastUpdated)
+      .tz(tz)
+      .format('MM-DD-YYYY hh:mm:ssa')
 
     return res.send(obj)
   })
   // return res.send(obj);
 }
 
-function parseTicketStats(role, tickets, callback) {
+function parseTicketStats (role, tickets, callback) {
   if (_.isEmpty(tickets)) return callback({ tickets: tickets, tags: {} })
   var t = []
   var tags = {}
@@ -1493,13 +1517,17 @@ function parseTicketStats(role, tickets, callback) {
               return obj[key]
             })
           )
-        },
+        }
       })
 
       tags = _.countBy(t, function (k) {
         return k
       })
-      tags = _(tags).toPairs().sortBy(0).fromPairs().value()
+      tags = _(tags)
+        .toPairs()
+        .sortBy(0)
+        .fromPairs()
+        .value()
 
       return callback({ tickets: tickets, tags: tags })
     }
@@ -1543,7 +1571,10 @@ apiTickets.getTicketStatsForGroup = function (req, res) {
       },
       function (tickets, callback) {
         if (_.isEmpty(tickets)) return callback('Group has no tickets to report.')
-        var today = moment().hour(23).minute(59).second(59)
+        var today = moment()
+          .hour(23)
+          .minute(59)
+          .second(59)
         var r = {}
         r.ticketCount = _.size(tickets)
         tickets = _.sortBy(tickets, 'date')
@@ -1569,7 +1600,7 @@ apiTickets.getTicketStatsForGroup = function (req, res) {
             return callback(null, r)
           })
         })
-      },
+      }
     ],
     function (err, results) {
       if (err) return res.status(400).json({ success: false, error: err })
@@ -1622,7 +1653,10 @@ apiTickets.getTicketStatsForUser = function (req, res) {
       },
       function (tickets, callback) {
         if (_.isEmpty(tickets)) return callback('User has no tickets to report.')
-        var today = moment().hour(23).minute(59).second(59)
+        var today = moment()
+          .hour(23)
+          .minute(59)
+          .second(59)
         var r = {}
         r.ticketCount = _.size(tickets)
         tickets = _.sortBy(tickets, 'date')
@@ -1648,7 +1682,7 @@ apiTickets.getTicketStatsForUser = function (req, res) {
             return callback(null, r)
           })
         })
-      },
+      }
     ],
     function (err, results) {
       if (err) return res.status(400).json({ success: false, error: err })
@@ -1832,7 +1866,7 @@ apiTickets.subscribe = function (req, res) {
               callback()
             })
           }
-        },
+        }
       ],
       function (err) {
         if (err) {
@@ -1903,7 +1937,7 @@ apiTickets.getOverdue = function (req, res) {
     if (setting !== null && setting.value === false) {
       return res.json({
         success: true,
-        error: 'Show Overdue currently disabled.',
+        error: 'Show Overdue currently disabled.'
       })
     }
 
@@ -1931,10 +1965,12 @@ apiTickets.getOverdue = function (req, res) {
 
             return next(null, sorted)
           })
-        },
+        }
       ],
       function (err, overdueTickets) {
         if (err) return res.status(400).json({ success: false, error: err.message })
+
+        if (!overdueTickets) overdueTickets = []
 
         return res.json({ success: true, tickets: overdueTickets })
       }

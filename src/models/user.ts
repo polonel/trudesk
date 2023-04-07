@@ -157,7 +157,7 @@ export class UserModelClass {
     if (!obj.showDeleted) query.where({deleted: false})
 
     if (!_.isEmpty(search))
-      q.where({fullname: new RegExp(`^${search.toLowerCase()}`, 'i')})
+      query.where({fullname: new RegExp(`^${search.toLowerCase()}`, 'i')})
 
     return query.exec()
   }
