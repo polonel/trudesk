@@ -163,8 +163,11 @@ helpers.jsPreventDefault = function () {
 helpers.UI = {}
 
 helpers.UI.playSound = function (soundId) {
-  var audio = $('audio#' + soundId + '_audio')
-  if (audio.length > 0) audio.trigger('play')
+  const audio = document.getElementById(soundId + '_audio')
+  if (audio) {
+    audio.setAttribute('crossorigin', 'anonymous')
+    audio.play().then(() => {})
+  }
 }
 
 helpers.UI.bindAccordion = function () {

@@ -20,7 +20,7 @@ import path from 'path'
 import config from '../config'
 import { trudeskDatabase } from '../database'
 import winston from '../logger'
-import { PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel } from '../models'
+import { GroupModel, PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel } from '../models'
 
 type DefaultGrants = {
   userGrants: Array<string>
@@ -559,6 +559,14 @@ function addedDefaultPrioritiesToTicketTypes(callback) {
   )
 }
 
+async function defaultGroup() {
+  const group = new GroupModel({
+    name: 'My First Group (Default)'
+  });
+
+  await group.save();
+}
+
 function mailTemplates(callback) {
   var newTicket = require('./json/mailer-new-ticket')
   var passwordReset = require('./json/mailer-password-reset')
@@ -594,7 +602,7 @@ function elasticSearchConfToDB(callback) {
   const nconf = require('nconf')
   const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
-    host: nconf.get('elasticsearch:host') || '',
+    host: nconf.get('elasticsearch:host') || 'http://localhost',
     port: nconf.get('elasticsearch:port') || 9200,
   }
 
@@ -722,6 +730,10 @@ export const init = function (callback: () => void) {
       },
       function (done) {
         return checkPriorities(done)
+      },
+      function(done) {
+        // await defaultGroup()
+        return done()
       },
       function (done) {
         return normalizeTags(done)

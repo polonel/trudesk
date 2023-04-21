@@ -15,6 +15,7 @@
 import async from 'async'
 import _ from 'lodash'
 import * as marked from 'marked'
+import type { Types } from "mongoose"
 import path from "path"
 import sanitizeHtml from "sanitize-html"
 import xss from 'xss'
@@ -28,6 +29,7 @@ import {
   TicketModel,
   TicketTagModel,
   TicketTypeModel,
+  UserModel
 } from '../../../models'
 import permissions from '../../../permissions'
 import apiUtils from '../apiUtils'
@@ -38,9 +40,68 @@ export interface TypedRequestBody<T> extends Express.Request {
   body: T
 }
 
-ticketsV2.create = (req: Express.Request, res: Express.Response) => {
+export interface TicketCreateBody {
+  subject: string
+  issue: string
+  owner?: string | Types.ObjectId
+  tags?: Array<string | Types.ObjectId>
+
+  socketId?: string
+}
+
+ticketsV2.create = async (req: TypedRequestBody<TicketCreateBody>, res: Express.Response) => {
+  if (!req.user) return apiUtils.sendApiError(res, 403)
+
   const postTicket = req.body
-  if (!postTicket) return apiUtils.sendApiError_InvalidPostData(res)
+  if (!postTicket || !postTicket.subject || !postTicket.issue) return apiUtils.sendApiError_InvalidPostData(res)
+
+  const socketId = postTicket.socketId ? postTicket.socketId : ''
+
+  if (!postTicket.tags) {
+    postTicket.tags = []
+  } else if (!_.isArray(postTicket.tags)) {
+    postTicket.tags = [postTicket.tags]
+  }
+
+  try {
+    const user = await UserModel.findOne({_id: req.user._id})
+    if (!user || user.deleted) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const HistoryItem = {
+      action: 'ticket:created',
+      description: 'Ticket was created.',
+      owner: req.user._id
+    }
+
+    const ticket = TicketModel(postTicket)
+    if (postTicket.owner)
+      ticket.owner = postTicket.owner
+    else
+      ticket.owner = req.user._id
+
+    ticket.subject = sanitizeHtml(ticket.subject).trim()
+
+    let tIssue = ticket.issue
+    tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+    tIssue = sanitizeHtml(tIssue).trim()
+    ticket.issue = xss(marked.parse(tIssue))
+    ticket.history = [HistoryItem]
+    ticket.subscribers = [user._id]
+
+    let savedTicket = await ticket.save()
+    savedTicket = await savedTicket.populate('group owner priority')
+
+    emitter.emit('ticket:created', {
+      hostname: req.headers.host,
+      socketId: socketId,
+      ticket: savedTicket
+    })
+
+    return apiUtils.sendApiSuccess(res, {ticket: savedTicket})
+  } catch (e) {
+    logger.warn (e)
+    return apiUtils.sendApiError(res, 400, e)
+  }
 }
 
 ticketsV2.get = async (req, res) => {
@@ -209,14 +270,14 @@ ticketsV2.batchUpdate = function (req, res) {
 }
 
 ticketsV2.delete = function (req, res) {
-  const uid = req.params.uid
-  if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+  const id = req.params.id
+  if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
-  TicketModel.softDeleteUid(uid, function (err, success) {
+  TicketModel.softDelete(id, (err, success) => {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
     if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete ticket')
 
-    return apiUtils.sendApiSuccess(res, { deleted: true })
+    return apiUtils.sendApiSuccess(res, {deleted: true})
   })
 }
 

@@ -65,18 +65,18 @@ export const menu = [
     icon: 'chat',
     url: '/messages'
   },
-  {
-    label: 'Knowledge Base',
-    icon: 'book',
-    url: '/kbadmin',
-    perm: 'agent:*'
-  },
-  {
-    label: 'Knowledge Base',
-    icon: 'book',
-    url: '/portal',
-    customer: true
-  },
+  // {
+  //   label: 'Knowledge Base',
+  //   icon: 'book',
+  //   url: '/kbadmin',
+  //   perm: 'agent:*'
+  // },
+  // {
+  //   label: 'Knowledge Base',
+  //   icon: 'book',
+  //   url: '/portal',
+  //   customer: true
+  // },
   {
     label: 'Accounts',
     icon: 'person',
@@ -101,6 +101,12 @@ export const menu = [
         perm: 'admin:*'
       }
     ]
+  },
+  {
+    label: 'Groups',
+    icon: 'groups',
+    url: '/groups',
+    perm: 'groups:view'
   },
   {
     label: 'Teams',

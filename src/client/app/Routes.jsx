@@ -12,6 +12,7 @@ const SingleTicketContainer = lazy(() =>
 )
 const MessagesContainer = lazy(() => import(/* webpackChunkName:  "conversations" */ 'containers/Messages'))
 const AccountsContainer = lazy(() => import(/* webpackChunkName: "accounts" */ 'containers/Accounts'))
+const GroupsContainer = lazy(() => import(/* webpackChunkName: "groups" */ 'containers/Groups'))
 const TeamsContainer = lazy(() => import(/* webpackChunkName:  "teams" */ 'containers/Teams'))
 const DepartmentsContainer = lazy(() => import(/* webpackChunkName: "departments" */ 'containers/Departments'))
 const NoticesContainer = lazy(() => import(/* webpackChunkName: "notices" */ 'containers/Notice/NoticeContainer'))
@@ -39,6 +40,12 @@ const AccountsWithParams = props => {
   const params = useParams()
 
   return <AccountsContainer view={params.view} {...props} />
+}
+
+const GroupsWithParams = props => {
+  const params = useParams()
+
+  return <GroupsContainer {...props} />
 }
 
 const BaseRouter = ({ user, setSession }) => {
@@ -82,6 +89,9 @@ const BaseRouter = ({ user, setSession }) => {
         {/* Accounts*/}
         <Route path={'accounts'} element={<AccountsContainer key={0} sessionUser={user} />} exact />
         <Route path={'accounts/:view'} element={<AccountsWithParams key={location.key} sessionUser={user} />} exact />
+
+        {/* Groups */}
+        <Route path={'groups'} element={<GroupsContainer key={0} sessionUser={user} />} exact />
 
         {/* Teams */}
         <Route path={'teams'} element={<TeamsContainer key={location.key} sessionUser={user} />} exact />

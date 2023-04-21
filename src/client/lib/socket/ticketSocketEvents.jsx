@@ -19,7 +19,7 @@ const TicketSocketEvents = () => {
 
   const ticketCreated = () => {
     socket.removeAllListeners(TICKETS_CREATED)
-    socket.on(TICKETS_CREATED, ticket => {
+    socket.on(TICKETS_CREATED, () => {
       if (viewdata) {
         if (viewdata.get('ticketSettings') && viewdata.get('ticketSettings').get('playNewTicketSound'))
           helpers.UI.playSound('TICKET_CREATED')

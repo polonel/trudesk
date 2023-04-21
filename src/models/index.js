@@ -14,7 +14,7 @@ import { DepartmentModelClass } from './department'
 import Message from './chat/message'
 import Conversation from './chat/conversation'
 import Notice from './notice'
-import Notification from './notification'
+import { NotificationModelClass } from './notification'
 import Template from './template'
 
 export const TicketModel = Ticket
@@ -32,7 +32,7 @@ export const DepartmentModel = getModelForClass(DepartmentModelClass)
 export const MessageModel = Message
 export const ConversationModel = Conversation
 export const NoticeModel = Notice
-export const NotificationModel = Notification
+export const NotificationModel = getModelForClass(NotificationModelClass)
 export const TemplateModel = Template
 
 export default {
@@ -51,6 +51,6 @@ export default {
   MessageModel: Message,
   ConversationModel: Conversation,
   NoticeModel: Notice,
-  NotificationModel: Notification,
+  NotificationModel,
   TemplateModel: Template
 }

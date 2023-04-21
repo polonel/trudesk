@@ -15,11 +15,12 @@
 const path = require('path')
 const { head, filter, flattenDeep, concat, uniq, uniqBy, map, chain } = require('lodash')
 const logger = require('../../logger')
-const Ticket = require('../../models/ticket')
-const User = require('../../models').UserModel
-const Setting = require('../../models/setting')
-const Department = require('../../models/department')
-const Notification = require('../../models/notification')
+const Models = require('../../models')
+const Ticket = Models.TicketModel
+const User = Models.UserModel
+const Setting = Models.SettingModel
+const Department = Models.DepartmentModel
+const Notification = Models.NotificationModel
 const Template = require('../../models/template')
 const Mailer = require('../../mailer')
 
@@ -197,6 +198,7 @@ module.exports = async data => {
 
     util.sendToAllConnectedClients(io, socketEvents.TICKETS_CREATED, ticket)
   } catch (e) {
+    console.log(e)
     logger.warn(`[trudesk:events:ticket:created] - Error: ${e}`)
   }
 }

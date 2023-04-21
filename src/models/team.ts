@@ -12,9 +12,10 @@
  *  Copyright (c) 2014-2022. All rights reserved.
  */
 
-import { DocumentType, modelOptions, pre, prop, Ref, ReturnModelType } from '@typegoose/typegoose'
+import { DocumentType, modelOptions, plugin, pre, prop, Ref, ReturnModelType } from '@typegoose/typegoose'
 import _ from 'lodash'
 import type { Types } from 'mongoose'
+import mongooseAutoPopulate from "mongoose-autopopulate"
 import utils from '../helpers/utils'
 import { UserModelClass } from './user'
 
@@ -25,6 +26,7 @@ type TeamQueryObj = {
   page?: number
 }
 
+@plugin(mongooseAutoPopulate as any)
 @pre('validate', function (this: DocumentType<TeamModelClass>) {
   this.normalized = utils.sanitizeFieldPlainText(this.name.trim().toLowerCase())
 })
@@ -40,7 +42,7 @@ export class TeamModelClass {
   public name!: string
   @prop({ required: true, unique: true, lowercase: true })
   public normalized!: string
-  @prop({ ref: () => UserModelClass })
+  @prop({ ref: () => UserModelClass, autopopulate: true })
   public members!: Ref<UserModelClass>[]
 
   // Statics

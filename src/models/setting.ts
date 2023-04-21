@@ -47,7 +47,7 @@ export class SettingModelClass {
     if (select) query.select(select)
     if (typeof callback === 'function') return query.exec(callback)
 
-    return query.exec
+    return query.exec()
   }
 }
 

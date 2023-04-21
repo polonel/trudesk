@@ -80,5 +80,9 @@ export class DepartmentModelClass {
     } else {
       return _.flattenDeep(departments.map((department) => department.groups))
     }
+  } 
+
+  public static async getDepartmentsByGroup(this: ReturnModelType<typeof DepartmentModelClass>, groupId: Types.ObjectId | string) {
+    return this.find({$or: [{groups: groupId}, {allGroups: true}]}).exec()
   }
 }

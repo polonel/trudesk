@@ -52,6 +52,7 @@ module.exports = function (middleware, router, controllers) {
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, canUser('tickets:view'), apiv2.tickets.get)
   router.post('/api/v2/tickets', apiv2Auth, canUser('tickets:create'), apiv2.tickets.create)
+  router.post('/api/v2/tickets/create', apiv2Auth, canUser('tickets:create'), apiv2.tickets.create)
   router.post('/api/v2/tickets/transfer/:uid', apiv2Auth, isAdmin, apiv2.tickets.transferToThirdParty)
   router.get('/api/v2/tickets/deleted', apiv2Auth, isAdmin, apiv2.tickets.getDeleted)
   router.post('/api/v2/tickets/addcomment', apiv2Auth, canUser('comments:create'), apiv2.tickets.postComment)
@@ -66,7 +67,7 @@ module.exports = function (middleware, router, controllers) {
   )
   router.put('/api/v2/tickets/batch', apiv2Auth, canUser('tickets:update'), apiv2.tickets.batchUpdate)
   router.put('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:update'), apiv2.tickets.update)
-  router.delete('/api/v2/tickets/:uid', apiv2Auth, canUser('tickets:delete'), apiv2.tickets.delete)
+  router.delete('/api/v2/tickets/:id', apiv2Auth, canUser('tickets:delete'), apiv2.tickets.delete)
   router.delete('/api/v2/tickets/deleted/:id', apiv2Auth, isAdmin, apiv2.tickets.permDelete)
   router.get('/api/v2/tickets/stats/tags', apiv2Auth, isAgentOrAdmin, apiv2.tickets.topTags)
   router.get('/api/v2/tickets/stats/tags/:timespan', apiv2Auth, isAgentOrAdmin, apiv2.tickets.topTags)

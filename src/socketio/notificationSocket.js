@@ -16,7 +16,7 @@ var async = require('async')
 var winston = require('../logger')
 var utils = require('../helpers/utils')
 var socketEvents = require('./socketEventConsts')
-
+var Models = require('../models')
 var events = {}
 
 function register (socket) {
@@ -31,7 +31,7 @@ function eventLoop () {
 }
 
 function updateNotifications () {
-  const notificationSchema = require('../models/notification')
+  var notificationSchema = Models.NotificationModel
   // eslint-disable-next-line no-unused-vars
   for (const [_, socket] of io.of('/').sockets) {
     const notifications = {}
@@ -69,7 +69,7 @@ function updateNotifications () {
 
 function updateAllNotifications (socket) {
   var notifications = {}
-  var notificationSchema = require('../models/notification')
+  var notificationSchema = Models.NotificationModel
   notificationSchema.findAllForUser(socket.request.user._id, function (err, items) {
     if (err) return false
 
@@ -94,7 +94,7 @@ events.updateAllNotifications = function (socket) {
 events.markNotificationRead = function (socket) {
   socket.on(socketEvents.NOTIFICATIONS_MARK_READ, function (_id) {
     if (_.isUndefined(_id)) return true
-    var notificationSchema = require('../models/notification')
+    var notificationSchema = Models.NotificationModel
     notificationSchema.getNotification(_id, function (err, notification) {
       if (err) return true
 
@@ -116,8 +116,7 @@ events.clearNotifications = function (socket) {
     var notifications = {}
     notifications.items = []
     notifications.count = 0
-
-    var notificationSchema = require('../models/notification')
+    var notificationSchema = Models.NotificationModel
     notificationSchema.clearNotifications(userId, function (err) {
       if (err) return true
 

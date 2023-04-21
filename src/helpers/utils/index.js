@@ -74,6 +74,7 @@ module.exports.sendToAllClientsInRoom = function (io, room, method, data) {
 
 module.exports.sendToUser = function (socketList, userList, username, method, data) {
   let userOnline = null
+
   _.forEach(userList, function (v, k) {
     if (k.toLowerCase() === username.toLowerCase()) {
       userOnline = v
