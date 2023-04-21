@@ -29,7 +29,7 @@ apiGroupModels.create = function (req, res) {
     GroupModel.populate('members sendMailTo', function (err, GroupModel) {
       if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-      return apiUtils.sendApiSuccess(res, { GroupModel: GroupModel })
+      return apiUtils.sendApiSuccess(res, { group: GroupModel })
     })
   })
 }
@@ -78,7 +78,7 @@ apiGroupModels.update = function (req, res) {
       GroupModel.populate('members sendMailTo', function (err, GroupModel) {
         if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-        return apiUtils.sendApiSuccess(res, { GroupModel: GroupModel })
+        return apiUtils.sendApiSuccess(res, { group: GroupModel })
       })
     })
   })
@@ -88,7 +88,7 @@ apiGroupModels.delete = function (req, res) {
   var id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Ticket.countDocuments({ GroupModel: { $in: [id] } }, function (err, tickets) {
+  Ticket.countDocuments({ group: { $in: [id] } }, function (err, tickets) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
     if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete GroupModel with tickets.')
 

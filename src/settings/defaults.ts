@@ -20,7 +20,7 @@ import path from 'path'
 import config from '../config'
 import { trudeskDatabase } from '../database'
 import winston from '../logger'
-import { GroupModel, PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel } from '../models'
+import { PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel } from '../models'
 
 type DefaultGrants = {
   userGrants: Array<string>
@@ -559,14 +559,6 @@ function addedDefaultPrioritiesToTicketTypes(callback) {
   )
 }
 
-async function defaultGroup() {
-  const group = new GroupModel({
-    name: 'My First Group (Default)'
-  });
-
-  await group.save();
-}
-
 function mailTemplates(callback) {
   var newTicket = require('./json/mailer-new-ticket')
   var passwordReset = require('./json/mailer-password-reset')
@@ -730,10 +722,6 @@ export const init = function (callback: () => void) {
       },
       function (done) {
         return checkPriorities(done)
-      },
-      function(done) {
-        // await defaultGroup()
-        return done()
       },
       function (done) {
         return normalizeTags(done)

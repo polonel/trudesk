@@ -39,7 +39,7 @@ class EditGroupModal extends React.Component {
   }
 
   componentDidMount () {
-    this.props.fetchAccounts({ type: 'customers', limit: -1 })
+    this.props.fetchAccounts({ type: 'requesters', limit: -1 })
     this.name = this.props.group.name
 
     helpers.UI.inputs()

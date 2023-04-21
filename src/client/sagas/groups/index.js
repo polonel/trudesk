@@ -49,6 +49,7 @@ function * updateGroup ({ payload }) {
     const response = yield call(api.groups.update, payload)
     yield put({ type: UPDATE_GROUP.SUCCESS, response })
     yield put({ type: HIDE_MODAL.ACTION })
+    helpers.UI.showSnackbar('Successfully updated group')
   } catch (error) {
     const errorText = error.response ? error.response.data.error : error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
