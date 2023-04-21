@@ -110,6 +110,7 @@ export async function init(callback: DBCallback, connectionString?: string, opts
   global.CONNECTION_URI = CONNECTION_URI
 
   mongoose.Promise = global.Promise
+  mongoose.set('strictQuery', true)
   mongoose
     .connect(CONNECTION_URI, options)
     .then(function () {
