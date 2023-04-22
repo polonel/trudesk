@@ -20,7 +20,7 @@ const COLLECTION = 'settings'
 export class SettingModelClass {
   @prop({ required: true, unique: true })
   public name!: string
-  @prop({ required: true, unique: true })
+  @prop({ required: true })
   public value!: string | number | boolean | object
 
   public static async getSettings(this: ReturnModelType<typeof SettingModelClass>, callback: any) {
@@ -30,11 +30,11 @@ export class SettingModelClass {
     return query.exec()
   }
 
-  public static async getSettingByName(this: ReturnModelType<typeof SettingModelClass>, name: string, callback: any) {
+  public static async getSettingByName(this: ReturnModelType<typeof SettingModelClass>, name: string, callback?: any) {
     const query = this.findOne({ name })
     if (typeof callback === 'function') return query.exec(callback)
 
-    return query.exec()
+    return query.exec() 
   }
 
   public static async getSettingsByName(

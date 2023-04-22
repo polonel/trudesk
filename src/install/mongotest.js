@@ -19,7 +19,9 @@ global.env = process.env.NODE_ENV || 'production'
   const CONNECTION_URI = process.env.MONGOTESTURI
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
   const options = {
-    connectTimeoutMS: 5000
+    keepAlive: false,
+    connectTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 5000
   }
   database.init(
     function (e, db) {

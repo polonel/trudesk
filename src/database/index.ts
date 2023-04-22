@@ -88,7 +88,8 @@ export function getConnectionUri(): string {
 export async function init(callback: DBCallback, connectionString?: string, opts?: mongoose.ConnectOptions) {
   let options: mongoose.ConnectOptions = {
     keepAlive: true,
-    connectTimeoutMS: 30000
+    connectTimeoutMS: 30000,
+    serverSelectionTimeoutMS: 5000
   }
 
   if (opts) options = opts
@@ -111,6 +112,7 @@ export async function init(callback: DBCallback, connectionString?: string, opts
 
   mongoose.Promise = global.Promise
   mongoose.set('strictQuery', true)
+
   mongoose
     .connect(CONNECTION_URI, options)
     .then(function () {

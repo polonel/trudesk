@@ -20,8 +20,8 @@ const COLLECTION = 'departments'
 export class DepartmentModelClass {
   @prop({ required: true, unique: true })
   public name!: string
-  @prop({ required: true, unique: true })
-  public normalized!: string
+  @prop({ unique: true })
+  public normalized?: string
   @prop({ ref: () => TeamModelClass, autopopulate: true })
   public teams?: Ref<TeamModelClass>[]
   @prop({ default: false })

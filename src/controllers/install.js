@@ -18,7 +18,7 @@ const _ = require('lodash')
 const winston = require('../logger')
 const pkg = require('../../package')
 const Chance = require('chance')
-const { GroupModel } = require('../models')
+const { GroupModel, DepartmentModel, UserSchema } = require('../models')
 
 const installController = {}
 installController.content = {}
@@ -104,7 +104,8 @@ installController.existingdb = function (req, res) {
     },
     tokens: {
       secret: chance.hash() + chance.md5(),
-      expires: 900 // 15min
+      expires: 900, // 15min
+      refreshExpires: 604800
     }
   }
 
@@ -131,26 +132,26 @@ installController.install = function (req, res) {
   const data = req.body
 
   // Mongo
-  const host = data['mongo[host]']
-  const port = data['mongo[port]']
-  const database = data['mongo[database]']
-  const username = data['mongo[username]']
-  const password = data['mongo[password]']
+  const host = data.mongo.host
+  const port = data.mongo.port
+  const database = data.mongo.database
+  const username = data.mongo.username
+  const password = data.mongo.password
 
   // ElasticSearch
-  let eEnabled = data['elastic[enable]']
+  let eEnabled = data.elastic.enable
   if (typeof eEnabled === 'string') eEnabled = eEnabled.toLowerCase() === 'true'
 
-  const eHost = data['elastic[host]']
-  const ePort = data['elastic[port]']
+  const eHost = data.elastic.host
+  const ePort = data.elastic.port
 
   // Account
   const user = {
-    username: data['account[username]'],
-    password: data['account[password]'],
-    passconfirm: data['account[cpassword]'],
-    email: data['account[email]'],
-    fullname: data['account[fullname]']
+    username: data.account.username,
+    password: data.account.password,
+    passconfirm: data.account.cpassword,
+    email: data.account.email,
+    fullname: data.account.fullname
   }
 
   const dbPassword = encodeURIComponent(password)
@@ -317,82 +318,78 @@ installController.install = function (req, res) {
         )
       },
       function (defaultTeam, roleResults, next) {
-        UserSchema.getUserByUsername(user.username, function (err, admin) {
-          if (err) {
+        ;(async next => {
+          try {
+            const admin = await UserSchema.getByUsername(user.username)
+
+            if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
+              return next('Username: ' + user.username + ' already exists.')
+            }
+
+            if (user.password !== user.passconfirm) {
+              return next('Passwords do not match!')
+            }
+
+            const chance = new Chance()
+            const adminUser = new UserSchema({
+              username: user.username,
+              password: user.password,
+              fullname: user.fullname,
+              email: user.email,
+              role: roleResults.adminRole._id,
+              title: 'Administrator',
+              accessToken: chance.hash()
+            })
+
+            const savedUser = await adminUser.save()
+            const success = await defaultTeam.addMember(savedUser._id)
+
+            if (!success) {
+              return next('Unable to add user to Administrator group!')
+            }
+
+            const savedTeam = await defaultTeam.save()
+
+            return next(null, savedTeam)
+          } catch (err) {
             winston.error('Database Error: ' + err.message)
             return next('Database Error: ' + err.message)
           }
-
-          if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
-            return next('Username: ' + user.username + ' already exists.')
-          }
-
-          if (user.password !== user.passconfirm) {
-            return next('Passwords do not match!')
-          }
-
-          const chance = new Chance()
-          const adminUser = new UserSchema({
-            username: user.username,
-            password: user.password,
-            fullname: user.fullname,
-            email: user.email,
-            role: roleResults.adminRole._id,
-            title: 'Administrator',
-            accessToken: chance.hash()
-          })
-
-          adminUser.save(function (err, savedUser) {
-            if (err) {
-              winston.error('Database Error: ' + err.message)
-              return next('Database Error: ' + err.message)
-            }
-
-            defaultTeam.addMember(savedUser._id, function (err, success) {
-              if (err) {
-                winston.error('Database Error: ' + err.message)
-                return next('Database Error: ' + err.message)
-              }
-
-              if (!success) {
-                return next('Unable to add user to Administrator group!')
-              }
-
-              defaultTeam.save(function (err) {
-                if (err) {
-                  winston.error('Database Error: ' + err.message)
-                  return next('Database Error: ' + err.message)
-                }
-
-                return next(null, defaultTeam)
-              })
-            })
-          })
-        })
+        })(next)
       },
       function (defaultTeam, next) {
-        const DepartmentSchema = require('../models/department')
-        DepartmentSchema.create(
-          {
-            name: 'Support - All Groups (Default)',
-            teams: [defaultTeam._id],
-            allGroups: true,
-            groups: []
-          },
-          function (err) {
-            return next(err)
-          }
-        )
-      },
-      function (next) {
-        const group = new GroupModel({
-          name: 'My First Group (Default)'
-        })
+        ;(async next => {
+          try {
+            await DepartmentModel.create({
+              name: 'Support - All Groups (Default)',
+              teams: [defaultTeam._id],
+              allGroups: true,
+              groups: []
+            })
 
-        group.save(next)
+            next()
+          } catch (err) {
+            console.log(err)
+            winston.error('Database Error: ' + err.message)
+            next(err)
+          }
+        })(next)
       },
       function (next) {
-        if (!process.env.TRUDESK_DOCKER) return next()
+        ;(async next => {
+          try {
+            await GroupModel.create({
+              name: 'My First Group (Default)'
+            })
+
+            next()
+          } catch (err) {
+            next(err)
+          }
+        })(next)
+      },
+      function (done) {
+        if (!process.env.TRUDESK_DOCKER) return done()
         const S = require('../models/setting')
         const installed = new S({
           name: 'installed',
@@ -402,10 +399,10 @@ installController.install = function (req, res) {
         installed.save(function (err) {
           if (err) {
             winston.error('DB Error: ' + err.message)
-            return next('DB Error: ' + err.message)
+            return done('DB Error: ' + err.message)
           }
 
-          return next()
+          return done()
         })
       },
       function (next) {
@@ -427,7 +424,8 @@ installController.install = function (req, res) {
           },
           tokens: {
             secret: chance.hash() + chance.md5(),
-            expires: 900 // 15min
+            expires: 900, // 15min
+            refreshExpires: 604800
           }
         }
 

@@ -13,7 +13,8 @@ module.exports = {
   mode: IS_PROD ? 'production' : 'development',
   target: 'web',
   entry: {
-    'js/trudesk': path.resolve(__dirname, 'src/client/app.jsx')
+    'js/trudesk': path.resolve(__dirname, 'src/client/app.jsx'),
+    'js/install_trudesk': path.resolve(__dirname, 'src/client/containers/Install/install-app.jsx')
   },
   output: {
     filename: '[name].[chunkhash:8].js',
@@ -163,36 +164,58 @@ module.exports = {
       chunks: 'all',
       maxInitialRequests: Infinity,
       minSize: 0,
+      maxSize: 3000000,
       cacheGroups: {
         reactVendor: {
           test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-          name: 'js/vendor/react.bundle'
+          name: 'js/lib/vendor/react.bundle',
+          priority: 10
         },
         utilityVendor: {
           test: /[\\/]node_modules[\\/](lodash|moment|moment-timezone)[\\/]/,
-          name: 'js/vendor/utility.bundle'
+          name: 'js/lib/vendor/utility.bundle',
+          priority: 10
         },
-        lib: {
+        libVendor: {
           test: /[\\/]lib[\\/]vendor[\\/]/,
           name: 'js/lib/vendor/vendor.bundle',
-          // name: function (module) {
-          //   const packageName = module.context.match(/[\\/]lib[\\/]vendor[\\/](.+)/)[1]
-          //   return 'js/lib/vendor/' + packageName
-          // },
+          priority: -10,
           enforce: true
         },
         plugins: {
           test: /[\\/]lib[\\/]plugins[\\/]/,
-          name: 'js/lib/plugins.bundle'
+          name: 'js/lib/plugins.bundle',
+          priority: -10,
+          reuseExistingChunk: true
         },
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'js/lib/vendor/npm.bundle',
-          // name: function (module) {
-          //   const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
-          //   return 'js/vendor/npm.' + packageName.replace('@', '')
-          // },
+          priority: -10,
+          reuseExistingChunk: true,
           enforce: true
+        },
+        jqueryVendor: {
+          test: /[\\/]lib[\\/]vendor[\\/]jquery[\\/]/,
+          name: 'js/lib/vendor/jquery.bundle',
+          priority: 10,
+          enforce: true
+        },
+        uikit: {
+          test: /[\\/]lib[\\/]vendor[\\/]uikit[\\/]/,
+          name: 'js/lib/vendor/uikit.bundle',
+          priority: 10,
+          enforce: true
+        },
+        components: {
+          test: /[\\/]components[\\/]/,
+          name: 'js/lib/components.bundle',
+          priority: 10
+        },
+        default: {
+          minChunks: 1,
+          priority: -20,
+          reuseExistingChunk: true
         }
       }
     }
@@ -223,9 +246,19 @@ module.exports = {
       // chunkFilename: 'css/[name].[contenthash:8].css'
     }),
     new HtmlWebpackPlugin({
+      // inject: true,
       minify: IS_PROD,
       template: path.resolve(__dirname, 'src/client/index.html'),
       filename: '../index.html',
+      chunks: ['js/trudesk'],
+      chunksSortMode: 'none'
+    }),
+    new HtmlWebpackPlugin({
+      // inject: true,
+      minify: IS_PROD,
+      template: path.resolve(__dirname, 'src/client/index-install.html'),
+      filename: '../index-install.html',
+      chunks: ['js/install_trudesk'],
       chunksSortMode: 'none'
     }),
     new CompressionPlugin()
