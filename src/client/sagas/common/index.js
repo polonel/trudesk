@@ -47,7 +47,7 @@ function * updateSocket ({ payload }) {
 
 function * setSessionUser ({ payload }) {
   try {
-    if (payload.clear) {
+    if (payload && payload.clear) {
       yield put({ type: SET_SESSION_USER.SUCCESS, payload: { sessionUser: null } })
     } else {
       const response = yield call(api.common.getSessionUser, payload)
