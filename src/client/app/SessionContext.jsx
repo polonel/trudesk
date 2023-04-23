@@ -70,7 +70,7 @@ export function saveSession (session) {
 
 export function clearSession () {
   memory.data = defaultData
-  store.dispatch({ type: 'SET_SESSION_USER', payload: { sessionUser: null } })
+  store.dispatch({ type: 'SET_SESSION_USER', payload: { clear: true, sessionUser: null } })
 
   return memory.data
 }

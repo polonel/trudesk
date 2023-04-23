@@ -286,6 +286,7 @@ middleware.hasAuth = async (req, res, next) => {
 
     return next()
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log(e)
     res.cookie('_rft_', null, { maxAge: 0 })
     return res.status(401).json({ success: false, error: 'Invalid Authentication Token'})

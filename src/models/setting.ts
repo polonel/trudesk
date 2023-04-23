@@ -23,7 +23,7 @@ export class SettingModelClass {
   @prop({ required: true })
   public value!: string | number | boolean | object
 
-  public static async getSettings(this: ReturnModelType<typeof SettingModelClass>, callback: any) {
+  public static async getSettings(this: ReturnModelType<typeof SettingModelClass>, callback?: any) {
     const query = this.find({}).select('name value')
     if (typeof callback === 'function') return query.exec(callback)
 
@@ -34,7 +34,7 @@ export class SettingModelClass {
     const query = this.findOne({ name })
     if (typeof callback === 'function') return query.exec(callback)
 
-    return query.exec() 
+    return query.exec()
   }
 
   public static async getSettingsByName(

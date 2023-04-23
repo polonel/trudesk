@@ -14,8 +14,6 @@
 
 import bodyParser from "body-parser";
 import express from "express";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore // 404: @types/express-hbs
 import expressStaticGzip from "express-static-gzip"
 import path from "path";
 import serveFavicon from 'serve-favicon'
@@ -29,17 +27,6 @@ import { ExpressApp, HTTPServer, Port } from "./webserver";
 
 export const installServer = function (callback: (err?: Error) => void) {
   const router = express.Router()
-
-  // ExpressApp.set('views', path.join(__dirname, './views/'))
-  // ExpressApp.engine(
-  //   'hbs',
-  //   hbs.express3({
-  //     defaultLayout: path.join(__dirname, './views/layout/main.hbs'),
-  //     partialsDir: [path.join(__dirname, './views/partials/')]
-  //   })
-  // )
-  // ExpressApp.set('view engine', 'hbs')
-  // hbsHelpers.register(hbs.handlebars)
   ExpressApp.use('/assets', express.static(path.resolve(__dirname, '../public/uploads/assets')))
 
   if (global.env === 'production') {
@@ -65,14 +52,24 @@ export const installServer = function (callback: (err?: Error) => void) {
     return res.json({ version: pkg.version })
   })
 
-  router.get('/install', (req, res) => {
+  router.get('/install', (_req, res) => {
     res.sendFile(path.resolve(trudeskRoot(), 'dist/index-install.html'))
   })
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   router.post('/install', routeMiddleware.checkOrigin, controllers.install.install)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   router.post('/install/elastictest', routeMiddleware.checkOrigin, controllers.install.elastictest)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   router.post('/install/existingdb', routeMiddleware.checkOrigin, controllers.install.existingdb)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart)
 
   router.get('*', (_req, res) => {

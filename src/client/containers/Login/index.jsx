@@ -88,7 +88,7 @@ const Login = ({ theme, common }) => {
           </svg>
           {/*)}*/}
           <div className='login-wrapper' style={{ background: 'var(--pagecontentlight10)' }}>
-            <h2 className='uk-text-left font-light uk-margin-large-bottom' style={{ color: 'var(--primary)' }}>
+            <h2 className='uk-text-center font-light uk-margin-large-bottom' style={{ color: 'var(--primary)' }}>
               Sign into your account
             </h2>
             <div className='loginForm'>
