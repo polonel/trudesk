@@ -26,6 +26,8 @@ import SingleSelect from 'components/SingleSelect'
 
 import helpers from 'lib/helpers'
 import RGrid from 'components/RGrid'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 @observer
 class ProfileContainer extends React.Component {
@@ -287,6 +289,13 @@ class ProfileContainer extends React.Component {
 
     return (
       <>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Profile</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <PageTitle title={'Profile'} />
         <PageContent>
           <TruCard
