@@ -68,12 +68,12 @@ jobs:
     - run:
         name: Run Build
         command: yarn run build
-    - run:
-        name: Run Codacy
-        command: yarn run coverage
-    - coverage-reporter/send_report:
-        coverage-reports: './coverage/lcov.info'
-        project-token: $CODACY_PROJECT_TOKEN
+#    - run:
+#        name: Run Codacy
+#        command: yarn run coverage
+#    - coverage-reporter/send_report:
+#        coverage-reports: './coverage/lcov.info'
+#        project-token: $CODACY_PROJECT_TOKEN
     parallelism: 2
   build_production:
     docker:
@@ -90,12 +90,12 @@ jobs:
 #    - run:
 #        name: Run Tests
 #        command: yarn run test
-    - run:
-        name: Run Codacy
-        command: yarn run coverage
-    - coverage-reporter/send_report:
-        coverage-reports: './coverage/lcov.info'
-        project-token: $CODACY_PROJECT_TOKEN
+#    - run:
+#        name: Run Codacy
+#        command: yarn run coverage
+#    - coverage-reporter/send_report:
+#        coverage-reports: './coverage/lcov.info'
+#        project-token: $CODACY_PROJECT_TOKEN
     - run:
         name: Semantic Release
         command: npx semantic-release
