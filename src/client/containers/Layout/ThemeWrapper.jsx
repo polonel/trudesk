@@ -15,7 +15,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
-import TitleContext from 'app/TitleContext'
+import TitleContext, { setTitle } from 'app/TitleContext'
 import { fetchTheme } from 'actions/common'
 import setTheme from '../../lib/theme'
 
@@ -58,7 +58,8 @@ class ThemeWrapper extends React.Component {
     if (this.props.theme.loading) return null
     // const customFavicon = this.props.theme.customFavicon || false
     // const customFaviconUrl = customFavicon ? this.props.theme.customFaviconUrl : 'favicon.ico'
-    const title = this.props.common.siteTitle ? `${this.props.common.siteTitle} ·` : 'Trudesk ·'
+    const title = this.props.theme.siteTitle + ' · ' || ''
+    setTitle(title)
     return (
       <HelmetProvider>
         <TitleContext.Provider value={{ title }} displayName={'Title Context'}>

@@ -5,6 +5,7 @@ import { FETCH_THEME } from 'actions/types'
 const initialState = {
   loading: false,
 
+  siteTitle: '',
   customLogo: false,
   customLogoUrl: '',
   customFavicon: false,
@@ -32,6 +33,7 @@ const reducer = handleActions(
         ...state,
         loading: false,
 
+        siteTitle: fromJS(theme.siteTitle),
         customLogo: fromJS(theme.customLogo),
         customLogoUrl: fromJS(theme.customLogoUrl),
         customFavicon: fromJS(theme.customFavicon),

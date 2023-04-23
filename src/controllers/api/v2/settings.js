@@ -111,6 +111,7 @@ apiSettings.theme = async (req, res) => {
       customLogoUrl: parsed.customLogoFilename.value,
       customFavicon: parsed.hasCustomFavicon.value,
       customFaviconUrl: parsed.customFaviconFilename.value,
+      siteTitle: parsed.siteTitle.value,
       headerBG: parsed.colorHeaderBG.value,
       headerPrimary: parsed.colorHeaderPrimary.value,
       primary: parsed.colorPrimary.value,

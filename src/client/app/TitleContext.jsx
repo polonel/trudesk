@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-const memory = { title: 'Trudesk &middot; ' }
+const memory = { title: '' }
 
 export const setTitle = title => {
   memory.title = title
