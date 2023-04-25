@@ -142,6 +142,7 @@ module.exports = function (app, db, callback) {
           middleware.isAdmin,
           express.static(path.resolve(config.trudeskRoot(), 'backups'))
         )
+        app.use('/sounds', express.static(path.resolve(config.trudeskRoot(), 'public/sounds')))
 
         // Uncomment to enable plugins
         return next(null, store)
