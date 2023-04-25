@@ -134,7 +134,7 @@
     "velocity-react": "1.4.3",
     "winston": "3.8.1",
     "xss": "1.0.13",
-    "yaml": "2.1.1"
+    "yaml": "2.2.2"
   },
   "devDependencies": {
     "@babel/core": "7.18.6",
