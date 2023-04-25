@@ -146,7 +146,7 @@ backupRestore.restoreBackup = function (req, res) {
     env: {
       FORK: 1,
       NODE_ENV: global.env,
-      MONGOURI: database.connectionuri,
+      MONGOURI: global.CONNECTION_URI,
       FILE: file,
       PATH: process.env.PATH
     }

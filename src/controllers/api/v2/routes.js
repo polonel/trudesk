@@ -124,6 +124,7 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/backups', apiv2Auth, isAdmin, controllers.backuprestore.getBackups)
   router.post('/api/v2/backup', apiv2Auth, isAdmin, controllers.backuprestore.runBackup)
   router.delete('/api/v2/backup/:backup', apiv2Auth, isAdmin, controllers.backuprestore.deleteBackup)
+  router.post('/api/v2/backup/restore', apiv2Auth, isAdmin, controllers.backuprestore.restoreBackup)
   router.post('/api/v2/backup/upload', apiv2Auth, isAdmin, controllers.backuprestore.uploadBackup)
   router.get('/api/v2/backup/hastools', apiv2Auth, isAdmin, controllers.backuprestore.hasBackupTools)
 
