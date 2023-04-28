@@ -58,7 +58,7 @@ class SingleSelect extends React.Component {
 
   componentDidUpdate (prevProps) {
     if (prevProps.defaultValue !== this.props.defaultValue && !this.value) this.value = this.props.defaultValue
-
+    if (prevProps.value !== this.props.value && this.props.value !== this.value) this.value = this.props.value
     this.updateSelectizeItems()
   }
 
@@ -125,6 +125,7 @@ SingleSelect.propTypes = {
   multiple: PropTypes.bool,
   showTextbox: PropTypes.bool,
   defaultValue: PropTypes.string,
+  value: PropTypes.string,
   disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   onSelectChange: PropTypes.func
 }
