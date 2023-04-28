@@ -90,6 +90,14 @@ const colorMap = {
     secondary: '#ebf0f6',
     tertiary: '#ff7f50',
     quaternary: '#4a5479'
+  },
+  noctis: {
+    headerBG: '#242e42',
+    headerPrimary: '#d5dee5',
+    primary: '#d5dee5',
+    secondary: '#2b374e',
+    tertiary: '#1a89f5',
+    quaternary: '#242e42'
   }
 }
 
@@ -128,6 +136,7 @@ class AppearanceSettings extends React.Component {
     else if (this.getSettingsValue('colorTertiary') === '#f67280') colorScheme = 'purplerain'
     else if (this.getSettingsValue('colorHeaderBG') === '#625757') colorScheme = 'sandstone'
     else if (this.getSettingsValue('colorHeaderBG') === '#404969') colorScheme = 'winterfire'
+    else if (this.getSettingsValue('colorHeaderBG') === '#242e42') colorScheme = 'noctis'
 
     return colorScheme
   }
@@ -266,6 +275,7 @@ class AppearanceSettings extends React.Component {
                     items={[
                       { text: 'Light (Default)', value: 'light' },
                       { text: 'Dark', value: 'dark' },
+                      { text: 'Noctis', value: 'noctis' },
                       { text: 'Blue Jean', value: 'bluejean' },
                       { text: 'Midnight', value: 'midnight' },
                       { text: 'Moonlight', value: 'moonlight' },
@@ -274,6 +284,7 @@ class AppearanceSettings extends React.Component {
                       { text: "Winter's Fire", value: 'winterfire' }
                     ]}
                     defaultValue={this.state.selectedColorScheme}
+                    value={this.state.selectedColorScheme}
                     onSelectChange={e => {
                       this.onBuiltInColorSelectChange(e)
                     }}
