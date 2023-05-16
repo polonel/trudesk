@@ -26,7 +26,7 @@ const limiterSlowBruteByIP = new RateLimiterMemory({
   keyPrefix: 'login_fail_ip_per_day',
   points: 15,
   duration: 60 * 60 * 24,
-  blockDuration: 60 * 60,
+  blockDuration: 60 * 60
 })
 
 const mainController = {}
@@ -78,7 +78,7 @@ mainController.about = function (req, res) {
       return res.render('error', {
         layout: false,
         error: err,
-        message: err.message,
+        message: err.message
       })
 
     const content = {}
@@ -244,16 +244,16 @@ mainController.forgotL2Auth = function (req, res) {
         views: {
           root: templateDir,
           options: {
-            extension: 'handlebars',
-          },
-        },
+            extension: 'handlebars'
+          }
+        }
       })
 
       savedUser = savedUser.toJSON()
 
       const data = {
         base_url: req.protocol + '://' + req.get('host'),
-        user: savedUser,
+        user: savedUser
       }
 
       email
@@ -263,7 +263,7 @@ mainController.forgotL2Auth = function (req, res) {
             to: savedUser.email,
             subject: '[Trudesk] Account Recovery',
             html: html,
-            generateTextFromHTML: true,
+            generateTextFromHTML: true
           }
 
           mailer.sendMail(mailOptions, function (err) {
@@ -292,7 +292,8 @@ mainController.forgotPass = async function (req, res) {
 
     let user = await userSchema.findOne({ email: postEmail.toLowerCase(), deleted: false })
     if (!user) {
-      return res.status(400).json({ success: false, error: 'Invalid Email: Account not found!' })
+      // Send a fake success to prevent identifying active accounts
+      return res.status(200).json({ success: true })
     }
 
     const Chance = require('chance')
@@ -316,7 +317,7 @@ mainController.forgotPass = async function (req, res) {
 
     const data = {
       base_url: `${req.protocol}://${req.get('host')}`,
-      user,
+      user
     }
 
     const settingUtils = require('../settings/settingsUtil')
@@ -338,7 +339,7 @@ mainController.forgotPass = async function (req, res) {
                 email.juiceResources(html).then(resolve)
               })()
             })
-          },
+          }
         })
       }
     } else {
@@ -346,9 +347,9 @@ mainController.forgotPass = async function (req, res) {
         views: {
           root: templateDir,
           options: {
-            extension: 'handlebars',
-          },
-        },
+            extension: 'handlebars'
+          }
+        }
       })
     }
 
@@ -356,12 +357,12 @@ mainController.forgotPass = async function (req, res) {
     if (template) subject = global.Handlebars.compile(template.subject)(data)
     if (!email) throw new Error('No Email was defined. Exiting...')
 
-    email.render('password-reset', data).then(async (html) => {
+    email.render('password-reset', data).then(async html => {
       const mailOptions = {
         to: user.email,
         subject,
         html,
-        generateTextFromHTML: true,
+        generateTextFromHTML: true
       }
 
       await mailer.sendMail(mailOptions)
@@ -410,9 +411,9 @@ mainController.resetl2auth = function (req, res) {
           views: {
             root: templateDir,
             options: {
-              extension: 'handlebars',
-            },
-          },
+              extension: 'handlebars'
+            }
+          }
         })
 
         updated = updated.toJSON()
@@ -424,7 +425,7 @@ mainController.resetl2auth = function (req, res) {
               to: updated.email,
               subject: '[Trudesk] Two-Factor Authentication Removed!',
               html: html,
-              generateTextFromHTML: true,
+              generateTextFromHTML: true
             }
 
             mailer.sendMail(mailOptions, function (err) {
@@ -481,24 +482,24 @@ mainController.resetPass = async (req, res) => {
         views: {
           root: templateDir,
           options: {
-            extension: 'handlebars',
-          },
-        },
+            extension: 'handlebars'
+          }
+        }
       })
 
       user = user.toJSON()
 
       const data = {
         password: gPass,
-        user,
+        user
       }
 
-      email.render('new-password', data).then(async (html) => {
+      email.render('new-password', data).then(async html => {
         const mailOptions = {
           to: user.email,
           subject: '[Trudesk] New Password',
           html,
-          generateTextFromHTML: true,
+          generateTextFromHTML: true
         }
 
         await mailer.sendMail(mailOptions)
@@ -545,8 +546,8 @@ mainController.uploadFavicon = function (req, res) {
     headers: req.headers,
     limit: {
       file: 1,
-      fileSize: 1024 * 1024 * 1,
-    },
+      fileSize: 1024 * 1024 * 1
+    }
   })
 
   const object = {}
@@ -559,7 +560,7 @@ mainController.uploadFavicon = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -575,7 +576,7 @@ mainController.uploadFavicon = function (req, res) {
     file.on('limit', function () {
       error = {
         stats: 400,
-        message: 'File size too large. File size limit: 1mb',
+        message: 'File size too large. File size limit: 1mb'
       }
 
       return file.resume()
@@ -621,8 +622,8 @@ mainController.uploadLogo = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 1024 * 1024 * 3, // 3mb
-    },
+      fileSize: 1024 * 1024 * 3 // 3mb
+    }
   })
 
   const object = {}
@@ -634,7 +635,7 @@ mainController.uploadLogo = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -650,7 +651,7 @@ mainController.uploadLogo = function (req, res) {
     file.on('limit', function () {
       error = {
         stats: 400,
-        message: 'File size too large. File size limit: 3mb',
+        message: 'File size too large. File size limit: 3mb'
       }
 
       return file.resume()
@@ -696,8 +697,8 @@ mainController.uploadPageLogo = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 1024 * 1024 * 3, // 3mb
-    },
+      fileSize: 1024 * 1024 * 3 // 3mb
+    }
   })
 
   const object = {}
@@ -710,7 +711,7 @@ mainController.uploadPageLogo = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -726,7 +727,7 @@ mainController.uploadPageLogo = function (req, res) {
     file.on('limit', function () {
       error = {
         stats: 400,
-        message: 'File size too large. File size limit: 3mb',
+        message: 'File size too large. File size limit: 3mb'
       }
 
       return file.resume()

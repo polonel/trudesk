@@ -2,6 +2,7 @@ import React, { lazy, Fragment } from 'react'
 import { Navigate, Route, Routes, Link, useParams, useLocation } from 'react-router-dom'
 import SessionContext from './SessionContext'
 import Login from 'containers/Login'
+import ForgotPasswordContainer from 'containers/Login/forgotPassword'
 
 const LogoutContainer = lazy(() => import(/* webpackChunkName: "auth" */ 'containers/Logout'))
 const ProfileContainer = lazy(() => import(/* webpackChunkName:"profile" */ 'containers/Profile'))
@@ -56,6 +57,7 @@ const BaseRouter = ({ user, setSession }) => {
       <Routes>
         <Route path='/' element={<Login />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
+        <Route path={'forgotpassword'} element={<ForgotPasswordContainer />} exact />
         <Route path='*' element={<Navigate to={'/'} exact />} />
       </Routes>
     )
