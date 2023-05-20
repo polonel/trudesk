@@ -15,15 +15,17 @@
 
 import { Document, model, Model, Schema, Types } from 'mongoose'
 import winston from '../logger'
+import type { UserModelClass } from "./user"
 
 const COLLECTION = 'sessions_jwt'
 
 interface ISession extends Document {
   _id: string
-  user: Types.ObjectId
+  user: Types.ObjectId | UserModelClass
   expires: Date
   session: string
   refreshToken: string
+  exp: Date
 }
 
 interface ISessionModel extends Model<ISession> {
@@ -35,12 +37,12 @@ const SessionSchema = new Schema<ISession, ISessionModel>(
     user: { type: Schema.Types.ObjectId, ref: 'accounts' },
     expires: Date,
     session: String,
-    refreshToken: String,
+    refreshToken: String
   },
   { strict: false }
 )
 
-SessionSchema.statics.getAllSessionUsers = async function () {}
+// SessionSchema.statics.getAllSessionUsers = async function () {}
 
 SessionSchema.statics.getSession = async function (id) {
   return this.findOne({ id }).populate('user').exec()

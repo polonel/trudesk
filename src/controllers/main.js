@@ -14,6 +14,7 @@
 
 const _ = require('lodash')
 const path = require('path')
+const crypto = require('crypto')
 const passport = require('passport')
 const winston = require('../logger')
 const pkg = require('../../package')
@@ -21,6 +22,9 @@ const xss = require('xss')
 const { trudeskRoot } = require('../config')
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
 const userSchema = require('../models').UserModel
+const apiUtils = require('./api/apiUtils')
+const { SessionModel } = require('../models')
+const moment = require('moment/moment')
 
 const limiterSlowBruteByIP = new RateLimiterMemory({
   keyPrefix: 'login_fail_ip_per_day',
@@ -171,30 +175,71 @@ mainController.loginPost = async function (req, res) {
   }
 }
 
-mainController.l2AuthPost = function (req, res, next) {
-  if (!req.user) {
-    return res.redirect('/')
+mainController.verifymfa = async function (req, res, next) {
+  const body = req.body
+  if (!body.auth || !body.code) return res.status(401).json({ success: false })
+
+  try {
+    const decoded = apiUtils.verifyMFAToken(body.auth)
+    const user = await userSchema.findOne({ _id: decoded.uid })
+    if (!user) return res.status(401).json({ success: false })
+
+    req.user = user
+    passport.authenticate('totp', async function (err, success) {
+      if (err) throw err
+
+      if (!success) return res.status(401).json({ success: false })
+
+      const hash = crypto.createHash('sha256')
+
+      const session = await SessionModel.create({
+        user: user._id,
+        refreshToken: hash.update(user._id.toString()).digest('hex'),
+        exp: moment()
+          .utc()
+          .add(96, 'hours')
+          .toDate()
+      })
+
+      const cookie = {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
+      }
+
+      const tokens = await apiUtils.generateJWTToken(user, session)
+
+      res.cookie('_rft_', tokens.refreshToken, cookie)
+
+      return apiUtils.sendApiSuccess(res, tokens)
+    })(req, res, next)
+  } catch (e) {
+    // winston.debug(e)
+    return res.status(401).json({ success: false })
   }
 
-  passport.authenticate('totp', function (err, success) {
-    if (err) {
-      winston.error(err)
-      return next(err)
-    }
-
-    if (!success) return res.redirect('/l2auth')
-
-    req.session.l2auth = 'totp'
-
-    let redirectUrl = '/dashboard'
-
-    if (req.session.redirectUrl) {
-      redirectUrl = req.session.redirectUrl
-      req.session.redirectUrl = null
-    }
-
-    return res.redirect(redirectUrl)
-  })(req, res, next)
+  // if (!req.user) {
+  //   return res.redirect('/')
+  // }
+  //
+  // passport.authenticate('totp', function (err, success) {
+  //   if (err) {
+  //     winston.error(err)
+  //     return next(err)
+  //   }
+  //
+  //   if (!success) return res.redirect('/l2auth')
+  //
+  //   req.session.l2auth = 'totp'
+  //
+  //   let redirectUrl = '/dashboard'
+  //
+  //   if (req.session.redirectUrl) {
+  //     redirectUrl = req.session.redirectUrl
+  //     req.session.redirectUrl = null
+  //   }
+  //
+  //   return res.redirect(redirectUrl)
+  // })(req, res, next)
 }
 
 mainController.logout = function (req, res) {

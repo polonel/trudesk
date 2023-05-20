@@ -10,7 +10,7 @@ import Input from 'components/Input'
 import Button from 'components/Button'
 import BaseModal from 'containers/Modals/BaseModal'
 
-import axios from 'axios'
+import axios from 'api/axios'
 import helpers from 'lib/helpers'
 
 @observer

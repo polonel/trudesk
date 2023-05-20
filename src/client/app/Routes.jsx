@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, Link, useParams, useLocation } from 'react-rou
 import SessionContext from './SessionContext'
 import Login from 'containers/Login'
 import ForgotPasswordContainer from 'containers/Login/forgotPassword'
+import MFAVerify from 'containers/Login/mfaVerify'
 
 const LogoutContainer = lazy(() => import(/* webpackChunkName: "auth" */ 'containers/Logout'))
 const ProfileContainer = lazy(() => import(/* webpackChunkName:"profile" */ 'containers/Profile'))
@@ -58,6 +59,7 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path='/' element={<Login />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
         <Route path={'forgotpassword'} element={<ForgotPasswordContainer />} exact />
+        <Route path={'mfa'} element={<MFAVerify setSession={setSession} />} exact />
         <Route path='*' element={<Navigate to={'/'} exact />} />
       </Routes>
     )
@@ -65,6 +67,7 @@ const BaseRouter = ({ user, setSession }) => {
     return (
       <Routes>
         <Route path={'/'} element={<Navigate to={'/dashboard'} exact />} />
+        <Route path={'/mfa'} element={<Navigate to={'/dashboard'} exact />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
         <Route path={'profile'} element={<ProfileContainer setSession={setSession} />} exact />
         <Route path={'dashboard'} element={<DashboardContainer />} exact />

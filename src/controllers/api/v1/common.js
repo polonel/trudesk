@@ -15,6 +15,7 @@
 const _ = require('lodash')
 const async = require('async')
 const winston = require('../../../logger')
+const { UserModel } = require('../../../models')
 
 const commonV1 = {}
 
@@ -42,20 +43,20 @@ const commonV1 = {}
  * delete resUser.iOSDeviceToken;
  *
  */
-commonV1.login = function (req, res) {
-  var userModel = require('../../../models').UserModel
-  var username = req.body.username
-  var password = req.body.password
+commonV1.login = async function (req, res) {
+  const { UserModel } = require('../../../models')
+  const username = req.body.username
+  const password = req.body.password
 
   if (_.isUndefined(username) || _.isUndefined(password)) {
     return res.sendStatus(403)
   }
 
-  userModel.getUserByUsername(username, function (err, user) {
-    if (err) return res.status(401).json({ success: false, error: err.message })
+  try {
+    const user = await UserModel.getByUsername(username)
     if (!user) return res.status(401).json({ success: false, error: 'Invalid User' })
 
-    if (!userModel.validatePassword(password, user.password))
+    if (!UserModel.validatePassword(password, user.password))
       return res.status(401).json({ success: false, error: 'Invalid Password' })
 
     var resUser = _.clone(user._doc)
@@ -76,9 +77,11 @@ commonV1.login = function (req, res) {
     return res.json({
       success: true,
       accessToken: resUser.accessToken,
-      user: resUser,
+      user: resUser
     })
-  })
+  } catch (err) {
+    return res.status(401).json({ success: false, error: err.message })
+  }
 }
 
 commonV1.getLoggedInUser = function (req, res) {
@@ -124,7 +127,7 @@ commonV1.logout = function (req, res) {
 
           callback()
         })
-      },
+      }
     ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err.message })

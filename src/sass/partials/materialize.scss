@@ -325,8 +325,8 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 }
 
 .md-btn.disabled {
-  color: #a8a8a8;
-  background: #eaeaea;
+  color: #a8a8a8 !important;
+  background: #eaeaea !important;
   box-shadow: none !important;
   cursor: default;
   pointer-events: none;

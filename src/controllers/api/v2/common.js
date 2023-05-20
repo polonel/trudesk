@@ -25,6 +25,7 @@ const commonV2 = {}
 commonV2.login = async (req, res) => {
   const username = req.body.username
   const password = req.body.password
+  const mfa = req.body.mfa
 
   if (!username || !password) return apiUtils.sendApiError_InvalidPostData(res)
 
@@ -34,6 +35,11 @@ commonV2.login = async (req, res) => {
 
     if (!UserModel.validatePassword(password, user.password))
       return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
+
+    if (user.hasL2Auth) {
+      const auth = apiUtils.generateMFAToken(user._id)
+      return apiUtils.sendApiSuccess(res, { uid: user._id, mfa: true, auth })
+    }
 
     const hash = crypto.createHash('sha256')
 

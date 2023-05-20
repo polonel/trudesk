@@ -58,6 +58,10 @@ interface MiddlewareResponse extends Response {
   session: any
 }
 
+interface DecodedSessionJWT {
+  s: string
+}
+
 const middleware: RouteMiddlewareType = {}
 
 middleware.db = (req, res, next) => {
@@ -242,7 +246,7 @@ middleware.apiv2 = function (req, res, next) {
   passport.authenticate('jwt', { session: true }, function (err, user) {
     if (err && err.type === 'exp')
       return res.status(401).json({ success: false, error: { type: 'exp', message: 'invalid_token' } })
-
+    if (err) winston.debug(err)
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
     if (user) {
       req.user = user
@@ -257,7 +261,7 @@ middleware.hasAuth = async (req, res, next) => {
   const refreshToken = req.cookies['_rft_']
   if (!refreshToken) return res.status(401).json({ success: false, error: 'Invalid Authentication Token'})
 
-  const decoded = jwt.verify(refreshToken, config.get('tokens:secret'))
+  const decoded = jwt.verify(refreshToken, config.get('tokens:secret')) as DecodedSessionJWT
   if (!decoded || !decoded.s) return res.status(401).json({ success: false, error: 'Invalid Authentication Token'})
   const sessionId = decoded.s
 
@@ -296,7 +300,7 @@ middleware.hasAuth = async (req, res, next) => {
 
 middleware.canUser = function (action) {
   return function (req, res, next) {
-    if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+    if (!req.user || typeof (req.user) !== 'object') return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 
     const perm = permissions.canThis(req.user.role._id, action)
     if (perm) return next()

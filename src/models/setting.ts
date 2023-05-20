@@ -43,7 +43,7 @@ export class SettingModelClass {
     callback?: any,
     select?: string
   ) {
-    const query = this.find({ name })
+    const query = this.findOne({ name })
     if (select) query.select(select)
     if (typeof callback === 'function') return query.exec(callback)
 

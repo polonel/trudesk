@@ -16,6 +16,8 @@ const _ = require('lodash')
 const nconf = require('nconf')
 const jwt = require('jsonwebtoken')
 const { GroupModel, DepartmentModel } = require('../../models')
+const Chance = require('chance')
+const chance = new Chance()
 
 const apiUtils = {}
 
@@ -31,6 +33,16 @@ apiUtils.sendApiError = function (res, errorNum, error) {
 }
 apiUtils.sendApiError_InvalidPostData = function (res) {
   return apiUtils.sendApiError(res, 400, 'Invalid Post Data')
+}
+
+apiUtils.generateMFAToken = function (userId) {
+  const secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
+  return jwt.sign({ uid: userId, hash: chance.hash() }, secret, { expiresIn: '60s' })
+}
+
+apiUtils.verifyMFAToken = function (token) {
+  const secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
+  return jwt.verify(token, secret)
 }
 
 apiUtils.generateJWTToken = async function (dbUser, session, callback) {

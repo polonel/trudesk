@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
-import axios from 'axios'
+import axios from 'api/axios'
 import moment from 'moment-timezone'
 
 import { saveProfile, genMFA } from 'actions/accounts'

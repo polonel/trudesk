@@ -11,11 +11,11 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { connect } from 'react-redux'
-import SessionContext, { saveSession } from 'app/SessionContext'
+import jwt_decode from 'jwt-decode'
 
 import Button from 'components/Button'
 import Form from 'components/Form'
@@ -27,30 +27,53 @@ import './login.styles.sass'
 import pkg from '../../../../package.json'
 import { Helmet } from 'react-helmet-async'
 import TitleContext from 'app/TitleContext'
+import SessionContext, { saveSession } from 'app/SessionContext'
 import LoginBackground from '../../components/LoginBackground'
 import $ from 'jquery'
+import clsx from 'clsx'
+import axios from 'api/axios'
 
-const Login = ({ theme, common }) => {
+const MFAVerify = props => {
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [auth, setAuth] = useState('')
+  const [code, setCode] = useState('')
+  const [buttonText, setButtonText] = useState('Verify MFA Code')
+  const [pending, setPending] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
 
-  const userNameInput = React.createRef()
+  const codeInputRef = React.createRef()
 
   useEffect(() => {
+    checkToken()
+
     helpers.UI.inputs()
     // helpers.UI.reRenderInputs()
     $.event.trigger('trudesk:ready', window)
-    if (userNameInput.current) userNameInput.current.focus()
+    if (codeInputRef.current) codeInputRef.current.focus()
   }, [])
+
+  const checkToken = () => {
+    // Let's check on the token
+    const authToken = searchParams.get('auth')
+    try {
+      if (!authToken) return navigate('/')
+      const decoded = jwt_decode(authToken)
+      if (!decoded.exp || !decoded.uid || !decoded.hash) return navigate('/')
+      if (Date.now() >= decoded.exp * 1000) return navigate('/')
+      setAuth(authToken)
+    } catch (e) {
+      return navigate('/')
+    }
+  }
 
   return (
     <div style={{ overflow: 'auto' }}>
       <TitleContext.Consumer>
         {({ title }) => (
           <Helmet>
-            <title>{title} Login - Powered by Trudesk</title>
+            <title>{title} - Powered by Trudesk</title>
           </Helmet>
         )}
       </TitleContext.Consumer>
@@ -89,62 +112,83 @@ const Login = ({ theme, common }) => {
           </svg>
           {/*)}*/}
           <div className='login-wrapper' style={{ background: 'var(--pagecontentlight10)' }}>
-            <h2 className='uk-text-center font-light uk-margin-large-bottom' style={{ color: 'var(--primary)' }}>
-              Sign into your account
+            <h2 className='uk-text-center font-light uk-margin-medium-bottom' style={{ color: 'var(--primary)' }}>
+              MFA Authentication Code
             </h2>
+            <div
+              style={{
+                display: 'block',
+                width: '100%',
+                borderRadius: 3,
+                height: 45,
+                fontSize: 18,
+                textAlign: 'center',
+                padding: '13px 0'
+              }}
+              className={clsx(!success && 'hide', 'bg-success')}
+            >
+              Reset Password Email Sent
+            </div>
             <div className='loginForm'>
               <SessionContext.Consumer>
                 {({ setSession }) => (
                   <Form
                     id='loginForm'
                     className='uk-form-stacked uk-clearfix'
-                    url={'/api/v2/login'}
+                    url={'/verifymfa'}
                     method={'post'}
-                    data={{ username, password }}
+                    data={{ auth, code }}
+                    onBeforeSend={() => {
+                      checkToken()
+                      setPending(true)
+                      setButtonText('Please wait...')
+                    }}
                     onValidate={(e, data) => {
-                      if (!data.username || !data.password) return false
+                      if (!data.code || data.code < 6) {
+                        setPending(false)
+                        setSuccess(false)
+                        setButtonText('Verify MFA Code')
+
+                        return false
+                      }
 
                       return true
                     }}
                     onCompleted={({ data }) => {
                       setError('')
-                      if (data.mfa === true) return navigate(`/mfa?auth=${data.auth}`)
+                      setPending(false)
                       setSession(saveSession(data))
                     }}
                     onError={err => {
+                      setCode('')
+                      setPending(false)
+                      setSuccess(false)
+                      setButtonText('Verify MFA Code')
+
                       if (err.response && err.response.data) setError(err.response.data.error)
-                      else setError('Invalid Login')
+                      else setError('Invalid Code')
 
                       Log.error(error)
                     }}
                   >
-                    <div className='uk-margin-medium-bottom'>
-                      <label htmlFor='username'>Username</label>
+                    <div className='uk-margin-medium-bottom uk-margin-medium-top'>
+                      <label htmlFor='username'>Code</label>
                       <input
-                        id='username'
+                        id='code'
                         className='md-input'
                         type='text'
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
-                        ref={userNameInput}
-                      />
-                    </div>
-                    <div className='uk-margin-medium-bottom'>
-                      <label htmlFor='password'>Password</label>
-                      <input
-                        id='password'
-                        className='md-input md-waves-light'
-                        type='password'
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        value={code}
+                        onChange={e => setCode(e.target.value)}
+                        ref={codeInputRef}
                       />
                     </div>
                     <Button
                       flat={false}
                       waves={true}
-                      text={'Continue'}
+                      text={buttonText}
                       type={'submit'}
-                      extraClass={'btn'}
+                      extraClass={clsx('btn', pending && 'disabled')}
+                      disabled={pending}
                       styleOverride={{ background: 'var(--tertiary)', color: 'var(--tertiarytextcolor)' }}
                     />
                   </Form>
@@ -161,13 +205,8 @@ const Login = ({ theme, common }) => {
               }}
             >
               <hr style={{ width: '100%' }} />
-              {common.allowUserRegistration && (
-                <Link to={`/signup`} style={{ float: 'left' }}>
-                  Create an account
-                </Link>
-              )}
-              <Link to={`/forgotpassword`} className='right' style={{ display: 'block', clear: 'right' }}>
-                Forgot your password?
+              <Link to={`/`} className='right' style={{ display: 'block', clear: 'right' }}>
+                Back to Login
               </Link>
             </div>
           </div>
@@ -180,8 +219,10 @@ const Login = ({ theme, common }) => {
   )
 }
 
-Login.propTypes = {
-  theme: PropTypes.object
+MFAVerify.propTypes = {
+  theme: PropTypes.object,
+  onBeforeSubmit: PropTypes.func,
+  onCompleted: PropTypes.func
 }
 
 const mapStateToProps = state => ({
@@ -189,4 +230,4 @@ const mapStateToProps = state => ({
   common: state.common
 })
 
-export default connect(mapStateToProps, null)(Login)
+export default connect(mapStateToProps, null)(MFAVerify)
