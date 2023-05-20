@@ -9,31 +9,32 @@ import helpers from 'lib/helpers'
 class Input extends React.Component {
   @observable value = ''
 
-  constructor(props) {
+  constructor (props) {
     super(props)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     helpers.UI.inputs()
   }
 
-  handleChange = (e) => {
+  handleChange = e => {
     this.value = e.target.value
     if (this.props.onChange) this.props.onChange(this.value)
   }
 
-  render() {
-    const { id, name, type, defaultValue, showLabel, labelText } = this.props
+  render () {
+    const { id, name, type, defaultValue, showLabel, labelText, innerRef } = this.props
     return (
       <div>
         {showLabel && <label htmlFor={id}>{labelText}</label>}
         <input
+          ref={innerRef}
           className={'md-input'}
           id={id}
           name={name}
           type={type}
           defaultValue={defaultValue}
-          onChange={(e) => this.handleChange(e)}
+          onChange={e => this.handleChange(e)}
         />
       </div>
     )
@@ -48,11 +49,12 @@ Input.propTypes = {
   onChange: PropTypes.func,
   showLabel: PropTypes.bool,
   labelText: PropTypes.string,
+  innerRef: PropTypes.any
 }
 
 Input.defaultProps = {
   type: 'text',
-  showLabel: false,
+  showLabel: false
 }
 
 export default Input

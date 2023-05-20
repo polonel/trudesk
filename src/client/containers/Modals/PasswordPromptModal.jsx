@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createRef } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
@@ -16,6 +16,20 @@ import helpers from 'lib/helpers'
 @observer
 class PasswordPromptModal extends React.Component {
   @observable confirmPassword = ''
+
+  constructor (props) {
+    super(props)
+    this.passwordRef = createRef()
+  }
+
+  componentDidMount () {
+    if (this.passwordRef.current) {
+      helpers.UI.inputs()
+      setTimeout(() => {
+        this.passwordRef.current.focus()
+      }, 250)
+    }
+  }
 
   onVerifyPassword = e => {
     e.preventDefault()
@@ -49,7 +63,12 @@ class PasswordPromptModal extends React.Component {
         </div>
         <div className={'uk-margin-medium-bottom'}>
           <label>Current Password</label>
-          <Input name={'current-password'} type={'password'} onChange={val => (this.confirmPassword = val)} />
+          <Input
+            innerRef={this.passwordRef}
+            name={'current-password'}
+            type={'password'}
+            onChange={val => (this.confirmPassword = val)}
+          />
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button text={'Cancel'} small={true} flat={true} waves={false} onClick={() => this.props.hideModal()} />
