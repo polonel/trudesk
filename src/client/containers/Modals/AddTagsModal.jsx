@@ -21,7 +21,7 @@ import { showModal, hideModal } from 'actions/common'
 import BaseModal from 'containers/Modals/BaseModal'
 import Button from 'components/Button'
 import Log from '../../logger'
-import axios from 'axios'
+import axios from 'api/axios'
 import $ from 'jquery'
 import helpers from 'lib/helpers'
 
@@ -53,7 +53,7 @@ class AddTagsModal extends React.Component {
     let selectedTags = $(e.target.tags).val()
     if (!selectedTags) selectedTags = []
     axios
-      .put(`/api/v1/tickets/${this.props.ticketId}`, {
+      .put(`/api/v2/tickets/${this.props.ticketId}`, {
         tags: selectedTags
       })
       .then(() => {
@@ -68,7 +68,7 @@ class AddTagsModal extends React.Component {
 
   onClearClicked () {
     axios
-      .put(`/api/v1/tickets/${this.props.ticketId}`, {
+      .put(`/api/v2/tickets/${this.props.ticketId}`, {
         tags: []
       })
       .then(() => {

@@ -16,11 +16,13 @@ import async, { series } from 'async'
 import fs from 'fs-extra'
 import _ from 'lodash'
 import moment from 'moment-timezone'
+import type { Types } from "mongoose"
 import path from 'path'
 import config from '../config'
 import { trudeskDatabase } from '../database'
 import winston from '../logger'
-import { PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel } from '../models'
+import { PriorityModel, RoleModel, SettingModel, TicketModel, TicketTagModel, TicketTypeModel } from '../models'
+import type { TicketTypeClass } from "../models/tickettype"
 
 type DefaultGrants = {
   userGrants: Array<string>
@@ -28,7 +30,12 @@ type DefaultGrants = {
   adminGrants: Array<string>
 }
 
-const settingsDefaults = {}
+type SettingsDefaults = {
+  init?: (callback: any) => void
+  roleDefaults?: DefaultGrants
+}
+
+const settingsDefaults : SettingsDefaults = {}
 const roleDefaults: DefaultGrants = {
   userGrants: ['tickets:create view update', 'comments:create view update'],
   supportGrants: [
@@ -306,8 +313,8 @@ function showTourSettingDefault(callback) {
   })
 }
 
-function ticketTypeSettingDefault(callback) {
-  SettingModel.getSettingByName('ticket:type:default', function (err, setting) {
+function ticketTypeSettingDefault(callback: any) {
+  SettingModel.getSettingByName('ticket:type:default', async function (err, setting) {
     if (err) {
       winston.warn(err)
       if (_.isFunction(callback)) {
@@ -316,39 +323,28 @@ function ticketTypeSettingDefault(callback) {
     }
 
     if (!setting) {
-      var ticketTypeSchema = require('../models/tickettype')
-      ticketTypeSchema.getTypes(function (err, types) {
-        if (err) {
-          winston.warn(err)
-          if (_.isFunction(callback)) {
-            return callback(err)
-          }
-          return false
-        }
+      try {
+        const types = await TicketTypeModel.getTypes()
+        const type = _.first(types) as TicketTypeClass
+        if (!type) throw new Error('Invalid Type. Skipping.')
+        if (!_.isObject(type) || _.isUndefined(type._id))
+            throw new Error('Invalid Type. Skipping.')
 
-        var type = _.first(types)
-        if (!type) return callback('No Types Defined!')
-        if (!_.isObject(type) || _.isUndefined(type._id)) return callback('Invalid Type. Skipping.')
-
-        // Save default ticket type
-        var defaultTicketType = new SettingModel({
+        const defaultTicketType = new SettingModel({
           name: 'ticket:type:default',
           value: type._id,
         })
 
-        defaultTicketType.save(function (err) {
-          if (err) {
-            winston.warn(err)
-            if (_.isFunction(callback)) {
-              return callback(err)
-            }
-          }
+        await defaultTicketType.save()
 
-          if (_.isFunction(callback)) {
-            return callback()
-          }
-        })
-      })
+        if (typeof callback === 'function') return callback()
+      } catch (err) {
+        winston.warn(err)
+        if (_.isFunction(callback)) {
+          return callback(err)
+        }
+        return false
+      }
     } else {
       if (_.isFunction(callback)) {
         return callback()
@@ -357,23 +353,23 @@ function ticketTypeSettingDefault(callback) {
   })
 }
 
-function ticketPriorityDefaults(callback) {
-  var priorities = []
+async function ticketPriorityDefaults(callback: any) {
+  const priorities = []
 
-  var normal = new PriorityModel({
+  const normal = new PriorityModel({
     name: 'Normal',
     migrationNum: 1,
     default: true,
   })
 
-  var urgent = new PriorityModel({
+  const urgent = new PriorityModel({
     name: 'Urgent',
     migrationNum: 2,
     htmlColor: '#8e24aa',
     default: true,
   })
 
-  var critical = new PriorityModel({
+  const critical = new PriorityModel({
     name: 'Critical',
     migrationNum: 3,
     htmlColor: '#e65100',
@@ -383,22 +379,21 @@ function ticketPriorityDefaults(callback) {
   priorities.push(normal)
   priorities.push(urgent)
   priorities.push(critical)
-  async.each(
-    priorities,
-    function (item, next) {
-      PriorityModel.findOne({ migrationNum: item.migrationNum }, function (err, priority) {
-        if (!err && (_.isUndefined(priority) || _.isNull(priority))) {
-          return item.save(next)
-        }
 
-        return next(err)
-      })
-    },
-    callback
-  )
+  priorities.forEach(async (item) => {
+    try {
+      const priority = await PriorityModel.findOne({ migrationNum: item.migrationNum })
+      if (!priority)
+        await item.save()
+    } catch (err) {
+      winston.error(`Error: ${err}`)
+    }
+  }, Error())
+
+  return callback()
 }
 
-function normalizeTags(callback) {
+function normalizeTags(callback : any) {
   TicketTagModel.find({}, function (err, tags) {
     if (err) return callback(err)
     async.each(
@@ -411,7 +406,7 @@ function normalizeTags(callback) {
   })
 }
 
-function checkPriorities(callback) {
+function checkPriorities(callback: any) {
   let migrateP1 = false
   let migrateP2 = false
   let migrateP3 = false
@@ -438,125 +433,113 @@ function checkPriorities(callback) {
       },
     ],
     function () {
-      async.parallel(
-        [
-          function (done) {
-            if (!migrateP1) return done()
-            PriorityModel.getByMigrationNum(1, function (err, normal) {
-              if (!err) {
-                winston.debug('Converting Priority: Normal')
-                TicketModel.collection
-                  .updateMany({ priority: 1 }, { $set: { priority: normal._id } })
-                  .then(function (res) {
-                    if (res && res.result) {
-                      if (res.result.ok === 1) {
-                        return done()
-                      }
+      const p1 = new Promise<void>((resolve, reject) => {
+        (async ():Promise<void> => {
+          if (!migrateP1) return resolve()
+          try {
+            const normal = await PriorityModel.getByMigrationNum(1)
+            if (!normal) throw new Error('Invalid priority!')
+            winston.debug('Converting Priority: Normal')
 
-                      winston.warn(res.message)
-                      return done(res.message)
-                    }
-                  })
-              } else {
-                winston.warn(err.message)
-                return done()
-              }
-            })
-          },
-          function (done) {
-            if (!migrateP2) return done()
-            PriorityModel.getByMigrationNum(2, function (err, urgent) {
-              if (!err) {
-                winston.debug('Converting Priority: Urgent')
-                TicketModel.collection
-                  .updateMany({ priority: 2 }, { $set: { priority: urgent._id } })
-                  .then(function (res) {
-                    if (res && res.result) {
-                      if (res.result.ok === 1) {
-                        return done()
-                      }
+            const res = await TicketModel.collection
+              .updateMany({ priority: 1 }, { $set: { priority: normal._id } })
 
-                      winston.warn(res.message)
-                      return done(res.message)
-                    }
-                  })
-              } else {
-                winston.warn(err.message)
-                return done()
+            if (res && res.result) {
+              if (res.result.ok === 1) {
+                return resolve()
               }
-            })
-          },
-          function (done) {
-            if (!migrateP3) return done()
-            PriorityModel.getByMigrationNum(3, function (err, critical) {
-              if (!err) {
-                winston.debug('Converting Priority: Critical')
-                TicketModel.collection
-                  .updateMany({ priority: 3 }, { $set: { priority: critical._id } })
-                  .then(function (res) {
-                    if (res && res.result) {
-                      if (res.result.ok === 1) {
-                        return done()
-                      }
 
-                      winston.warn(res.message)
-                      return done(res.message)
-                    }
-                  })
-              } else {
-                winston.warn(err.message)
-                return done()
+              winston.warn(res.message)
+              return resolve(res.message)
+            }
+          } catch (err: any) {
+            winston.warn(err.message)
+            return reject(err)
+          }
+        })()
+      })
+
+      const p2 = new Promise<void>((resolve, reject) => {
+        (async ():Promise<void> => {
+          if (!migrateP1) return resolve()
+          try {
+            const urgent = await PriorityModel.getByMigrationNum(2)
+            if (!urgent) throw new Error('Invalid priority!')
+            winston.debug('Converting Priority: Urgent')
+
+            const res = await TicketModel.collection
+              .updateMany({ priority: 1 }, { $set: { priority: urgent._id } })
+
+            if (res && res.result) {
+              if (res.result.ok === 1) {
+                return resolve()
               }
-            })
-          },
-        ],
-        callback
-      )
+
+              winston.warn(res.message)
+              return resolve(res.message)
+            }
+          } catch (err: any) {
+            winston.warn(err.message)
+            return reject(err)
+          }
+        })()
+      })
+
+      const p3 = new Promise<void>((resolve, reject) => {
+        (async ():Promise<void> => {
+          if (!migrateP1) return resolve()
+          try {
+            const critical = await PriorityModel.getByMigrationNum(3)
+            if (!critical) throw new Error('Invalid priority!')
+            winston.debug('Converting Priority: Critical')
+
+            const res = await TicketModel.collection
+              .updateMany({ priority: 1 }, { $set: { priority: critical._id } })
+
+            if (res && res.result) {
+              if (res.result.ok === 1) {
+                return resolve()
+              }
+
+              winston.warn(res.message)
+              return resolve(res.message)
+            }
+          } catch (err: any) {
+            winston.warn(err.message)
+            return reject(err)
+          }
+        })()
+      })
+
+      Promise.all([p1, p2, p3]).then(() => {
+        callback()
+      }).catch(err => callback(err))
     }
   )
 }
 
-function addedDefaultPrioritiesToTicketTypes(callback) {
-  async.waterfall(
-    [
-      function (next) {
-        PriorityModel.find({ default: true })
-          .then(function (results) {
-            return next(null, results)
-          })
-          .catch(next)
-      },
-      function (priorities, next) {
-        priorities = _.sortBy(priorities, 'migrationNum')
-        var ticketTypeSchema = require('../models/tickettype')
-        ticketTypeSchema.getTypes(function (err, types) {
-          if (err) return next(err)
+async function addedDefaultPrioritiesToTicketTypes(callback: any) {
+  try {
+    let priorities = await PriorityModel.find({ default: true })
+    priorities = _.sortBy(priorities, 'migrationNum')
+    const types = await TicketTypeModel.getTypes()
+    for (const type of types) {
+      let prioritiesToAdd: Types.ObjectId[] = []
+      if (!type.priorities || type.priorities.length < 1) {
+        type.priorities = []
+        prioritiesToAdd = _.map(priorities, '_id')
+      }
 
-          async.each(
-            types,
-            function (type, done) {
-              var prioritiesToAdd = []
-              if (!type.priorities || type.priorities.length < 1) {
-                type.priorities = []
-                prioritiesToAdd = _.map(priorities, '_id')
-              }
+      if (prioritiesToAdd.length > 1) {
+        type.priorities = _.concat(type.priorities, prioritiesToAdd)
+        await type.save()
+      }
+    }
 
-              if (prioritiesToAdd.length < 1) {
-                return done()
-              }
-
-              type.priorities = _.concat(type.priorities, prioritiesToAdd)
-              type.save(done)
-            },
-            function () {
-              next(null)
-            }
-          )
-        })
-      },
-    ],
-    callback
-  )
+    return callback()
+  } catch (err) {
+    return callback(err)
+  }
 }
 
 function mailTemplates(callback) {
@@ -747,6 +730,7 @@ export const init = function (callback: () => void) {
     }
   )
 }
+
 settingsDefaults.init = init
 
 export default settingsDefaults

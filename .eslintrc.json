@@ -30,7 +30,9 @@
     ],
     "@typescript-eslint/no-extra-semi": 1,
     // Temp Typescript while converting
-    "@typescript-eslint/no-explicit-any": 0
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
   },
   "globals": {
     "define": true,

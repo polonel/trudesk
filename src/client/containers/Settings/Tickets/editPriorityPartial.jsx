@@ -21,9 +21,7 @@ import ColorSelector from 'components/ColorSelector'
 import Button from 'components/Button'
 
 import { fetchSettings } from 'actions/settings'
-import api from 'api/index'
-import Log from '../../../logger'
-import helpers from 'lib/helpers'
+import { updatePriority } from 'actions/tickets'
 
 class EditPriorityPartial extends React.Component {
   constructor (props) {
@@ -51,25 +49,9 @@ class EditPriorityPartial extends React.Component {
     const overdueIn = e.target.overdueIn.value
     const htmlColor = e.target.htmlColor.value
 
-    const self = this
-
-    api.tickets
-      .updatePriority({ id, name, overdueIn, htmlColor })
-      .then(res => {
-        Log.debug(res)
-        self.toggleEditPriority()
-        this.props.fetchSettings()
-      })
-      .catch(err => {
-        if (!err.response) {
-          Log.error(err)
-          return
-        }
-
-        const errorText = err.response.data.error
-        Log.error(errorText, err.response)
-        helpers.UI.showSnackbar(`Error: ${errorText}`, true)
-      })
+    this.props.updatePriority({ id, name, overdueIn, htmlColor }).then(() => {
+      this.toggleEditPriority()
+    })
   }
 
   render () {
@@ -109,10 +91,8 @@ class EditPriorityPartial extends React.Component {
 
 EditPriorityPartial.propTypes = {
   priority: PropTypes.object.isRequired,
-  fetchSettings: PropTypes.func.isRequired
+  fetchSettings: PropTypes.func.isRequired,
+  updatePriority: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { fetchSettings }
-)(EditPriorityPartial)
+export default connect(null, { fetchSettings, updatePriority })(EditPriorityPartial)

@@ -93,7 +93,7 @@ api.tickets.createTicketType = ({ name }) => {
 
 api.tickets.addPriorityToType = ({ typeId, priority }) => {
   return axios
-    .post(`/api/v2/tickets/type/${typeId}/addpriority`, {
+    .post(`/api/v2/tickets/types/${typeId}/addpriority`, {
       priority
     })
     .then(res => {
@@ -103,7 +103,7 @@ api.tickets.addPriorityToType = ({ typeId, priority }) => {
 
 api.tickets.removePriorityFromType = ({ typeId, priority }) => {
   return axios
-    .post(`/api/v2/tickets/type/${typeId}/removepriority`, {
+    .post(`/api/v2/tickets/types/${typeId}/removepriority`, {
       priority
     })
     .then(res => {
@@ -124,7 +124,7 @@ api.tickets.fetchPriorities = () => {
 }
 api.tickets.createPriority = ({ name, overdueIn, htmlColor }) => {
   return axios
-    .post('/api/v2/tickets/priority/create', {
+    .post('/api/v2/tickets/priority', {
       name,
       overdueIn,
       htmlColor

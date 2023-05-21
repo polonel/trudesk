@@ -34,6 +34,7 @@ interface ServerToClientEvents {
   unauthorized: () => void
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ClientToServerEvents {
 }
 
@@ -53,6 +54,11 @@ interface ExtendedUser extends UserModelClass {
 interface ExtendedSocket extends Socket {
   token: string
   user: ExtendedUser
+}
+
+interface DecodedSocketJWT {
+  s: string
+  r: string
 }
 
 interface QueryIncomingMessage extends IncomingMessage {
@@ -106,11 +112,11 @@ export const SocketServer = function (ws: WebServer) {
           return accept(new Error('Invalid Token'))
         }
 
-        const decoded = jwt.verify(rftJWT, config.get('tokens:secret'))
+        const decoded = jwt.verify(rftJWT, config.get('tokens:secret')) as DecodedSocketJWT
         const session = await SessionModel.findOne({ _id: decoded.s, refreshToken: decoded.r }).populate('user')
         if (!session) throw new Error('Invalid Session')
 
-        queryRequest.user = session.user
+        queryRequest.user = session.user as ExtendedUser
         queryRequest.user.logged_in = true
 
         onAuthorizeSuccess(queryRequest, accept)

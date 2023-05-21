@@ -52,7 +52,7 @@ class CreateTicketTypeModal extends React.Component {
 
   render () {
     return (
-      <BaseModal {...this.props} ref={i => (this.base = i)}>
+      <BaseModal {...this.props}>
         <form className={'uk-form-stacked'} onSubmit={e => this.onCreateTicketTypeSubmit(e)}>
           <div>
             <h2 className='nomargin mb-5'>Create Ticket Type</h2>
@@ -84,7 +84,4 @@ CreateTicketTypeModal.propTypes = {
   createTicketType: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { createTicketType }
-)(CreateTicketTypeModal)
+export default connect(null, { createTicketType })(CreateTicketTypeModal)

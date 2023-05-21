@@ -56,7 +56,7 @@ class CreatePriorityModal extends React.Component {
 
   render () {
     return (
-      <BaseModal {...this.props} ref={i => (this.base = i)}>
+      <BaseModal {...this.props}>
         <form className={'uk-form-stacked'} onSubmit={e => this.onCreatePrioritySubmit(e)}>
           <div className='uk-margin-medium-bottom uk-clearfix'>
             <h2>Create Priority</h2>

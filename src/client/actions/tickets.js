@@ -58,12 +58,11 @@ export const createPriority = createAction(CREATE_PRIORITY.ACTION, ({ name, over
   overdueIn,
   htmlColor
 }))
-export const updatePriority = createAction(UPDATE_PRIORITY.ACTION, ({ id, name, overdueIn, htmlColor }) => ({
-  id,
-  name,
-  overdueIn,
-  htmlColor
-}))
+export const updatePriority = createAction(
+  UPDATE_PRIORITY.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
 export const deletePriority = createAction(DELETE_PRIORITY.ACTION, ({ id, newPriority }) => ({ id, newPriority }))
 export const getTagsWithPage = createAction(GET_TAGS_WITH_PAGE.ACTION, ({ limit, page }) => ({ limit, page }))
 export const tagsUpdateCurrentPage = createAction(TAGS_UPDATE_CURRENT_PAGE.ACTION, currentPage => ({ currentPage }))

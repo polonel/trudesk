@@ -208,7 +208,4 @@ TicketTypeBody.propTypes = {
   showModal: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { updatePriority, fetchSettings, showModal }
-)(TicketTypeBody)
+export default connect(null, { updatePriority, fetchSettings, showModal })(TicketTypeBody)

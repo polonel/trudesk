@@ -14,9 +14,11 @@
 
 import async from 'async'
 import _ from 'lodash'
+// @ts-ignore
 import * as marked from 'marked'
 import type { Types } from "mongoose"
 import path from "path"
+// @ts-ignore
 import sanitizeHtml from "sanitize-html"
 import xss from 'xss'
 import config from "../../../config"
@@ -26,18 +28,26 @@ import {
   DepartmentModel,
   GroupModel,
   PriorityModel,
+  SettingModel,
   TicketModel,
   TicketTagModel,
   TicketTypeModel,
   UserModel
 } from '../../../models'
+import type { IRole } from "../../../models/role"
 import permissions from '../../../permissions'
+import type { RequestUser } from "../../../types/requestuser"
 import apiUtils from '../apiUtils'
-
-const ticketsV2 = {}
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T
+  headers: any
+  query: any
+}
+
+export interface TicketV2Api {
+  create: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
+  get: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
 }
 
 export interface TicketCreateBody {
@@ -49,7 +59,16 @@ export interface TicketCreateBody {
   socketId?: string
 }
 
-ticketsV2.create = async (req: TypedRequestBody<TicketCreateBody>, res: Express.Response) => {
+export interface TicketQueryObject {
+  limit: number
+  page: number
+  owner?: string | Types.ObjectId
+  status?: number | number[]
+  filter?: any
+  unassigned?: boolean
+}
+
+const ticketCreate = async (req: TypedRequestBody<TicketCreateBody>, res: Express.Response) => {
   if (!req.user) return apiUtils.sendApiError(res, 403)
 
   const postTicket = req.body
@@ -64,20 +83,21 @@ ticketsV2.create = async (req: TypedRequestBody<TicketCreateBody>, res: Express.
   }
 
   try {
-    const user = await UserModel.findOne({_id: req.user._id})
+    const requestUser = req.user as RequestUser
+    const user = await UserModel.findOne({_id: requestUser._id})
     if (!user || user.deleted) return apiUtils.sendApiError_InvalidPostData(res)
 
     const HistoryItem = {
       action: 'ticket:created',
       description: 'Ticket was created.',
-      owner: req.user._id
+      owner: requestUser._id
     }
 
     const ticket = TicketModel(postTicket)
     if (postTicket.owner)
       ticket.owner = postTicket.owner
     else
-      ticket.owner = req.user._id
+      ticket.owner = requestUser._id
 
     ticket.subject = sanitizeHtml(ticket.subject).trim()
 
@@ -104,7 +124,7 @@ ticketsV2.create = async (req: TypedRequestBody<TicketCreateBody>, res: Express.
   }
 }
 
-ticketsV2.get = async (req, res) => {
+const ticketsGet = async (req: TypedRequestBody<any>, res: Express.Response) => {
   const query = req.query
   const type = query.type || 'all'
 
@@ -119,21 +139,22 @@ ticketsV2.get = async (req, res) => {
     return apiUtils.sendApiError_InvalidPostData(res)
   }
 
-  const queryObject = {
+  const queryObject: TicketQueryObject = {
     limit,
     page,
   }
 
   try {
     let groups = []
-    if (req.user.role.isAdmin || req.user.role.isAgent) {
-      const dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
-      groups = dbGroups.map((g) => g._id)
+    const requestUser = req.user as RequestUser
+    if (requestUser.role.isAdmin || requestUser.role.isAgent) {
+      const dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(requestUser._id)
+      groups = dbGroups.map((g) => g?._id)
     } else {
-      groups = await GroupModel.getAllGroupsOfUser(req.user._id)
+      groups = await GroupModel.getAllGroupsOfUser(requestUser._id)
     }
 
-    const mappedGroups = groups.map((g) => g._id)
+    const mappedGroups = groups.map((g) => g?._id)
 
     switch (type.toLowerCase()) {
       case 'active':
@@ -141,7 +162,7 @@ ticketsV2.get = async (req, res) => {
         break
       case 'assigned':
         queryObject.filter = {
-          assignee: [req.user._id],
+          assignee: [requestUser._id],
         }
         break
       case 'unassigned':
@@ -169,7 +190,7 @@ ticketsV2.get = async (req, res) => {
         break
     }
 
-    if (!permissions.canThis(req.user.role, 'tickets:viewall', false)) queryObject.owner = req.user._id
+    if (!permissions.canThis(requestUser.role as IRole, 'tickets:viewall', false)) queryObject.owner = requestUser._id
 
     const tickets = await TicketModel.getTicketsWithObject(mappedGroups, queryObject)
     const totalCount = await TicketModel.getCountWithObject(mappedGroups, queryObject)
@@ -182,10 +203,15 @@ ticketsV2.get = async (req, res) => {
       prevPage: page === 0 ? 0 : page - 1,
       nextPage: page * limit + limit <= totalCount ? page + 1 : page,
     })
-  } catch (err) {
+  } catch (err: any) {
     logger.warn(err)
     return apiUtils.sendApiError(res, 500, err.message)
   }
+}
+
+const ticketsV2: TicketV2Api = {
+  create: ticketCreate,
+  get: ticketsGet
 }
 
 ticketsV2.single = async function (req, res) {
@@ -224,17 +250,20 @@ ticketsV2.single = async function (req, res) {
   }
 }
 
-ticketsV2.update = function (req, res) {
+ticketsV2.update = async function (req, res) {
   const uid = req.params.uid
   const putTicket = req.body.ticket
   if (!uid || !putTicket) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
-
+  
   // todo: complete this...
-  TicketModel.getTicketByUid(uid, function (err, ticket) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    let ticket = await TicketModel.getTicketByUid(uid)
 
-    return apiUtils.sendApiSuccess(res, ticket)
-  })
+    return apiUtils.sendApiSuccess(res, { ticket })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+
 }
 
 ticketsV2.batchUpdate = function (req, res) {
@@ -594,6 +623,167 @@ ticketsV2.topTags = async (req, res) => {
     return apiUtils.sendApiSuccess(res, { tags })
   } catch (e) {
     return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
+ticketsV2.types = {}
+ticketsV2.types.create = async (req, res) => {
+  const data = req.body
+  if (!data || !data.name) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    const type = await TicketTypeModel.create({
+      name: data.name
+    })
+
+    return apiUtils.sendApiSuccess(res, { type})
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.types.update = async (req, res) => {
+  const id = req.params.id
+  const data = req.body
+  if (!id || !data) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    let type = await TicketTypeModel.getType(id)
+    if (!type) return apiUtils.sendApiError(res, 404, 'Not Found')
+
+    type.name = data.name
+
+    type = await type.save()
+    return apiUtils.sendApiSuccess(res, { type })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.types.delete = async (req, res) => {
+  const newTypeId = req.body.newTypeId
+  const delTypeId = req.params.id
+  if (!delTypeId || !newTypeId) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    const mailerTicketType = await SettingModel.getSettingsByName('mailer:check:ticketype')
+    if (mailerTicketType && mailerTicketType.value.toString().toLowerCase() === delTypeId.toString().toLowerCase()) {
+      const error = {
+        custom: true,
+        message: 'Type currently "Default Ticket Type" for mailer check.'
+      }
+
+      return apiUtils.sendApiError(res, 400, error) 
+    }
+
+    await TicketModel.updateType(delTypeId, newTypeId)
+    await TicketTypeModel.deleteOne({_id: delTypeId})
+
+    return apiUtils.sendApiSuccess(res)
+  } catch (e) {
+    console.log(e)
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.types.addPriority = async (req, res) => {
+  const id = req.params.id
+  const data = req.body
+  if (!id || !data || !data.priority) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    let type = await TicketTypeModel.getType(id)
+    if (!type) return apiUtils.sendApiError(res, 404, 'Not Found')
+
+    await type.addPriority(data.priority)
+    type = await type.save()
+    type = await type.populate('priorities')
+
+    return apiUtils.sendApiSuccess(res, { type })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.types.removePriority = async (req, res) => {
+  const id = req.params.id
+  const data = req.body
+  if (!id || !data || !data.priority) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    let type = await TicketTypeModel.getType(id)
+    if (!type) return apiUtils.sendApiError(res, 404, 'Not Found')
+
+    await type.removePriority(data.priority)
+    type = await type.save()
+    type = await type.populate('priorities')
+
+    return apiUtils.sendApiSuccess(res, { type })
+
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.priority = {}
+ticketsV2.priority.create = async (req, res) => {
+  const data = req.body
+  const name = data.name
+  const overdueIn = data.overdueIn
+  const htmlColor = data.htmlColor
+  if (!name || !overdueIn || !htmlColor) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    const priority = await PriorityModel.create({
+      name,
+      overdueIn,
+      htmlColor
+    })
+
+    return apiUtils.sendApiSuccess(res, { priority })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.priority.update = async (req, res) => {
+  const id = req.params.id
+  const data = req.body
+  if (!id || !data) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    let priority = await PriorityModel.getPriority(id)
+    if (!priority) return apiUtils.sendApiError(res, 404, 'Not Found')
+    if (data.name) priority.name = data.name
+    if (data.htmlColor) priority.htmlColor = data.htmlColor
+    if (data.overdueIn) priority.overdueIn = data.overdueIn
+
+    priority = await priority.save()
+    return apiUtils.sendApiSuccess(res, { priority})
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
+  }
+}
+
+ticketsV2.priority.delete = async (req, res) => {
+  const id = req.params.id
+  const data = req.body
+  if (!id || !data || !data.newPriority) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    await TicketModel.updateMany({priority: id}, { priority: data.newPriority})
+
+    const priority = await PriorityModel.findOne({_id: id})
+    if (!priority) return apiUtils.sendApiError_InvalidPostData(res)
+    if (priority.default)
+      return apiUtils.sendApiError(res, 400, {message: 'Unable to delete default priority: ' + priority.name})
+
+    const success = await PriorityModel.deleteOne({_id: id})
+    if (!success) return apiUtils.sendApiError(res, 400, {message: `Unable to delete: ${id}`})
+
+    return apiUtils.sendApiSuccess(res)
+  } catch (e) {
+    return apiUtils.sendApiError(res, 400, e)
   }
 }
 

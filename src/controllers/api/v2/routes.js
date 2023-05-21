@@ -49,6 +49,18 @@ module.exports = function (middleware, router, controllers) {
   // Ticket Info
   router.get('/api/v2/tickets/info/types', apiv2Auth, apiv2.tickets.info.types)
 
+  // Types
+  router.post('/api/v2/tickets/types/create', apiv2Auth, isAdmin, apiv2.tickets.types.create)
+  router.put('/api/v2/tickets/types/:id', apiv2Auth, isAdmin, apiv2.tickets.types.update)
+  router.delete('/api/v2/tickets/types/:id', apiv2Auth, isAdmin, apiv2.tickets.types.delete)
+  router.post('/api/v2/tickets/types/:id/addpriority', apiv2Auth, isAdmin, apiv2.tickets.types.addPriority)
+  router.post('/api/v2/tickets/types/:id/removepriority', apiv2Auth, isAdmin, apiv2.tickets.types.removePriority)
+
+  // Priorities
+  router.post('/api/v2/tickets/priority', apiv2Auth, isAgentOrAdmin, apiv2.tickets.priority.create)
+  router.put('/api/v2/tickets/priority/:id', apiv2Auth, isAgentOrAdmin, apiv2.tickets.priority.update)
+  router.post('/api/v2/tickets/priority/:id/delete', apiv2Auth, isAgentOrAdmin, apiv2.tickets.priority.delete)
+
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, canUser('tickets:view'), apiv2.tickets.get)
   router.post('/api/v2/tickets', apiv2Auth, canUser('tickets:create'), apiv2.tickets.create)

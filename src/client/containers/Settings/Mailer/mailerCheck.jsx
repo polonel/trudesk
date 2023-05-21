@@ -46,14 +46,6 @@ class Mailer_MailerCheck extends React.Component {
     }
   }
 
-  componentDidMount () {
-    helpers.UI.inputs()
-  }
-
-  componentDidUpdate () {
-    helpers.UI.reRenderInputs()
-  }
-
   static getDerivedStateFromProps (nextProps, state) {
     // Load those settings Up to state!
     if (nextProps.settings) {
@@ -94,6 +86,31 @@ class Mailer_MailerCheck extends React.Component {
     return null
   }
 
+  static getTypePriorities (ticketTypes, typeId) {
+    if (!ticketTypes && !typeId) return []
+
+    const filter = ticketTypes.filter(item => {
+      return item.get('_id') === typeId
+    })
+
+    if (!filter || !filter.first()) return []
+    return filter
+      .first()
+      .get('priorities')
+      .map(p => {
+        return { text: p.get('name'), value: p.get('_id') }
+      })
+      .toArray()
+  }
+
+  componentDidMount () {
+    helpers.UI.inputs()
+  }
+
+  componentDidUpdate () {
+    helpers.UI.reRenderInputs()
+  }
+
   getSetting (stateName) {
     return this.props.settings.getIn(['settings', stateName, 'value'])
       ? this.props.settings.getIn(['settings', stateName, 'value'])
@@ -102,20 +119,6 @@ class Mailer_MailerCheck extends React.Component {
 
   getTicketTypes () {
     return this.props.settings.get('ticketTypes') ? this.props.settings.get('ticketTypes').toArray() : []
-  }
-
-  static getTypePriorities (ticketTypes, typeId) {
-    if (!ticketTypes && !typeId) return []
-    return ticketTypes
-      .filter(item => {
-        return item.get('_id') === typeId
-      })
-      .first()
-      .get('priorities')
-      .map(p => {
-        return { text: p.get('name'), value: p.get('_id') }
-      })
-      .toArray()
   }
 
   onFormSubmit (e) {

@@ -1,7 +1,7 @@
 import { getModelForClass } from '@typegoose/typegoose'
 import Ticket from './ticket'
-import TicketType from './tickettype'
-import Priority from './ticketpriority'
+import { TicketTypeClass } from './tickettype'
+import { TicketPriorityClass } from './ticketpriority'
 import { TicketTagClass } from './tag'
 import Role from './role'
 import RoleOrder from './roleorder'
@@ -18,8 +18,8 @@ import { NotificationModelClass } from './notification'
 import Template from './template'
 
 export const TicketModel = Ticket
-export const TicketTypeModel = TicketType
-export const PriorityModel = Priority
+export const TicketTypeModel = getModelForClass(TicketTypeClass)
+export const PriorityModel = getModelForClass(TicketPriorityClass)
 export const TicketTagModel = getModelForClass(TicketTagClass)
 export const RoleModel = Role
 export const RoleOrderModel = RoleOrder
@@ -38,8 +38,8 @@ export const TemplateModel = Template
 export default {
   UserModel,
   TicketModel: Ticket,
-  TicketTypeModel: TicketType,
-  PriorityModel: Priority,
+  TicketTypeModel,
+  PriorityModel,
   TicketTagModel,
   RoleModel: Role,
   RoleOrderModel: RoleOrder,

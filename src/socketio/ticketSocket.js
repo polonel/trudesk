@@ -25,6 +25,7 @@ var userSchema = require('../models').UserModel
 var roleSchema = require('../models/role')
 var permissions = require('../permissions')
 var xss = require('xss')
+const { PriorityModel } = require('../models')
 
 var events = {}
 
@@ -206,31 +207,24 @@ events.onUpdateTicketTags = socket => {
 }
 
 events.onSetTicketPriority = function (socket) {
-  socket.on(socketEvents.TICKETS_PRIORITY_SET, function (data) {
+  socket.on(socketEvents.TICKETS_PRIORITY_SET, async function (data) {
     const ticketId = data._id
     const priority = data.value
     const ownerId = socket.request.user._id
 
     if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true
-    ticketSchema.getTicketById(ticketId, function (err, ticket) {
-      if (err) return true
-      prioritySchema.getPriority(priority, function (err, p) {
-        if (err) {
-          winston.debug(err)
-          return true
-        }
+    try {
+      let ticket = await ticketSchema.getTicketById(ticketId)
+      const p = await PriorityModel.getPriority(priority)
 
-        ticket.setTicketPriority(ownerId, p, function (err, t) {
-          if (err) return true
-          t.save(function (err, tt) {
-            if (err) return true
+      ticket = await ticket.setTicketPriority(ownerId, p)
+      ticket = await ticket.save()
 
-            // emitter.emit('ticket:updated', tt)
-            utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_PRIORITY_UPDATE, tt)
-          })
-        })
-      })
-    })
+      utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_PRIORITY_UPDATE, ticket)
+    } catch (e) {
+      winston.warn(e)
+      return true
+    }
   })
 }
 

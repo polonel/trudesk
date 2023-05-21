@@ -1,5 +1,5 @@
 export type SettingsObjectType = {
-  emailBeta: SettingsObjectType_Bool
+  emailBeta?: SettingsObjectType_Bool
   hasThirdParty?: boolean
   siteTitle: SettingsObjectType_String
   siteUrl?: SettingsObjectType_String

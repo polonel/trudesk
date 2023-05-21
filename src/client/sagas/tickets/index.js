@@ -194,10 +194,10 @@ function * createPriority ({ payload }) {
   }
 }
 
-function * updatePriority ({ payload }) {
+function * updatePriority ({ payload, meta }) {
   try {
     const response = yield call(api.tickets.updatePriority, payload)
-    yield put({ type: UPDATE_PRIORITY.SUCCESS, response })
+    yield put({ type: UPDATE_PRIORITY.SUCCESS, response, meta })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
     if (error.code === 'ERR_CANCELED') return

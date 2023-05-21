@@ -78,7 +78,7 @@ async function getSettings(
   return new Promise<ContentData>((resolve, reject) => {
     ;(async () => {
       try {
-        const settings = await SettingModel.getSettings()
+        const settings = await SettingModel.getSettings() as Array<SettingsObjectType_Base>
         const result: ContentData = {}
         const s: SettingsObjectType = {
           emailBeta: parseSetting(settings, 'beta:email', false),

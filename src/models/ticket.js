@@ -23,7 +23,7 @@ const xss = require('xss')
 const utils = require('../helpers/utils')
 
 // Needed - For Population
-import { GroupModel as groupSchema, UserModel as userSchema } from '../models'
+import { GroupModel as groupSchema, TicketTypeModel, UserModel as userSchema } from '../models'
 
 const permissions = require('../permissions')
 const commentSchema = require('./comment')
@@ -354,22 +354,32 @@ ticketSchema.methods.clearAssignee = function (ownerId, callback) {
  * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
-  const typeSchema = require('./tickettype')
-  const self = this
-  self.type = typeId
-  typeSchema.findOne({ _id: typeId }, function (err, type) {
-    if (err) return callback(err)
-    if (!type) return callback('Invalid Type Id: ' + typeId)
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      this.type = typeId
+      try {
+        const type = await TicketTypeModel.findOne({ _id: typeId })
+        if (!type) {
+          if (typeof callback === 'function') return callback('Invalid Type Id: ' + typeId)
+          return reject(new Error('Invalid Type Id: ' + typeId))
+        }
 
-    const historyItem = {
-      action: 'ticket:set:type',
-      description: 'Ticket type set to: ' + type.name,
-      owner: ownerId
-    }
+        const historyItem = {
+          action: 'ticket:set:type',
+          description: 'Ticket type set to: ' + type.name,
+          owner: ownerId
+        }
 
-    self.history.push(historyItem)
+        this.history.push(historyItem)
 
-    if (typeof callback === 'function') return callback(null, self)
+        if (typeof callback === 'function') return callback(null, this)
+
+        return resolve(this)
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
+        return reject(e)
+      }
+    })()
   })
 }
 
@@ -384,25 +394,32 @@ ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
  * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function (ownerId, priority, callback) {
-  if (_.isUndefined(priority) || !_.isObject(priority)) return callback('Priority must be a PriorityObject.', null)
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (_.isUndefined(priority) || !_.isObject(priority)) {
+        if (typeof callback === 'function') return callback('Priority must be a PriorityObject.', null)
+        return reject(new Error('Priority must be a PriorityObject.'))
+      }
 
-  const self = this
-  self.priority = priority._id
-  const historyItem = {
-    action: 'ticket:set:priority',
-    description: 'Ticket Priority set to: ' + priority.name,
-    owner: ownerId
-  }
-  self.history.push(historyItem)
+      this.priority = priority._id
+      const historyItem = {
+        action: 'ticket:set:priority',
+        description: 'Ticket Priority set to: ' + priority.name,
+        owner: ownerId
+      }
 
-  self
-    .populate(['priority'])
-    .then(function (updatedSelf) {
-      return callback(null, updatedSelf)
-    })
-    .catch(function (err) {
-      return callback(err, null)
-    })
+      this.history.push(historyItem)
+
+      try {
+        const populatedTicket = await this.populate(['priority'])
+        if (typeof callback === 'function') return callback(null, populatedTicket)
+
+        return resolve(populatedTicket)
+      } catch (err) {
+        if (typeof callback === 'function') return callback(err)
+      }
+    })()
+  })
 }
 
 /**
@@ -1516,12 +1533,24 @@ ticketSchema.statics.getAllTicketsByType = function (typeId, callback) {
 }
 
 ticketSchema.statics.updateType = function (oldTypeId, newTypeId, callback) {
-  if (_.isUndefined(oldTypeId) || _.isUndefined(newTypeId)) {
-    return callback('Invalid IDs - TicketSchema.UpdateType()', null)
-  }
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      if (!oldTypeId || !newTypeId) {
+        if (typeof callback === 'function') return callback('Invalid IDs - TicketSchema.UpdateType()')
+        return reject('Invalid IDs - TicketSchema.UpdateType()')
+      }
 
-  const self = this
-  return self.model(COLLECTION).updateMany({ type: oldTypeId }, { $set: { type: newTypeId } }, callback)
+      const query = this.model(COLLECTION).updateMany({ type: oldTypeId }, { $set: { type: newTypeId } })
+      if (typeof callback === 'function') return query.exec(callback)
+
+      try {
+        const res = await query.exec()
+        return resolve(res)
+      } catch (e) {
+        return reject(e)
+      }
+    })()
+  })
 }
 
 ticketSchema.statics.getAssigned = function (userId, callback) {

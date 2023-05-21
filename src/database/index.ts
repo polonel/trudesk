@@ -98,6 +98,7 @@ export async function init(callback: DBCallback, connectionString?: string, opts
   let CONNECTION_URI
   if (connectionString) {
     CONNECTION_URI = connectionString
+    options.dbName = ''
   } else if (process.env["TD_MONGODB_URI"]) {
     CONNECTION_URI = process.env["TD_MONGODB_URI"]
   } else {

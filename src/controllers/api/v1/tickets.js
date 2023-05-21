@@ -1061,25 +1061,28 @@ apiTickets.postInternalNote = function (req, res) {
  * @apiError InvalidRequest Invalid Post Data
  *
  */
-apiTickets.getTypes = function (req, res) {
-  var ticketType = require('../../../models/tickettype')
-  ticketType.getTypes(function (err, types) {
-    if (err) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
-
+apiTickets.getTypes = async function (req, res) {
+  const TicketTypeModel = require('../../../models').TicketTypeModel
+  try {
+    const types = await TicketTypeModel.getTypes()
     return res.json(types)
-  })
+  } catch (err) {
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  }
 }
 
-apiTickets.getType = function (req, res) {
+apiTickets.getType = async function (req, res) {
   var id = req.params.id
   if (!id) return res.status(400).json({ success: false, error: 'Invalid Type ID' })
 
-  var ticketType = require('../../../models/tickettype')
-  ticketType.getType(id, function (err, type) {
-    if (err) return res.status(400).json({ success: false, error: 'Invalid Type ID' })
+  try {
+    const TicketTypeModel = require('../../../models').TicketTypeModel
+    const type = await TicketTypeModel.getType(id)
 
-    return res.json({ success: true, type: type })
-  })
+    return res.json({ success: true, type })
+  } catch (err) {
+    return res.status(400).json({ success: false, error: 'Invalid Type ID' })
+  }
 }
 
 /**
@@ -1252,7 +1255,7 @@ apiTickets.deleteType = function (req, res) {
   async.waterfall(
     [
       function (next) {
-        settingsSchema.getSettingByName('mailer:check:ticketype', function (err, setting) {
+        settingsSchema.getSettingByName('mailer:check:tickettype', function (err, setting) {
           if (err) return next(err)
           if (setting && setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase()) {
             return next({

@@ -7,8 +7,13 @@ var mongoose = require('mongoose')
 var path = require('path')
 var _ = require('lodash')
 
+// Preload Models
+require('../src/models')
+const { webServerListen } = require('../src/webserver')
+
 var database, db
-var CONNECTION_URI = 'mongodb://localhost:27017/polonel_trudesk31908899'
+var TEST_DB_NAME = 'polonel_trudesk31908899'
+var CONNECTION_URI = 'mongodb://192.168.4.187:27017/' + TEST_DB_NAME
 
 // Global Setup for tests
 before(function (done) {
@@ -29,10 +34,11 @@ before(function (done) {
     async.series(
       [
         function (cb) {
-          mongoose.connection.db.dropDatabase(function (err) {
-            expect(err).to.not.exist
-            cb()
-          })
+          if (mongoose.connection.db.namespace !== TEST_DB_NAME) {
+            return cb('Invalid Test Database. Existing...')
+          }
+
+          return cb()
         },
         function (cb) {
           var counter = require('../src/models/counters')
@@ -67,10 +73,10 @@ before(function (done) {
           })
         },
         function (cb) {
-          var userSchema = require('../src/models/user')
+          const { UserModel } = require('../src/models')
           var adminRole = _.find(global.roles, { normalized: 'admin' })
           expect(adminRole).to.exist
-          userSchema.create(
+          UserModel.create(
             {
               username: 'trudesk',
               password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
@@ -88,12 +94,12 @@ before(function (done) {
           )
         },
         function (cb) {
-          var userSchema = require('../src/models/user')
+          var { UserModel } = require('../src/models')
           var supportRole = _.find(global.roles, { normalized: 'support' })
           expect(supportRole).to.exist
           global.supportRoleId = supportRole._id
 
-          userSchema.create(
+          UserModel.create(
             {
               username: 'fake.user',
               password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
@@ -111,11 +117,11 @@ before(function (done) {
           )
         },
         function (cb) {
-          var userSchema = require('../src/models/user')
+          var { UserModel } = require('../src/models')
           var userRole = _.find(global.roles, { normalized: 'user' })
           expect(userRole).to.exist
           global.userRoleId = userRole._id
-          userSchema.create(
+          UserModel.create(
             {
               username: 'deleted.user',
               password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
@@ -134,8 +140,8 @@ before(function (done) {
           )
         },
         function (cb) {
-          var groupSchema = require('../src/models/group')
-          groupSchema.create(
+          var { GroupModel } = require('../src/models')
+          GroupModel.create(
             {
               name: 'TEST'
             },
@@ -153,11 +159,12 @@ before(function (done) {
             db,
             function (err) {
               expect(err).to.not.exist
-              ws.listen(function (err) {
+              ws.webServerListen(function (err) {
                 expect(err).to.not.exist
-                global.server = ws.server
+                global.server = ws.default.server
 
-                require('../src/socketserver')(ws)
+                const { SocketServer } = require('../src/socketserver')
+                SocketServer(ws)
 
                 cb()
               })
@@ -166,7 +173,12 @@ before(function (done) {
           )
         }
       ],
-      function () {
+      function (err) {
+        if (err) {
+          console.log(err)
+          return done(err)
+        }
+
         done()
       }
     )
@@ -178,8 +190,8 @@ after(function (done) {
   this.timeout(5000)
   mongoose.connection.dropDatabase(function () {
     mongoose.connection.close(function () {
-      socketServer.eventLoop.stop()
-      server.close()
+      global.socketServer.eventLoop.stop()
+      global.server.close()
 
       done()
     })

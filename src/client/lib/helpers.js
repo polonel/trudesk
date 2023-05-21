@@ -166,7 +166,8 @@ helpers.UI.playSound = function (soundId) {
   const audio = document.getElementById(soundId + '_audio')
   if (audio) {
     audio.setAttribute('crossorigin', 'anonymous')
-    audio.play().then(() => {})
+    audio.crossOrigin = 'anonymous'
+    audio.play()
   }
 }
 
