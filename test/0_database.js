@@ -13,7 +13,8 @@ const { webServerListen } = require('../src/webserver')
 
 var database, db
 var TEST_DB_NAME = 'polonel_trudesk31908899'
-var CONNECTION_URI = 'mongodb://192.168.4.187:27017/' + TEST_DB_NAME
+// var CONNECTION_URI = 'mongodb://192.168.4.187:27017/' + TEST_DB_NAME
+var CONNECTION_URI = 'mongodb://localhost:27017/' + TEST_DB_NAME
 
 // Global Setup for tests
 before(function (done) {
