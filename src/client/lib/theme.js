@@ -60,6 +60,9 @@ const setTheme = colorScheme => {
   const tertiaryFade = color(tertiary)
     .fade(0.15)
     .toString()
+  const tertiaryFade25 = color(tertiary)
+    .fade(0.75)
+    .toString()
 
   const tertiaryLight5 = color(tertiary)
     .lighten(0.05)
@@ -136,6 +139,7 @@ const setTheme = colorScheme => {
   html.style.setProperty('--secondary', secondary)
   html.style.setProperty('--tertiary', tertiary)
   html.style.setProperty('--tertiaryfade', tertiaryFade)
+  html.style.setProperty('--tertiaryfade25', tertiaryFade25)
   html.style.setProperty('--tertiarylight5', tertiaryLight5)
   html.style.setProperty('--tertiarydark10', tertiaryDark10)
   html.style.setProperty('--tertiarytextcolor', tertiaryTextColor)

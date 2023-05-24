@@ -450,5 +450,8 @@ api.common.fetchViewData = () => {
 api.common.fetchTheme = () => {
   return axios.get('/api/v2/settings/theme').then(res => res.data)
 }
+api.common.fetchReleases = () => {
+  return axios.get('/api/v2/releases').then(res => res.data)
+}
 
 export default api

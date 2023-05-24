@@ -998,3 +998,93 @@ textarea.review-list
     background: #000
 
 // END - React Grid Layout
+
+// About Section
+.about-section
+  section
+    margin: 0 15px
+    dl
+      padding: 25px 10px
+      border-bottom: 1px solid rgba(0,0,0,0.15)
+      & > div
+        display: grid
+        max-width: 70rem
+        gap: 1rem
+        grid-template-columns: repeat(3, minmax(0,1fr))
+        dt
+          font-size: 1.15rem
+        dd
+          code
+            font-size: 14px
+            background: rgba(0,0,0,0.15)
+            padding: 6px 12px
+            border-radius: 3px
+            margin-right: 6px
+  span.text
+    font-size: 1.1rem
+    flex-grow: 1
+    a
+      font-weight: 600
+
+.releases
+  padding-top: 15px
+  .release-item
+    display: flex
+    width: 100%
+    flex-direction: row
+    padding: 0.75rem 1.25rem
+    background: var(--pagecontentdark10)
+    border: 1px solid rgba(0,0,0,0.15)
+    border-radius: 5px
+    margin-bottom: 10px
+    .release-text
+      display: flex
+      width: 100%
+      flex-grow: 1
+      align-items: center
+      text-overflow: ellipsis
+      & > span
+        font-weight: bold
+        font-size: 1.15rem
+        line-height: 1.75rem
+        & > span
+          margin-right: 0.5rem
+          font-size: .75rem
+          line-height: 1rem
+          font-weight: 400
+
+    button
+      width: 230px
+      display: inline-flex
+      flex-grow: 1
+      align-items: center
+      justify-content: center
+      padding: 5px 20px
+
+// Up to Date
+a.up-to-date > span,
+a.out-of-date > span
+  line-height: 1.45rem
+  font-weight: 600
+  font-size: 0.85rem
+  padding-left: 0.5rem
+  padding-right: 0.5rem
+  border-width: 1px
+  border-style: solid
+  white-space: nowrap
+  border-radius: 99999px
+  cursor: pointer !important
+  display: inline-flex
+  margin-left: 0.5rem
+  color: rgba(255,255,255,0.75)
+  background: darken($accent_success, 5%)
+  border-color: lighten($accent_success, 10%)
+  &:hover
+    background: lighten($accent_success, 10%)
+
+a.out-of-date > span
+  background: darken($accent_warn, 15%)
+  border-color: $accent_warn
+  &:hover
+    background: darken($accent_warn, 25%)
+

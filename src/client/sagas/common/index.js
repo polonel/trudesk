@@ -15,7 +15,15 @@
 import { call, put, takeLatest, select } from 'redux-saga/effects'
 
 import api from '../../api'
-import { FETCH_ROLES, FETCH_VIEWDATA, INIT_SOCKET, SET_SESSION_USER, UPDATE_SOCKET, FETCH_THEME } from 'actions/types'
+import {
+  FETCH_ROLES,
+  FETCH_VIEWDATA,
+  INIT_SOCKET,
+  SET_SESSION_USER,
+  UPDATE_SOCKET,
+  FETCH_THEME,
+  FETCH_RELEASES
+} from 'actions/types'
 
 import Log from '../../logger'
 import helpers from 'lib/helpers'
@@ -106,6 +114,23 @@ function * fetchViewData ({ payload, meta }) {
   }
 }
 
+function * fetchReleases ({ payload }) {
+  yield put({ type: FETCH_RELEASES.PENDING })
+  try {
+    const response = yield call(api.common.fetchReleases, payload)
+    yield put({ type: FETCH_RELEASES.SUCCESS, response })
+  } catch (error) {
+    console.log(error)
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: FETCH_RELEASES.ERROR, error })
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(INIT_SOCKET.ACTION, initSocket)
   yield takeLatest(UPDATE_SOCKET.ACTION, updateSocket)
@@ -113,4 +138,5 @@ export default function * watcher () {
   yield takeLatest(FETCH_THEME.ACTION, fetchTheme)
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
   yield takeLatest(FETCH_VIEWDATA.ACTION, fetchViewData)
+  yield takeLatest(FETCH_RELEASES.ACTION, fetchReleases)
 }

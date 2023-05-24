@@ -19,6 +19,7 @@ import apiUtils from '../apiUtils'
 import { SessionModel, UserModel } from '../../../models'
 import jwt from 'jsonwebtoken'
 import config from '../../../config'
+import { getReleases } from '../../../memory/releases_inmemory'
 
 const commonV2 = {}
 
@@ -141,6 +142,10 @@ commonV2.token = async (req, res) => {
 
 commonV2.viewData = async (req, res) => {
   return apiUtils.sendApiSuccess(res, { viewdata: req.viewdata })
+}
+
+commonV2.getReleases = async (req, res) => {
+  return apiUtils.sendApiSuccess(res, { releases: getReleases() })
 }
 
 module.exports = commonV2

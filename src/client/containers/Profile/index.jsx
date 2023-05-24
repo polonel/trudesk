@@ -461,7 +461,7 @@ class ProfileContainer extends React.Component {
                                 <i className='material-icons mr-10' style={{ opacity: 0.5 }}>
                                   info
                                 </i>
-                                <p style={{ lineHeight: '18px' }}>
+                                <p style={{ lineHeight: '18px', color: 'rgba(0, 0, 0, 0.5)' }}>
                                   After changing your password, you will be logged out of all sessions.
                                 </p>
                               </div>

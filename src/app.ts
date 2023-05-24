@@ -24,7 +24,6 @@ import mailCheck from './mailer/mailCheck'
 import migration from './migration'
 import Models from './models'
 import type { SettingModelClass } from "./models/setting"
-import type { ISetting } from "./models/setting1"
 import permissions from './permissions'
 import buildSass from './sass/buildsass'
 import { init as tdDefaultInit } from './settings/defaults'
@@ -109,7 +108,7 @@ function launchServer(db: TrudeskDatabase) {
         function (next) {
           // Start Check Mail
           const settingSchema = Models.SettingModel
-          settingSchema.getSettingByName('mailer:check:enable', function (err: Error, mailCheckEnabled: ISetting) {
+          settingSchema.getSettingByName('mailer:check:enable', function (err: Error, mailCheckEnabled: SettingModelClass) {
             if (err) {
               winston.warn(err)
               return next(err)
@@ -158,7 +157,7 @@ function dbCallback(err?: Error | null, db?: TrudeskDatabase | null) {
 
   if (isDocker) {
     const s = Models.SettingModel
-    s.getSettingByName('installed', function (err: Error, installed: ISetting) {
+    s.getSettingByName('installed', function (err: Error, installed: SettingModelClass) {
       if (err) return start()
 
       if (!installed) {

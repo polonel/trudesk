@@ -25,7 +25,8 @@ import {
   FETCH_VIEWDATA,
   SHOW_NOTICE,
   CLEAR_NOTICE,
-  FETCH_THEME
+  FETCH_THEME,
+  FETCH_RELEASES
 } from 'actions/types'
 
 export const initSocket = createAction(
@@ -53,3 +54,4 @@ export const fetchViewData = createAction(
   payload => payload,
   () => ({ thunk: true })
 )
+export const fetchReleases = createAction(FETCH_RELEASES.ACTION)
