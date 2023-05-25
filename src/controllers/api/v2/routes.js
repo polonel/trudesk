@@ -28,6 +28,7 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/logout', controllers.api.v2.common.logout)
   router.post('/api/v2/token', controllers.api.v2.common.token)
   router.get('/api/v2/viewdata', middleware.loadCommonData, controllers.api.v2.common.viewData)
+  router.get('/api/v2/about/stats', apiv2Auth, controllers.api.v2.common.aboutStats)
   router.get('/api/v2/releases', controllers.api.v2.common.getReleases)
 
   // Accounts

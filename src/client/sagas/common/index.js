@@ -22,7 +22,8 @@ import {
   SET_SESSION_USER,
   UPDATE_SOCKET,
   FETCH_THEME,
-  FETCH_RELEASES
+  FETCH_RELEASES,
+  FETCH_ABOUT_STATS
 } from 'actions/types'
 
 import Log from '../../logger'
@@ -120,7 +121,6 @@ function * fetchReleases ({ payload }) {
     const response = yield call(api.common.fetchReleases, payload)
     yield put({ type: FETCH_RELEASES.SUCCESS, response })
   } catch (error) {
-    console.log(error)
     const errorText = error.response ? error.response.data.error : error
     if (error.response && error.response.status !== (401 || 403)) {
       Log.error(errorText, error)
@@ -128,6 +128,22 @@ function * fetchReleases ({ payload }) {
     }
 
     yield put({ type: FETCH_RELEASES.ERROR, error })
+  }
+}
+
+function * fetchAboutStats ({ payload }) {
+  try {
+    const response = yield call(api.common.fetchAboutStats, payload)
+    yield put({ type: FETCH_ABOUT_STATS.SUCCESS, response })
+  } catch (error) {
+    console.log(error)
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: FETCH_ABOUT_STATS.ERROR, error })
   }
 }
 
@@ -139,4 +155,5 @@ export default function * watcher () {
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
   yield takeLatest(FETCH_VIEWDATA.ACTION, fetchViewData)
   yield takeLatest(FETCH_RELEASES.ACTION, fetchReleases)
+  yield takeLatest(FETCH_ABOUT_STATS.ACTION, fetchAboutStats)
 }

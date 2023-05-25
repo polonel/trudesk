@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { hideModal, showModal, fetchReleases } from 'actions/common'
+import { hideModal, showModal, fetchReleases, fetchAboutStats } from 'actions/common'
 
 import helpers from 'lib/helpers'
 import PageContent from 'components/PageContent'
@@ -15,6 +15,7 @@ import TitleContext from 'app/TitleContext'
 class AboutContainer extends React.Component {
   componentDidMount () {
     this.props.fetchReleases()
+    this.props.fetchAboutStats()
     helpers.setupScrollers()
     helpers.UI.waves()
   }
@@ -100,23 +101,29 @@ class AboutContainer extends React.Component {
               <div>
                 <dt>Total Tickets</dt>
                 <dd>
-                  <span className={'text'}>12,568</span>
+                  <span className={'text'}>
+                    {helpers.formatNumberWithCommas(this.props.aboutState.stats.get('ticketCount')) || 0}
+                  </span>
                 </dd>
               </div>
             </dl>
             <dl>
               <div>
-                <dt>Total Customers</dt>
+                <dt>Total Agents</dt>
                 <dd>
-                  <span className={'text'}>34</span>
+                  <span className={'text'}>
+                    {helpers.formatNumberWithCommas(this.props.aboutState.stats.get('agentCount')) || 0}
+                  </span>
                 </dd>
               </div>
             </dl>
             <dl>
               <div>
-                <dt>Total Customers</dt>
+                <dt>Total Requesters</dt>
                 <dd>
-                  <span className={'text'}>34</span>
+                  <span className={'text'}>
+                    {helpers.formatNumberWithCommas(this.props.aboutState.stats.get('requesterCount')) || 0}
+                  </span>
                 </dd>
               </div>
             </dl>
@@ -217,13 +224,16 @@ AboutContainer.propTypes = {
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   fetchReleases: PropTypes.func.isRequired,
+  fetchAboutStats: PropTypes.func.isRequired,
   viewdata: PropTypes.object.isRequired,
-  releases: PropTypes.object.isRequired
+  releases: PropTypes.object.isRequired,
+  aboutState: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
   viewdata: state.common.viewdata,
-  releases: state.releases
+  releases: state.releases,
+  aboutState: state.aboutState
 })
 
-export default connect(mapStateToProps, { fetchReleases, showModal, hideModal })(AboutContainer)
+export default connect(mapStateToProps, { fetchAboutStats, fetchReleases, showModal, hideModal })(AboutContainer)

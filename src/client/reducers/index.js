@@ -31,6 +31,7 @@ import departmentsState from './departmentsReducer'
 import noticesState from './noticesReducer'
 import searchState from './searchReducer'
 import messagesState from './messagesReducer'
+import aboutState from './aboutReducer'
 
 const IndexReducer = combineReducers({
   shared,
@@ -49,7 +50,8 @@ const IndexReducer = combineReducers({
   noticesState,
   settings,
   tagsSettings,
-  messagesState
+  messagesState,
+  aboutState
 })
 
 export default IndexReducer

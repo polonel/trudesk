@@ -2281,6 +2281,11 @@ helpers.isValidEmail = function (email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+helpers.formatNumberWithCommas = function (num) {
+  if (!num) return '0'
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
 window.trudesk = {}
 window.trudesk.helpers = helpers
 module.exports = helpers

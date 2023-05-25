@@ -8,9 +8,6 @@ import rehypeRaw from 'rehype-raw'
 
 import BaseModal from 'containers/Modals/BaseModal'
 
-import Log from '../../logger'
-import axios from 'axios'
-
 @observer
 class ViewChangelogModal extends React.Component {
   @observable content = ''
@@ -34,9 +31,19 @@ class ViewChangelogModal extends React.Component {
           </ReactMarkdown>
 
           <div style={{ marginTop: 25 }}>
-            <a href={this.props.link} style={{ fontSize: '1.25rem' }} target={'_blank'} rel={'noreferrer noopener'}>
-              View on Github
-            </a>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+              <a
+                href={this.props.link}
+                className={'md-btn md-btn-accent'}
+                target={'_blank'}
+                rel={'noreferrer noopener'}
+              >
+                View on Github
+              </a>
+              <a href='#' className={'md-btn md-btn-flat md-btn-flat-primary uk-modal-close'}>
+                Close
+              </a>
+            </div>
           </div>
         </div>
       </BaseModal>

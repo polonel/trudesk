@@ -8,42 +8,42 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    5/23/23 6:37 PM
+ *  Updated:    5/24/23 1:35 AM
  *  Copyright (c) 2014-2023. All rights reserved.
  */
 
 import { handleActions } from 'redux-actions'
-import { fromJS, List, Map } from 'immutable'
+import { fromJS, Map } from 'immutable'
 
-import { FETCH_RELEASES } from 'actions/types'
+import { FETCH_ABOUT_STATS } from 'actions/types'
 
 const initialState = {
-  data: List([]),
+  stats: Map({}),
   loading: false,
   error: ''
 }
 
-const releasesReducer = handleActions(
+const aboutReducer = handleActions(
   {
-    [FETCH_RELEASES.PENDING]: state => {
+    [FETCH_ABOUT_STATS.PENDING]: state => {
       return {
         ...state,
         loading: true
       }
     },
 
-    [FETCH_RELEASES.SUCCESS]: (state, action) => {
+    [FETCH_ABOUT_STATS.SUCCESS]: (state, action) => {
       return {
         ...state,
         loading: false,
-        data: fromJS(action.response.releases)
+        stats: fromJS(action.response.stats)
       }
     },
-    [FETCH_RELEASES.ERROR]: (state, action) => {
+    [FETCH_ABOUT_STATS.ERROR]: (state, action) => {
       return {
         ...state,
         loading: false,
-        data: initialState.data,
+        stats: initialState.stats,
         error: action.error
       }
     }
@@ -52,4 +52,4 @@ const releasesReducer = handleActions(
   initialState
 )
 
-export default releasesReducer
+export default aboutReducer

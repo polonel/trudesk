@@ -16,7 +16,7 @@ import crypto from 'crypto'
 import moment from 'moment'
 import logger from '../../../logger'
 import apiUtils from '../apiUtils'
-import { SessionModel, UserModel } from '../../../models'
+import { SessionModel, TicketModel, UserModel } from '../../../models'
 import jwt from 'jsonwebtoken'
 import config from '../../../config'
 import { getReleases } from '../../../memory/releases_inmemory'
@@ -146,6 +146,26 @@ commonV2.viewData = async (req, res) => {
 
 commonV2.getReleases = async (req, res) => {
   return apiUtils.sendApiSuccess(res, { releases: getReleases() })
+}
+
+commonV2.aboutStats = async (req, res) => {
+  try {
+    const stats = {}
+    stats.ticketCount = await TicketModel.countDocuments({ deleted: false })
+
+    const obj = {
+      limit: 99999999,
+      page: 0,
+      showDeleted: false
+    }
+    const requesters = await UserModel.getRequesters(obj)
+    const agents = await UserModel.getAgents(obj)
+    stats.requesterCount = requesters ? requesters.length : 0
+    stats.agentCount = agents ? agents.length : 0
+    return apiUtils.sendApiSuccess(res, { stats })
+  } catch (e) {
+    return apiUtils.sendApiError(res, e)
+  }
 }
 
 module.exports = commonV2
