@@ -71,7 +71,7 @@ class AboutContainer extends React.Component {
                 <dt>Version</dt>
                 <dd>
                   <span>
-                    <code>1.2.2</code>
+                    <code>{this.props.aboutState.stats.get('version') || 'unknown'}</code>
                     <code>CE</code>
                     <a
                       href='https://github.com/polonel/trudesk/releases'

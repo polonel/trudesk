@@ -14,6 +14,7 @@
 
 import crypto from 'crypto'
 import moment from 'moment'
+import pkg from '../../../../package.json'
 import logger from '../../../logger'
 import apiUtils from '../apiUtils'
 import { SessionModel, TicketModel, UserModel } from '../../../models'
@@ -150,7 +151,9 @@ commonV2.getReleases = async (req, res) => {
 
 commonV2.aboutStats = async (req, res) => {
   try {
-    const stats = {}
+    const stats = {
+      version: pkg.version
+    }
     stats.ticketCount = await TicketModel.countDocuments({ deleted: false })
 
     const obj = {
