@@ -65,7 +65,7 @@ taskRunner.checkForUpdates = async () => {
         const currentVersion = semver.parse(pkg.version)
         // logger.debug('Current version: v' + currentVersion.version)
         // logger.debug('Latest Version: v' + latestVersion.version)
-        if (latestVersion < currentVersion)
+        if (latestVersion > currentVersion)
           logger.info('!!! New version available: v' + latestVersion.version + '  !!!')
       }
     }
