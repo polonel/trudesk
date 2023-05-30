@@ -3289,13 +3289,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/component-emitter@npm:^1.2.10":
-  version: 1.2.11
-  resolution: "@types/component-emitter@npm:1.2.11"
-  checksum: 0e081c5f7a4b113af3732f67ad9ebb487d5c239d440d96938ff9a679d18bb9337a513638e12b5b02a7a921494eef18c5a4d78f1188bc43a12290edd74c42a9c7
-  languageName: node
-  linkType: hard
-
 "@types/cookie@npm:^0.4.1":
   version: 0.4.1
   resolution: "@types/cookie@npm:0.4.1"
@@ -6355,7 +6348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"component-emitter@npm:^1.3.0, component-emitter@npm:~1.3.0":
+"component-emitter@npm:^1.3.0":
   version: 1.3.0
   resolution: "component-emitter@npm:1.3.0"
   checksum: b3c46de38ffd35c57d1c02488355be9f218e582aec72d72d1b8bbec95a3ac1b38c96cd6e03ff015577e68f550fbb361a3bfdbd9bb248be9390b7b3745691be6b
@@ -20470,17 +20463,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-parser@npm:~4.0.4":
-  version: 4.0.4
-  resolution: "socket.io-parser@npm:4.0.4"
-  dependencies:
-    "@types/component-emitter": ^1.2.10
-    component-emitter: ~1.3.0
-    debug: ~4.3.1
-  checksum: c173b4f3747c51e2af802eca35212f4dcfa8fe55d7fdc07b9a01da1ecc956791c1bf6591e307952548eab69e6500bcfe27cea8aff1386b860d9bb51f98e4fafb
-  languageName: node
-  linkType: hard
-
 "socket.io-parser@npm:~4.2.0":
   version: 4.2.1
   resolution: "socket.io-parser@npm:4.2.1"
@@ -20491,17 +20473,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io@npm:4.5.1":
-  version: 4.5.1
-  resolution: "socket.io@npm:4.5.1"
+"socket.io@npm:4.5.2":
+  version: 4.5.2
+  resolution: "socket.io@npm:4.5.2"
   dependencies:
     accepts: ~1.3.4
     base64id: ~2.0.0
     debug: ~4.3.2
     engine.io: ~6.2.0
     socket.io-adapter: ~2.4.0
-    socket.io-parser: ~4.0.4
-  checksum: 86afd6dcce0c96de85b20a0e37fa4a21e2e96bd6e36d2518acfad37597bcb5208feafbbac20cd34ee4b9356d40418a43938bcf4a206ba693ba3c771ffcef724f
+    socket.io-parser: ~4.2.0
+  checksum: 8527dd78fa3cf483a2cf0f09f64c4591186931b6765e5d8456dd3022b8786407952e3b931a83a86513c9f56852442e12f3497c761a113113e32b0c867c5ad5a7
   languageName: node
   linkType: hard
 
@@ -22069,7 +22051,7 @@ __metadata:
     semver: 7.3.7
     serve-favicon: 2.5.0
     snyk: 1.965.0
-    socket.io: 4.5.1
+    socket.io: 4.5.2
     socket.io-client: 4.5.1
     standard: 17.0.0
     style-loader: 3.3.1
@@ -22397,7 +22379,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>":
   version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=7ad353"
+  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
