@@ -88,6 +88,11 @@ const parseMemberEmails = async ticket => {
 }
 
 const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
+  if (emails.length < 1) {
+    logger.warn('[CreateTicketEvent::SendMail] - No recipients defined for sendMail')
+    return
+  }
+
   let email = null
 
   if (betaEnabled) {
@@ -135,7 +140,10 @@ const sendMail = async (ticket, emails, baseUrl, betaEnabled) => {
     }
 
     Mailer.sendMail(mailOptions, function (err) {
-      if (err) throw err
+      if (err) {
+        logger.error(err)
+        throw err
+      }
 
       logger.debug(`Sent [${emails.length}] emails.`)
     })
