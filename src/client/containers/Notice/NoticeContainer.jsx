@@ -20,6 +20,8 @@ import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
 import UIKit from 'uikit'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 class NoticeContainer extends React.Component {
   constructor (props) {
@@ -57,7 +59,7 @@ class NoticeContainer extends React.Component {
 
   onDeactivateNotice () {
     axios
-      .get('/api/v1/notices/clearactive')
+      .get('/api/v2/notices/clear')
       .then(() => {
         this.props.socket.emit(NOTICE_CLEAR)
 
@@ -134,6 +136,13 @@ class NoticeContainer extends React.Component {
     })
     return (
       <div>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Notices</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <PageTitle
           title={'Notices'}
           shadow={false}

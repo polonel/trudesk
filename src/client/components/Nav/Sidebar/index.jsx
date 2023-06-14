@@ -20,6 +20,7 @@ import SidebarItem from 'components/Nav/SidebarItem'
 import NavSeparator from 'components/Nav/NavSeparator'
 import Submenu from 'components/Nav/Submenu'
 import SubmenuItem from 'components/Nav/SubmenuItem'
+import clsx from 'clsx'
 
 import { menu } from '../SidebarContent'
 
@@ -33,6 +34,10 @@ function Location ({ children }) {
 }
 
 class Sidebar extends React.Component {
+  constructor (props) {
+    super(props)
+  }
+
   componentDidMount () {
     // Helpers.UI.getPlugins((err, result) => {
     //   if (!err && result.plugins) {
@@ -78,108 +83,120 @@ class Sidebar extends React.Component {
     const { isOpen, sessionUser } = this.props
     if (!sessionUser) return null
     return (
-      <ul className='side-nav'>
-        <Location>
-          {({ location: { pathname } }) => {
-            return menu.map((item, idx) => {
-              if (item.divider) {
-                return <NavSeparator key={new Date()} />
-              }
-              if (item.options) {
-                if (item.perm && Helpers.canUser(item.perm, true)) {
-                  return (
-                    <SidebarItem
-                      key={item.url}
-                      text={item.label}
-                      icon={item.icon}
-                      active={pathname.startsWith(item.url)}
-                      href={item.url}
-                      hasSubmenu={true}
-                      subMenuTarget={item.label.toLowerCase()}
-                    >
-                      <Submenu
-                        id={item.label.toLowerCase()}
-                        title={item.showTitle !== false && item.label}
-                        // subMenuOpen={pathname.startsWith(item.url)}
-                        subMenuOpen={false}
-                        sidebarOpen={isOpen}
-                      >
-                        {item.options.map(subItem => {
-                          if (subItem.divider) {
-                            return <NavSeparator key={new Date()} />
-                          }
-                          if (subItem.perm && Helpers.canUser(subItem.perm, true)) {
-                            return (
-                              <SubmenuItem
-                                key={subItem.url}
-                                href={subItem.url}
-                                text={subItem.label}
-                                icon={subItem.icon}
-                                active={pathname.startsWith(subItem.url)}
-                              />
-                            )
-                          } else if (!subItem.perm) {
-                            return (
-                              <SubmenuItem
-                                key={subItem.url}
-                                href={subItem.url}
-                                text={subItem.label}
-                                icon={subItem.icon}
-                                active={pathname.startsWith(subItem.url)}
-                              />
-                            )
-                          }
-                        })}
-                      </Submenu>
-                    </SidebarItem>
-                  )
-                }
-              }
+      <Fragment>
+        <div
+          className={clsx('sidebar', 'nopadding', this.props.notice && 'has-notice')}
+          style={{ overflowX: 'hidden' }}
+          data-scroll-opacitymax='0.1'
+        >
+          <div className='side-nav-container' style={{ minHeight: 'calc(100% - 53px)' }}>
+            <ul className='side-nav'>
+              <Location>
+                {({ location: { pathname } }) => {
+                  return menu.map((item, idx) => {
+                    if (item.divider) {
+                      return <NavSeparator key={new Date()} />
+                    }
+                    if (item.options) {
+                      if (item.perm && Helpers.canUser(item.perm, true)) {
+                        return (
+                          <SidebarItem
+                            key={item.url}
+                            text={item.label}
+                            icon={item.icon}
+                            active={pathname.startsWith(item.url)}
+                            href={item.url}
+                            hasSubmenu={true}
+                            subMenuTarget={item.label.toLowerCase()}
+                          >
+                            <Submenu
+                              id={item.label.toLowerCase()}
+                              title={item.showTitle !== false && item.label}
+                              // subMenuOpen={pathname.startsWith(item.url)}
+                              subMenuOpen={false}
+                              sidebarOpen={isOpen}
+                            >
+                              {item.options.map(subItem => {
+                                if (subItem.divider) {
+                                  return <NavSeparator key={new Date()} />
+                                }
+                                if (subItem.perm && Helpers.canUser(subItem.perm, true)) {
+                                  return (
+                                    <SubmenuItem
+                                      key={subItem.url}
+                                      href={subItem.url}
+                                      text={subItem.label}
+                                      icon={subItem.icon}
+                                      active={pathname.startsWith(subItem.url)}
+                                    />
+                                  )
+                                } else if (!subItem.perm) {
+                                  return (
+                                    <SubmenuItem
+                                      key={subItem.url}
+                                      href={subItem.url}
+                                      text={subItem.label}
+                                      icon={subItem.icon}
+                                      active={pathname.startsWith(subItem.url)}
+                                    />
+                                  )
+                                }
+                              })}
+                            </Submenu>
+                          </SidebarItem>
+                        )
+                      }
+                    }
 
-              return (
-                <Fragment key={item.label + idx}>
-                  {item.perm && Helpers.canUser(item.perm, true) && (
-                    <SidebarItem
-                      key={item.url}
-                      text={item.label}
-                      icon={item.icon}
-                      href={item.url}
-                      active={pathname.startsWith(item.url)}
-                    />
-                  )}
-                  {!item.perm && item.customer === true && Helpers.canUser('customer:*', false) && (
-                    <SidebarItem
-                      key={item.url}
-                      text={item.label}
-                      icon={item.icon}
-                      href={item.url}
-                      active={pathname.startsWith(item.url)}
-                    />
-                  )}
-                  {!item.perm && item.cloud && (sessionUser.cloudOwner || sessionUser.hasCloudPerm) && (
-                    <SidebarItem
-                      key={item.url}
-                      text={item.label}
-                      icon={item.icon}
-                      href={item.url}
-                      active={pathname.startsWith(item.url)}
-                    />
-                  )}
-                  {!item.perm && !item.cloud && !item.customer && (
-                    <SidebarItem
-                      key={item.url}
-                      text={item.label}
-                      icon={item.icon}
-                      href={item.url}
-                      active={pathname.startsWith(item.url)}
-                    />
-                  )}
-                </Fragment>
-              )
-            })
-          }}
-        </Location>
-      </ul>
+                    return (
+                      <Fragment key={item.label + idx}>
+                        {item.perm && Helpers.canUser(item.perm, true) && (
+                          <SidebarItem
+                            key={item.url}
+                            text={item.label}
+                            icon={item.icon}
+                            href={item.url}
+                            active={pathname.startsWith(item.url)}
+                          />
+                        )}
+                        {!item.perm && item.customer === true && Helpers.canUser('customer:*', false) && (
+                          <SidebarItem
+                            key={item.url}
+                            text={item.label}
+                            icon={item.icon}
+                            href={item.url}
+                            active={pathname.startsWith(item.url)}
+                          />
+                        )}
+                        {!item.perm && item.cloud && (sessionUser.cloudOwner || sessionUser.hasCloudPerm) && (
+                          <SidebarItem
+                            key={item.url}
+                            text={item.label}
+                            icon={item.icon}
+                            href={item.url}
+                            active={pathname.startsWith(item.url)}
+                          />
+                        )}
+                        {!item.perm && !item.cloud && !item.customer && (
+                          <SidebarItem
+                            key={item.url}
+                            text={item.label}
+                            icon={item.icon}
+                            href={item.url}
+                            active={pathname.startsWith(item.url)}
+                          />
+                        )}
+                      </Fragment>
+                    )
+                  })
+                }}
+              </Location>
+            </ul>
+          </div>
+          {/*<SidebarExpandButton />*/}
+        </div>
+        <div className='sidebar-to-right' />
+      </Fragment>
     )
   }
 }
@@ -189,6 +206,7 @@ Sidebar.propTypes = {
   activeItem: PropTypes.string.isRequired,
   activeSubItem: PropTypes.string.isRequired,
   sessionUser: PropTypes.object,
+  notice: PropTypes.object,
   plugins: PropTypes.array,
   isOpen: PropTypes.bool
 }
@@ -196,7 +214,8 @@ Sidebar.propTypes = {
 const mapStateToProps = state => ({
   activeItem: state.sidebar.activeItem,
   activeSubItem: state.sidebar.activeSubItem,
-  sessionUser: state.shared.sessionUser
+  sessionUser: state.shared.sessionUser,
+  notice: state.shared.notice
 })
 
 export default connect(mapStateToProps, { updateNavChange })(Sidebar)

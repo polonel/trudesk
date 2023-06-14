@@ -34,15 +34,8 @@ const Layout = ({ children }) => {
                 </>
 
                 <TopbarContainer />
-                <Fragment>
-                  <div className='sidebar nopadding ' style={{ overflowX: 'hidden' }} data-scroll-opacitymax='0.1'>
-                    <div className='side-nav-container' style={{ minHeight: 'calc(100% - 53px)' }}>
-                      <Sidebar sessionUser={user} />
-                    </div>
-                    {/*<SidebarExpandButton />*/}
-                  </div>
-                  <div className='sidebar-to-right' />
-                </Fragment>
+                <Sidebar sessionUser={user} />
+
                 <div id={'page-content'} style={{ marginLeft: 57, position: 'relative' }}>
                   <Suspense fallback={<div />}>{children}</Suspense>
                 </div>
