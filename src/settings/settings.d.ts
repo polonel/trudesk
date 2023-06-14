@@ -13,6 +13,9 @@ export type SettingsObjectType = {
   customPageLogoFilename?: SettingsObjectType_String
   hasCustomFavicon?: SettingsObjectType_Bool
   customFaviconFilename?: SettingsObjectType_String
+  themeAutoDark?: SettingsObjectType_Bool
+  themeLight?: SettingsObjectType_String
+  themeDark?: SettingsObjectType_String
   colorHeaderBG?: SettingsObjectType_String
   colorHeaderPrimary: SettingsObjectType_String
   colorPrimary: SettingsObjectType_String

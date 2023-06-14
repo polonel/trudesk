@@ -11,6 +11,10 @@ const initialState = {
   customFavicon: false,
   customFaviconUrl: '',
 
+  autoDark: false,
+  themeLight: 'light',
+  themeDark: 'noctis',
+
   headerBG: '#42464d',
   headerPrimary: '#f6f7f8',
   primary: '#606771',
@@ -38,6 +42,10 @@ const reducer = handleActions(
         customLogoUrl: fromJS(theme.customLogoUrl),
         customFavicon: fromJS(theme.customFavicon),
         customFaviconUrl: fromJS(theme.customFaviconUrl),
+
+        autoDark: fromJS(theme.autoDark),
+        themeLight: fromJS(theme.themeLight),
+        themeDark: fromJS(theme.themeDark),
 
         headerBG: fromJS(theme.headerBG),
         headerPrimary: fromJS(theme.headerPrimary),

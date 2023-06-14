@@ -98,6 +98,10 @@ async function getSettings(
           hasCustomFavicon: parseSetting(settings, 'gen:customfavicon', false),
           customFaviconFilename: parseSetting(settings, 'gen:customfaviconfilename', ''),
 
+          themeAutoDark: parseSetting(settings, 'theme:autodark', false),
+          themeLight: parseSetting(settings, 'theme:light', 'light'),
+          themeDark: parseSetting(settings, 'theme:dark', 'noctis'),
+
           colorHeaderBG: parseSetting(settings, 'color:headerbg', '#42464d'),
           colorHeaderPrimary: parseSetting(settings, 'color:headerprimary', '#f6f7fa'),
           colorPrimary: parseSetting(settings, 'color:primary', '#545A63'),

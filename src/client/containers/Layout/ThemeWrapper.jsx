@@ -18,6 +18,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import TitleContext, { setTitle } from 'app/TitleContext'
 import { fetchTheme } from 'actions/common'
 import setTheme from '../../lib/theme'
+import colorMap from '../../lib/themeColors'
 
 class ThemeWrapper extends React.Component {
   constructor (props) {
@@ -40,8 +41,14 @@ class ThemeWrapper extends React.Component {
   }
 
   loadTheme () {
-    const theme = this.props.theme
+    let theme = this.props.theme
     if (!theme) return
+
+    const darkThemePerf = window.matchMedia('(prefers-color-scheme: dark)')
+    if (darkThemePerf.matches && this.props.theme.autoDark) {
+      theme = colorMap[this.props.theme.themeDark]
+    }
+
     const colorScheme = {
       headerBG: theme.headerBG,
       headerPrimary: theme.headerPrimary,
