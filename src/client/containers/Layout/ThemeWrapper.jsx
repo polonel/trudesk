@@ -44,11 +44,23 @@ class ThemeWrapper extends React.Component {
     let theme = this.props.theme
     if (!theme) return
 
-    const darkThemePerf = window.matchMedia('(prefers-color-scheme: dark)')
-    if (darkThemePerf.matches && this.props.theme.autoDark) {
-      theme = colorMap[this.props.theme.themeDark]
-    }
+    if (window.matchMedia && this.props.theme.autoDark) {
+      const darkThemePerf = window.matchMedia('(prefers-color-scheme: dark)')
+      darkThemePerf.addEventListener('change', event => {
+        const newColorScheme = event.matches ? this.props.theme.themeDark : this.props.theme.themeLight
+        theme = colorMap[newColorScheme]
 
+        this.setColorScheme(theme)
+      })
+
+      const newColorScheme = darkThemePerf.matches ? this.props.theme.themeDark : this.props.theme.themeLight
+      theme = colorMap[newColorScheme]
+
+      this.setColorScheme(theme)
+    }
+  }
+
+  setColorScheme (theme) {
     const colorScheme = {
       headerBG: theme.headerBG,
       headerPrimary: theme.headerPrimary,
