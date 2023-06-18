@@ -21,6 +21,7 @@ const GroupModel = require('../models').GroupModel
 const sharedVars = require('./index').shared
 const sharedUtils = require('./index').utils
 const socketEventConst = require('./socketEventConsts')
+const { UserModel: User } = require('../models')
 
 const events = {}
 
@@ -190,7 +191,7 @@ async function updateConversationsNotifications (socket) {
   if (socket && socket.request && socket.request.user) {
     const user = socket.request.user
     const Message = require('../models/chat/message')
-    const Conversation = require('../models/chat/conversation')
+    const Conversation = require('../models').ConversationModel
 
     Conversation.getConversationsWithLimit(user._id, null, (err, conversations) => {
       if (err) {
@@ -344,7 +345,7 @@ events.saveChatWindow = function (socket) {
 }
 
 events.onChatMessage = function (socket) {
-  socket.on(socketEventConst.MESSAGES_SEND, function (data) {
+  socket.on(socketEventConst.MESSAGES_SEND, async function (data) {
     const to = data.to
     const from = data.from
 
@@ -361,69 +362,75 @@ events.onChatMessage = function (socket) {
       id: data.message.owner._id
     }
 
-    async.parallel(
-      [
-        function (next) {
-          User.getUser(to, function (err, toUser) {
-            if (err) return next(err)
-            if (!toUser) return next('User Not Found!')
+    const toUserPromise = new Promise((resolve, reject) => {
+      ;(async () => {
+        try {
+          const toUser = await User.getUser(to)
 
-            // Strip
-            data.toUser = {
-              _id: toUser._id,
-              email: toUser.email,
-              username: toUser.username,
-              fullname: toUser.fullname,
-              image: toUser.image,
-              title: toUser.title,
-              lastOnline: toUser.lastOnline,
-              id: toUser._id
-            }
-
-            return next()
-          })
-        },
-        function (next) {
-          User.getUser(from, function (err, fromUser) {
-            if (err) return next(err)
-            if (!fromUser) return next('User Not Found')
-
-            // Strip
-            data.fromUser = {
-              _id: fromUser._id,
-              email: fromUser.email,
-              username: fromUser.username,
-              fullname: fromUser.fullname,
-              image: fromUser.image,
-              title: fromUser.title,
-              lastOnline: fromUser.lastOnline,
-              id: fromUser._id
-            }
-
-            return next()
-          })
+          // Strip
+          data.toUser = {
+            _id: toUser._id,
+            email: toUser.email,
+            username: toUser.username,
+            fullname: toUser.fullname,
+            image: toUser.image,
+            title: toUser.title,
+            lastOnline: toUser.lastOnline,
+            id: toUser._id
+          }
+          return resolve(toUser)
+        } catch (e) {
+          return reject(e)
         }
-      ],
-      function (err) {
-        if (err) return utils.sendToSelf(socket, socketEventConst.MESSAGES_UI_RECEIVE, { message: err })
+      })()
+    })
 
-        utils.sendToUser(
-          sharedVars.sockets,
-          sharedVars.usersOnline,
-          data.toUser.username,
-          socketEventConst.MESSAGES_UI_RECEIVE,
-          data
-        )
+    const fromUserPromise = new Promise((resolve, reject) => {
+      ;(async () => {
+        try {
+          const fromUser = await User.getUser(from)
+          if (!fromUser) return reject('User Not Found')
 
-        utils.sendToUser(
-          sharedVars.sockets,
-          sharedVars.usersOnline,
-          data.fromUser.username,
-          socketEventConst.MESSAGES_UI_RECEIVE,
-          data
-        )
-      }
-    )
+          // Strip
+          data.fromUser = {
+            _id: fromUser._id,
+            email: fromUser.email,
+            username: fromUser.username,
+            fullname: fromUser.fullname,
+            image: fromUser.image,
+            title: fromUser.title,
+            lastOnline: fromUser.lastOnline,
+            id: fromUser._id
+          }
+
+          return resolve(fromUser)
+        } catch (e) {
+          return reject(e)
+        }
+      })()
+    })
+
+    try {
+      const [toUser, fromUser] = await Promise.all([toUserPromise, fromUserPromise])
+
+      utils.sendToUser(
+        sharedVars.sockets,
+        sharedVars.usersOnline,
+        data.toUser.username,
+        socketEventConst.MESSAGES_UI_RECEIVE,
+        data
+      )
+
+      utils.sendToUser(
+        sharedVars.sockets,
+        sharedVars.usersOnline,
+        data.fromUser.username,
+        socketEventConst.MESSAGES_UI_RECEIVE,
+        data
+      )
+    } catch (err) {
+      return utils.sendToSelf(socket, socketEventConst.MESSAGES_UI_RECEIVE, { error: true, message: err })
+    }
   })
 }
 

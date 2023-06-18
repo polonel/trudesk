@@ -63,8 +63,7 @@ export class ConversationModelClass {
      ;(async () => {
        try {
          const l = limit || 1000000
-         const conversations = await this
-           .find({ participants: userId })
+         const conversations = await this.find({ participants: userId })
            .sort('-updatedAt')
            .limit(l)
            .populate({
