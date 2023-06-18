@@ -206,7 +206,37 @@ apiMessages.send = async (req, res) => {
 }
 
 apiMessages.deleteConversation = async (req, res) => {
-  return apiUtils.sendApiSuccess(res)
+  const conversation = req.params.id
+  if (!conversation) return apiUtils.sendApiError_InvalidPostData(res)
+
+  try {
+    const convo = await ConversationModel.getConversation(conversation)
+    const user = req.user
+    const idx = _.findIndex(convo.userMeta, function (item) {
+      return item.userId.toString() === user._id.toString()
+    })
+    if (idx === -1) {
+      return apiUtils.sendApiError(res, 400, { error: 'Unable to attach to userMeta' })
+    }
+
+    convo.userMeta[idx].deletedAt = new Date()
+    const sConvo = await convo.save()
+
+    const cleanConvo = sConvo.toObject()
+    cleanConvo.participants.forEach(p => {
+      delete p._id
+      delete p.id
+      delete p.role
+    })
+
+    cleanConvo.userMeta.forEach(meta => {
+      delete meta.userId
+    })
+
+    return apiUtils.sendApiSuccess(res, { conversation: cleanConvo })
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
 module.exports = apiMessages

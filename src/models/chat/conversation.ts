@@ -8,13 +8,13 @@ const COLLECTION = 'conversations'
 class UserConversationMeta {
   @prop({required: true, ref: () => UserModelClass})
   public userId!: Ref<UserModelClass>
-  @prop()
+  @prop({type: Date})
   public joinedAt?: Date
   @prop()
   public hasUnread?: boolean
-  @prop()
+  @prop({type: Date})
   public lastRead?: Date
-  @prop()
+  @prop({type: Date})
   public deletedAt?: Date
 }
 
@@ -22,10 +22,11 @@ class UserConversationMeta {
 
 @modelOptions({options: {customName: COLLECTION, allowMixed: Severity.ALLOW}})
 export class ConversationModelClass {
+  public _id!: Types.ObjectId
   @prop()
   public title?: string
-  @prop()
-  public userMeta!: Array<UserConversationMeta>
+  @prop({ type: () => [UserConversationMeta]})
+  public userMeta!: UserConversationMeta[]
 
   @prop({ref: () => UserModelClass})
   public participants!: Ref<UserModelClass>[]
@@ -37,7 +38,7 @@ export class ConversationModelClass {
  public static async getConversations(
    this: ReturnModelType<typeof ConversationModelClass>,
    userId: Array<Types.ObjectId> | Types.ObjectId | string
- ) {
+ ) : Promise<ConversationModelClass[]> {
     return new Promise<Array<ConversationModelClass>>((resolve, reject) => {
       ;(async () => {
         try {
@@ -58,7 +59,7 @@ export class ConversationModelClass {
    this: ReturnModelType<typeof ConversationModelClass>,
    userId: Array<Types.ObjectId | string>,
    limit: number
- ) : Promise<Array<ConversationModelClass>> {
+ ) : Promise<ConversationModelClass[]> {
    return new Promise((resolve, reject) => {
      ;(async () => {
        try {
@@ -82,12 +83,12 @@ export class ConversationModelClass {
  public static async getConversation(
    this: ReturnModelType<typeof ConversationModelClass>,
    convoId: Types.ObjectId
- ) {
+ ): Promise<ConversationModelClass> {
    return new Promise((resolve, reject) => {
      ;(async () => {
        try {
          const conversation = await this.findOne({ _id: convoId })
-           .populate('participants', '_id username fullname email title image lastOnline').exec()
+           .populate('participants', '_id username fullname email title image lastOnline').exec() as ConversationModelClass
 
          return resolve(conversation)
        } catch (e) {

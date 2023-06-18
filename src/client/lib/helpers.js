@@ -1884,8 +1884,8 @@ helpers.setupContextMenu = function (selector, complete) {
       .finish()
       .toggle(100)
       .css({
-        top: event.pageY + 'px',
-        left: event.pageX + 'px'
+        top: event.pageY - 35 + 'px',
+        left: event.pageX - 45 + 'px'
       })
   })
 

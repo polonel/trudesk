@@ -312,7 +312,7 @@ api.messages.getSingleConversation = ({ _id }) => {
   })
 }
 api.messages.deleteConversation = payload => {
-  return axios.delete(`/api/v2/messages/conversation/${payload.convoId}`, payload).then(res => {
+  return axios.delete(`/api/v2/messages/conversations/${payload.convoId}`, payload).then(res => {
     return res.data
   })
 }
