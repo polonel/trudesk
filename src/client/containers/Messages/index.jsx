@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
 import clsx from 'clsx'
+import history from 'lib/lib-history'
 
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
 
@@ -263,10 +264,10 @@ class MessagesContainer extends React.Component {
       return
 
     // History.replaceState(null, null, `/messages/${id}`)
-
     this.props.unloadSingleConversation().then(() => {
       this.singleConversationLoaded = false
       this.props.fetchSingleConversation({ _id: id }).then(() => {
+        history.push(`/messages/${id}`)
         this.scrollToMessagesBottom(true)
       })
     })
