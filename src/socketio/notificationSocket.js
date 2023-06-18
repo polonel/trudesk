@@ -30,40 +30,45 @@ function eventLoop () {
   updateNotifications()
 }
 
-function updateNotifications () {
+async function updateNotifications () {
   var notificationSchema = Models.NotificationModel
   // eslint-disable-next-line no-unused-vars
   for (const [_, socket] of io.of('/').sockets) {
     const notifications = {}
-    async.parallel(
-      [
-        function (done) {
-          notificationSchema.getForUserWithLimit(socket.request.user._id, function (err, items) {
-            if (err) return done(err)
+    const notificationsPromise = new Promise((resolve, reject) => {
+      ;(async () => {
+        try {
+          const items = await notificationSchema.getForUserWithLimit(socket.request.user._id)
+          notifications.items = items
 
-            notifications.items = items
-            return done()
-          })
-        },
-        function (done) {
-          notificationSchema.getUnreadCount(socket.request.user._id, function (err, count) {
-            if (err) return done(err)
-
-            notifications.count = count
-
-            return done()
-          })
+          return resolve(items)
+        } catch (e) {
+          return reject(e)
         }
-      ],
-      function (err) {
-        if (err) {
-          winston.warn(err)
-          return true
-        }
+      })()
+    })
 
-        utils.sendToSelf(socket, socketEvents.NOTIFICATIONS_UPDATE, notifications)
-      }
-    )
+    const unreadCountPromise = new Promise((resolve, reject) => {
+      ;(async () => {
+        try {
+          const count = await notificationSchema.getUnreadCount(socket.request.user._id)
+          notifications.count = count
+
+          return resolve(count)
+        } catch (e) {
+          return reject(e)
+        }
+      })()
+    })
+
+    try {
+      const [items, count] = await Promise.all([notificationsPromise, unreadCountPromise])
+
+      utils.sendToSelf(socket, socketEvents.NOTIFICATIONS_UPDATE, notifications)
+    } catch (err) {
+      winston.warn(err)
+      return true
+    }
   }
 }
 
