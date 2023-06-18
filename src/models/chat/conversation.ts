@@ -25,7 +25,7 @@ export class ConversationModelClass {
   @prop()
   public title?: string
   @prop()
-  public userMeta!: Array<UserConversationMeta>[]
+  public userMeta!: Array<UserConversationMeta>
 
   @prop({ref: () => UserModelClass})
   public participants!: Ref<UserModelClass>[]
@@ -58,7 +58,7 @@ export class ConversationModelClass {
    this: ReturnModelType<typeof ConversationModelClass>,
    userId: Array<Types.ObjectId | string>,
    limit: number
- ) {
+ ) : Promise<Array<ConversationModelClass>> {
    return new Promise((resolve, reject) => {
      ;(async () => {
        try {

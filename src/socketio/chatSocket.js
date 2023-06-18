@@ -193,61 +193,48 @@ async function updateConversationsNotifications (socket) {
     const Message = require('../models/chat/message')
     const Conversation = require('../models').ConversationModel
 
-    Conversation.getConversationsWithLimit(user._id, null, (err, conversations) => {
-      if (err) {
-        winston.warn(err.message)
-        return false
-      }
+    try {
+      const conversations = await Conversation.getConversationsWithLimit(user._id)
 
       const convos = []
 
-      async.eachSeries(
-        conversations,
-        (convo, done) => {
-          const c = convo.toObject()
-
-          const userMeta = convo.userMeta[_.findIndex(convo.userMeta, i => i.userId.toString() === user._id.toString())]
-          if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
-            return done()
-          }
-
-          Message.getMostRecentMessage(c._id, (err, rm) => {
-            if (err) return done(err)
-
-            _.each(c.participants, p => {
-              if (p._id.toString() !== user._id.toString()) {
-                c.partner = p
-              }
-            })
-
-            rm = _.first(rm)
-
-            if (!_.isUndefined(rm)) {
-              if (!c.partner || !rm.owner) return done()
-
-              if (c.partner._id.toString() === rm.owner._id.toString()) {
-                c.recentMessage = c.partner.fullname + ': ' + rm.body
-              } else {
-                c.recentMessage = 'You: ' + rm.body
-              }
-            } else {
-              c.recentMessage = 'New Conversation'
-            }
-
-            convos.push(c)
-
-            return done()
-          })
-        },
-        err => {
-          if (err) return false
-
-          return utils.sendToSelf(socket, socketEventConst.MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, {
-            conversations: convos.length >= 10 ? convos.slice(0, 9) : convos
-          })
+      for (const convo of conversations) {
+        const c = convo.toObject()
+        const idx = _.findIndex(convo.userMeta, i => i.userId.toString() === user._id.toString())
+        const userMeta = convo.userMeta[idx]
+        if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+          continue
         }
-      )
-    })
+
+        let rm = await Message.getMostRecentMessage(c._id)
+        _.each(c.participants, p => {
+          if (p._id.toString() !== user._id.toString()) c.partner = p
+        })
+
+        rm = _.first(rm)
+
+        if (!_.isUndefined(rm)) {
+          if (!c.partner || !rm.owner) continue
+
+          if (c.partner._id.toString() === rm.owner._id.toString()) {
+            c.recentMessage = c.partner.fullname + ': ' + rm.body
+          } else {
+            c.recentMessage = 'You: ' + rm.body
+          }
+        } else {
+          c.recentMessage = 'New Conversation'
+        }
+
+        convos.push(c)
+      }
+
+      return utils.sendToSelf(socket, socketEventConst.MESSAGES_UPDATE_UI_CONVERSATION_NOTIFICATIONS, {
+        conversations: convos.length >= 10 ? convos.slice(0, 9) : convos
+      })
+    } catch (e) {
+      winston.warn(e)
+      return false
+    }
   }
 }
 
