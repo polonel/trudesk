@@ -192,10 +192,10 @@ apiMessages.send = function (req, res) {
       message = message.replace(
         m,
         '<a href="/tickets/' +
-        m.replace('T#', '').replace('t#', '') +
-        '">T#' +
-        m.replace('T#', '').replace('t#', '') +
-        '</a>'
+          m.replace('T#', '').replace('t#', '') +
+          '">T#' +
+          m.replace('T#', '').replace('t#', '') +
+          '</a>'
       )
     })
   }

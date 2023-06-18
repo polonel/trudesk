@@ -30,10 +30,12 @@ import PageTitle from 'components/PageTitle'
 import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
 
-import { startConversation } from 'lib/chat'
+import { startConversation } from 'lib/chat/index'
 import UIKit from 'uikit'
 import $ from 'jquery'
 import helpers from 'lib/helpers'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 @observer
 class MessagesContainer extends React.Component {
@@ -153,7 +155,7 @@ class MessagesContainer extends React.Component {
   }
 
   onUserStopTyping (data) {
-    console.log(data)
+    // console.log(data)
   }
 
   showUserList (e) {
@@ -306,6 +308,13 @@ class MessagesContainer extends React.Component {
 
     return (
       <div>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Conversations</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <Grid>
           <GridItem width={'3-10'} extraClass={'full-height'}>
             <PageTitle

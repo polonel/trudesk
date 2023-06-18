@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from 'api/axios'
 
-const startConversation = (owner, receiver, callback) => {
+export const startConversation = async function (owner, receiver, callback) {
   return new Promise((resolve, reject) => {
     if (owner === receiver) {
       if (typeof callback === 'function') return callback('Invalid Participants')
@@ -9,7 +9,7 @@ const startConversation = (owner, receiver, callback) => {
     }
 
     axios
-      .post('/api/v1/messages/conversation/start', {
+      .post('/api/v2/messages/conversations/start', {
         owner,
         participants: [owner, receiver]
       })
@@ -25,12 +25,12 @@ const startConversation = (owner, receiver, callback) => {
   })
 }
 
-const createChatWindow = (ownerId, receiverId, callback) => {
+export const createChatWindow = async function (ownerId, receiverId, callback) {
   return new Promise((resolve, reject) => {
     startConversation(ownerId, receiverId)
       .then(conversation => {
         axios
-          .get(`/api/v1/messages/conversation/${conversation._id}`)
+          .get(`/api/v2/messages/conversations/${conversation._id}`)
           .then(res => {})
           .catch(error => {
             if (typeof callback === 'function') return callback(error)
@@ -46,4 +46,4 @@ const createChatWindow = (ownerId, receiverId, callback) => {
   })
 }
 
-export { startConversation, createChatWindow }
+export default { startConversation, createChatWindow }

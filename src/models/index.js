@@ -12,7 +12,7 @@ import { TeamModelClass } from './team'
 import { UserModelClass } from './user'
 import { DepartmentModelClass } from './department'
 import Message from './chat/message'
-import Conversation from './chat/conversation'
+import { ConversationModelClass } from './chat/conversation'
 import Notice from './notice'
 import { NotificationModelClass } from './notification'
 import Template from './template'
@@ -30,7 +30,7 @@ export const TeamModel = getModelForClass(TeamModelClass)
 export const UserModel = getModelForClass(UserModelClass)
 export const DepartmentModel = getModelForClass(DepartmentModelClass)
 export const MessageModel = Message
-export const ConversationModel = Conversation
+export const ConversationModel = getModelForClass(ConversationModelClass)
 export const NoticeModel = Notice
 export const NotificationModel = getModelForClass(NotificationModelClass)
 export const TemplateModel = Template
@@ -49,7 +49,7 @@ export default {
   TeamModel,
   DepartmentModel,
   MessageModel: Message,
-  ConversationModel: Conversation,
+  ConversationModel,
   NoticeModel: Notice,
   NotificationModel,
   TemplateModel: Template

@@ -122,8 +122,10 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v2/notices/:id', apiv2Auth, canUser('notices:delete'), apiv2.notices.delete)
 
   router.get('/api/v2/messages/conversations', apiv2Auth, apiv2.messages.getConversations)
+  router.post('/api/v2/messages/conversations/start', apiv2Auth, apiv2.messages.startConversation)
   router.get('/api/v2/messages/conversations/:id', apiv2Auth, apiv2.messages.single)
   router.delete('/api/v2/messages/conversations/:id', apiv2Auth, apiv2.messages.deleteConversation)
+  router.post('/api/v2/messages/send', apiv2Auth, apiv2.messages.send)
 
   // Settings
   router.get('/api/v2/settings', apiv2Auth, isAdmin, apiv2.settings.get)
