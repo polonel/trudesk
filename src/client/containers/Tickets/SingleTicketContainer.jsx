@@ -55,6 +55,7 @@ import TruTabSelectors from 'components/TruTabs/TruTabSelectors'
 import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
 
 import axios from 'api/axios'
+import history from 'lib/lib-history'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
 import UIkit from 'uikit'
@@ -74,8 +75,9 @@ const fetchTicket = parent => {
       // }, 3000)
     })
     .catch(error => {
-      if (error.response.status === 403) {
-        History.pushState(null, null, '/tickets')
+      if (error.response.status === 404) helpers.UI.showSnackbar('404: Ticket not found', true)
+      if (error.response.status === 403 || error.response.status === 404) {
+        history.push('/tickets')
       }
       Log.error(error)
     })

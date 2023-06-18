@@ -220,6 +220,7 @@ ticketsV2.single = async function (req, res) {
     if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
     TicketModel.getTicketByUid(uid, async function (err, ticket) {
       if (err) return apiUtils.sendApiError(res, 500, err)
+      if (!ticket) return apiUtils.sendApiError(res, 404, 'Ticket not found')
 
       if (req.user.role.isAdmin || req.user.role.isAgent) {
         const dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
