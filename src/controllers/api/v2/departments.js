@@ -14,6 +14,7 @@
 
 import { DepartmentModel } from '../../../models'
 import apiUtils from '../apiUtils'
+import logger from '../../../logger'
 
 const apiDepartments = {}
 
@@ -56,11 +57,11 @@ apiDepartments.update = async (req, res) => {
   if (putData.allGroups) putData.groups = []
 
   try {
-    let department = await DepartmentModel.findOneAndUpdate(({ _id: id }, putData, { new: true }))
-    department = await DepartmentModel.populate('teams groups')
+    const department = await DepartmentModel.findOneAndUpdate({ _id: id }, putData, { new: true })
 
     return apiUtils.sendApiSuccess(res, { department })
   } catch (e) {
+    logger.debug(e)
     return apiUtils.sendApiError(res, 500, e.message)
   }
 }

@@ -26,6 +26,8 @@ import PageContent from 'components/PageContent'
 
 import UIKit from 'uikit'
 import helpers from 'lib/helpers'
+import { Helmet } from 'react-helmet-async'
+import TitleContext from 'app/TitleContext'
 
 class DepartmentsContainer extends React.Component {
   componentDidMount () {
@@ -63,6 +65,13 @@ class DepartmentsContainer extends React.Component {
   render () {
     return (
       <div>
+        <TitleContext.Consumer>
+          {({ title }) => (
+            <Helmet>
+              <title>{title} Departments</title>
+            </Helmet>
+          )}
+        </TitleContext.Consumer>
         <PageTitle
           title={'Departments'}
           shadow={false}
