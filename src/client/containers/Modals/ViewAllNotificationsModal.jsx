@@ -28,6 +28,7 @@ import BaseModal from 'containers/Modals/BaseModal'
 import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
+import history from 'lib/lib-history'
 
 @observer
 class ViewAllNotificationsModal extends React.Component {
@@ -41,7 +42,7 @@ class ViewAllNotificationsModal extends React.Component {
   componentDidMount () {
     helpers.hideAllpDropDowns()
     axios
-      .get('/api/v1/users/notifications')
+      .get('/api/v2/accounts/profile/notifications')
       .then(res => {
         this.notifications = res.data.notifications
       })
@@ -57,7 +58,7 @@ class ViewAllNotificationsModal extends React.Component {
 
     this.props.hideModal()
     this.props.socket.emit(NOTIFICATIONS_MARK_READ, notification._id)
-    History.pushState(null, null, `/tickets/${notification.data.ticket.uid}`)
+    history.push(`/tickets/${notification.data.ticket.uid}`)
   }
 
   render () {

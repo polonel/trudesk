@@ -39,6 +39,7 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/accounts/profile/mfa/verify', apiv2Auth, csrfCheck, apiv2.accounts.verifyMFA)
   router.post('/api/v2/accounts/profile/mfa/disable', apiv2Auth, csrfCheck, apiv2.accounts.disableMFA)
   router.post('/api/v2/accounts/profile/update-password', apiv2Auth, csrfCheck, apiv2.accounts.updatePassword)
+  router.get('/api/v2/accounts/profile/notifications', apiv2Auth, apiv2.accounts.userNotifications)
   router.put('/api/v2/accounts/:username', apiv2Auth, canUser('accounts:update'), apiv2.accounts.update)
 
   // Account Roles

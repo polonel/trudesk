@@ -22,7 +22,7 @@ const Group = require('../../../models').GroupModel
 const Team = require('../../../models').TeamModel
 const Department = require('../../../models').DepartmentModel
 const passwordComplexity = require('../../../settings/passwordComplexity')
-const { RoleModel, RoleOrderModel } = require('../../../models')
+const { RoleModel, RoleOrderModel, NotificationModel } = require('../../../models')
 
 const accountsApi = {}
 
@@ -469,6 +469,16 @@ accountsApi.updatePassword = async (req, res) => {
     return apiUtil.sendApiSuccess(res, {})
   } catch (err) {
     return apiUtil.sendApiError(res, 500, err.message)
+  }
+}
+
+accountsApi.userNotifications = async (req, res) => {
+  try {
+    const notifications = await NotificationModel.findAllForUser(req.user._id)
+
+    return apiUtil.sendApiSuccess(res, { notifications })
+  } catch (err) {
+    return apiUtil.sendApiError(res, 500, err)
   }
 }
 
