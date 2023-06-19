@@ -12,20 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const _ = require('lodash')
-const async = require('async')
-const winston = require('../../../logger')
-const es = require('../../../elasticsearch')
-const ticketSchema = require('../../../models/ticket')
-const groupSchema = require('../../../models/group')
+import _ from 'lodash'
+import logger from '../../../logger'
+import es from '../../../elasticsearch'
+import ticketSchema from '../../../models/ticket'
+import { DepartmentModel, GroupModel } from '../../../models'
+import apiUtils from '../apiUtils'
 
 const apiElasticSearch = {}
-const apiUtil = require('../apiUtils')
 
 apiElasticSearch.rebuild = (req, res) => {
   es.rebuildIndex()
 
-  return apiUtil.sendApiSuccess(res)
+  return apiUtils.sendApiSuccess(res)
 }
 
 apiElasticSearch.status = async (req, res) => {
@@ -65,46 +64,15 @@ apiElasticSearch.status = async (req, res) => {
     response.isRebuilding = global.esRebuilding === true
     response.inSync = response.dbCount === response.indexCount
 
-    return apiUtil.sendApiSuccess(res, { status: response })
+    return apiUtils.sendApiSuccess(res, { status: response })
   } catch (e) {
-    if (process.env.NODE_ENV === 'development') winston.warn(e.message)
+    if (process.env.NODE_ENV === 'development') logger.warn(e.message)
 
-    return apiUtil.sendApiError(res, 500, e.message)
+    return apiUtils.sendApiError(res, 500, e.message)
   }
-
-  // async.parallel(
-  //   [
-  //     function (done) {
-  //       return es.checkConnection(done)
-  //     },
-  //     function (done) {
-  //       es.getIndexCount(function (err, data) {
-  //         if (err) return done(err)
-  //         response.indexCount = !_.isUndefined(data.count) ? data.count : 0
-  //         return done()
-  //       })
-  //     },
-  //     function (done) {
-  //       ticketSchema.getCount(function (err, count) {
-  //         if (err) return done(err)
-  //         response.dbCount = count
-  //         return done()
-  //       })
-  //     }
-  //   ],
-  //   function (err) {
-  //     if (err) return res.status(500).json({ success: false, error: err })
-  //
-  //     response.esStatus = global.esStatus
-  //     response.isRebuilding = global.esRebuilding === true
-  //     response.inSync = response.dbCount === response.indexCount
-  //
-  //     res.json({ success: true, status: response })
-  //   }
-  // )
 }
 
-apiElasticSearch.search = function (req, res) {
+apiElasticSearch.search = async (req, res) => {
   var limit = !_.isUndefined(req.query['limit']) ? req.query.limit : 100
   try {
     limit = parseInt(limit)
@@ -112,71 +80,64 @@ apiElasticSearch.search = function (req, res) {
     limit = 100
   }
 
-  async.waterfall(
-    [
-      function (next) {
-        if (!req.user.role.isAdmin && !req.user.role.isAgent)
-          return groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, next)
+  try {
+    let groups = []
+    if (!req.user.role.isAdmin && !req.user.role.isAgent) {
+      groups = await GroupModel.getAllGroupsOfUser(req.user._id)
+    } else {
+      groups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
+    }
 
-        var Department = require('../../../models/department')
-        return Department.getDepartmentGroupsOfUser(req.user._id, next)
-      },
-      function (groups, next) {
-        var g = _.map(groups, function (i) {
-          return i._id
-        })
-        // For docker we need to add a unique ID for the index.
-        var obj = {
-          index: es.indexName,
-          body: {
-            size: limit,
-            from: 0,
-            query: {
-              bool: {
-                must: {
-                  multi_match: {
-                    query: req.query['q'],
-                    type: 'cross_fields',
-                    operator: 'and',
-                    fields: [
-                      'uid^5',
-                      'subject^4',
-                      'issue^4',
-                      'owner.fullname',
-                      'owner.username',
-                      'owner.email',
-                      'comments.owner.email',
-                      'tags.normalized',
-                      'priority.name',
-                      'type.name',
-                      'group.name',
-                      'comments.comment^3',
-                      'notes.note^3',
-                      'dateFormatted'
-                    ],
-                    tie_breaker: 0.3
-                  }
-                },
-                filter: {
-                  terms: { 'group._id': g }
-                }
+    const g = _.map(groups, i => i._id)
+
+    const obj = {
+      index: es.indexName,
+      body: {
+        size: limit,
+        from: 0,
+        query: {
+          bool: {
+            must: {
+              multi_match: {
+                query: req.query['q'],
+                type: 'cross_fields',
+                operator: 'and',
+                fields: [
+                  'uid^5',
+                  'subject^4',
+                  'issue^4',
+                  'owner.fullname',
+                  'owner.username',
+                  'owner.email',
+                  'comments.owner.email',
+                  'tags.normalized',
+                  'priority.name',
+                  'type.name',
+                  'group.name',
+                  'comments.comment^3',
+                  'notes.note^3',
+                  'dateFormatted'
+                ],
+                tie_breaker: 0.3
               }
+            },
+            filter: {
+              terms: { 'group._id': g }
             }
           }
         }
-
-        return next(null, obj)
       }
-    ],
-    function (err, obj) {
-      if (err) return apiUtil.sendApiError(res, 500, err.message)
-      if (!es || !es.esclient) return apiUtil.sendApiError(res, 400, 'Elasticsearch is not configured')
-
-      es.esclient.search(obj).then(function (r) {
-        return res.send(r)
-      })
     }
-  )
+
+    if (!es || !es.esclient) return apiUtils.sendApiError(res, 400, 'Elasticsearch is not configured')
+
+    es.esclient.search(obj).then(r => {
+      return res.send(r)
+    })
+  } catch (e) {
+    logger.debug(e)
+    return apiUtils.sendApiError(res, 500, { error: e })
+  }
 }
 
 module.exports = apiElasticSearch
