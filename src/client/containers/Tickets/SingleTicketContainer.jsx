@@ -109,6 +109,30 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
   }
 
+  @computed
+  get notesTagged () {
+    this.ticket.notes.forEach(i => (i.isNote = true))
+
+    return this.ticket.notes
+  }
+
+  @computed get commentsAndNotes () {
+    if (!this.ticket) return []
+    if (!helpers.canUser('tickets:notes', true)) {
+      return sortBy(this.ticket.comments, 'date')
+    }
+
+    let commentsAndNotes = union(this.ticket.comments, this.notesTagged)
+    commentsAndNotes = sortBy(commentsAndNotes, 'date')
+
+    return commentsAndNotes
+  }
+
+  @computed get hasCommentsOrNotes () {
+    if (!this.ticket) return false
+    return this.ticket.comments.length > 0 || this.ticket.notes.length > 0
+  }
+
   componentDidMount () {
     this.props.socket.on(TICKETS_UPDATE, this.onUpdateTicket)
     this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
@@ -235,30 +259,6 @@ class SingleTicketContainer extends React.Component {
     this.props.transferToThirdParty({ uid: this.ticket.uid })
   }
 
-  @computed
-  get notesTagged () {
-    this.ticket.notes.forEach(i => (i.isNote = true))
-
-    return this.ticket.notes
-  }
-
-  @computed get commentsAndNotes () {
-    if (!this.ticket) return []
-    if (!helpers.canUser('tickets:notes', true)) {
-      return sortBy(this.ticket.comments, 'date')
-    }
-
-    let commentsAndNotes = union(this.ticket.comments, this.notesTagged)
-    commentsAndNotes = sortBy(commentsAndNotes, 'date')
-
-    return commentsAndNotes
-  }
-
-  @computed get hasCommentsOrNotes () {
-    if (!this.ticket) return false
-    return this.ticket.comments.length > 0 || this.ticket.notes.length > 0
-  }
-
   render () {
     const mappedGroups = this.props.groupsState
       ? this.props.groupsState.groups.map(group => {
@@ -301,7 +301,9 @@ class SingleTicketContainer extends React.Component {
                     ticketId={this.ticket._id}
                     status={this.ticket.status}
                     socket={this.props.socket}
-                    onStatusChange={status => (this.ticket.status = status)}
+                    onStatusChange={status => {
+                      this.ticket.status = status
+                    }}
                     hasPerm={hasTicketStatusUpdate()}
                   />
                 </div>

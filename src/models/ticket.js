@@ -183,27 +183,15 @@ ticketSchema.post('save', async function (doc, next) {
   }
 })
 
-ticketSchema.virtual('statusFormatted').get(function () {
+ticketSchema.virtual('statusFormatted').get(function (callback) {
   const s = this.status
-  let formatted
-  switch (s) {
-    case 0:
-      formatted = 'New'
-      break
-    case 1:
-      formatted = 'Open'
-      break
-    case 2:
-      formatted = 'Pending'
-      break
-    case 3:
-      formatted = 'Closed'
-      break
-    default:
-      formatted = 'New'
-  }
+  const ticketStatus = require('./ticketStatus');
 
-  return formatted
+  ticketStatus.findOne({ uid: s }, function (err, status) {
+    if (err) return callback(err)
+    if (!status) return callback('Invalid Status Id: ' + typeId)
+    if (typeof callback === 'function') return callback(null, status.get('name'))
+  })
 })
 
 ticketSchema.virtual('commentsAndNotes').get(function () {
@@ -243,21 +231,24 @@ ticketSchema.methods.setStatus = function (ownerId, status, callback) {
       if (typeof callback === 'function') callback('Invalid Status', null)
       return reject(new Error('Invalid Status'))
     }
+    const statusSchema = require('./ticketStatus');
+    statusSchema.getStatusByUID(status, function (err, statusModel) {
+      self.closedDate = status === 3 ? new Date() : null
+      self.status = status
 
-    self.closedDate = status === 3 ? new Date() : null
-    self.status = status
+      const historyItem = {
+        action: 'ticket:set:status:' + status,
+        description: 'Ticket Status set to: ' + statusModel.get('name'),
+        owner: ownerId
+      }
 
-    const historyItem = {
-      action: 'ticket:set:status:' + status,
-      description: 'Ticket Status set to: ' + statusToString(status),
-      owner: ownerId
-    }
+      self.history.push(historyItem)
 
-    self.history.push(historyItem)
+      if (typeof callback === 'function') callback(null, self)
 
-    if (typeof callback === 'function') callback(null, self)
+      return resolve(self)
+  })
 
-    return resolve(self)
   })
 }
 
@@ -1695,29 +1686,6 @@ ticketSchema.statics.getDeleted = function (callback) {
     .sort({ uid: -1 })
     .limit(1000)
     .exec(callback)
-}
-
-function statusToString (status) {
-  let str
-  switch (status) {
-    case 0:
-      str = 'New'
-      break
-    case 1:
-      str = 'Open'
-      break
-    case 2:
-      str = 'Pending'
-      break
-    case 3:
-      str = 'Closed'
-      break
-    default:
-      str = status
-      break
-  }
-
-  return str
 }
 
 module.exports = mongoose.model(COLLECTION, ticketSchema)

@@ -58,7 +58,14 @@ export const DELETE_TICKET_TYPE = defineAction('DELETE_TICKET_TYPE', [SUCCESS, E
 export const FETCH_PRIORITIES = defineAction('FETCH_PRIORITIES', [SUCCESS, PENDING, ERROR])
 export const CREATE_PRIORITY = defineAction('CREATE_PRIORITY', [SUCCESS, ERROR])
 export const UPDATE_PRIORITY = defineAction('UPDATE_PRIORITY', [SUCCESS, ERROR])
+
+export const CREATE_STATUS = defineAction('CREATE_STATUS', [SUCCESS, ERROR])
+export const UPDATE_STATUS = defineAction('UPDATE_STATUS', [SUCCESS, ERROR])
+export const FETCH_STATUS = defineAction('FETCH_STATUS', [SUCCESS, PENDING, ERROR])
+
 export const DELETE_PRIORITY = defineAction('DELETE_PRIORITY', [SUCCESS, ERROR])
+
+export const DELETE_STATUS = defineAction('DELETE_STATUS', [SUCCESS, ERROR])
 export const GET_TAGS_WITH_PAGE = defineAction('GET_TAGS_WITH_PAGE', [SUCCESS, ERROR])
 export const TAGS_UPDATE_CURRENT_PAGE = defineAction('TAGS_UPDATE_CURRENT_PAGE', [SUCCESS, ERROR])
 export const CREATE_TAG = defineAction('CREATE_TAG', [SUCCESS, ERROR])

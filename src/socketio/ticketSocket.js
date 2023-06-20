@@ -13,7 +13,7 @@
  */
 var _ = require('lodash')
 var async = require('async')
-var winston = require('winston')
+var winston = require('../logger')
 var marked = require('marked')
 var sanitizeHtml = require('sanitize-html')
 var utils = require('../helpers/utils')
@@ -59,7 +59,7 @@ events.onUpdateTicketStatus = socket => {
     const ticketId = data._id
     const status = data.value
     const ownerId = socket.request.user._id
-
+    // winston.debug('Received Status')
     try {
       let ticket = await ticketSchema.getTicketById(ticketId)
       ticket = await ticket.setStatus(ownerId, status)
@@ -72,7 +72,7 @@ events.onUpdateTicketStatus = socket => {
         status: status
       })
     } catch (e) {
-      // Blank
+      winston.log('info', 'Error in Status' + JSON.stringify(e))
     }
   })
 }

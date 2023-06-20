@@ -63,6 +63,7 @@ function renderView (res, content) {
     content.data.priorities = returnedContent.data.priorities
     content.data.mailTemplates = returnedContent.data.mailTemplates
     content.data.tags = returnedContent.data.tags
+    content.data.status = returnedContent.data.status
 
     return res.render('settings', content)
   })

@@ -781,6 +781,17 @@ apiTickets.update = function (req, res) {
             }
           },
           function (cb) {
+            if (!_.isUndefined(reqTicket.priority)) {
+              ticket.priority = reqTicket.priority._id || reqTicket.priority
+
+              ticket.populate('priority', function () {
+                return cb()
+              })
+            } else {
+              return cb()
+            }
+          },
+          function (cb) {
             if (!_.isUndefined(reqTicket.closedDate)) {
               ticket.closedDate = reqTicket.closedDate
             }
@@ -1345,6 +1356,97 @@ apiTickets.updatePriority = function (req, res) {
     })
   })
 }
+
+apiTickets.createStatus = function (req, res) {
+  var data = req.body
+
+  var pName = data.name
+
+  var pHtmlColor = data.htmlColor
+
+  if (!pName) {
+    return res.status(400).json({ success: false, error: 'Invalid Request Data.' })
+  }
+
+  var TicketStatusSchema = require('../../../models/ticketStatus')
+
+  var P = new TicketStatusSchema({
+    name: pName,
+    htmlColor: pHtmlColor
+  })
+
+  P.save(function (err, savedPriority) {
+    if (err) {
+      return res.status(400).json({ success: false, error: err.message })
+    }
+
+    return res.json({ success: true, priority: savedPriority })
+  })
+}
+
+apiTickets.getStatus = function (req, res) {
+  var ticketStatusSchema = require('../../../models/ticketStatus')
+  ticketStatusSchema.find({}, function (err, status) {
+    if (err) return res.status(400).json({ success: false, error: err.message })
+
+    status = _.sortBy(status, ['uid'])
+
+    return res.json({ success: true, status: status })
+  })
+}
+
+apiTickets.updateStatus = function (req, res) {
+  var id = req.params.id
+
+  var data = req.body
+
+  if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data)) {
+    return res.status(400).json({ success: false, error: 'Invalid Request Data' })
+  }
+
+  var ticketStatusSchema = require('../../../models/ticketStatus')
+  ticketStatusSchema.findOne({ _id: id }, function (err, status) {
+    if (err) return res.status(400).json({ success: false, error: err.message })
+
+    if (data.name) {
+      status.name = data.name
+    }
+    if (data.htmlColor) {
+      status.htmlColor = data.htmlColor
+    }
+    
+    status.save(function (err, p) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      return res.json({ success: true, status: p })
+    })
+  })
+}
+
+
+apiTickets.deleteStatus = function (req, res) {
+  var id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({ success: false, error: 'Invalid Request Data' })
+  }
+  async.series([ function (next) {
+  var ticketStatusSchema = require('../../../models/ticketStatus')
+    ticketStatusSchema.findOne({ _id: id }, function (err, status) {
+          if (err) return next(err)
+          status.remove(next)
+        })
+  }],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      return res.json({ success: true })
+    }
+  )
+}
+
+
+
 
 apiTickets.deletePriority = function (req, res) {
   var id = req.params.id
