@@ -18,7 +18,7 @@ import { connect } from 'react-redux'
 import { hideModal } from 'actions/common'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
-import { getTagsWithPage, fetchTicketTypes } from 'actions/tickets'
+import { getTagsWithPage, fetchTicketTypes, fetchTicketStatus } from 'actions/tickets'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import SingleSelect from 'components/SingleSelect'
@@ -37,6 +37,7 @@ class FilterTicketsModal extends React.Component {
     this.props.fetchAccounts({ page: 0, limit: -1, type: 'agents', showDeleted: false })
     this.props.getTagsWithPage({ limit: -1 })
     this.props.fetchTicketTypes()
+    this.props.fetchTicketStatus()
   }
 
   componentDidUpdate () {
@@ -90,13 +91,8 @@ class FilterTicketsModal extends React.Component {
   }
 
   render () {
-    const statuses = [
-      { text: 'New', value: '0' },
-      { text: 'Open', value: '1' },
-      { text: 'Pending', value: '2' },
-      { text: 'Closed', value: '3' }
-    ]
-
+    const statuses = this.props.ticketStatuses.map(s => ({text: s.get('name'), value: s.get('uid')})).toArray()
+    
     const tags = this.props.ticketTags
       .map(t => {
         return { text: t.get('name'), value: t.get('_id') }
@@ -222,7 +218,9 @@ FilterTicketsModal.propTypes = {
   getTagsWithPage: PropTypes.func.isRequired,
   ticketTags: PropTypes.object.isRequired,
   fetchTicketTypes: PropTypes.func.isRequired,
-  ticketTypes: PropTypes.object.isRequired
+  ticketTypes: PropTypes.object.isRequired,
+  fetchTicketStatus: PropTypes.func.isRequired,
+  ticketStatuses: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -230,7 +228,8 @@ const mapStateToProps = state => ({
   groupsState: state.groupsState,
   accountsState: state.accountsState,
   ticketTags: state.tagsSettings.tags,
-  ticketTypes: state.ticketsState.types
+  ticketTypes: state.ticketsState.types,
+  ticketStatuses: state.ticketsState.ticketStatuses,
 })
 
 export default connect(mapStateToProps, {
@@ -240,5 +239,6 @@ export default connect(mapStateToProps, {
   fetchAccounts,
   unloadAccounts,
   getTagsWithPage,
-  fetchTicketTypes
+  fetchTicketTypes,
+  fetchTicketStatus
 })(FilterTicketsModal)

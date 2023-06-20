@@ -56,6 +56,11 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/tickets/priorities', apiv1, apiCtrl.tickets.getPriorities)
   router.put('/api/v1/tickets/priority/:id', apiv1, isAdmin, apiCtrl.tickets.updatePriority)
 
+  router.post('/api/v1/tickets/status/create', apiv1, isAdmin, apiCtrl.tickets.createStatus)
+  router.get('/api/v1/tickets/status', apiv1, apiCtrl.tickets.getStatus)
+  router.put('/api/v1/tickets/status/:id', apiv1, isAdmin, apiCtrl.tickets.updateStatus)
+  router.post('/api/v1/tickets/status/:id/delete', apiv1, isAdmin, apiCtrl.tickets.deleteStatus)
+
   router.get('/api/v1/tickets/overdue', apiv1, canUser('tickets:view'), apiCtrl.tickets.getOverdue)
   router.post('/api/v1/tickets/addcomment', apiv1, canUser('comments:create'), apiCtrl.tickets.postComment)
   router.post('/api/v1/tickets/addnote', apiv1, canUser('tickets:notes'), apiCtrl.tickets.postInternalNote)

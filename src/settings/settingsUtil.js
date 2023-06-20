@@ -19,6 +19,7 @@ const settingSchema = require('../models/setting')
 const ticketTypeSchema = require('../models/tickettype')
 const roleSchema = require('../models/role')
 const roleOrderSchema = require('../models/roleorder')
+const statusSchema = require('../models/ticketStatus')
 
 const util = {}
 
@@ -136,6 +137,9 @@ util.getSettings = async callback => {
         const priorities = await ticketPrioritySchema.getPriorities()
         content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
 
+        const status = await statusSchema.getStatus()
+        content.data.status = _.sortBy(status,'_id')
+        
         const templateSchema = require('../models/template')
         const templates = await templateSchema.find({})
         content.data.mailTemplates = _.sortBy(templates, 'name')

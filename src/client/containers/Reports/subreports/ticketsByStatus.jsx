@@ -17,14 +17,10 @@ import helpers from 'lib/helpers'
 
 const ReportTicketsByStatus = () => {
   const groupsState = useSelector(state => state.groupsState)
+  const statuses = useSelector((state) => state.ticketsState.ticketStatuses)
   const dispatch = useDispatch()
 
-  const statuses = [
-    { text: 'New', value: 0 },
-    { text: 'Open', value: 1 },
-    { text: 'Pending', value: 2 },
-    { text: 'Closed', value: 3 }
-  ]
+  const mappedStatuses = statuses.map(s => ({text: s.get('name'), value: s.get('uid')}))
 
   const [groups, setGroups] = useState([])
 
@@ -153,7 +149,7 @@ const ReportTicketsByStatus = () => {
                       <SingleSelect
                         id={'status'}
                         multiple={true}
-                        items={statuses}
+                        items={mappedStatuses}
                         value={selectedStatuses}
                         onSelectChange={(e, value) => {
                           setSelectedStatuses(value)

@@ -185,6 +185,7 @@
     "nyc": "15.1.0",
     "patch": "0.0.1",
     "prettier-standard": "16.4.1",
+    "sass": "1.55.0",
     "sass-loader": "13.0.2",
     "semantic-release": "19.0.3",
     "snyk": "1.965.0",

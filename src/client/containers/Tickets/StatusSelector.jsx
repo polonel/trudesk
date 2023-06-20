@@ -16,8 +16,10 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { observer } from 'mobx-react'
 import { observable, makeObservable } from 'mobx'
+import { connect } from 'react-redux'
 
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts'
+import {fetchTicketStatus} from 'actions/tickets'
 
 const statusToName = status => {
   switch (status) {
@@ -50,6 +52,7 @@ class StatusSelector extends React.Component {
     document.addEventListener('click', this.onDocumentClick)
 
     this.props.socket.on(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus)
+    this.props.fetchTicketStatus()
   }
 
   componentDidUpdate (prevProps) {
@@ -66,6 +69,7 @@ class StatusSelector extends React.Component {
   }
 
   onUpdateTicketStatus (data) {
+    console.log("here")
     if (this.props.ticketId === data.tid) {
       this.status = data.status
       if (this.props.onStatusChange) this.props.onStatusChange(this.status)
@@ -94,19 +98,21 @@ class StatusSelector extends React.Component {
   }
 
   render () {
+    const currentStatus = this.props.ticketStatuses ? this.props.ticketStatuses.find( s=> s.get('uid') == this.status) : null;
+   
     return (
       <div className='floating-ticket-status'>
         <div
           title='Change Status'
           className={clsx(
             `ticket-status`,
-            `ticket-${statusToName(this.status).toLowerCase()}`,
             this.props.hasPerm && `cursor-pointer`
           )}
+          style={{color:'white', background: (currentStatus != null ? currentStatus.get('htmlColor') : '#000000')}}
           onClick={e => this.toggleDropMenu(e)}
           ref={r => (this.selectorButton = r)}
         >
-          <span>{statusToName(this.status)}</span>
+          <span>{(currentStatus != null ? currentStatus.get('name') : 'Unknown')}</span>
         </div>
 
         {this.props.hasPerm && (
@@ -115,20 +121,12 @@ class StatusSelector extends React.Component {
           </span>
         )}
 
-        <div id={'statusSelect'} ref={r => (this.dropMenu = r)} className='hide'>
+        <div id={'statusSelect'} ref={r => (this.dropMenu = r)} className='hide' style={{height: (25*this.props.ticketStatuses.size + 25)}}>
           <ul>
-            <li className='ticket-status ticket-new' onClick={() => this.changeStatus(0)}>
-              <span>New</span>
-            </li>
-            <li className='ticket-status ticket-open' onClick={() => this.changeStatus(1)}>
-              <span>Open</span>
-            </li>
-            <li className='ticket-status ticket-pending' onClick={() => this.changeStatus(2)}>
-              <span>Pending</span>
-            </li>
-            <li className='ticket-status ticket-closed' onClick={() => this.changeStatus(3)}>
-              <span>Closed</span>
-            </li>
+            {this.props.ticketStatuses.map(s => s && (
+               <li className='ticket-status' onClick={() => this.changeStatus(s.get('uid'))} style={{color:'white', background: s.get('htmlColor') }}>
+              <span>{s.get('name')}</span>
+            </li>) )}
           </ul>
         </div>
       </div>
@@ -141,11 +139,19 @@ StatusSelector.propTypes = {
   status: PropTypes.number.isRequired,
   onStatusChange: PropTypes.func,
   hasPerm: PropTypes.bool.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  fetchTicketStatus: PropTypes.func.isRequired,
+  ticketStatuses: PropTypes.object.isRequired,
 }
+
+const mapStateToProps = state => ({
+  ticketStatuses: state.ticketsState.ticketStatuses,
+})
 
 StatusSelector.defaultProps = {
   hasPerm: false
 }
 
-export default StatusSelector
+export default connect(mapStateToProps, {
+  fetchTicketStatus
+})(StatusSelector)
