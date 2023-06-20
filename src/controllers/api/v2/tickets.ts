@@ -562,6 +562,19 @@ ticketsV2.getDeleted = async (req, res) => {
   }
 }
 
+ticketsV2.restoreDeleted = async (req, res) => {
+  try {
+    const postData = req.body
+    if (!postData || !postData._id) return apiUtils.sendApiError_InvalidPostData(res)
+
+    await TicketModel.restoreDeleted(postData._id)
+
+    return apiUtils.sendApiSuccess(res)
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
+}
+
 ticketsV2.stats = async (req, res) => {
   const ticketStats = require('../../../lib/ticketStats')
 
