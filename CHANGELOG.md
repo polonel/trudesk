@@ -1,3 +1,10 @@
+## [1.2.7](https://github.com/polonel/trudesk/compare/v1.2.6...v1.2.7) (2023-04-05)
+
+
+### Bug Fixes
+
+* **profile:** user title persists when saving profile ([e7e58cb](https://github.com/polonel/trudesk/commit/e7e58cb))
+
 ## [1.2.6](https://github.com/polonel/trudesk/compare/v1.2.5...v1.2.6) (2022-08-22)
 
 

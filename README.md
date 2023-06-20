@@ -12,7 +12,7 @@
 <a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
 <a href="https://docs.trudesk.io/v1.2"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
-<sub>© 2014-2022, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
+<sub>© 2014-2023, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
 </p>
 <br />
 
@@ -51,7 +51,7 @@ Trudesk is tested with confidence using [BrowserStack](https://browserstack.com)
 
 ### License
 
-    Copyright 2014-2022 Trudesk, Inc.
+    Copyright 2014-2023 Trudesk, Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
