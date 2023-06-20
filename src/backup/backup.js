@@ -20,13 +20,14 @@ const archiver = require('archiver')
 const database = require('../database')
 const winston = require('../logger')
 const moment = require('moment')
+const pkg = require('../../package.json')
 
 global.env = process.env.NODE_ENV || 'production'
 
 let CONNECTION_URI = null
 
 function createZip (callback) {
-  const filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
+  const filename = 'trudesk-v' + pkg.version + '-' + moment().format('MMDDYYYY_HHmm') + '.zip'
   const output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename))
   const archive = archiver('zip', {
     zlib: { level: 9 }
