@@ -20,7 +20,14 @@ import { each, without, uniq } from 'lodash'
 
 import Log from '../../logger'
 import axios from 'axios'
-import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated, fetchTicketStatus } from 'actions/tickets'
+import {
+  fetchTickets,
+  deleteTicket,
+  ticketEvent,
+  unloadTickets,
+  ticketUpdated,
+  fetchTicketStatus
+} from 'actions/tickets'
 import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 
@@ -120,8 +127,6 @@ class TicketsContainer extends React.Component {
   }
 
   onSetStatus (status) {
-   
-
     const batch = this.selectedTickets.map(id => {
       return { id, status: status.get('uid') }
     })
@@ -276,7 +281,13 @@ class TicketsContainer extends React.Component {
                   <Dropdown small={true} width={120}>
                     <DropdownItem text={'Create'} onClick={() => this.props.showModal('CREATE_TICKET')} />
                     <DropdownSeparator />
-                    {this.props.ticketStatuses.map((s) => <DropdownItem text={'Set ' + s.get('name')} onClick={() => this.onSetStatus(s)} />)}
+                    {this.props.ticketStatuses.map(s => (
+                      <DropdownItem
+                        key={s.get('_id')}
+                        text={'Set ' + s.get('name')}
+                        onClick={() => this.onSetStatus(s)}
+                      />
+                    ))}
                     {helpers.canUser('tickets:delete', true) && <DropdownSeparator />}
                     {helpers.canUser('tickets:delete', true) && (
                       <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
@@ -336,8 +347,8 @@ class TicketsContainer extends React.Component {
             {this.props.loading && loadingItems}
             {!this.props.loading &&
               this.props.tickets.map(ticket => {
-                const status = this.props.ticketStatuses.find((s) => s.get('uid') === ticket.get('status'));                  
-                
+                const status = this.props.ticketStatuses.find(s => s.get('uid') === ticket.get('status'))
+
                 const assignee = () => {
                   const a = ticket.get('assignee')
                   return !a ? '--' : a.get('fullname')
@@ -369,7 +380,9 @@ class TicketsContainer extends React.Component {
                 return (
                   <TableRow
                     key={ticket.get('_id')}
-                    className={`ticket-${status == null? 'unknonwn' : status.get('name')} ${isOverdue() ? 'overdue' : ''}`}
+                    className={`ticket-${status == null ? 'unknonwn' : status.get('name')} ${
+                      isOverdue() ? 'overdue' : ''
+                    }`}
                     clickable={true}
                     onClick={e => {
                       const td = e.target.closest('td')
@@ -397,8 +410,13 @@ class TicketsContainer extends React.Component {
                         </svg>
                       </label>
                     </TableCell>
-                    <TableCell className={`ticket-status vam nbb uk-text-center`} >
-                      <span className={'uk-display-inline-block'} style={{backgroundColor: status== null? undefined : status.get('htmlColor')}}>{status == null? 'U' : status.get('name')[0].toUpperCase()}</span>
+                    <TableCell className={`ticket-status vam nbb uk-text-center`}>
+                      <span
+                        className={'uk-display-inline-block'}
+                        style={{ backgroundColor: status == null ? undefined : status.get('htmlColor') }}
+                      >
+                        {status == null ? 'U' : status.get('name')[0].toUpperCase()}
+                      </span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('subject')}</TableCell>
@@ -440,7 +458,7 @@ TicketsContainer.propTypes = {
   fetchSearchResults: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
   filter: PropTypes.object.isRequired,
-  ticketStatuses: PropTypes.object.isRequired,
+  ticketStatuses: PropTypes.object.isRequired
 }
 
 TicketsContainer.defaultProps = {
@@ -459,7 +477,7 @@ const mapStateToProps = state => ({
   common: state.common,
   socket: state.shared.socket,
   ticketStatuses: state.ticketsState.ticketStatuses,
-  fetchTicketStatus: PropTypes.func.isRequired,
+  fetchTicketStatus: PropTypes.func.isRequired
 })
 
 export default connect(mapStateToProps, {

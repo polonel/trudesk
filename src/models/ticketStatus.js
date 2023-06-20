@@ -18,14 +18,14 @@ require('moment-duration-format')
 var utils = require('../helpers/utils')
 const _ = require('lodash')
 
-var COLLECTION = 'TicketStatus'
+var COLLECTION = 'statuses'
 
 var statusSchema = mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
     htmlColor: { type: String, default: '#29b955' },
     uid: { type: Number, unique: true, index: true },
-    isLocked: {type: Boolean, default: false}
+    isLocked: { type: Boolean, default: false }
   },
   {
     toJSON: {
@@ -42,7 +42,7 @@ statusSchema.pre('save', function (next) {
   }
 
   const c = require('./counters')
-  
+
   const self = this
   c.increment('status', function (err, res) {
     if (err) return next(err)
@@ -58,7 +58,6 @@ statusSchema.pre('save', function (next) {
   })
 })
 
-
 statusSchema.statics.getStatus = function (_id, callback) {
   return this.model(COLLECTION)
     .findOne({ _id: _id })
@@ -72,9 +71,9 @@ statusSchema.statics.getStatus = function (callback) {
 }
 
 statusSchema.statics.getStatusByUID = function (uid, callback) {
-  return  this.model(COLLECTION)
-  .findOne({ uid: uid })
-  .exec(callback)
+  return this.model(COLLECTION)
+    .findOne({ uid: uid })
+    .exec(callback)
 }
 
 module.exports = mongoose.model(COLLECTION, statusSchema)
