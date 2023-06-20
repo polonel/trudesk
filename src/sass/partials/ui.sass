@@ -1063,7 +1063,9 @@ textarea.review-list
 
 // Up to Date
 a.up-to-date > span,
-a.out-of-date > span
+a.out-of-date > span,
+a.prerelease > span,
+a.current > span
   line-height: 1.45rem
   font-weight: 600
   font-size: 0.85rem
@@ -1082,9 +1084,18 @@ a.out-of-date > span
   &:hover
     background: lighten($accent_success, 10%)
 
-a.out-of-date > span
-  background: darken($accent_warn, 15%)
+a.out-of-date > span,
+a.prerelease > span
+  background: darken($accent_warn, 35%)
   border-color: $accent_warn
+  color: $accent_warn
   &:hover
     background: darken($accent_warn, 25%)
+
+a.current > span
+  background: darken($accent_blue, 25%)
+  border-color: $accent_blue
+  color: white
+  &:hover
+    background: darken($accent_blue, 15%)
 

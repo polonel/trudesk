@@ -91,7 +91,7 @@ class AboutContainer extends React.Component {
                 <dt>Release Channel</dt>
                 <dd>
                   <span>
-                    <code>stable</code>
+                    <code>{!this.props.releases.loading && this.props.releases.releaseChannel}</code>
                   </span>
                 </dd>
               </div>
@@ -196,6 +196,26 @@ class AboutContainer extends React.Component {
                       <span>
                         <span>{release.get('duration_format')}</span>
                         {release.get('name')}
+                        {release.get('tag_name') === this.props.releases.currentVersion && (
+                          <a
+                            href='https://github.com/polonel/trudesk/releases'
+                            className={'current'}
+                            target={'_blank'}
+                            rel={'noreferrer noopener'}
+                          >
+                            <span>Current</span>
+                          </a>
+                        )}
+                        {release.get('prerelease') && (
+                          <a
+                            href='https://github.com/polonel/trudesk/releases'
+                            className={'prerelease'}
+                            target={'_blank'}
+                            rel={'noreferrer noopener'}
+                          >
+                            <span>Pre-release</span>
+                          </a>
+                        )}
                       </span>
                     </div>
                     <button

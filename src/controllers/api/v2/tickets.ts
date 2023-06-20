@@ -552,7 +552,7 @@ ticketsV2.transferToThirdParty = async (req, res) => {
   }
 }
 
-ticketsV2.getDeleted = async (req, res) => {
+ticketsV2.getDeleted = async (req, res) => { 
   try {
     const deletedTickets = await TicketModel.find({ deleted: true })
 

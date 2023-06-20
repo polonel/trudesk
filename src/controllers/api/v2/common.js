@@ -146,13 +146,15 @@ commonV2.viewData = async (req, res) => {
 }
 
 commonV2.getReleases = async (req, res) => {
-  return apiUtils.sendApiSuccess(res, { releases: getReleases() })
+  let releaseChannel = config.get('trudesk')?.release
+  if (!releaseChannel) releaseChannel = 'stable'
+  return apiUtils.sendApiSuccess(res, { currentVersion: pkg.version, releaseChannel, releases: getReleases() })
 }
 
 commonV2.aboutStats = async (req, res) => {
   try {
     const stats = {
-      version: pkg.version
+      version: 'v' + pkg.version
     }
     stats.ticketCount = await TicketModel.countDocuments({ deleted: false })
 

@@ -9,9 +9,11 @@
  ========================================================================
 */
 
+import _ from 'lodash'
 import pkg from '../../package.json'
 import logger from '../logger'
 import { Octokit } from '@octokit/core'
+import config from '../config'
 import semver from 'semver'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -55,18 +57,54 @@ taskRunner.getReleases = async () => {
   }
 }
 
+const getLatestPreRelease = async () => {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const releases = await octokit.request('GET /repos/polonel/trudesk/releases')
+        if (releases.length < 1) return reject('No releases found')
+
+        let latestPreRelease = _.without(releases.data, release => release.prerelease !== true)
+        latestPreRelease = _.first(latestPreRelease)
+        return resolve(latestPreRelease)
+      } catch (e) {
+        return reject(e)
+      }
+    })()
+  })
+}
+
 taskRunner.checkForUpdates = async () => {
   try {
-    const response = await octokit.request('GET /repos/polonel/trudesk/releases/latest')
-    if (response.data) {
-      const tagName = response.data.tag_name
-      if (tagName) {
-        const latestVersion = semver.parse(tagName)
-        const currentVersion = semver.parse(pkg.version)
-        // logger.debug('Current version: v' + currentVersion.version)
-        // logger.debug('Latest Version: v' + latestVersion.version)
-        if (latestVersion > currentVersion)
-          logger.info('!!! New version available: v' + latestVersion.version + '  !!!')
+    let releaseChannel = config.get('trudesk')?.release
+    if (!releaseChannel) releaseChannel = 'stable'
+    if (releaseChannel.toLowerCase() === 'beta') {
+      const prerelease = await getLatestPreRelease()
+      if (prerelease) {
+        const tagName = prerelease.tag_name
+        if (tagName) {
+          const latestVersion = semver.parse(tagName)
+          const currentVersion = semver.parse(pkg.version)
+          logger.debug('Release Channel: ' + releaseChannel)
+          logger.debug('Current version: v' + currentVersion.version)
+          logger.debug('Latest Version: v' + latestVersion.version)
+          if (latestVersion > currentVersion)
+            logger.info('!!! New version available: v' + latestVersion.version + '  !!!')
+        }
+      }
+    } else {
+      const response = await octokit.request('GET /repos/polonel/trudesk/releases/latest')
+      if (response.data) {
+        let tagName = response.data.tag_name
+        if (tagName) {
+          const latestVersion = semver.parse(tagName)
+          const currentVersion = semver.parse(pkg.version)
+          logger.debug('Release Channel: ' + releaseChannel)
+          logger.debug('Current version: v' + currentVersion.version)
+          logger.debug('Latest Version: v' + latestVersion.version)
+          if (latestVersion > currentVersion)
+            logger.info('!!! New version available: v' + latestVersion.version + '  !!!')
+        }
       }
     }
   } catch (err) {

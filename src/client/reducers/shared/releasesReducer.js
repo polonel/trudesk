@@ -18,6 +18,8 @@ import { fromJS, List, Map } from 'immutable'
 import { FETCH_RELEASES } from 'actions/types'
 
 const initialState = {
+  currentVersion: '',
+  releaseChannel: 'stable',
   data: List([]),
   loading: false,
   error: ''
@@ -36,6 +38,8 @@ const releasesReducer = handleActions(
       return {
         ...state,
         loading: false,
+        currentVersion: 'v' + fromJS(action.response.currentVersion),
+        releaseChannel: fromJS(action.response.releaseChannel),
         data: fromJS(action.response.releases)
       }
     },
