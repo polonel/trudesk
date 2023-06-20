@@ -23,7 +23,7 @@ import UIKit from 'uikit'
 import helpers from 'lib/helpers'
 
 import { updateSetting } from 'actions/settings'
-import { getTagsWithPage, tagsUpdateCurrentPage } from 'actions/tickets'
+import { getTagsWithPage, tagsUpdateCurrentPage, deleteStatus } from 'actions/tickets'
 import { showModal } from 'actions/common'
 
 import EnableSwitch from 'components/Settings/EnableSwitch'
@@ -41,6 +41,7 @@ import SettingItem from 'components/Settings/SettingItem'
 import SingleSelect from 'components/SingleSelect'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
 import SpinLoader from 'components/SpinLoader'
+import EditStatusPartial from './editStatusPartial'
 
 class TicketsSettings extends React.Component {
   constructor (props) {
@@ -87,6 +88,13 @@ class TicketsSettings extends React.Component {
       ? this.props.settings.get('priorities').toArray()
       : []
   }
+
+  getStatus () {
+    return this.props.settings && this.props.settings.get('status')
+      ? this.props.settings.get('status').toArray()
+      : []
+  }
+
 
   getTicketTags (e, page) {
     if (e) e.preventDefault()
@@ -149,11 +157,28 @@ class TicketsSettings extends React.Component {
     }
   }
 
+  static toggleEditStatus (e) {
+    const $parent = $(e.target).parents('.status-wrapper')
+    const $v = $parent.find('.view-status')
+    const $e = $parent.find('.edit-status')
+    if ($v && $e) {
+      $v.toggleClass('hide')
+      $e.toggleClass('hide')
+    }
+  }
+
+
   onRemovePriorityClicked (e, priority) {
     e.preventDefault()
     this.props.showModal('DELETE_PRIORITY', { priority })
   }
 
+  onRemoveStatusClicked (e, stat) {
+    e.preventDefault()
+    console.log(stat)
+    console.log(stat.get('_id'))
+    this.props.deleteStatus(stat.get('id'));
+  }
   static toggleEditTag (e) {
     const $target = $(e.target)
     const $parent = $target.parents('.tag-wrapper')
@@ -392,6 +417,50 @@ class TicketsSettings extends React.Component {
           </Zone>
         </SettingItem>
         <SettingItem
+          title={'Ticket Status'}
+          subtitle={'Ticket status sets the current status options available'}
+          component={
+            <Button
+              text={'Create'}
+              style={'success'}
+              flat={true}
+              waves={true}
+              extraClass={'mt-10 right'}
+              onClick={e => this.showModal(e, 'CREATE_STATUS')}
+            />
+          }
+        >
+          <Zone>
+            {this.getStatus().map(p => {
+              return (
+                <ZoneBox key={p.get('_id')} extraClass={'status-wrapper'}>
+                  <SettingSubItem
+                    parentClass={'view-status'}
+                    title={p.get('name')}
+                    titleCss={{ color: p.get('htmlColor') }}
+                    component={
+                      <ButtonGroup classNames={'uk-float-right'}>
+                        <Button
+                          text={'Remove'}
+                          small={true}
+                          style={'danger'}
+                          disabled={p.get('isLocked')}
+                          onClick={e => this.onRemoveStatusClicked(e, p)}
+                        />
+
+                        <Button text={'Edit'} small={true} onClick={e => TicketsSettings.toggleEditStatus(e)} />
+                      </ButtonGroup>
+                    }
+                  />
+                  <EditStatusPartial status={p} />
+                </ZoneBox>
+              )
+            })}
+          </Zone>
+        </SettingItem>
+
+
+        <SettingItem
           title={'Ticket Tags'}
           subtitle={'Create/Modify Ticket Tags'}
           component={
@@ -510,15 +579,17 @@ TicketsSettings.propTypes = {
   updateSetting: PropTypes.func.isRequired,
   getTagsWithPage: PropTypes.func.isRequired,
   tagsUpdateCurrentPage: PropTypes.func.isRequired,
-  showModal: PropTypes.func.isRequired
+  showModal: PropTypes.func.isRequired,
+  deleteStatus: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   viewdata: state.common.viewdata,
   settings: state.settings.settings,
-  tagsSettings: state.tagsSettings
+  tagsSettings: state.tagsSettings,
+  
 })
 
-export default connect(mapStateToProps, { updateSetting, getTagsWithPage, tagsUpdateCurrentPage, showModal })(
+export default connect(mapStateToProps, { updateSetting, getTagsWithPage, tagsUpdateCurrentPage, showModal, deleteStatus })(
   TicketsSettings
 )

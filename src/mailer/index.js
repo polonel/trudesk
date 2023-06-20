@@ -85,8 +85,7 @@ function createTransporter (callback) {
       port: mailSettings.port && mailSettings.port.value ? mailSettings.port.value : 25,
       secure: mailSettings.ssl && mailSettings.ssl.value ? mailSettings.ssl.value : false,
       tls: {
-        rejectUnauthorized: false,
-        ciphers: 'SSLv3'
+        rejectUnauthorized: false
       }
     }
     if (mailSettings.username && mailSettings.username.value) {

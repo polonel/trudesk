@@ -20,7 +20,14 @@ import { each, without, uniq } from 'lodash'
 
 import Log from '../../logger'
 import axios from 'axios'
-import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
+import {
+  fetchTickets,
+  deleteTicket,
+  ticketEvent,
+  unloadTickets,
+  ticketUpdated,
+  fetchTicketStatus
+} from 'actions/tickets'
 import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 
@@ -62,6 +69,7 @@ class TicketsContainer extends React.Component {
     this.props.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
 
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
+    this.props.fetchTicketStatus()
   }
 
   componentDidUpdate () {
@@ -119,30 +127,15 @@ class TicketsContainer extends React.Component {
   }
 
   onSetStatus (status) {
-    let statusText = ''
-    switch (status) {
-      case 0:
-        statusText = 'New'
-        break
-      case 1:
-        statusText = 'Open'
-        break
-      case 2:
-        statusText = 'Pending'
-        break
-      case 3:
-        statusText = 'Closed'
-    }
-
     const batch = this.selectedTickets.map(id => {
-      return { id, status }
+      return { id, status: status.get('uid') }
     })
 
     axios
       .put(`/api/v2/tickets/batch`, { batch })
       .then(res => {
         if (res.data.success) {
-          helpers.UI.showSnackbar({ text: `Ticket status set to ${statusText}` })
+          helpers.UI.showSnackbar({ text: `Ticket status set to ${s.get('name')}` })
           this._clearChecked()
         } else {
           helpers.UI.showSnackbar('An unknown error occurred.', true)
@@ -288,9 +281,13 @@ class TicketsContainer extends React.Component {
                   <Dropdown small={true} width={120}>
                     <DropdownItem text={'Create'} onClick={() => this.props.showModal('CREATE_TICKET')} />
                     <DropdownSeparator />
-                    <DropdownItem text={'Set Open'} onClick={() => this.onSetStatus(1)} />
-                    <DropdownItem text={'Set Pending'} onClick={() => this.onSetStatus(2)} />
-                    <DropdownItem text={'Set Closed'} onClick={() => this.onSetStatus(3)} />
+                    {this.props.ticketStatuses.map(s => (
+                      <DropdownItem
+                        key={s.get('_id')}
+                        text={'Set ' + s.get('name')}
+                        onClick={() => this.onSetStatus(s)}
+                      />
+                    ))}
                     {helpers.canUser('tickets:delete', true) && <DropdownSeparator />}
                     {helpers.canUser('tickets:delete', true) && (
                       <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
@@ -350,18 +347,7 @@ class TicketsContainer extends React.Component {
             {this.props.loading && loadingItems}
             {!this.props.loading &&
               this.props.tickets.map(ticket => {
-                const status = () => {
-                  switch (ticket.get('status')) {
-                    case 0:
-                      return 'new'
-                    case 1:
-                      return 'open'
-                    case 2:
-                      return 'pending'
-                    case 3:
-                      return 'closed'
-                  }
-                }
+                const status = this.props.ticketStatuses.find(s => s.get('uid') === ticket.get('status'))
 
                 const assignee = () => {
                   const a = ticket.get('assignee')
@@ -394,7 +380,9 @@ class TicketsContainer extends React.Component {
                 return (
                   <TableRow
                     key={ticket.get('_id')}
-                    className={`ticket-${status()} ${isOverdue() ? 'overdue' : ''}`}
+                    className={`ticket-${status == null ? 'unknonwn' : status.get('name')} ${
+                      isOverdue() ? 'overdue' : ''
+                    }`}
                     clickable={true}
                     onClick={e => {
                       const td = e.target.closest('td')
@@ -422,8 +410,13 @@ class TicketsContainer extends React.Component {
                         </svg>
                       </label>
                     </TableCell>
-                    <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
-                      <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
+                    <TableCell className={`ticket-status vam nbb uk-text-center`}>
+                      <span
+                        className={'uk-display-inline-block'}
+                        style={{ backgroundColor: status == null ? undefined : status.get('htmlColor') }}
+                      >
+                        {status == null ? 'U' : status.get('name')[0].toUpperCase()}
+                      </span>
                     </TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
                     <TableCell className={'vam nbb'}>{ticket.get('subject')}</TableCell>
@@ -464,7 +457,8 @@ TicketsContainer.propTypes = {
   showModal: PropTypes.func.isRequired,
   fetchSearchResults: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
-  filter: PropTypes.object.isRequired
+  filter: PropTypes.object.isRequired,
+  ticketStatuses: PropTypes.object.isRequired
 }
 
 TicketsContainer.defaultProps = {
@@ -481,7 +475,9 @@ const mapStateToProps = state => ({
   nextPage: state.ticketsState.nextPage,
   loading: state.ticketsState.loading,
   common: state.common,
-  socket: state.shared.socket
+  socket: state.shared.socket,
+  ticketStatuses: state.ticketsState.ticketStatuses,
+  fetchTicketStatus: PropTypes.func.isRequired
 })
 
 export default connect(mapStateToProps, {
@@ -491,5 +487,6 @@ export default connect(mapStateToProps, {
   unloadTickets,
   ticketUpdated,
   fetchSearchResults,
-  showModal
+  showModal,
+  fetchTicketStatus
 })(TicketsContainer)
