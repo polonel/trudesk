@@ -14,9 +14,11 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import Input from 'components/Input'
 import { makeObservable, observable } from 'mobx'
+import { fetchSettings } from 'actions/settings'
 import ColorSelector from 'components/ColorSelector'
 import Button from 'components/Button'
 import EnableSwitch from 'components/Settings/EnableSwitch'
@@ -59,8 +61,8 @@ class TicketStatusBody extends React.Component {
     api.tickets
       .updateStatus({ id, name, htmlColor, isResolved, slatimer })
       .then(res => {
-        console.log(res)
         helpers.UI.showSnackbar('Status updated')
+        this.props.fetchSettings()
       })
       .catch(e => {
         console.log(e)
@@ -147,7 +149,8 @@ class TicketStatusBody extends React.Component {
 }
 
 TicketStatusBody.propTypes = {
-  status: PropTypes.object.isRequired
+  status: PropTypes.object.isRequired,
+  fetchSettings: PropTypes.func.isRequired
 }
 
-export default TicketStatusBody
+export default connect(null, { fetchSettings })(TicketStatusBody)

@@ -58,6 +58,7 @@ module.exports = function (middleware, router, controllers) {
 
   router.post('/api/v1/tickets/status/create', apiv1, isAdmin, apiCtrl.tickets.createStatus)
   router.get('/api/v1/tickets/status', apiv1, apiCtrl.tickets.getStatus)
+  router.put('/api/v1/tickets/status/order', apiv1, isAdmin, apiCtrl.tickets.updateStatusOrder)
   router.put('/api/v1/tickets/status/:id', apiv1, isAdmin, apiCtrl.tickets.updateStatus)
   router.post('/api/v1/tickets/status/:id/delete', apiv1, isAdmin, apiCtrl.tickets.deleteStatus)
 

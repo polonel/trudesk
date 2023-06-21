@@ -25,7 +25,7 @@ var statusSchema = mongoose.Schema(
     name: { type: String, required: true, unique: true },
     htmlColor: { type: String, default: '#29b955' },
     uid: { type: Number, unique: true, index: true },
-    order: { type: Number, unique: true, index: true },
+    order: { type: Number, index: true },
     slatimer: { type: Boolean, default: true },
     isResolved: { type: Boolean, default: false },
     isLocked: { type: Boolean, default: false }
@@ -70,6 +70,7 @@ statusSchema.statics.getStatus = function (_id, callback) {
 statusSchema.statics.getStatus = function (callback) {
   return this.model(COLLECTION)
     .find({})
+    .sort({ order: 1 })
     .exec(callback)
 }
 

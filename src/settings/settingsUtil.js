@@ -138,8 +138,8 @@ util.getSettings = async callback => {
         content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
 
         const status = await statusSchema.getStatus()
-        content.data.status = _.sortBy(status,'_id')
-        
+        content.data.status = _.sortBy(status, 'order')
+
         const templateSchema = require('../models/template')
         const templates = await templateSchema.find({})
         content.data.mailTemplates = _.sortBy(templates, 'name')

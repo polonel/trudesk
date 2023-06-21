@@ -36,7 +36,7 @@ class TicketStatusContainer extends React.Component {
     for (let i = 0; i < children.length; i++) arr.push($(children[i]).attr('data-key'))
 
     axios
-      .put('/api/v2/tickets/status/order', { order: arr })
+      .put('/api/v1/tickets/status/order', { order: arr })
       .then(res => {
         console.log(res)
       })

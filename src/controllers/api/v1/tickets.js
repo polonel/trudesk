@@ -1389,7 +1389,7 @@ apiTickets.getStatus = function (req, res) {
   ticketStatusSchema.find({}, function (err, status) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
-    status = _.sortBy(status, ['uid'])
+    status = _.sortBy(status, 'order')
 
     return res.json({ success: true, status: status })
   })
@@ -1414,9 +1414,37 @@ apiTickets.updateStatus = function (req, res) {
 
     status.save(function (err, p) {
       if (err) return res.status(400).json({ success: false, error: err.message })
-      console.log(p)
+
       return res.json({ success: true, status: p })
     })
+  })
+}
+
+apiTickets.updateStatusOrder = function (req, res) {
+  var data = req.body
+  if (!data || !data.order) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+
+  var order = data.order
+  var ticketStatusSchema = require('../../../models/ticketStatus')
+  ticketStatusSchema.find({}, function (err, statuses) {
+    if (err) return res.status(400).json({ success: false, error: err })
+
+    async.eachSeries(
+      statuses,
+      function (item, done) {
+        var idx = _.findIndex(order, id => item._id.toString() === id)
+        item.order = idx
+        item.save(done)
+      },
+      function (err) {
+        if (err) {
+          winston.debug(err)
+          return res.status(500).json({ success: false, error: err })
+        }
+
+        return res.status(200).json({ success: true })
+      }
+    )
   })
 }
 
