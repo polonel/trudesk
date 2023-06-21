@@ -149,11 +149,13 @@ api.tickets.createStatus = ({ name, htmlColor }) => {
       return res.data
     })
 }
-api.tickets.updateStatus = ({ id, name, htmlColor }) => {
+api.tickets.updateStatus = ({ id, name, htmlColor, isResolved, slatimer }) => {
   return axios
     .put(`/api/v1/tickets/status/${id}`, {
       name,
-      htmlColor
+      htmlColor,
+      isResolved,
+      slatimer
     })
     .then(res => {
       return res.data
@@ -162,16 +164,13 @@ api.tickets.updateStatus = ({ id, name, htmlColor }) => {
 api.tickets.getStatus = () => {
   return axios.get('/api/v1/tickets/status').then(res => {
     return res.data
-    })
+  })
 }
 
-
 api.tickets.deleteStatus = ({ id }) => {
-  return axios
-    .post(`/api/v1/tickets/status/${id}/delete`, {})
-    .then(res => {
-      return res.data
-    })
+  return axios.post(`/api/v1/tickets/status/${id}/delete`, {}).then(res => {
+    return res.data
+  })
 }
 
 api.tickets.deletePriority = ({ id, newPriority }) => {

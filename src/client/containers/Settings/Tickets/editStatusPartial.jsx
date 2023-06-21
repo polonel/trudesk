@@ -55,7 +55,6 @@ class EditStatusPartial extends React.Component {
     api.tickets
       .updateStatus({ id, name, htmlColor })
       .then(res => {
-        Log.debug(res)
         self.toggleEditStatus()
         this.props.fetchSettings()
       })
@@ -107,7 +106,4 @@ EditStatusPartial.propTypes = {
   fetchSettings: PropTypes.func.isRequired
 }
 
-export default connect(
-  null,
-  { fetchSettings }
-)(EditStatusPartial)
+export default connect(null, { fetchSettings })(EditStatusPartial)

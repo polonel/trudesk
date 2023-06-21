@@ -213,24 +213,32 @@ function createTicketStatus (callback) {
               name: 'New',
               htmlColor: '#29b955',
               uid: 0,
+              isResolved: false,
+              slatimer: true,
               isLocked: true
             },
             {
               name: 'Open',
               htmlColor: '#d32f2f',
               uid: 1,
+              isResolved: false,
+              slatimer: true,
               isLocked: true
             },
             {
               name: 'Pending',
               htmlColor: '#2196F3',
               uid: 2,
+              isResolved: false,
+              slatimer: false,
               isLocked: true
             },
             {
               name: 'Closed',
               htmlColor: '#CCCCCC',
               uid: 3,
+              isResolved: true,
+              slatimer: false,
               isLocked: true
             }
           ],

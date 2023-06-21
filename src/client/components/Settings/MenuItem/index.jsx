@@ -17,7 +17,8 @@ import PropTypes from 'prop-types'
 
 class MenuItem extends React.Component {
   render () {
-    const { title, active, onClick, draggable } = this.props
+    const { title, content, active, onClick, draggable } = this.props
+    const useContent = content !== undefined
     return (
       <li className={active ? ' active' : ''} onClick={onClick} data-key={this.props.dragKey}>
         <div className='setting-category'>
@@ -26,7 +27,8 @@ class MenuItem extends React.Component {
               <i className='material-icons'>drag_handle</i>
             </span>
           )}
-          <h3>{title}</h3>
+          {useContent && content}
+          {!useContent && <h3>{title}</h3>}
         </div>
       </li>
     )
@@ -35,6 +37,7 @@ class MenuItem extends React.Component {
 
 MenuItem.propTypes = {
   title: PropTypes.string.isRequired,
+  content: PropTypes.element,
   active: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   draggable: PropTypes.bool,

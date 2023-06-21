@@ -1397,7 +1397,6 @@ apiTickets.getStatus = function (req, res) {
 
 apiTickets.updateStatus = function (req, res) {
   var id = req.params.id
-
   var data = req.body
 
   if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data)) {
@@ -1408,21 +1407,18 @@ apiTickets.updateStatus = function (req, res) {
   ticketStatusSchema.findOne({ _id: id }, function (err, status) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
-    if (data.name) {
-      status.name = data.name
-    }
-    if (data.htmlColor) {
-      status.htmlColor = data.htmlColor
-    }
-    
+    if (data.name) status.name = data.name
+    if (data.htmlColor) status.htmlColor = data.htmlColor
+    status.isResolved = data.isResolved
+    status.slatimer = data.slatimer
+
     status.save(function (err, p) {
       if (err) return res.status(400).json({ success: false, error: err.message })
-
+      console.log(p)
       return res.json({ success: true, status: p })
     })
   })
 }
-
 
 apiTickets.deleteStatus = function (req, res) {
   var id = req.params.id
@@ -1430,13 +1426,16 @@ apiTickets.deleteStatus = function (req, res) {
   if (!id) {
     return res.status(400).json({ success: false, error: 'Invalid Request Data' })
   }
-  async.series([ function (next) {
-  var ticketStatusSchema = require('../../../models/ticketStatus')
-    ticketStatusSchema.findOne({ _id: id }, function (err, status) {
+  async.series(
+    [
+      function (next) {
+        var ticketStatusSchema = require('../../../models/ticketStatus')
+        ticketStatusSchema.findOne({ _id: id }, function (err, status) {
           if (err) return next(err)
           status.remove(next)
         })
-  }],
+      }
+    ],
     function (err) {
       if (err) return res.status(400).json({ success: false, error: err.message })
 
@@ -1444,9 +1443,6 @@ apiTickets.deleteStatus = function (req, res) {
     }
   )
 }
-
-
-
 
 apiTickets.deletePriority = function (req, res) {
   var id = req.params.id

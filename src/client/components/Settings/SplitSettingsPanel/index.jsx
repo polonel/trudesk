@@ -91,6 +91,7 @@ class SplitSettingsPanel extends React.Component {
                         key={item.key}
                         dragKey={item.key}
                         title={item.title}
+                        content={item.content}
                         onClick={() => {
                           this.switchChild(item.key)
                         }}
