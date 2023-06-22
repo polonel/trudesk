@@ -1284,23 +1284,23 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
 
   const self = this
 
-  // Disable cache (TEMP 01/04/2019)
-  // const grpHash = hash(grpId);
-  // const cache = global.cache;
-  // if (cache) {
-  //     const overdue = cache.get('tickets:overdue:' + grpHash);
-  //     if (overdue)
-  //         return callback(null, overdue);
-  // }
-
   async.waterfall(
     [
       function (next) {
+        statusSchema.find({ slatimer: true }, function (err, statuses) {
+          if (err) return next(err)
+
+          const statusesMapped = statuses.map(i => i._id)
+
+          return next(null, statusesMapped)
+        })
+      },
+      function (statuses, next) {
         return self
           .model(COLLECTION)
           .find({
             group: { $in: grpId },
-            status: { $in: [0, 1] },
+            status: { $in: statuses },
             deleted: false
           })
           .select('_id date updated')

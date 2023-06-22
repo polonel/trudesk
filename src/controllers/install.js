@@ -18,6 +18,8 @@ const _ = require('lodash')
 const winston = require('../logger')
 const pkg = require('../../package')
 const Chance = require('chance')
+const Status = require('../models/ticketStatus')
+const counterSchema = require('../models/counters')
 
 const installController = {}
 installController.content = {}
@@ -125,6 +127,7 @@ installController.install = function (req, res) {
   const GroupSchema = require('../models/group')
   const Counters = require('../models/counters')
   const TicketTypeSchema = require('../models/tickettype')
+  const TicketStatusSchema = require('../models/ticketStatus')
   const SettingsSchema = require('../models/setting')
 
   const data = req.body
@@ -233,6 +236,60 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
+        TicketStatusSchema.create(
+          [
+            {
+              name: 'New',
+              htmlColor: '#29b955',
+              uid: 0,
+              order: 0,
+              isResolved: false,
+              slatimer: true,
+              isLocked: true
+            },
+            {
+              name: 'Open',
+              htmlColor: '#d32f2f',
+              uid: 1,
+              order: 1,
+              isResolved: false,
+              slatimer: true,
+              isLocked: true
+            },
+            {
+              name: 'Pending',
+              htmlColor: '#2196F3',
+              uid: 2,
+              order: 2,
+              isResolved: false,
+              slatimer: false,
+              isLocked: true
+            },
+            {
+              name: 'Closed',
+              htmlColor: '#CCCCCC',
+              uid: 3,
+              order: 3,
+              isResolved: true,
+              slatimer: false,
+              isLocked: true
+            }
+          ],
+          function (err) {
+            if (err) return next(err)
+
+            return next()
+          }
+        )
+      },
+      function (next) {
+        Counters.setCounter('status', 4, function (err) {
+          if (err) return next(err)
+
+          return next()
+        })
+      },
+      function (next) {
         const type = new TicketTypeSchema({
           name: 'Issue'
         })
@@ -248,6 +305,12 @@ installController.install = function (req, res) {
 
         type.save(function (err) {
           return next(err)
+        })
+      },
+      function (next) {
+        GroupSchema.create({ name: 'Default Group' }, function (err) {
+          if (err) return next(err)
+          return next()
         })
       },
       function (next) {
