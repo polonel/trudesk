@@ -23,18 +23,6 @@ import $ from 'jquery'
 import helpers from 'lib/helpers'
 
 class SearchResults extends React.Component {
-  componentDidMount () {
-    helpers.UI.setupDataTethers()
-    $(document).on('mousedown', SearchResults.documentMouseEvent)
-  }
-
-  componentDidUpdate () {}
-
-  componentWillUnmount () {
-    SearchResults.toggleAnimation(true, false)
-    $(document).off('mousedown', SearchResults.documentMouseEvent)
-  }
-
   static documentMouseEvent (event) {
     const $target = $(event.target)
     const isInContainer = $target.parents('.search-results-container').length > 0
@@ -67,6 +55,18 @@ class SearchResults extends React.Component {
     }
   }
 
+  componentDidMount () {
+    helpers.UI.setupDataTethers()
+    $(document).on('mousedown', SearchResults.documentMouseEvent)
+  }
+
+  componentDidUpdate () {}
+
+  componentWillUnmount () {
+    SearchResults.toggleAnimation(true, false)
+    $(document).off('mousedown', SearchResults.documentMouseEvent)
+  }
+
   onSearchItemClick (e) {
     e.preventDefault()
     SearchResults.toggleAnimation(true, false)
@@ -89,8 +89,20 @@ class SearchResults extends React.Component {
           {searchResults &&
             searchResults.map(item => {
               const doc = item.get('_source')
+
               return (
-                <li key={item.get('_id')} className={`search-results-item status-${doc.get('status')}`}>
+                <li key={item.get('_id')} className={`search-results-item`} style={{ position: 'relative' }}>
+                  <span
+                    style={{
+                      display: 'block',
+                      height: '100%',
+                      width: 5,
+                      background: doc.getIn(['status', 'htmlColor']),
+                      position: 'absolute',
+                      top: 0,
+                      left: 0
+                    }}
+                  ></span>
                   <a href={`/tickets/${doc.get('uid')}`} onClick={e => this.onSearchItemClick(e)}>
                     <span className='priority' style={{ background: `${doc.getIn(['priority', 'htmlColor'])}` }} />
                     <span className='uid'>{doc.get('uid')}</span>

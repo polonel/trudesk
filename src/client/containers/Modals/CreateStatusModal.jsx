@@ -24,11 +24,14 @@ import ColorSelector from 'components/ColorSelector'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
+import EnableSwitch from 'components/Settings/EnableSwitch'
 
 @observer
 class CreateStatusModal extends React.Component {
   @observable name = ''
   @observable htmlColor = '#29B995'
+  @observable slatimer = true
+  @observable isResolved = false
 
   constructor (props) {
     super(props)
@@ -48,13 +51,15 @@ class CreateStatusModal extends React.Component {
     //  Form is valid... Submit..
     this.props.createStatus({
       name: this.name,
-      htmlColor: this.htmlColor
+      htmlColor: this.htmlColor,
+      slatimer: this.slatimer,
+      isResolved: this.isResolved
     })
   }
 
   render () {
     return (
-      <BaseModal {...this.props} ref={i => (this.base = i)}>
+      <BaseModal {...this.props} large={true}>
         <form className={'uk-form-stacked'} onSubmit={e => this.onCreateStatusSubmit(e)}>
           <div className='uk-margin-medium-bottom uk-clearfix'>
             <h2>Create Status</h2>
@@ -63,7 +68,7 @@ class CreateStatusModal extends React.Component {
           <div>
             <div className='uk-clearfix'>
               <div className='z-box uk-grid uk-grid-collpase uk-clearfix'>
-                <div className='uk-width-1-3'>
+                <div className='uk-width-1-4'>
                   <label>Status Name</label>
                   <input
                     type='text'
@@ -75,14 +80,32 @@ class CreateStatusModal extends React.Component {
                     data-validation-error-msg='Invalid name (3+ characters)'
                   />
                 </div>
-                
-                <div className='uk-width-1-3'>
+
+                <div className='uk-width-1-4'>
                   <ColorSelector
                     hideRevert={true}
                     defaultColor={'#29B995'}
                     validationEnabled={true}
                     onChange={e => (this.htmlColor = e.target.value)}
                   />
+                </div>
+                <div className={'uk-width-1-4'}>
+                  <div className={'uk-float-left'}>
+                    <EnableSwitch
+                      stateName={'slatimer'}
+                      label={'SLA'}
+                      checked={this.slatimer}
+                      onChange={e => (this.slatimer = e.target.checked)}
+                    />
+                  </div>
+                  <div className={'uk-float-left'}>
+                    <EnableSwitch
+                      stateName={'isResolved'}
+                      label={'isResolved'}
+                      checked={this.isResolved}
+                      onChange={e => (this.isResolved = e.target.checked)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className='uk-modal-footer uk-text-right'>
@@ -98,7 +121,6 @@ class CreateStatusModal extends React.Component {
 }
 
 CreateStatusModal.propTypes = {
-  onPriorityCreated: PropTypes.func,
   createStatus: PropTypes.func.isRequired
 }
 

@@ -61,16 +61,16 @@ statusSchema.pre('save', function (next) {
   })
 })
 
-statusSchema.statics.getStatus = function (_id, callback) {
-  return this.model(COLLECTION)
-    .findOne({ _id: _id })
-    .exec(callback)
-}
-
 statusSchema.statics.getStatus = function (callback) {
   return this.model(COLLECTION)
     .find({})
     .sort({ order: 1 })
+    .exec(callback)
+}
+
+statusSchema.statics.getStatusById = function (_id, callback) {
+  return this.model(COLLECTION)
+    .findOne({ _id: _id })
     .exec(callback)
 }
 

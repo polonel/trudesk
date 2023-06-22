@@ -219,7 +219,6 @@ function * updateStatus ({ payload }) {
   }
 }
 
-
 function * deletePriority ({ payload }) {
   try {
     const response = yield call(api.tickets.deletePriority, payload)
@@ -236,9 +235,9 @@ function * deletePriority ({ payload }) {
 
 function * deleteStatus ({ payload }) {
   try {
-    console.log(payload);
     const response = yield call(api.tickets.deleteStatus, payload)
     yield put({ type: DELETE_STATUS.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
     yield put({ type: FETCH_SETTINGS.ACTION })
   } catch (error) {
     const errorText = error.response.data.error
@@ -312,8 +311,6 @@ function * fetchTicketStatus ({ payload }) {
     yield put({ type: FETCH_STATUS.ERROR, error })
   }
 }
-
-
 
 export default function * watcher () {
   yield takeLatest(FETCH_TICKETS.ACTION, fetchTickets)

@@ -71,37 +71,6 @@ apiElasticSearch.status = async (req, res) => {
 
     return apiUtil.sendApiError(res, 500, e.message)
   }
-
-  // async.parallel(
-  //   [
-  //     function (done) {
-  //       return es.checkConnection(done)
-  //     },
-  //     function (done) {
-  //       es.getIndexCount(function (err, data) {
-  //         if (err) return done(err)
-  //         response.indexCount = !_.isUndefined(data.count) ? data.count : 0
-  //         return done()
-  //       })
-  //     },
-  //     function (done) {
-  //       ticketSchema.getCount(function (err, count) {
-  //         if (err) return done(err)
-  //         response.dbCount = count
-  //         return done()
-  //       })
-  //     }
-  //   ],
-  //   function (err) {
-  //     if (err) return res.status(500).json({ success: false, error: err })
-  //
-  //     response.esStatus = global.esStatus
-  //     response.isRebuilding = global.esRebuilding === true
-  //     response.inSync = response.dbCount === response.indexCount
-  //
-  //     res.json({ success: true, status: response })
-  //   }
-  // )
 }
 
 apiElasticSearch.search = function (req, res) {

@@ -65,7 +65,7 @@ class CommentNotePartial extends React.Component {
             {!isNote && <Fragment>{ReactHtmlParser(comment.comment)}</Fragment>}
           </div>
         </div>
-        {this.props.ticketStatus !== 3 && (
+        {this.props.ticketStatus.get('isResolved') === false && (
           <div className='comment-actions'>
             {helpers.hasPermOverRole(comment.owner.role, null, 'comments:delete', true) && (
               <div className='remove-comment' onClick={onRemoveClick}>
@@ -85,7 +85,7 @@ class CommentNotePartial extends React.Component {
 }
 
 CommentNotePartial.propTypes = {
-  ticketStatus: PropTypes.number.isRequired,
+  ticketStatus: PropTypes.object.isRequired,
   ticketSubject: PropTypes.string.isRequired,
   comment: PropTypes.object.isRequired,
   dateFormat: PropTypes.string.isRequired,

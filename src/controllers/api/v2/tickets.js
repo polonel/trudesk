@@ -18,6 +18,7 @@ const logger = require('../../../logger')
 const apiUtils = require('../apiUtils')
 const Models = require('../../../models')
 const permissions = require('../../../permissions')
+const ticketStatusSchema = require('../../../models/ticketStatus')
 
 const ticketsV2 = {}
 
@@ -57,9 +58,11 @@ ticketsV2.get = async (req, res) => {
 
     const mappedGroups = groups.map(g => g._id)
 
+    const statuses = await ticketStatusSchema.find({ isResolved: false })
+
     switch (type.toLowerCase()) {
       case 'active':
-        queryObject.status = [0, 1, 2]
+        queryObject.status = statuses.map(i => i._id.toString())
         break
       case 'assigned':
         queryObject.filter = {

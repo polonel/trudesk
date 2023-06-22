@@ -25,9 +25,10 @@ const pkg = require('../../package.json')
 global.env = process.env.NODE_ENV || 'production'
 
 let CONNECTION_URI = null
+let FILENAME = null
 
 function createZip (callback) {
-  const filename = 'trudesk-v' + pkg.version + '-' + moment().format('MMDDYYYY_HHmm') + '.zip'
+  const filename = FILENAME
   const output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename))
   const archive = archiver('zip', {
     zlib: { level: 9 }
@@ -124,6 +125,7 @@ function runBackup (callback) {
 
 ;(function () {
   CONNECTION_URI = process.env.MONGOURI
+  FILENAME = process.env.FILENAME || 'trudesk-v' + pkg.version + '-' + moment().format('MMDDYYYY_HHmm') + '.zip'
 
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
   const options = {
@@ -151,9 +153,8 @@ function runBackup (callback) {
 
         runBackup(function (err) {
           if (err) return process.send({ success: false, error: err })
-          const filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
 
-          winston.info('Backup completed successfully: ' + filename)
+          winston.info('Backup completed successfully: ' + FILENAME)
           process.send({ success: true })
         })
       })

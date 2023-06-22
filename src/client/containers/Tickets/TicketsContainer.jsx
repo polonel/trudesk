@@ -128,14 +128,14 @@ class TicketsContainer extends React.Component {
 
   onSetStatus (status) {
     const batch = this.selectedTickets.map(id => {
-      return { id, status: status.get('uid') }
+      return { id, status: status.get('_id') }
     })
 
     axios
       .put(`/api/v2/tickets/batch`, { batch })
       .then(res => {
         if (res.data.success) {
-          helpers.UI.showSnackbar({ text: `Ticket status set to ${s.get('name')}` })
+          helpers.UI.showSnackbar({ text: `Ticket status set to ${status.get('name')}` })
           this._clearChecked()
         } else {
           helpers.UI.showSnackbar('An unknown error occurred.', true)
@@ -347,7 +347,7 @@ class TicketsContainer extends React.Component {
             {this.props.loading && loadingItems}
             {!this.props.loading &&
               this.props.tickets.map(ticket => {
-                const status = this.props.ticketStatuses.find(s => s.get('uid') === ticket.get('status'))
+                const status = this.props.ticketStatuses.find(s => s.get('_id') === ticket.get('status').get('_id'))
 
                 const assignee = () => {
                   const a = ticket.get('assignee')
@@ -413,7 +413,7 @@ class TicketsContainer extends React.Component {
                     <TableCell className={`ticket-status vam nbb uk-text-center`}>
                       <span
                         className={'uk-display-inline-block'}
-                        style={{ backgroundColor: status == null ? undefined : status.get('htmlColor') }}
+                        style={{ backgroundColor: status == null ? '#000' : status.get('htmlColor') }}
                       >
                         {status == null ? 'U' : status.get('name')[0].toUpperCase()}
                       </span>
@@ -458,7 +458,8 @@ TicketsContainer.propTypes = {
   fetchSearchResults: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
   filter: PropTypes.object.isRequired,
-  ticketStatuses: PropTypes.object.isRequired
+  ticketStatuses: PropTypes.object.isRequired,
+  fetchTicketStatus: PropTypes.func.isRequired
 }
 
 TicketsContainer.defaultProps = {

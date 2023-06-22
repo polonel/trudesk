@@ -19,7 +19,7 @@ import { observer } from 'mobx-react'
 import sortBy from 'lodash/sortBy'
 import union from 'lodash/union'
 
-import { transferToThirdParty, fetchTicketTypes } from 'actions/tickets'
+import { transferToThirdParty, fetchTicketTypes, fetchTicketStatus } from 'actions/tickets'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { showModal } from 'actions/common'
 
@@ -145,6 +145,7 @@ class SingleTicketContainer extends React.Component {
     fetchTicket(this)
     this.props.fetchTicketTypes()
     this.props.fetchGroups()
+    this.props.fetchTicketStatus()
   }
 
   componentDidUpdate () {
@@ -273,7 +274,9 @@ class SingleTicketContainer extends React.Component {
       : []
 
     // Perms
-    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update')
+    const hasTicketUpdate = this.ticket && this.ticket.status.isResolved === false && helpers.canUser('tickets:update')
+    const statusObj = this.ticket ? this.props.ticketStatuses.find(s => s.get('_id') === this.ticket.status._id) : null
+
     const hasTicketStatusUpdate = () => {
       const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
       const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
@@ -299,7 +302,7 @@ class SingleTicketContainer extends React.Component {
                   <p>Ticket #{this.ticket.uid}</p>
                   <StatusSelector
                     ticketId={this.ticket._id}
-                    status={this.ticket.status}
+                    status={this.ticket.status._id}
                     socket={this.props.socket}
                     onStatusChange={status => {
                       this.ticket.status = status
@@ -629,7 +632,7 @@ class SingleTicketContainer extends React.Component {
                   <div className='comments-wrapper'>
                     <IssuePartial
                       ticketId={this.ticket._id}
-                      status={this.ticket.status}
+                      status={statusObj}
                       owner={this.ticket.owner}
                       subject={this.ticket.subject}
                       issue={this.ticket.issue}
@@ -673,7 +676,7 @@ class SingleTicketContainer extends React.Component {
                             {this.commentsAndNotes.map(item => (
                               <CommentNotePartial
                                 key={item._id}
-                                ticketStatus={this.ticket.status}
+                                ticketStatus={statusObj}
                                 ticketSubject={this.ticket.subject}
                                 comment={item}
                                 isNote={item.isNote}
@@ -711,7 +714,7 @@ class SingleTicketContainer extends React.Component {
                               this.ticket.comments.map(comment => (
                                 <CommentNotePartial
                                   key={comment._id}
-                                  ticketStatus={this.ticket.status}
+                                  ticketStatus={statusObj}
                                   ticketSubject={this.ticket.subject}
                                   comment={comment}
                                   dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
@@ -748,7 +751,7 @@ class SingleTicketContainer extends React.Component {
                               this.ticket.notes.map(note => (
                                 <CommentNotePartial
                                   key={note._id}
-                                  ticketStatus={this.ticket.status}
+                                  ticketStatus={statusObj}
                                   ticketSubject={this.ticket.subject}
                                   comment={note}
                                   isNote={true}
@@ -784,7 +787,7 @@ class SingleTicketContainer extends React.Component {
                     )}
 
                     {/* Comment / Notes Form */}
-                    {this.ticket.status !== 3 &&
+                    {this.ticket.status.isResolved === false &&
                       (helpers.canUser('comments:create', true) || helpers.canUser('tickets:notes', true)) && (
                         <div className='uk-width-1-1 ticket-reply uk-clearfix'>
                           <Avatar image={this.props.shared.sessionUser.image} showOnlineBubble={false} />
@@ -879,7 +882,9 @@ SingleTicketContainer.propTypes = {
   fetchGroups: PropTypes.func.isRequired,
   unloadGroups: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
-  transferToThirdParty: PropTypes.func
+  transferToThirdParty: PropTypes.func,
+  ticketStatuses: PropTypes.object.isRequired,
+  fetchTicketStatus: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -888,12 +893,14 @@ const mapStateToProps = state => ({
   sessionUser: state.shared.sessionUser,
   socket: state.shared.socket,
   ticketTypes: state.ticketsState.types,
+  ticketStatuses: state.ticketsState.ticketStatuses,
   groupsState: state.groupsState
 })
 
 export default connect(mapStateToProps, {
   fetchTicketTypes,
   fetchGroups,
+  fetchTicketStatus,
   unloadGroups,
   showModal,
   transferToThirdParty

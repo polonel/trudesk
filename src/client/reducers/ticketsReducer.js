@@ -41,36 +41,27 @@ const initialState = {
 }
 
 // Util function until custom views are finished
-function hasInView (view, status, assignee, userId, userGroupIds, groupId) {
+function hasInView (state, view, statusId, assignee, userId, userGroupIds, groupId) {
   let hasView = false
   let hasGroup = false
+  const unresolvedStatuses = state.ticketStatuses.filter(i => i.get('isResolved') === false)
+  const status = state.ticketStatuses.find(i => i.get('_id') === statusId)
+
   switch (view) {
     case 'filter':
       hasView = true
       break
     case 'all':
-      hasView = [0, 1, 2, 3].indexOf(status) !== -1
+      hasView = state.ticketStatuses.findIndex(s => s.get('_id') === statusId) !== -1
       break
     case 'active':
-      hasView = [0, 1, 2].indexOf(status) !== -1
+      hasView = unresolvedStatuses.findIndex(s => s.get('_id') === statusId) !== -1
       break
     case 'assigned':
       hasView = assignee === userId
       break
     case 'unassigned':
       hasView = isUndefined(assignee)
-      break
-    case 'new':
-      hasView = status === 0
-      break
-    case 'open':
-      hasView = status === 1
-      break
-    case 'pending':
-      hasView = status === 2
-      break
-    case 'closed':
-      hasView = status === 3
       break
     default:
       hasView = false
@@ -167,9 +158,12 @@ const reducer = handleActions(
         return t.get('_id') === ticket._id
       })
 
+      ticket.status = state.ticketStatuses.find(i => i.get('_id') === ticket.status)
+
       const inView = hasInView(
+        state,
         state.viewType,
-        ticket.status,
+        ticket.status.get('_id'),
         ticket.assignee ? ticket.assignee._id : undefined,
         action.sessionUser._id,
         userGroupIds,
@@ -225,14 +219,14 @@ const reducer = handleActions(
 
     [FETCH_STATUS.PENDING]: state => {
       return {
-        ...state,
+        ...state
       }
     },
 
     [FETCH_STATUS.SUCCESS]: (state, action) => {
       return {
         ...state,
-        ticketStatuses: fromJS(action.response.status),
+        ticketStatuses: fromJS(action.response.status)
       }
     },
 

@@ -429,6 +429,12 @@ apiTickets.create = function (req, res) {
         UserSchema.findOne({ _id: req.user._id }, done)
       },
       function (user, done) {
+        var TicketStatusSchema = require('../../../models/ticketStatus')
+        TicketStatusSchema.findOne({ order: 0 }, function (err, status) {
+          return done(err, status, user)
+        })
+      },
+      function (status, user, done) {
         if (user.deleted) return done({ status: 400, error: 'Invalid User' })
 
         var HistoryItem = {
@@ -439,6 +445,9 @@ apiTickets.create = function (req, res) {
 
         var TicketSchema = require('../../../models/ticket')
         var ticket = new TicketSchema(postData)
+
+        ticket.status = status._id
+
         if (!_.isUndefined(postData.owner)) {
           ticket.owner = postData.owner
         } else {
@@ -1450,16 +1459,23 @@ apiTickets.updateStatusOrder = function (req, res) {
 
 apiTickets.deleteStatus = function (req, res) {
   var id = req.params.id
-
-  if (!id) {
+  var newStatusId = req.body.newStatusId
+  if (!id || !newStatusId) {
     return res.status(400).json({ success: false, error: 'Invalid Request Data' })
   }
+
   async.series(
     [
+      function (next) {
+        var ticketSchema = require('../../../models/ticket')
+        ticketSchema.updateMany({ status: id }, { status: newStatusId }, next)
+      },
       function (next) {
         var ticketStatusSchema = require('../../../models/ticketStatus')
         ticketStatusSchema.findOne({ _id: id }, function (err, status) {
           if (err) return next(err)
+          if (status.isLocked) return next(`Unable to delete default status: ${status.name}`)
+
           status.remove(next)
         })
       }

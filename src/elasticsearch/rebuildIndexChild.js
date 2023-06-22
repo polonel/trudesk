@@ -244,7 +244,7 @@ function crawlTickets (callback) {
   let count = 0
   const startTime = new Date().getTime()
   const stream = Model.find({ deleted: false })
-    .populate('owner group comments.owner notes.owner tags priority type')
+    .populate('owner group comments.owner notes.owner tags priority type status')
     .lean()
     .cursor()
 
@@ -290,7 +290,6 @@ function crawlTickets (callback) {
           _id: doc.group._id,
           name: doc.group.name
         },
-        status: doc.status,
         issue: doc.issue,
         subject: doc.subject,
         date: doc.date,
@@ -304,6 +303,7 @@ function crawlTickets (callback) {
           htmlColor: doc.priority.htmlColor
         },
         ticketType: { _id: doc.type._id, name: doc.type.name },
+        status: { _id: doc.status._id, name: doc.status.name, htmlColor: doc.status.htmlColor, uid: doc.status.uid },
         deleted: doc.deleted,
         comments: comments,
         notes: doc.notes,

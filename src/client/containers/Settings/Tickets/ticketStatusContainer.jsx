@@ -16,6 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
+import { showModal, hideModal } from 'actions/common'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
 import Button from 'components/Button'
 
@@ -27,7 +28,7 @@ import TicketStatusBody from 'containers/Settings/Tickets/ticketStatusBody'
 @observer
 class TicketStatusContainer extends React.Component {
   onCreateStatusClicked (e) {
-    console.log(e)
+    this.props.showModal('CREATE_STATUS')
   }
 
   onStatusOrderChanged (e) {
@@ -37,9 +38,7 @@ class TicketStatusContainer extends React.Component {
 
     axios
       .put('/api/v1/tickets/status/order', { order: arr })
-      .then(res => {
-        console.log(res)
-      })
+      .then(res => {})
       .catch(err => {
         console.log(err)
         helpers.UI.showSnackbar(err.message || err.response?.statusText, true)
@@ -96,9 +95,11 @@ class TicketStatusContainer extends React.Component {
 }
 
 TicketStatusContainer.propTypes = {
-  statuses: PropTypes.arrayOf(PropTypes.object)
+  statuses: PropTypes.arrayOf(PropTypes.object),
+  showModal: PropTypes.func.isRequired,
+  hideModal: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({})
 
-export default connect(mapStateToProps, {})(TicketStatusContainer)
+export default connect(mapStateToProps, { showModal, hideModal })(TicketStatusContainer)

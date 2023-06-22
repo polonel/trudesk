@@ -19,6 +19,7 @@ import { observer } from 'mobx-react'
 import Input from 'components/Input'
 import { makeObservable, observable } from 'mobx'
 import { fetchSettings } from 'actions/settings'
+import { showModal, hideModal } from 'actions/common'
 import ColorSelector from 'components/ColorSelector'
 import Button from 'components/Button'
 import EnableSwitch from 'components/Settings/EnableSwitch'
@@ -68,6 +69,10 @@ class TicketStatusBody extends React.Component {
         console.log(e)
         helpers.UI.showSnackbar(e, true)
       })
+  }
+
+  showDeleteTicketStatusModal (e, status) {
+    this.props.showModal('DELETE_STATUS', { status })
   }
 
   render () {
@@ -135,7 +140,7 @@ class TicketStatusBody extends React.Component {
                       text={'Delete'}
                       small={true}
                       style={'danger'}
-                      onClick={e => this.showDeleteTicketStatusModal(e, type)}
+                      onClick={e => this.showDeleteTicketStatusModal(e, this.props.status)}
                     />
                   </div>
                 </div>
@@ -150,7 +155,9 @@ class TicketStatusBody extends React.Component {
 
 TicketStatusBody.propTypes = {
   status: PropTypes.object.isRequired,
-  fetchSettings: PropTypes.func.isRequired
+  fetchSettings: PropTypes.func.isRequired,
+  showModal: PropTypes.func.isRequired,
+  hideModal: PropTypes.func.isRequired
 }
 
-export default connect(null, { fetchSettings })(TicketStatusBody)
+export default connect(null, { fetchSettings, showModal, hideModal })(TicketStatusBody)

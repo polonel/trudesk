@@ -14,15 +14,62 @@
 
 var _ = require('lodash')
 var async = require('async')
-var winston = require('winston')
+var winston = require('../logger')
 var semver = require('semver')
+var moment = require('moment')
 var version = require('../../package.json').version
 
 var SettingsSchema = require('../models/setting')
 var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
+var database = require('../database')
+const path = require('path')
 
 var migrations = {}
+
+function performBackup (dbVersion, callback) {
+  const child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), {
+    env: {
+      FORK: 1,
+      NODE_ENV: global.env,
+      MONGOURI: database.connectionuri,
+      PATH: process.env.PATH,
+      FILENAME: 'PREUPGRADE--trudesk-v' + dbVersion + '-' + moment().format('MMDDYYYY_HHmm') + '.zip'
+    }
+  })
+  global.forks.push({ name: 'backup', fork: child })
+
+  let result = null
+
+  child.on('message', function (data) {
+    child.kill('SIGINT')
+    global.forks = _.remove(global.forks, function (f) {
+      return f.fork !== child
+    })
+
+    if (data.error) {
+      result = { success: false, error: data.error }
+    }
+
+    if (data.success) {
+      result = { success: true }
+    } else {
+      result = { success: false, error: data }
+    }
+  })
+
+  child.on('close', function () {
+    if (!result) {
+      return callback({ success: false, error: 'An Unknown Error Occurred' })
+    }
+
+    if (result.error) {
+      return callback(result)
+    }
+
+    return callback(null, result)
+  })
+}
 
 function saveVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
@@ -204,8 +251,15 @@ function removeAgentsFromGroups (callback) {
 function createTicketStatus (callback) {
   const Status = require('../models/ticketStatus')
   const counterSchema = require('../models/counters')
+  let newId = ''
+  let openId = ''
+  let pendingId = ''
+  let closedId = ''
   async.series(
     [
+      function (next) {
+        Status.deleteMany({}, next)
+      },
       function (next) {
         Status.create(
           [
@@ -246,10 +300,50 @@ function createTicketStatus (callback) {
               isLocked: true
             }
           ],
-          next
+          function (err, result) {
+            if (err) return next(err)
+            newId = result[0]._id
+            openId = result[1]._id
+            pendingId = result[2]._id
+            closedId = result[3]._id
+
+            return next()
+          }
         )
       },
       function (next) {
+        winston.info('Updating ticket statuses for migration. Please Wait...')
+        winston.debug('Status [New ID]: ' + newId)
+        winston.debug('Status [Open ID]: ' + openId)
+        winston.debug('Status [Pending ID]: ' + pendingId)
+        winston.debug('Status [Closed ID]: ' + closedId)
+
+        const newPromise = database.db.connection.db
+          .collection('tickets')
+          .updateMany({ status: 0 }, { $set: { status: newId } })
+
+        const openPromise = database.db.connection.db
+          .collection('tickets')
+          .updateMany({ status: 1 }, { $set: { status: openId } })
+
+        const pendingPromise = database.db.connection.db
+          .collection('tickets')
+          .updateMany({ status: 2 }, { $set: { status: pendingId } })
+
+        const closedPromise = database.db.connection.db
+          .collection('tickets')
+          .updateMany({ status: 3 }, { $set: { status: closedId } })
+
+        Promise.allSettled([newPromise, openPromise, pendingPromise, closedPromise])
+          .then(res => {
+            return next()
+          })
+          .catch(err => {
+            return next(err)
+          })
+      },
+      function (next) {
+        winston.info('Completed updating ticket status.')
         counterSchema.setCounter('status', 4, next)
       }
     ],
@@ -291,9 +385,15 @@ migrations.run = function (callback) {
         }
       },
       function (next) {
-        if (semver.satisfies(semver.coerce(databaseVersion).version, '<1.2.8')) return createTicketStatus(next)
+        if (semver.satisfies(semver.coerce(databaseVersion).version, '<1.2.8')) {
+          performBackup(databaseVersion, function (err) {
+            if (err) return next(err)
 
-        return next()
+            return createTicketStatus(next)
+          })
+        } else {
+          return next()
+        }
       }
     ],
     function (err) {

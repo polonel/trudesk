@@ -167,8 +167,8 @@ api.tickets.getStatus = () => {
   })
 }
 
-api.tickets.deleteStatus = ({ id }) => {
-  return axios.post(`/api/v1/tickets/status/${id}/delete`, {}).then(res => {
+api.tickets.deleteStatus = ({ id, newStatusId }) => {
+  return axios.post(`/api/v1/tickets/status/${id}/delete`, { newStatusId }).then(res => {
     return res.data
   })
 }

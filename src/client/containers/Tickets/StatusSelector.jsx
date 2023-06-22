@@ -85,7 +85,7 @@ class StatusSelector extends React.Component {
 
   render () {
     const currentStatus = this.props.ticketStatuses
-      ? this.props.ticketStatuses.find(s => s.get('uid') === this.status)
+      ? this.props.ticketStatuses.find(s => s.get('_id') === this.status)
       : null
 
     return (
@@ -119,7 +119,7 @@ class StatusSelector extends React.Component {
                   <li
                     key={s.get('_id')}
                     className='ticket-status'
-                    onClick={() => this.changeStatus(s.get('uid'))}
+                    onClick={() => this.changeStatus(s.get('_id'))}
                     style={{ color: 'white', background: s.get('htmlColor') }}
                   >
                     <span>{s.get('name')}</span>
@@ -135,7 +135,7 @@ class StatusSelector extends React.Component {
 
 StatusSelector.propTypes = {
   ticketId: PropTypes.string.isRequired,
-  status: PropTypes.number.isRequired,
+  status: PropTypes.string.isRequired,
   onStatusChange: PropTypes.func,
   hasPerm: PropTypes.bool.isRequired,
   socket: PropTypes.object.isRequired,

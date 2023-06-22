@@ -145,7 +145,7 @@ ticketsController.getActive = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: [0, 1, 2]
+    status: { isResolved: false }
   }
 
   req.processor = processor
@@ -174,7 +174,7 @@ ticketsController.getAssigned = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: [0, 1, 2],
+    status: { isResolved: false },
     assignedSelf: true,
     user: req.user._id
   }

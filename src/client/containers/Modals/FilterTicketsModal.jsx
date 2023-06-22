@@ -91,8 +91,8 @@ class FilterTicketsModal extends React.Component {
   }
 
   render () {
-    const statuses = this.props.ticketStatuses.map(s => ({text: s.get('name'), value: s.get('uid')})).toArray()
-    
+    const statuses = this.props.ticketStatuses.map(s => ({ text: s.get('name'), value: s.get('_id') })).toArray()
+
     const tags = this.props.ticketTags
       .map(t => {
         return { text: t.get('name'), value: t.get('_id') }
@@ -229,7 +229,7 @@ const mapStateToProps = state => ({
   accountsState: state.accountsState,
   ticketTags: state.tagsSettings.tags,
   ticketTypes: state.ticketsState.types,
-  ticketStatuses: state.ticketsState.ticketStatuses,
+  ticketStatuses: state.ticketsState.ticketStatuses
 })
 
 export default connect(mapStateToProps, {
