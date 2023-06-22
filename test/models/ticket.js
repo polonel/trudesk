@@ -5,6 +5,7 @@ var m = require('mongoose')
 var ticketSchema = require('../../src/models/ticket')
 var groupSchema = require('../../src/models/group')
 var prioritySchema = require('../../src/models/ticketpriority')
+var statusSchema = require('../../src/models/ticketStatus')
 
 describe('ticket.js', function () {
   // it('should clear collections.', function(done) {
@@ -21,46 +22,49 @@ describe('ticket.js', function () {
     prioritySchema.findOne({ default: true }).exec(function (err, p) {
       expect(err).to.not.exist
       expect(p).to.be.a('object')
+      statusSchema.findOne({ uid: 0 }).exec(function (err, status) {
+        expect(err).to.not.exist
+        expect(status).to.be.a('object')
+        ticketSchema.create(
+          {
+            owner: m.Types.ObjectId(),
+            group: m.Types.ObjectId(),
+            status: status._id,
+            tags: [],
+            date: new Date(),
+            subject: 'Dummy Test Subject',
+            issue: 'Dummy Test Issue',
+            priority: p._id,
+            type: m.Types.ObjectId(),
+            history: []
+          },
+          function (err, t) {
+            expect(err).to.not.exist
+            expect(t).to.be.a('object')
+            expect(t._doc).to.include.keys(
+              '_id',
+              'uid',
+              'owner',
+              'group',
+              'status',
+              'tags',
+              'date',
+              'subject',
+              'issue',
+              'priority',
+              'type',
+              'history',
+              'attachments',
+              'comments',
+              'deleted'
+            )
 
-      ticketSchema.create(
-        {
-          owner: m.Types.ObjectId(),
-          group: m.Types.ObjectId(),
-          status: 0,
-          tags: [],
-          date: new Date(),
-          subject: 'Dummy Test Subject',
-          issue: 'Dummy Test Issue',
-          priority: p._id,
-          type: m.Types.ObjectId(),
-          history: []
-        },
-        function (err, t) {
-          expect(err).to.not.exist
-          expect(t).to.be.a('object')
-          expect(t._doc).to.include.keys(
-            '_id',
-            'uid',
-            'owner',
-            'group',
-            'status',
-            'tags',
-            'date',
-            'subject',
-            'issue',
-            'priority',
-            'type',
-            'history',
-            'attachments',
-            'comments',
-            'deleted'
-          )
+            expect(t.uid).to.equal(1000)
 
-          expect(t.uid).to.equal(1000)
-
-          done()
-        }
-      )
+            done()
+          }
+        )
+      })
     })
   })
 
@@ -68,30 +72,40 @@ describe('ticket.js', function () {
     async.series(
       [
         function (cb) {
-          ticketSchema.getTicketByUid(1000, function (err, ticket) {
+          statusSchema.findOne({ uid: 3 }, function (err, status) {
             expect(err).to.not.exist
-            expect(ticket).to.be.a('object')
+            expect(status).to.be.a('object')
 
-            ticket.setStatus(m.Types.ObjectId(), 3, function (err, ticket) {
+            ticketSchema.getTicketByUid(1000, function (err, ticket) {
               expect(err).to.not.exist
-              expect(ticket.status).to.equal(3)
-              expect(ticket.closedDate).to.exist
+              expect(ticket).to.be.a('object')
 
-              cb()
+              ticket.setStatus(ticket._id, status._id, function (err, ticket) {
+                expect(err).to.not.exist
+                expect(ticket.status).to.equal(status._id)
+                expect(ticket.closedDate).to.exist
+
+                cb()
+              })
             })
           })
         },
         function (cb) {
-          ticketSchema.getTicketByUid(1000, function (err, ticket) {
+          statusSchema.findOne({ uid: 1 }, function (err, status) {
             expect(err).to.not.exist
-            expect(ticket).to.be.a('object')
-
-            ticket.setStatus(m.Types.ObjectId(), 1, function (err, ticket) {
+            expect(status).to.be.a('object')
+            ticketSchema.getTicketByUid(1000, function (err, ticket) {
               expect(err).to.not.exist
-              expect(ticket.status).to.equal(1)
-              expect(ticket.closedDate).to.not.exist
+              expect(ticket).to.be.a('object')
 
-              cb()
+              ticket.setStatus(ticket._id, status._id, function (err, ticket) {
+                expect(err).to.not.exist
+                console.log(ticket)
+                expect(ticket.status).to.equal(status._id)
+                expect(ticket.closedDate).to.not.exist
+
+                cb()
+              })
             })
           })
         }
@@ -393,7 +407,7 @@ describe('ticket.js', function () {
     async.parallel(
       [
         function (cb) {
-          ticketSchema.getTicketsByStatus([m.Types.ObjectId()], 0, function (err, tickets) {
+          ticketSchema.getTicketsByStatus([m.Types.ObjectId()], m.Types.ObjectId(), function (err, tickets) {
             expect(err).to.not.exist
             expect(tickets).to.have.length(0)
 
@@ -401,14 +415,14 @@ describe('ticket.js', function () {
           })
         },
         function (cb) {
-          ticketSchema.getTicketsByStatus(undefined, 0, function (err, tickets) {
+          ticketSchema.getTicketsByStatus(undefined, m.Types.ObjectId(), function (err, tickets) {
             expect(err).to.exist
 
             cb()
           })
         },
         function (cb) {
-          ticketSchema.getTicketsByStatus(m.Types.ObjectId(), 0, function (err, tickets) {
+          ticketSchema.getTicketsByStatus(m.Types.ObjectId(), m.Types.ObjectId(), function (err, tickets) {
             expect(err).to.exist
 
             cb()
@@ -422,12 +436,16 @@ describe('ticket.js', function () {
   })
 
   it('should get all tickets by status', function (done) {
-    ticketSchema.getAllByStatus(0, function (err, tickets) {
+    statusSchema.findOne({ uid: 0 }, function (err, status) {
       expect(err).to.not.exist
 
-      expect(tickets).to.have.length(1)
+      ticketSchema.getAllByStatus(status._id, function (err, tickets) {
+        expect(err).to.not.exist
 
-      done()
+        expect(tickets).to.have.length(1)
+
+        done()
+      })
     })
   })
 

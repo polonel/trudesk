@@ -29,10 +29,10 @@ const commentSchema = require('./comment')
 const noteSchema = require('./note')
 const attachmentSchema = require('./attachment')
 const historySchema = require('./history')
+const statusSchema = require('./ticketStatus')
 require('./tag')
 require('./ticketpriority')
 require('./tickettype')
-require('./ticketStatus')
 
 const COLLECTION = 'tickets'
 
@@ -250,7 +250,7 @@ ticketSchema.methods.setStatus = function (ownerId, status, callback) {
         return reject(new Error('Invalid Status'))
       }
 
-      self.closedDate = status.isResolved ? new Date() : null
+      self.closedDate = statusModel.isResolved ? new Date() : null
       self.status = status
 
       const historyItem = {
@@ -1516,16 +1516,22 @@ ticketSchema.statics.getAssigned = function (userId, callback) {
 
   const self = this
 
-  const q = self
-    .model(COLLECTION)
-    .find({ assignee: userId, deleted: false, status: { $ne: 3 } })
-    .populate(
-      'owner assignee comments.owner notes.owner subscribers history.owner',
-      'username fullname email role image title'
-    )
-    .populate('type tags status group')
+  statusSchema.find({ isResolved: false }, function (err, statuses) {
+    if (err) return callback(err)
 
-  return q.exec(callback)
+    const unresolvedStatusesIds = statuses.map(i => i._id)
+
+    const q = self
+      .model(COLLECTION)
+      .find({ assignee: userId, deleted: false, status: { $in: unresolvedStatusesIds } })
+      .populate(
+        'owner assignee comments.owner notes.owner subscribers history.owner',
+        'username fullname email role image title'
+      )
+      .populate('type tags status group')
+
+    return q.exec(callback)
+  })
 }
 
 /**

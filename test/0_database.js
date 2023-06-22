@@ -53,6 +53,18 @@ before(function (done) {
           typeSchema.insertMany([{ name: 'Task' }, { name: 'Issue' }], cb)
         },
         function (cb) {
+          var statusSchema = require('../src/models/ticketStatus')
+          statusSchema.insertMany(
+            [
+              { name: 'New', uid: 0, isLocked: true },
+              { name: 'Open', uid: 1, isLocked: true },
+              { name: 'Pending', uid: 2, isLocked: true },
+              { name: 'Closed', uid: 3, isLocked: true, isResolved: true }
+            ],
+            cb
+          )
+        },
+        function (cb) {
           require('../src/settings/defaults').init(cb)
         },
         function (cb) {
