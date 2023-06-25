@@ -21,8 +21,9 @@ import {
   RoleOrderModel,
   SettingModel,
   TemplateModel,
+  TicketStatusModel,
   TicketTagModel,
-  TicketTypeModel,
+  TicketTypeModel
 } from '../models'
 import type { SettingsObjectType, SettingsObjectType_Base } from './settings'
 
@@ -66,6 +67,7 @@ async function setSetting(setting: string, value: string | object | boolean | nu
 interface ContentData {
   ticketTypes?: any
   priorities?: any
+  status?: any
   mailTemplates?: any
   tags?: any
   roles?: any
@@ -172,6 +174,8 @@ async function getSettings(
 
         const priorities = await PriorityModel.getPriorities()
         result.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
+
+        result.status = await TicketStatusModel.getStatuses()
 
         const templates = await TemplateModel.find({})
         result.mailTemplates = _.sortBy(templates, 'name')

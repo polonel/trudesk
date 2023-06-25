@@ -64,6 +64,13 @@ module.exports = function (middleware, router, controllers) {
   router.put('/api/v2/tickets/priority/:id', apiv2Auth, isAgentOrAdmin, apiv2.tickets.priority.update)
   router.post('/api/v2/tickets/priority/:id/delete', apiv2Auth, isAgentOrAdmin, apiv2.tickets.priority.delete)
 
+  // Statuses
+  router.get('/api/v2/tickets/status', apiv2Auth, apiv2.tickets.status.get)
+  router.post('/api/v2/tickets/status/create', apiv2Auth, isAdmin, apiv2.tickets.status.create)
+  router.put('/api/v2/tickets/status/order', apiv2Auth, isAdmin, apiv2.tickets.status.order)
+  router.put('/api/v2/tickets/status/:id', apiv2Auth, isAdmin, apiv2.tickets.status.update)
+  router.post('/api/v2/tickets/status/:id/delete', apiv2Auth, isAdmin, apiv2.tickets.status.delete)
+
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, canUser('tickets:view'), apiv2.tickets.get)
   router.post('/api/v2/tickets', apiv2Auth, canUser('tickets:create'), apiv2.tickets.create)

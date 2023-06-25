@@ -145,7 +145,7 @@ class IssuePartial extends React.Component {
                   <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
                     {attachment.name}
                   </a>
-                  {this.status !== 3 && (
+                  {this.status.get('isResolved') === false && (
                     <a
                       role='button'
                       className={'remove-attachment'}
@@ -162,41 +162,41 @@ class IssuePartial extends React.Component {
           </div>
         </div>
         {/* Permissions on Fragment for edit */}
-        {this.status !== 3 && helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
-          <Fragment>
-            <div
-              className={'edit-issue'}
-              onClick={() => {
-                if (this.props.editorWindow)
-                  this.props.editorWindow.openEditorWindow({
-                    subject: this.subject,
-                    text: this.issue,
-                    onPrimaryClick: data => {
-                      this.props.socket.emit(TICKETS_ISSUE_SET, {
-                        _id: this.ticketId,
-                        value: data.text,
-                        subject: data.subjectText
-                      })
-                    }
-                  })
-              }}
-            >
-              <i className='material-icons'>&#xE254;</i>
-            </div>
-            <form className='form nomargin' encType='multipart/form-data'>
-              <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                <i className='material-icons'>&#xE226;</i>
+        {this.status.get('isResolved') === false &&
+          helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
+            <Fragment>
+              <div
+                className={'edit-issue'}
+                onClick={() => {
+                  if (this.props.editorWindow)
+                    this.props.editorWindow.openEditorWindow({
+                      subject: this.subject,
+                      text: this.issue,
+                      onPrimaryClick: data => {
+                        this.props.socket.emit(TICKETS_ISSUE_SET, {
+                          _id: this.ticketId,
+                          value: data.text,
+                          subject: data.subjectText
+                        })
+                      }
+                    })
+                }}
+              >
+                <i className='material-icons'>&#xE254;</i>
               </div>
-
-              <input
-                ref={r => (this.attachmentInput = r)}
-                className='hide'
-                type='file'
-                onChange={e => this.onAttachmentInputChange(e)}
-              />
-            </form>
-          </Fragment>
-        )}
+              <form className='form nomargin' encType='multipart/form-data'>
+                <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
+                  <i className='material-icons'>&#xE226;</i>
+                </div>
+                <input
+                  ref={r => (this.attachmentInput = r)}
+                  className='hide'
+                  type='file'
+                  onChange={e => this.onAttachmentInputChange(e)}
+                />
+              </form>
+            </Fragment>
+          )}
       </div>
     )
   }
@@ -204,7 +204,7 @@ class IssuePartial extends React.Component {
 
 IssuePartial.propTypes = {
   ticketId: PropTypes.string.isRequired,
-  status: PropTypes.number.isRequired,
+  status: PropTypes.object.isRequired,
   owner: PropTypes.object.isRequired,
   subject: PropTypes.string.isRequired,
   issue: PropTypes.string.isRequired,

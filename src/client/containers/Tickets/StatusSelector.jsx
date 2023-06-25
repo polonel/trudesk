@@ -16,21 +16,10 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { observer } from 'mobx-react'
 import { observable, makeObservable } from 'mobx'
+import { connect } from 'react-redux'
 
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts'
-
-const statusToName = status => {
-  switch (status) {
-    case 0:
-      return 'New'
-    case 1:
-      return 'Open'
-    case 2:
-      return 'Pending'
-    case 3:
-      return 'Closed'
-  }
-}
+import { fetchTicketStatus } from 'actions/tickets'
 
 @observer
 class StatusSelector extends React.Component {
@@ -50,6 +39,7 @@ class StatusSelector extends React.Component {
     document.addEventListener('click', this.onDocumentClick)
 
     this.props.socket.on(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus)
+    this.props.fetchTicketStatus()
   }
 
   componentDidUpdate (prevProps) {
@@ -94,19 +84,20 @@ class StatusSelector extends React.Component {
   }
 
   render () {
+    const currentStatus = this.props.ticketStatuses
+      ? this.props.ticketStatuses.find(s => s.get('_id') === this.status)
+      : null
+
     return (
       <div className='floating-ticket-status'>
         <div
           title='Change Status'
-          className={clsx(
-            `ticket-status`,
-            `ticket-${statusToName(this.status).toLowerCase()}`,
-            this.props.hasPerm && `cursor-pointer`
-          )}
+          className={clsx(`ticket-status`, this.props.hasPerm && `cursor-pointer`)}
+          style={{ color: 'white', background: currentStatus != null ? currentStatus.get('htmlColor') : '#000000' }}
           onClick={e => this.toggleDropMenu(e)}
           ref={r => (this.selectorButton = r)}
         >
-          <span>{statusToName(this.status)}</span>
+          <span>{currentStatus != null ? currentStatus.get('name') : 'Unknown'}</span>
         </div>
 
         {this.props.hasPerm && (
@@ -115,20 +106,26 @@ class StatusSelector extends React.Component {
           </span>
         )}
 
-        <div id={'statusSelect'} ref={r => (this.dropMenu = r)} className='hide'>
+        <div
+          id={'statusSelect'}
+          ref={r => (this.dropMenu = r)}
+          className='hide'
+          style={{ height: 25 * this.props.ticketStatuses.size + 25 }}
+        >
           <ul>
-            <li className='ticket-status ticket-new' onClick={() => this.changeStatus(0)}>
-              <span>New</span>
-            </li>
-            <li className='ticket-status ticket-open' onClick={() => this.changeStatus(1)}>
-              <span>Open</span>
-            </li>
-            <li className='ticket-status ticket-pending' onClick={() => this.changeStatus(2)}>
-              <span>Pending</span>
-            </li>
-            <li className='ticket-status ticket-closed' onClick={() => this.changeStatus(3)}>
-              <span>Closed</span>
-            </li>
+            {this.props.ticketStatuses.map(
+              s =>
+                s && (
+                  <li
+                    key={s.get('_id')}
+                    className='ticket-status'
+                    onClick={() => this.changeStatus(s.get('_id'))}
+                    style={{ color: 'white', background: s.get('htmlColor') }}
+                  >
+                    <span>{s.get('name')}</span>
+                  </li>
+                )
+            )}
           </ul>
         </div>
       </div>
@@ -138,14 +135,22 @@ class StatusSelector extends React.Component {
 
 StatusSelector.propTypes = {
   ticketId: PropTypes.string.isRequired,
-  status: PropTypes.number.isRequired,
+  status: PropTypes.string.isRequired,
   onStatusChange: PropTypes.func,
   hasPerm: PropTypes.bool.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  fetchTicketStatus: PropTypes.func.isRequired,
+  ticketStatuses: PropTypes.object.isRequired
 }
+
+const mapStateToProps = state => ({
+  ticketStatuses: state.ticketsState.ticketStatuses
+})
 
 StatusSelector.defaultProps = {
   hasPerm: false
 }
 
-export default StatusSelector
+export default connect(mapStateToProps, {
+  fetchTicketStatus
+})(StatusSelector)

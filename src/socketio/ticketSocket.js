@@ -66,11 +66,13 @@ events.onUpdateTicketStatus = socket => {
 
       ticket = await ticket.setStatus(ownerId, status)
       ticket = await ticket.save()
+      ticket = await ticket.populate('status')
+
       // emitter.emit('ticket:updated', t)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_STATUS_UPDATE, {
         tid: ticket._id,
         owner: ticket.owner,
-        status: status
+        status: ticket.status
       })
     } catch (e) {
       // Blank

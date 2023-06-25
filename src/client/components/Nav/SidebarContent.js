@@ -34,29 +34,6 @@ export const menu = [
         label: 'Assigned',
         icon: 'assignment_ind',
         url: '/tickets/assigned'
-      },
-      {
-        divider: true
-      },
-      {
-        label: 'New',
-        icon: 'description',
-        url: '/tickets/new'
-      },
-      {
-        label: 'Pending',
-        icon: 'sync_problem',
-        url: '/tickets/pending'
-      },
-      {
-        label: 'Open',
-        icon: 'folder_open',
-        url: '/tickets/open'
-      },
-      {
-        label: 'Closed',
-        icon: 'folder',
-        url: '/tickets/closed'
       }
     ]
   },

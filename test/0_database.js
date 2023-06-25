@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* globals server socketServer */
+
+import { TicketTypeModel } from '../src/models'
 var expect = require('chai').expect
 var winston = require('../src/logger')
 var async = require('async')
@@ -56,8 +58,14 @@ before(function (done) {
           )
         },
         function (cb) {
-          var typeSchema = require('../src/models/tickettype')
-          typeSchema.insertMany([{ name: 'Task' }, { name: 'Issue' }], cb)
+          const typePromise = TicketTypeModel.insertMany([{ name: 'Task' }, { name: 'Issue' }])
+          Promise.resolve(typePromise)
+            .then(() => {
+              return cb()
+            })
+            .catch(e => {
+              return cb(e)
+            })
         },
         function (cb) {
           require('../src/settings/defaults').init(cb)

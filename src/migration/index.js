@@ -12,19 +12,74 @@
 
  **/
 
+import counterSchema from '../models/counters'
+
 var _ = require('lodash')
 var async = require('async')
-var winston = require('winston')
+import * as child_process from 'child_process'
+var winston = require('../logger')
 var semver = require('semver')
+var moment = require('moment')
 var version = require('../../package.json').version
 
+import { TicketStatusModel } from '../models'
+
 var SettingsSchema = require('../models/setting')
-var userSchema = require('../models').UserModel
+var userSchema = require('../models/user')
 var roleSchema = require('../models/role')
+import * as database from '../database'
+import { trudeskDatabase } from '../database'
+const path = require('path')
 
 var migrations = {}
 
-function saveVersion(callback) {
+function performBackup (dbVersion) {
+  return new Promise((resolve, reject) => {
+    const child = child_process.fork(path.join(__dirname, '../../src/backup/backup'), {
+      env: {
+        FORK: 1,
+        NODE_ENV: global.env,
+        MONGOURI: database.getConnectionUri(),
+        PATH: process.env.PATH,
+        FILENAME: 'PREUPGRADE--trudesk-v' + dbVersion + '-' + moment().format('MMDDYYYY_HHmm') + '.zip'
+      }
+    })
+    global.forks.push({ name: 'backup', fork: child })
+
+    let result = null
+
+    child.on('message', function (data) {
+      child.kill('SIGINT')
+      global.forks = _.remove(global.forks, function (f) {
+        return f.fork !== child
+      })
+
+      if (data.error) {
+        result = { success: false, error: data.error }
+      }
+
+      if (data.success) {
+        result = { success: true }
+      } else {
+        result = { success: false, error: data }
+      }
+    })
+
+    child.on('close', function () {
+      if (!result) {
+        return reject(new Error('An Unknown Error Occurred'))
+      }
+
+      if (result.error) {
+        return reject(new Error(result.error))
+      }
+
+      return resolve(null, result)
+    })
+  })
+}
+
+function saveVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) {
       winston.warn(err)
@@ -35,7 +90,7 @@ function saveVersion(callback) {
     if (!setting) {
       var s = new SettingsSchema({
         name: 'gen:version',
-        value: version,
+        value: version
       })
       s.save(function (err) {
         if (err) {
@@ -60,7 +115,7 @@ function saveVersion(callback) {
   })
 }
 
-function getDatabaseVersion(callback) {
+function getDatabaseVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) return callback(err)
 
@@ -74,7 +129,7 @@ function getDatabaseVersion(callback) {
   })
 }
 
-function migrateUserRoles(callback) {
+function migrateUserRoles (callback) {
   winston.debug('Migrating Roles...')
   async.waterfall(
     [
@@ -137,13 +192,13 @@ function migrateUserRoles(callback) {
           .catch(function (err) {
             return next(err)
           })
-      },
+      }
     ],
     callback
   )
 }
 
-function createAdminTeamDepartment(callback) {
+function createAdminTeamDepartment (callback) {
   const Team = require('../models').TeamModel
   const Department = require('../models/department')
   const Account = require('../models').UserModel
@@ -154,14 +209,14 @@ function createAdminTeamDepartment(callback) {
         Account.getAdmins({}, next)
       },
       function (admins, next) {
-        const adminsIds = admins.map((admin) => {
+        const adminsIds = admins.map(admin => {
           return admin._id.toString()
         })
 
         Team.create(
           {
             name: 'Support (Default)',
-            members: adminsIds,
+            members: adminsIds
           },
           next
         )
@@ -172,17 +227,17 @@ function createAdminTeamDepartment(callback) {
             name: 'Support - All Groups (Default)',
             teams: adminTeam._id,
             allGroups: true,
-            groups: [],
+            groups: []
           },
           next
         )
-      },
+      }
     ],
     callback
   )
 }
 
-function removeAgentsFromGroups(callback) {
+function removeAgentsFromGroups (callback) {
   // winston.debug('Migrating Agents from Groups...')
   var groupSchema = require('../models/group')
   groupSchema.getAllGroups(function (err, groups) {
@@ -201,6 +256,98 @@ function removeAgentsFromGroups(callback) {
   })
 }
 
+async function createTicketStatus () {
+  const counterSchema = require('../models/counters')
+  let newId = ''
+  let openId = ''
+  let pendingId = ''
+  let closedId = ''
+
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        await TicketStatusModel.deleteMany({})
+
+        const results = await TicketStatusModel.create([
+          {
+            name: 'New',
+            htmlColor: '#29b955',
+            uid: 0,
+            order: 0,
+            isResolved: false,
+            slatimer: true,
+            isLocked: true
+          },
+          {
+            name: 'Open',
+            htmlColor: '#d32f2f',
+            uid: 1,
+            order: 1,
+            isResolved: false,
+            slatimer: true,
+            isLocked: true
+          },
+          {
+            name: 'Pending',
+            htmlColor: '#2196F3',
+            uid: 2,
+            order: 2,
+            isResolved: false,
+            slatimer: false,
+            isLocked: true
+          },
+          {
+            name: 'Closed',
+            htmlColor: '#CCCCCC',
+            uid: 3,
+            order: 3,
+            isResolved: true,
+            slatimer: false,
+            isLocked: true
+          }
+        ])
+
+        newId = results[0]._id
+        openId = results[1]._id
+        pendingId = results[2]._id
+        closedId = results[3]._id
+
+        winston.info('Updating ticket statuses for migration. Please Wait...')
+        winston.debug('Status [New ID]: ' + newId)
+        winston.debug('Status [Open ID]: ' + openId)
+        winston.debug('Status [Pending ID]: ' + pendingId)
+        winston.debug('Status [Closed ID]: ' + closedId)
+
+        const newPromise = trudeskDatabase.connection.db
+          .collection('tickets')
+          .updateMany({ status: 0 }, { $set: { status: newId } })
+
+        const openPromise = trudeskDatabase.connection.db
+          .collection('tickets')
+          .updateMany({ status: 1 }, { $set: { status: openId } })
+
+        const pendingPromise = trudeskDatabase.connection.db
+          .collection('tickets')
+          .updateMany({ status: 2 }, { $set: { status: pendingId } })
+
+        const closedPromise = trudeskDatabase.connection.db
+          .collection('tickets')
+          .updateMany({ status: 3 }, { $set: { status: closedId } })
+
+        Promise.allSettled([newPromise, openPromise, pendingPromise, closedPromise]).then(_res => {
+          winston.info('Completed updating ticket status.')
+          counterSchema.setCounter('status', 4, function (err) {
+            if (err) throw err
+            return resolve()
+          })
+        })
+      } catch (e) {
+        return reject(e)
+      }
+    })()
+  })
+}
+
 migrations.run = function (callback) {
   var databaseVersion
 
@@ -210,6 +357,7 @@ migrations.run = function (callback) {
         getDatabaseVersion(function (err, dbVer) {
           if (err) return next(err)
           databaseVersion = dbVer
+          winston.debug('Database version: v' + databaseVersion)
 
           if (semver.satisfies(databaseVersion, '<1.0.10')) {
             throw new Error('Please upgrade to v1.0.10 Exiting...')
@@ -226,7 +374,7 @@ migrations.run = function (callback) {
               },
               function (done) {
                 createAdminTeamDepartment(done)
-              },
+              }
             ],
             next
           )
@@ -234,6 +382,22 @@ migrations.run = function (callback) {
           return next()
         }
       },
+      function (next) {
+        if (semver.satisfies(semver.coerce(databaseVersion).version, '<1.2.8')) {
+          try {
+            const backupPromise = performBackup(databaseVersion)
+            Promise.resolve(backupPromise).then(async () => {
+              await createTicketStatus()
+              return next()
+            })
+          } catch (e) {
+            winston.error(e)
+            return next(e)
+          }
+        } else {
+          return next()
+        }
+      }
     ],
     function (err) {
       if (err) return callback(err)

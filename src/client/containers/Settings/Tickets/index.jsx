@@ -41,6 +41,7 @@ import SettingItem from 'components/Settings/SettingItem'
 import SingleSelect from 'components/SingleSelect'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
 import SpinLoader from 'components/SpinLoader'
+import TicketStatusContainer from 'containers/Settings/Tickets/ticketStatusContainer'
 
 class TicketsSettings extends React.Component {
   constructor (props) {
@@ -107,6 +108,10 @@ class TicketsSettings extends React.Component {
     return this.props.settings && this.props.settings.get('priorities')
       ? this.props.settings.get('priorities').toArray()
       : []
+  }
+
+  getStatus () {
+    return this.props.settings && this.props.settings.get('status') ? this.props.settings.get('status').toArray() : []
   }
 
   getTicketTags (e, page) {
@@ -391,6 +396,8 @@ class TicketsSettings extends React.Component {
             })}
           </Zone>
         </SettingItem>
+        <TicketStatusContainer statuses={this.getStatus()} />
+
         <SettingItem
           title={'Ticket Tags'}
           subtitle={'Create/Modify Ticket Tags'}

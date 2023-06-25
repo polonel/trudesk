@@ -35,7 +35,11 @@ import {
   DELETE_TICKET,
   TICKET_EVENT,
   TRANSFER_TO_THIRDPARTY,
-  FETCH_TICKET_TYPES
+  FETCH_TICKET_TYPES,
+  FETCH_STATUS,
+  CREATE_STATUS,
+  UPDATE_STATUS,
+  DELETE_STATUS
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
@@ -279,6 +283,62 @@ function * fetchTicketTypes ({ payload }) {
   }
 }
 
+function * fetchTicketStatus ({ payload }) {
+  yield put({ type: FETCH_STATUS.PENDING })
+  try {
+    const response = yield call(api.tickets.getStatus, payload)
+    yield put({ type: FETCH_STATUS.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: FETCH_STATUS.ERROR, error })
+  }
+}
+
+function * createStatus ({ payload }) {
+  try {
+    const response = yield call(api.tickets.createStatus, payload)
+    yield put({ type: CREATE_STATUS.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+    yield put({ type: FETCH_SETTINGS.ACTION })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response)
+    yield put({ type: CREATE_STATUS.ERROR, error })
+  }
+}
+
+function * updateStatus ({ payload }) {
+  try {
+    const response = yield call(api.tickets.updateStatus, payload)
+    yield put({ type: UPDATE_STATUS.SUCCESS, response })
+    yield put({ type: FETCH_SETTINGS.ACTION })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: UPDATE_STATUS.ERROR, error })
+  }
+}
+
+function * deleteStatus ({ payload }) {
+  try {
+    const response = yield call(api.tickets.deleteStatus, payload)
+    yield put({ type: DELETE_STATUS.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+    yield put({ type: FETCH_SETTINGS.ACTION })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response)
+    yield put({ type: DELETE_STATUS.ERROR, error })
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(FETCH_TICKETS.ACTION, fetchTickets)
   yield takeLatest(CREATE_TICKET.ACTION, createTicket)
@@ -296,4 +356,8 @@ export default function * watcher () {
   yield takeLatest(CREATE_TAG.ACTION, createTag)
   yield takeLatest(TRANSFER_TO_THIRDPARTY.ACTION, transferToThirdParty)
   yield takeLatest(FETCH_TICKET_TYPES.ACTION, fetchTicketTypes)
+  yield takeLatest(FETCH_STATUS.ACTION, fetchTicketStatus)
+  yield takeLatest(CREATE_STATUS.ACTION, createStatus)
+  yield takeLatest(UPDATE_STATUS.ACTION, updateStatus)
+  yield takeLatest(DELETE_STATUS.ACTION, deleteStatus)
 }

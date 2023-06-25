@@ -154,6 +154,42 @@ api.tickets.deletePriority = ({ id, newPriority }) => {
     })
 }
 
+api.tickets.createStatus = ({ name, htmlColor, slatimer, isResolved }) => {
+  return axios
+    .post('/api/v2/tickets/status/create', {
+      name,
+      htmlColor,
+      slatimer,
+      isResolved
+    })
+    .then(res => {
+      return res.data
+    })
+}
+api.tickets.updateStatus = ({ id, name, htmlColor, slatimer, isResolved }) => {
+  return axios
+    .put(`/api/v2/tickets/status/${id}`, {
+      name,
+      htmlColor,
+      slatimer,
+      isResolved
+    })
+    .then(res => {
+      return res.data
+    })
+}
+api.tickets.getStatus = () => {
+  return axios.get('/api/v2/tickets/status').then(res => {
+    return res.data
+  })
+}
+
+api.tickets.deleteStatus = ({ id, newStatusId }) => {
+  return axios.post(`/api/v2/tickets/status/${id}/delete`, { newStatusId }).then(res => {
+    return res.data
+  })
+}
+
 api.tickets.getTagsWithPage = ({ limit, page }) => {
   limit = limit ? limit : 10
   page = page ? page : 0

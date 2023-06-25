@@ -9,7 +9,7 @@ global.env = process.env.NODE_ENV || 'production'
 const ES = {}
 ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
 
-function setupTimezone(callback) {
+function setupTimezone (callback) {
   return new Promise((resolve, reject) => {
     ;(async () => {
       const settingsSchema = require('../models/setting')
@@ -31,7 +31,7 @@ function setupTimezone(callback) {
   })
 }
 
-function setupDatabase(callback) {
+function setupDatabase (callback) {
   database.init(function (err, db) {
     if (err) return callback(err)
 
@@ -41,16 +41,16 @@ function setupDatabase(callback) {
   }, process.env.MONGODB_URI)
 }
 
-function setupClient() {
+function setupClient () {
   ES.esclient = new elasticsearch.Client({
     node: process.env.ELASTICSEARCH_URI,
     pingTimeout: 10000,
     requestTimeout: 10000,
-    maxRetries: 5,
+    maxRetries: 5
   })
 }
 
-async function deleteIndex(callback) {
+async function deleteIndex (callback) {
   try {
     const exists = await ES.esclient.indices.exists({ index: ES.indexName })
     if (exists) {
@@ -67,111 +67,111 @@ async function deleteIndex(callback) {
   }
 }
 
-async function createIndex(callback) {
+async function createIndex (callback) {
   try {
     await ES.esclient.indices.create({
       index: ES.indexName,
       body: {
         settings: {
           index: {
-            number_of_replicas: 0,
+            number_of_replicas: 0
           },
           analysis: {
             filter: {
               leadahead: {
                 type: 'edge_ngram',
                 min_gram: 1,
-                max_gram: 20,
+                max_gram: 20
               },
               email: {
                 type: 'pattern_capture',
                 preserve_original: true,
-                patterns: ['([^@]+)', '(\\p{L}+)', '(\\d+)', '@(.+)'],
-              },
+                patterns: ['([^@]+)', '(\\p{L}+)', '(\\d+)', '@(.+)']
+              }
             },
             analyzer: {
               leadahead: {
                 type: 'custom',
                 tokenizer: 'standard',
-                filter: ['lowercase', 'leadahead'],
+                filter: ['lowercase', 'leadahead']
               },
               email: {
                 tokenizer: 'uax_url_email',
-                filter: ['email', 'lowercase', 'unique'],
-              },
-            },
-          },
+                filter: ['email', 'lowercase', 'unique']
+              }
+            }
+          }
         },
         mappings: {
           properties: {
             type: {
-              type: 'keyword',
+              type: 'keyword'
             },
             uid: {
               type: 'text',
               analyzer: 'leadahead',
-              search_analyzer: 'standard',
+              search_analyzer: 'standard'
             },
             subject: {
               type: 'text',
               analyzer: 'leadahead',
-              search_analyzer: 'standard',
+              search_analyzer: 'standard'
             },
             issue: {
               type: 'text',
               analyzer: 'leadahead',
-              search_analyzer: 'standard',
+              search_analyzer: 'standard'
             },
             dateFormatted: {
               type: 'text',
               analyzer: 'leadahead',
-              search_analyzer: 'standard',
+              search_analyzer: 'standard'
             },
             comments: {
               properties: {
                 comment: {
                   type: 'text',
                   analyzer: 'leadahead',
-                  search_analyzer: 'standard',
+                  search_analyzer: 'standard'
                 },
                 owner: {
                   properties: {
                     email: {
                       type: 'text',
-                      analyzer: 'email',
-                    },
-                  },
-                },
-              },
+                      analyzer: 'email'
+                    }
+                  }
+                }
+              }
             },
             notes: {
               properties: {
                 note: {
                   type: 'text',
                   analyzer: 'leadahead',
-                  search_analyzer: 'standard',
+                  search_analyzer: 'standard'
                 },
                 owner: {
                   properties: {
                     email: {
                       type: 'text',
-                      analyzer: 'email',
-                    },
-                  },
-                },
-              },
+                      analyzer: 'email'
+                    }
+                  }
+                }
+              }
             },
             owner: {
               properties: {
                 email: {
                   type: 'text',
-                  analyzer: 'email',
-                },
-              },
-            },
-          },
-        },
-      },
+                  analyzer: 'email'
+                }
+              }
+            }
+          }
+        }
+      }
     })
 
     if (typeof callback === 'function') callback()
@@ -182,7 +182,7 @@ async function createIndex(callback) {
   }
 }
 
-async function sendAndEmptyQueue(bulk) {
+async function sendAndEmptyQueue (bulk) {
   return new Promise((resolve, reject) => {
     ;(async () => {
       try {
@@ -200,11 +200,13 @@ async function sendAndEmptyQueue(bulk) {
   })
 }
 
-function crawlUsers(callback) {
+function crawlUsers (callback) {
   const Model = require('../models').UserModel
   let count = 0
   const startTime = new Date().getTime()
-  const stream = Model.find({ deleted: false }).lean().cursor()
+  const stream = Model.find({ deleted: false })
+    .lean()
+    .cursor()
 
   let bulk = []
 
@@ -218,7 +220,7 @@ function crawlUsers(callback) {
         email: doc.email,
         fullname: doc.fullname,
         title: doc.title,
-        role: doc.role,
+        role: doc.role
       })
 
       if (count % 200 === 1) bulk = await sendAndEmptyQueue(bulk)
@@ -237,19 +239,19 @@ function crawlUsers(callback) {
     })
 }
 
-function crawlTickets(callback) {
+function crawlTickets (callback) {
   const Model = require('../models/ticket')
   let count = 0
   const startTime = new Date().getTime()
   const stream = Model.find({ deleted: false })
-    .populate('owner group comments.owner notes.owner tags priority type')
+    .populate('owner group comments.owner notes.owner tags priority type status')
     .lean()
     .cursor()
 
   let bulk = []
 
   stream
-    .on('data', async (doc) => {
+    .on('data', async doc => {
       stream.pause()
       count += 1
 
@@ -268,8 +270,8 @@ function crawlTickets(callback) {
               username: c.owner.username,
               email: c.owner.email,
               role: c.owner.role,
-              title: c.owner.title,
-            },
+              title: c.owner.title
+            }
           })
         })
       }
@@ -282,27 +284,30 @@ function crawlTickets(callback) {
           username: doc.owner.username,
           email: doc.owner.email,
           role: doc.owner.role,
-          title: doc.owner.title,
+          title: doc.owner.title
         },
         group: {
           _id: doc.group._id,
-          name: doc.group.name,
+          name: doc.group.name
         },
-        status: doc.status,
         issue: doc.issue,
         subject: doc.subject,
         date: doc.date,
-        dateFormatted: moment.utc(doc.date).tz(ES.timezone).format('MMMM D YYYY'),
+        dateFormatted: moment
+          .utc(doc.date)
+          .tz(ES.timezone)
+          .format('MMMM D YYYY'),
         priority: {
           _id: doc.priority._id,
           name: doc.priority.name,
-          htmlColor: doc.priority.htmlColor,
+          htmlColor: doc.priority.htmlColor
         },
         ticketType: { _id: doc.type._id, name: doc.type.name },
+        status: { _id: doc.status._id, name: doc.status.name, htmlColor: doc.status.htmlColor, uid: doc.status.uid },
         deleted: doc.deleted,
         comments: comments,
         notes: doc.notes,
-        tags: doc.tags,
+        tags: doc.tags
       })
 
       if (count % 200 === 1) bulk = await sendAndEmptyQueue(bulk)
@@ -322,7 +327,7 @@ function crawlTickets(callback) {
     })
 }
 
-function rebuild(callback) {
+function rebuild (callback) {
   async.series(
     [
       function (next) {
@@ -339,7 +344,7 @@ function rebuild(callback) {
       },
       function (next) {
         crawlTickets(next)
-      },
+      }
     ],
     function (err) {
       if (err) winston.error(err)

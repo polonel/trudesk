@@ -90,13 +90,13 @@ ticketsController.getByStatus = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: [],
+    status: []
   }
 
   const fullUrl = url.format({
     protocol: req.protocol,
     host: req.get('host'),
-    pathname: req.originalUrl,
+    pathname: req.originalUrl
   })
 
   const pathname = new url.URL(fullUrl).pathname
@@ -145,7 +145,7 @@ ticketsController.getActive = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: [0, 1, 2],
+    status: { isResolved: false }
   }
 
   req.processor = processor
@@ -174,9 +174,9 @@ ticketsController.getAssigned = function (req, res, next) {
   processor.object = {
     limit: 50,
     page: page,
-    status: [0, 1, 2],
+    status: { isResolved: false },
     assignedSelf: true,
-    user: req.user._id,
+    user: req.user._id
   }
 
   req.processor = processor
@@ -207,7 +207,7 @@ ticketsController.getUnassigned = function (req, res, next) {
     page: page,
     status: [0, 1, 2],
     unassigned: true,
-    user: req.user._id,
+    user: req.user._id
   }
 
   req.processor = processor
@@ -253,7 +253,7 @@ ticketsController.filter = function (req, res, next) {
     issue: issue,
     date: {
       start: dateStart,
-      end: dateEnd,
+      end: dateEnd
     },
     status: status,
     priority: priority,
@@ -261,7 +261,7 @@ ticketsController.filter = function (req, res, next) {
     tags: tags,
     types: types,
     assignee: assignee,
-    raw: rawNoPage,
+    raw: rawNoPage
   }
 
   const processor = {}
@@ -275,7 +275,7 @@ ticketsController.filter = function (req, res, next) {
     page: page,
     status: filter.status,
     user: req.user._id,
-    filter: filter,
+    filter: filter
   }
 
   req.processor = processor
@@ -371,7 +371,7 @@ ticketsController.print = function (req, res) {
           try {
             if (user.role.isAdmin || user.role.isAgent) {
               const groups = await DepartmentModel.getDepartmentGroupsOfUser()
-              const gIds = groups.map((g) => g._id)
+              const gIds = groups.map(g => g._id)
 
               if (_.some(gIds, ticket.group._id)) {
                 if (!permissions.canThis(user.role, 'tickets:notes')) {
@@ -410,7 +410,7 @@ ticketsController.print = function (req, res) {
           }
 
           return next()
-        },
+        }
       ],
       function (err) {
         if (err) {
@@ -481,7 +481,7 @@ ticketsController.single = function (req, res) {
       else groups = await DepartmentModel.getDepartmentGroupsOfUser(user._id)
 
       const hasPublic = permissions.canThis(user.role, 'tickets:public')
-      const groupIds = groups.map((g) => g._id.toString())
+      const groupIds = groups.map(g => g._id.toString())
 
       if (!groupIds.includes(ticket.group._id.toString())) {
         if (ticket.group.public && !hasPublic) {
@@ -521,8 +521,8 @@ ticketsController.uploadImageMDE = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 5 * 1024 * 1024, // 5mb limit
-    },
+      fileSize: 5 * 1024 * 1024 // 5mb limit
+    }
   })
 
   const object = {}
@@ -537,7 +537,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 500,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -559,13 +559,13 @@ ticketsController.uploadImageMDE = function (req, res) {
       '.bmp',
       '.dib',
       '.heif',
-      '.heic',
+      '.heic'
     ]
 
     if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
       error = {
         status: 400,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -583,7 +583,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     if (fs.existsSync(object.filePath)) {
       error = {
         status: 500,
-        message: 'File already exists',
+        message: 'File already exists'
       }
 
       return file.resume()
@@ -592,7 +592,7 @@ ticketsController.uploadImageMDE = function (req, res) {
     file.on('limit', function () {
       error = {
         status: 500,
-        message: 'File too large',
+        message: 'File too large'
       }
 
       // Delete the temp file
@@ -628,12 +628,12 @@ ticketsController.uploadAttachment = function (req, res) {
     headers: req.headers,
     limits: {
       files: 1,
-      fileSize: 10 * 1024 * 1024, // 10mb limit
-    },
+      fileSize: 10 * 1024 * 1024 // 10mb limit
+    }
   })
 
   const object = {
-    ownerId: req.user._id,
+    ownerId: req.user._id
   }
   let error
 
@@ -664,7 +664,7 @@ ticketsController.uploadAttachment = function (req, res) {
     ) {
       error = {
         status: 400,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -696,14 +696,14 @@ ticketsController.uploadAttachment = function (req, res) {
       '.mpeg',
       '.eps',
       '.ai',
-      '.psd',
+      '.psd'
     ]
     const badExts = ['.html', '.htm', '.js', '.svg']
 
     if (!allowedExts.includes(ext)) {
       error = {
         status: 400,
-        message: 'Invalid File Type',
+        message: 'Invalid File Type'
       }
 
       return file.resume()
@@ -726,7 +726,7 @@ ticketsController.uploadAttachment = function (req, res) {
     if (fs.existsSync(object.filePath)) {
       error = {
         status: 400,
-        message: 'File already exists',
+        message: 'File already exists'
       }
 
       return file.resume()
@@ -735,7 +735,7 @@ ticketsController.uploadAttachment = function (req, res) {
     file.on('limit', function () {
       error = {
         status: 400,
-        message: 'File too large',
+        message: 'File too large'
       }
 
       // Delete the temp file
@@ -777,14 +777,14 @@ ticketsController.uploadAttachment = function (req, res) {
           owner: object.ownerId,
           name: object.filename,
           path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
-          type: object.mimetype,
+          type: object.mimetype
         }
         ticket.attachments.push(attachment)
 
         const historyItem = {
           action: 'ticket:added:attachment',
           description: 'Attachment ' + object.filename + ' was added.',
-          owner: object.ownerId,
+          owner: object.ownerId
         }
         ticket.history.push(historyItem)
 
@@ -797,7 +797,7 @@ ticketsController.uploadAttachment = function (req, res) {
           }
 
           const returnData = {
-            ticket: t,
+            ticket: t
           }
 
           return res.json(returnData)
@@ -809,7 +809,7 @@ ticketsController.uploadAttachment = function (req, res) {
   req.pipe(busboy)
 }
 
-function handleError(res, err) {
+function handleError (res, err) {
   if (err) {
     winston.warn(err)
     if (!err.status) res.status = 500
@@ -817,7 +817,7 @@ function handleError(res, err) {
     return res.render('error', {
       layout: false,
       error: err,
-      message: err.message,
+      message: err.message
     })
   }
 }

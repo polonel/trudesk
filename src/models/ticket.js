@@ -23,7 +23,7 @@ const xss = require('xss')
 const utils = require('../helpers/utils')
 
 // Needed - For Population
-import { GroupModel as groupSchema, TicketTypeModel, UserModel as userSchema } from '../models'
+import { GroupModel as groupSchema, TicketTypeModel, UserModel as userSchema, TicketStatusModel } from '../models'
 
 const permissions = require('../permissions')
 const commentSchema = require('./comment')
@@ -89,7 +89,12 @@ const ticketSchema = mongoose.Schema({
     required: true,
     ref: 'tickettypes'
   },
-  status: { type: Number, default: 0, required: true, index: true },
+  status: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'statuses',
+    index: true
+  },
 
   priority: {
     type: mongoose.Schema.Types.ObjectId,
@@ -181,27 +186,26 @@ ticketSchema.post('save', async function (doc, next) {
   }
 })
 
-ticketSchema.virtual('statusFormatted').get(function () {
-  const s = this.status
-  let formatted
-  switch (s) {
-    case 0:
-      formatted = 'New'
-      break
-    case 1:
-      formatted = 'Open'
-      break
-    case 2:
-      formatted = 'Pending'
-      break
-    case 3:
-      formatted = 'Closed'
-      break
-    default:
-      formatted = 'New'
-  }
+ticketSchema.virtual('statusFormatted').get(function (callback) {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      try {
+        const s = this.status
+        const status = await TicketStatusModel.getStatus(s)
+        if (!status) {
+          if (typeof callback === 'function') return callback('Invalid Status Id: ' + s)
+          return reject(new Error('Invalid Status Id: ' + s))
+        }
 
-  return formatted
+        if (typeof callback === 'function') return callback(null, status.get('name'))
+
+        return resolve(status.get('name'))
+      } catch (e) {
+        if (typeof callback === 'function') return callback(e)
+        return reject(e)
+      }
+    })()
+  })
 })
 
 ticketSchema.virtual('commentsAndNotes').get(function () {
@@ -224,38 +228,46 @@ ticketSchema.virtual('commentsAndNotes').get(function () {
  * @memberof Ticket
  *
  * @param {Object} ownerId Account ID preforming this action
- * @param {Number} status Status to set
+ * @param {string} status Status to set
  * @param {function} callback Callback with the updated ticket.
- *
- * @example
- * Status:
- *      0 - New
- *      1 - Open
- *      2 - Pending
- *      3 - Closed
  */
 ticketSchema.methods.setStatus = function (ownerId, status, callback) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this
   return new Promise((resolve, reject) => {
-    if (_.isUndefined(status)) {
-      if (typeof callback === 'function') callback('Invalid Status', null)
-      return reject(new Error('Invalid Status'))
-    }
+    ;(async () => {
+      if (_.isUndefined(status)) {
+        if (typeof callback === 'function') callback('Invalid Status', null)
+        return reject(new Error('Invalid Status'))
+      }
 
-    self.closedDate = status === 3 ? new Date() : null
-    self.status = status
+      try {
+        const statusModel = await TicketStatusModel.getStatusById(status)
+        if (!status) {
+          if (typeof callback === 'function') return callback('Invalid Status')
+          return reject(new Error('Invalid Status'))
+        }
 
-    const historyItem = {
-      action: 'ticket:set:status:' + status,
-      description: 'Ticket Status set to: ' + statusToString(status),
-      owner: ownerId
-    }
+        self.closedDate = statusModel.isResolved ? new Date() : null
+        self.status = status
 
-    self.history.push(historyItem)
+        const historyItem = {
+          action: 'ticket:set:status:' + statusModel.name,
+          description: 'Ticket Status set to: ' + statusModel.name,
+          owner: ownerId
+        }
 
-    if (typeof callback === 'function') callback(null, self)
+        self.history.push(historyItem)
 
-    return resolve(self)
+        if (typeof callback === 'function') callback(null, self)
+
+        return resolve(self)
+      } catch (err) {
+        if (typeof callback === 'function') return callback(err)
+
+        return reject(err)
+      }
+    })()
   })
 }
 
@@ -938,7 +950,7 @@ function buildQueryWithObject (SELF, grpId, object, count) {
         'username fullname email role image title'
       )
       .populate('assignee', 'username fullname email role image title')
-      .populate('type tags group')
+      .populate('type tags group status')
       .sort({ uid: -1 })
   }
 
@@ -1008,7 +1020,6 @@ ticketSchema.statics.getTicketsWithObject = async function (grpId, object, callb
           throw new Error('Invalid parameter in - TicketSchema.GetTicketsWithObject()')
 
         const query = buildQueryWithObject(self, grpId, object)
-
         if (typeof callback === 'function') return query.exec(callback)
 
         const resTickets = await query.exec()
@@ -1076,7 +1087,7 @@ ticketSchema.statics.getTicketsByStatus = function (grpId, status, callback) {
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'
     )
-    .populate('type tags group')
+    .populate('type tags group status')
     .sort({ uid: -1 })
 
   return q.exec(callback)
@@ -1103,7 +1114,7 @@ ticketSchema.statics.getTicketByUid = function (uid, callback) {
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'
     )
-    .populate('type tags group')
+    .populate('type tags group status')
 
   return q.exec(callback)
 }
@@ -1137,7 +1148,7 @@ ticketSchema.statics.getTicketById = async function (id, callback) {
           'owner assignee comments.owner notes.owner subscribers history.owner',
           'username fullname email role image title'
         )
-        .populate('type tags')
+        .populate('type tags status')
         .populate({
           path: 'group',
           model: groupSchema,
@@ -1190,7 +1201,7 @@ ticketSchema.statics.getTicketsByRequester = function (userId, callback) {
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'
     )
-    .populate('type tags')
+    .populate('type tags status')
     .populate({
       path: 'group',
       model: groupSchema,
@@ -1233,7 +1244,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
             'owner assignee comments.owner notes.owner subscribers history.owner',
             'username fullname email role image title'
           )
-          .populate('type tags group')
+          .populate('type tags group status')
           .limit(100)
 
         q.exec(function (err, results) {
@@ -1255,7 +1266,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
             'owner assignee comments.owner notes.owner subscribers history.owner',
             'username fullname email role image title'
           )
-          .populate('type tags group')
+          .populate('type tags group status')
           .limit(100)
 
         q.exec(function (err, results) {
@@ -1277,7 +1288,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
             'owner assignee comments.owner notes.owner subscribers history.owner',
             'username fullname email role image title'
           )
-          .populate('type tags group')
+          .populate('type tags group status')
           .limit(100)
 
         q.exec(function (err, results) {
@@ -1565,7 +1576,7 @@ ticketSchema.statics.getAssigned = function (userId, callback) {
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'
     )
-    .populate('type tags group')
+    .populate('type tags group status')
 
   return q.exec(callback)
 }
@@ -1751,29 +1762,6 @@ ticketSchema.statics.getTicketsPastDays = async function (days) {
     .populate('comments.owner')
     .lean()
     .sort({ status: 1 })
-}
-
-function statusToString (status) {
-  let str
-  switch (status) {
-    case 0:
-      str = 'New'
-      break
-    case 1:
-      str = 'Open'
-      break
-    case 2:
-      str = 'Pending'
-      break
-    case 3:
-      str = 'Closed'
-      break
-    default:
-      str = status
-      break
-  }
-
-  return str
 }
 
 module.exports = mongoose.model(COLLECTION, ticketSchema)

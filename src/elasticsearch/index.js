@@ -119,7 +119,12 @@ ES.setupHooks = () => {
           htmlColor: ticket.priority.htmlColor
         },
         ticketType: { _id: ticket.type._id, name: ticket.type.name },
-        status: ticket.status,
+        status: {
+          _id: ticket.status._id,
+          name: ticket.status.name,
+          htmlColor: ticket.status.htmlColor,
+          uid: ticket.status.uid
+        },
         tags: ticket.tags
       }
 
@@ -168,7 +173,12 @@ ES.setupHooks = () => {
           htmlColor: ticket.priority.htmlColor
         },
         typeTicket: { _id: ticket.type._id, name: ticket.type.name },
-        status: ticket.status,
+        status: {
+          _id: ticket.status._id,
+          name: ticket.status.name,
+          htmlColor: ticket.status.htmlColor,
+          uid: ticket.status.uid
+        },
         tags: ticket.tags
       }
 

@@ -20,15 +20,16 @@ const archiver = require('archiver')
 const database = require('../database')
 const winston = require('../logger')
 const moment = require('moment')
-const config = require('../config')
+const pkg = require('../../package.json')
 
 global.env = process.env.NODE_ENV || 'production'
 
 let CONNECTION_URI = null
+let FILENAME = null
 
 function createZip (callback) {
-  const filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
-  const output = fs.createWriteStream(path.resolve(config.trudeskRoot(), 'backups/', filename))
+  const filename = FILENAME
+  const output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename))
   const archive = archiver('zip', {
     zlib: { level: 9 }
   })
@@ -48,23 +49,23 @@ function createZip (callback) {
   archive.on('error', callback)
 
   archive.pipe(output)
-  archive.directory(path.resolve(config.trudeskRoot(), 'backups/dump/'), false)
+  archive.directory(path.join(__dirname, '../../backups/dump/'), false)
 
   archive.finalize()
 }
 
 function cleanup (callback) {
   const rimraf = require('rimraf')
-  rimraf(path.resolve(config.trudeskRoot(), 'backups/dump'), callback)
+  rimraf(path.join(__dirname, '../../backups/dump'), callback)
 }
 
 function copyFiles (callback) {
   // Make sure the directories are created for the backup.
-  fs.ensureDirSync(path.resolve(config.trudeskRoot(), 'public/uploads/assets'))
-  fs.ensureDirSync(path.resolve(config.trudeskRoot(), 'public/uploads/tickets'))
-  fs.ensureDirSync(path.resolve(config.trudeskRoot(), 'public/uploads/users'))
+  fs.ensureDirSync(path.join(__dirname, '../../public/uploads/assets'))
+  fs.ensureDirSync(path.join(__dirname, '../../public/uploads/tickets'))
+  fs.ensureDirSync(path.join(__dirname, '../../public/uploads/users'))
 
-  fs.copy(path.resolve(config.trudeskRoot(), 'public/uploads/'), path.resolve(config.trudeskRoot(), 'backups/dump'), callback)
+  fs.copy(path.join(__dirname, '../../public/uploads/'), path.join(__dirname, '../../backups/dump/'), callback)
 }
 
 function runBackup (callback) {
@@ -73,7 +74,7 @@ function runBackup (callback) {
 
   let mongodumpExec = 'mongodump'
   if (platform === 'win32') {
-    mongodumpExec = path.resolve(config.trudeskRoot(), 'src/backup/bin/win32/mongodump')
+    mongodumpExec = path.join(__dirname, 'bin/win32/mongodump')
   }
 
   const options = [
@@ -81,7 +82,7 @@ function runBackup (callback) {
     CONNECTION_URI,
     '--forceTableScan',
     '--out',
-    path.resolve(config.trudeskRoot(), 'backups/dump/database/')
+    path.join(__dirname, '../../backups/dump/database/')
   ]
   const mongodump = spawn(mongodumpExec, options, { env: { PATH: process.env.PATH } })
 
@@ -100,12 +101,12 @@ function runBackup (callback) {
 
   mongodump.on('exit', function (code) {
     if (code === 0) {
-      const dbName = fs.readdirSync(path.resolve(config.trudeskRoot(), 'backups/dump/database'))[0]
+      const dbName = fs.readdirSync(path.join(__dirname, '../../backups/dump/database'))[0]
       if (!dbName) {
         return callback(new Error('Unable to retrieve database name'))
       }
 
-      require('rimraf')(path.resolve(config.trudeskRoot(), 'backups/dump/database', dbName, 'session*'), function (err) {
+      require('rimraf')(path.join(__dirname, '../../backups/dump/database', dbName, 'session*'), function (err) {
         if (err) return callback(err)
 
         copyFiles(function (err) {
@@ -124,6 +125,7 @@ function runBackup (callback) {
 
 ;(function () {
   CONNECTION_URI = process.env.MONGOURI
+  FILENAME = process.env.FILENAME || 'trudesk-v' + pkg.version + '-' + moment().format('MMDDYYYY_HHmm') + '.zip'
 
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
   const options = {
@@ -151,9 +153,8 @@ function runBackup (callback) {
 
         runBackup(function (err) {
           if (err) return process.send({ success: false, error: err })
-          const filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
 
-          winston.info('Backup completed successfully: ' + filename)
+          winston.info('Backup completed successfully: ' + FILENAME)
           process.send({ success: true })
         })
       })

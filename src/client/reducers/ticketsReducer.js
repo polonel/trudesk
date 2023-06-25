@@ -23,11 +23,14 @@ import {
   DELETE_TICKET,
   TICKET_EVENT,
   FETCH_TICKET_TYPES,
-  FETCH_PRIORITIES
+  FETCH_PRIORITIES,
+  FETCH_STATUS
 } from 'actions/types'
 
 const initialState = {
   tickets: List([]),
+  ticketStatuses: List([]),
+  loadingTicketStatuses: false,
   loadingTicketTypes: false,
   types: List([]),
   priorities: List([]),
@@ -39,18 +42,21 @@ const initialState = {
 }
 
 // Util function until custom views are finished
-function hasInView (view, status, assignee, userId, userGroupIds, groupId) {
+function hasInView (state, view, statusId, assignee, userId, userGroupIds, groupId) {
   let hasView = false
   let hasGroup = false
+  const unresolvedStatuses = state.ticketStatuses.filter(i => i.get('isResolved') === false)
+  const status = state.ticketStatuses.find(i => i.get('_id') === statusId)
+
   switch (view) {
     case 'filter':
       hasView = true
       break
     case 'all':
-      hasView = [0, 1, 2, 3].indexOf(status) !== -1
+      hasView = state.ticketStatuses.findIndex(s => s.get('_id') === statusId) !== -1
       break
     case 'active':
-      hasView = [0, 1, 2].indexOf(status) !== -1
+      hasView = unresolvedStatuses.findIndex(s => s.get('_id') === statusId) !== -1
       break
     case 'assigned':
       hasView = assignee === userId
@@ -165,9 +171,12 @@ const reducer = handleActions(
         return t.get('_id') === ticket._id
       })
 
+      ticket.status = state.ticketStatuses.find(i => i.get('_id') === ticket.status)
+
       const inView = hasInView(
+        state,
         state.viewType,
-        ticket.status,
+        ticket.status.get('_id'),
         ticket.assignee ? ticket.assignee._id : undefined,
         action.sessionUser._id,
         userGroupIds,
@@ -225,6 +234,21 @@ const reducer = handleActions(
       return {
         ...state,
         priorities: fromJS(action.response.priorities)
+      }
+    },
+
+    [FETCH_STATUS.PENDING]: state => {
+      return {
+        ...state,
+        loadingTicketStatuses: true
+      }
+    },
+
+    [FETCH_STATUS.SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        loadingTicketStatuses: false,
+        ticketStatuses: fromJS(action.response.status)
       }
     }
   },

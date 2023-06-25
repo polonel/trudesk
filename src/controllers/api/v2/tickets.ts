@@ -30,11 +30,13 @@ import {
   PriorityModel,
   SettingModel,
   TicketModel,
+  TicketStatusModel,
   TicketTagModel,
   TicketTypeModel,
   UserModel
 } from '../../../models'
 import type { IRole } from "../../../models/role"
+import type { TicketStatusClass } from "../../../models/ticketStatus"
 import permissions from '../../../permissions'
 import type { RequestUser } from "../../../types/requestuser"
 import apiUtils from '../apiUtils'
@@ -43,11 +45,26 @@ export interface TypedRequestBody<T> extends Express.Request {
   body: T
   headers: any
   query: any
+  params: any
+}
+
+export interface TicketV2ApiModelEndpoint {
+  create: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
+  get: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
+  update: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
+  delete: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
+}
+
+export interface StatusV2ApiModelEndpoint extends TicketV2ApiModelEndpoint {
+  order: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
 }
 
 export interface TicketV2Api {
   create: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
   get: (req: TypedRequestBody<any>, res: Express.Response) => Promise<any>
+
+  // Temp during conversion
+  status: StatusV2ApiModelEndpoint
 }
 
 export interface TicketCreateBody {
@@ -63,7 +80,7 @@ export interface TicketQueryObject {
   limit: number
   page: number
   owner?: string | Types.ObjectId
-  status?: number | number[]
+  status?: string | string[] | Types.ObjectId | Types.ObjectId[]
   filter?: any
   unassigned?: boolean
 }
@@ -154,11 +171,12 @@ const ticketsGet = async (req: TypedRequestBody<any>, res: Express.Response) => 
       groups = await GroupModel.getAllGroupsOfUser(requestUser._id)
     }
 
-    const mappedGroups = groups.map((g) => g?._id)
+    const mappedGroups = groups.map((g) => g?._id) 
+    const statuses = await TicketStatusModel.find({isResolved: false})
 
     switch (type.toLowerCase()) {
       case 'active':
-        queryObject.status = [0, 1, 2]
+        queryObject.status = statuses.map(i => i._id.toString())
         break
       case 'assigned':
         queryObject.filter = {
@@ -167,18 +185,6 @@ const ticketsGet = async (req: TypedRequestBody<any>, res: Express.Response) => 
         break
       case 'unassigned':
         queryObject.unassigned = true
-        break
-      case 'new':
-        queryObject.status = [0]
-        break
-      case 'open':
-        queryObject.status = [1]
-        break
-      case 'pending':
-        queryObject.status = [2]
-        break
-      case 'closed':
-        queryObject.status = [3]
         break
       case 'filter':
         try {
@@ -799,6 +805,113 @@ ticketsV2.priority.delete = async (req, res) => {
   } catch (e) {
     return apiUtils.sendApiError(res, 400, e)
   }
+}
+
+const statusGet = async (_req: TypedRequestBody<any>, res: Express.Response) => {
+  try {
+    const status = await TicketStatusModel.getStatuses() as TicketStatusClass[]
+    return apiUtils.sendApiSuccess(res, {status})
+  } catch (e: Error | any) {
+    return apiUtils.sendApiError(res, 500, {error: e, message: e.message || 'Unable to get statuses!'})
+  }
+}
+
+const statusCreate = async (req: TypedRequestBody<any>, res: Express.Response) => {
+  try {
+    const payload = req.body
+    const name = payload.name
+    const htmlColor = payload.htmlColor
+    const slatimer = payload.slatimer
+    const isResolved = payload.isResolved
+    if (!name) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const status = await TicketStatusModel.create({
+      name,
+      htmlColor,
+      slatimer,
+      isResolved,
+    })
+
+    return apiUtils.sendApiSuccess(res, { status})
+
+  } catch (e: Error | any) {
+    console.log(e)
+    return apiUtils.sendApiError(res, 500, {error: e, message: e.message || 'Unable to create status!'})
+  }
+}
+
+const statusUpdate = async (req: TypedRequestBody<any>, res: Express.Response) => {
+  try {
+    const id = req.params.id
+    const payload = req.body
+    if (!id || !payload) return apiUtils.sendApiError_InvalidPostData(res)
+
+    let status = await TicketStatusModel.getStatusById(id)
+    if (!status) return apiUtils.sendApiError(res, 404, {error: new Error('404: Invalid Status')})
+
+    if (payload.name) status.name = payload.name
+    if (payload.htmlColor) status.htmlColor = payload.htmlColor
+    status.slatimer = payload.slatimer
+    status.isResolved = payload.isResolved
+
+    status = await status.save()
+
+    return apiUtils.sendApiSuccess(res, {status})
+
+  } catch (e: Error | any) {
+    return apiUtils.sendApiError(res, 500, {error: e, message: e.message || 'Unable to update status!'})
+  }
+
+}
+
+const statusDelete = async (req: TypedRequestBody<any>, res: Express.Response) => {
+  try {
+    const id = req.params.id
+    const newStatusId = req.body.newStatusId
+    if (!id || !newStatusId) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const status = await TicketStatusModel.findOne({_id: id})
+    if (!status) return apiUtils.sendApiError(res, 404, {error: new Error('404: Invalid Status')})
+    if (status.isLocked) return apiUtils.sendApiError(res, 400, {error: new Error(`Unable to delete default status: ${status.name}`)})
+
+    await TicketModel.updateMany({status:id}, {status: newStatusId})
+
+    await status.remove()
+
+    return apiUtils.sendApiSuccess(res)
+  } catch (e: Error | any) {
+    return apiUtils.sendApiError(res, 500, {error: e, message: e.message || 'Unable to delete status!'})
+  }
+}
+
+const statusOrder = async (req: TypedRequestBody<any>, res: Express.Response) => {
+  try {
+    const data = req.body
+    if (!data || !data.order) return apiUtils.sendApiError_InvalidPostData(res)
+
+    const order = data.order
+    const statuses = await TicketStatusModel.getStatuses()
+
+    for (const status of statuses) {
+      const idx = order.findIndex((id: string) => status._id.toString() === id)
+      if (idx === -1) continue
+      status.order = idx
+      await status.save()
+    }
+
+    return apiUtils.sendApiSuccess(res)
+
+  } catch (e) {
+    return apiUtils.sendApiError(res, 500, {error: e, message: e.message || 'Unable to update status order!'})
+  }
+}
+
+ticketsV2.status = {
+  create: statusCreate,
+  get: statusGet,
+  update: statusUpdate,
+  delete: statusDelete,
+  order: statusOrder
 }
 
 ticketsV2.info = {}

@@ -30,10 +30,8 @@ type TeamQueryObj = {
 @pre('validate', function (this: DocumentType<TeamModelClass>) {
   this.normalized = utils.sanitizeFieldPlainText(this.name.trim().toLowerCase())
 })
-@pre('save', function (this: DocumentType<TeamModelClass>, next) {
+@pre('save', function (this: DocumentType<TeamModelClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
-
-  return next()
 })
 @modelOptions({ options: { customName: COLLECTION } })
 export class TeamModelClass {
