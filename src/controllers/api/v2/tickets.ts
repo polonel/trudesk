@@ -104,6 +104,9 @@ const ticketCreate = async (req: TypedRequestBody<TicketCreateBody>, res: Expres
     const user = await UserModel.findOne({_id: requestUser._id})
     if (!user || user.deleted) return apiUtils.sendApiError_InvalidPostData(res)
 
+    const statuses = await TicketStatusModel.getStatuses()
+    if (statuses.length < 1) return apiUtils.sendApiError(res, 500, {error: new Error('Invalid Ticket Status')})
+
     const HistoryItem = {
       action: 'ticket:created',
       description: 'Ticket was created.',
@@ -117,6 +120,7 @@ const ticketCreate = async (req: TypedRequestBody<TicketCreateBody>, res: Expres
       ticket.owner = requestUser._id
 
     ticket.subject = sanitizeHtml(ticket.subject).trim()
+    ticket.status = statuses[0]?._id
 
     let tIssue = ticket.issue
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
