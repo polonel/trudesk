@@ -1,0 +1,21 @@
+[
+    {
+        "action": "created", 
+        "model": "tickets",
+        "payload": {
+            "color": "danger",
+            "text": "A New Ticket was created... {{data.subject}} {{data.issue}}"
+        },
+        "endpoint": " https://mattermost.gridprotectionalliance.org/hooks/pc481rjikifniyqtjmi5r7zknc"
+    },
+
+    {
+        "action":  "updated",
+        "model": "tickets",
+        "payload": {
+            "color": "danger",
+            "text": "The ticket {{data.uid}} was updated..."
+        },
+        "endpoint": " https://mattermost.gridprotectionalliance.org/hooks/pc481rjikifniyqtjmi5r7zknc"
+    }
+]
