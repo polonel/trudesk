@@ -17,6 +17,8 @@ var mongoose = require('mongoose')
 var moment = require('moment')
 require('moment-duration-format')
 var utils = require('../helpers/utils')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
+
 
 var COLLECTION = 'priorities'
 
@@ -66,5 +68,8 @@ prioritySchema.statics.getByMigrationNum = function (num, callback) {
 
   return q.exec(callback)
 }
+
+attachWebhooks(prioritySchema, COLLECTION);
+
 
 module.exports = mongoose.model(COLLECTION, prioritySchema)

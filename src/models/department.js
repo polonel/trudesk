@@ -16,6 +16,7 @@ var _ = require('lodash')
 var async = require('async')
 var mongoose = require('mongoose')
 var utils = require('../helpers/utils')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
 
 // Refs
 require('./group')
@@ -126,5 +127,7 @@ departmentSchema.statics.getDepartmentsByGroup = function (groupId, callback) {
     .find({ $or: [{ groups: groupId }, { allGroups: true }] })
     .exec(callback)
 }
+
+attachWebhooks(departmentSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, departmentSchema)

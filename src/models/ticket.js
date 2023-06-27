@@ -12,6 +12,8 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+const axios = require('axios')
+const fs = require('fs-extra')
 const async = require('async')
 const mongoose = require('mongoose')
 const winston = require('../logger')
@@ -30,6 +32,8 @@ const noteSchema = require('./note')
 const attachmentSchema = require('./attachment')
 const historySchema = require('./history')
 const statusSchema = require('./ticketStatus')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
+
 require('./tag')
 require('./ticketpriority')
 require('./tickettype')
@@ -1709,5 +1713,7 @@ ticketSchema.statics.getDeleted = function (callback) {
     .limit(1000)
     .exec(callback)
 }
+
+attachWebhooks(ticketSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, ticketSchema)

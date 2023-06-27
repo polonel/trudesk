@@ -17,6 +17,7 @@ var mongoose = require('mongoose')
 require('moment-duration-format')
 var utils = require('../helpers/utils')
 const _ = require('lodash')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
 
 var COLLECTION = 'statuses'
 
@@ -79,5 +80,7 @@ statusSchema.statics.getStatusByUID = function (uid, callback) {
     .findOne({ uid: uid })
     .exec(callback)
 }
+
+attachWebhooks(statusSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, statusSchema)

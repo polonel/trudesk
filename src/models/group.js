@@ -15,6 +15,7 @@
 var _ = require('lodash')
 var mongoose = require('mongoose')
 var utils = require('../helpers/utils')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
 
 var COLLECTION = 'groups'
 
@@ -299,5 +300,7 @@ function isMember (arr, id) {
 
   return matches.length > 0
 }
+
+attachWebhooks(groupSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, groupSchema)

@@ -11,6 +11,7 @@
 
 var mongoose = require('mongoose')
 var utils = require('../helpers/utils')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
 
 var COLLECTION = 'notices'
 
@@ -71,5 +72,7 @@ noticeSchema.statics.getActive = function (callback) {
     .findOne({ active: true })
     .exec(callback)
 }
+
+attachWebhooks(noticeSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, noticeSchema)

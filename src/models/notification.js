@@ -14,6 +14,7 @@
 
 var mongoose = require('mongoose')
 var _ = require('lodash')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
 
 var COLLECTION = 'notification'
 
@@ -92,5 +93,7 @@ notificationSchema.statics.clearNotifications = function (oId, callback) {
 
   return this.model(COLLECTION).deleteMany({ owner: oId }, callback)
 }
+
+attachWebhooks(notificationSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, notificationSchema)

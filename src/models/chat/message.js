@@ -15,6 +15,8 @@
 const mongoose = require('mongoose')
 const _ = require('lodash')
 const utils = require('../../helpers/utils')
+const {attachWebhooks} = require('../../helpers/utils/webhookhelper.js');
+
 
 const COLLECTION = 'messages'
 
@@ -148,5 +150,7 @@ messageSchema.statics.getMostRecentMessage = function (convoId, callback) {
     })()
   })
 }
+
+attachWebhooks(messageSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, messageSchema)

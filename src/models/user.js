@@ -14,6 +14,7 @@
 
 const async = require('async')
 const mongoose = require('mongoose')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
 const winston = require('winston')
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
@@ -700,5 +701,7 @@ userSchema.statics.getAdmins = function (obj, callback) {
       q.exec(callback)
     })
 }
+
+attachWebhooks(userSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, userSchema)

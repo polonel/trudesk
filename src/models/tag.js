@@ -14,6 +14,8 @@
 
 var mongoose = require('mongoose')
 var utils = require('../helpers/utils')
+const {attachWebhooks} = require('../helpers/utils/webhookhelper.js');
+
 
 var COLLECTION = 'tags'
 
@@ -94,5 +96,7 @@ tagSchema.statics.getTagCount = function (callback) {
 
   return q.exec(callback)
 }
+
+attachWebhooks(tagSchema, COLLECTION);
 
 module.exports = mongoose.model(COLLECTION, tagSchema)
