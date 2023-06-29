@@ -57,6 +57,8 @@ class ThemeWrapper extends React.Component {
       theme = colorMap[newColorScheme]
 
       this.setColorScheme(theme)
+    } else {
+      this.setColorScheme(theme)
     }
   }
 
