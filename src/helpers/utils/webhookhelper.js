@@ -1,11 +1,12 @@
 const fs = require('fs').promises; 
-const axios = require('axios')
-const winston = require('../../logger')
+const axios = require('axios');
+const winston = require('../../logger');
+const _ = require('lodash');
 
 
 function attachWebhooks(schema, COLLECTION) {
     schema.pre('save', async function(next) {
-        const self = this;
+        const self = _.cloneDeep(this);
         let doc = await self.model(COLLECTION).find({_id: self._id }).lean();
         
         next();
@@ -33,7 +34,7 @@ function attachWebhooks(schema, COLLECTION) {
 
           try{
             replace(json[i].payload, self);
-            if((doc.length === 0 && json[i].action == 'created') || (doc.length > 0 && json[i].action == 'updated') ){  
+            if((doc.length === 0 && json[i].action === 'created') || (doc.length > 0 && json[i].action === 'updated') ){  
                await axios.post(json[i].endpoint.trim(), json[i].payload);
           }
           }catch (error){
