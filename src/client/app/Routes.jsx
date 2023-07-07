@@ -19,7 +19,12 @@ const TeamsContainer = lazy(() => import(/* webpackChunkName:  "teams" */ 'conta
 const DepartmentsContainer = lazy(() => import(/* webpackChunkName: "departments" */ 'containers/Departments'))
 const NoticesContainer = lazy(() => import(/* webpackChunkName: "notices" */ 'containers/Notice/NoticeContainer'))
 const SettingsLazy = lazy(() => import(/* webpackChunkName: "settings" */ 'containers/Settings/SettingsContainer'))
+const SettingsV2Lazy = lazy(() => import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/SettingsContainer'))
 const AboutContainer = lazy(() => import(/* webpackChunkName: "about" */ 'containers/About'))
+
+const SettingsTimeAndDateLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/General/Settings-TimeAndDate')
+)
 
 const TC_WithParams = props => {
   const params = useParams()
@@ -119,6 +124,9 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'settings/backup'} element={<SettingsLazy key={7} />} />
         <Route path={'settings/server'} element={<SettingsLazy key={8} />} />
         <Route path={'settings/legal'} element={<SettingsLazy key={9} />} />
+
+        <Route path={'v2settings'} element={<SettingsV2Lazy />} />
+        <Route path={'v2settings/timeanddate'} element={<SettingsTimeAndDateLazy />} />
 
         <Route path={'about'} element={<AboutContainer />} />
 

@@ -18,7 +18,7 @@ import clsx from 'clsx'
 
 class PageTitle extends React.Component {
   render () {
-    const { title, rightComponent, shadow, hideBorderBottom, extraClasses } = this.props
+    const { title, breadcrumbs, rightComponent, shadow, hideBorderBottom, extraClasses } = this.props
     return (
       <div className={clsx('nopadding', extraClasses)}>
         <div
@@ -32,7 +32,8 @@ class PageTitle extends React.Component {
           )}
           style={{ display: 'flex', justifyContent: 'space-between' }}
         >
-          <p style={{ flexGrow: 1 }}>{title}</p>
+          {!breadcrumbs && <p style={{ flexGrow: 1 }}>{title}</p>}
+          {breadcrumbs && breadcrumbs}
           <div>{rightComponent}</div>
         </div>
       </div>
@@ -41,7 +42,8 @@ class PageTitle extends React.Component {
 }
 
 PageTitle.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  breadcrumbs: PropTypes.element,
   shadow: PropTypes.bool,
   hideBorderBottom: PropTypes.bool,
   extraClasses: PropTypes.string,

@@ -187,6 +187,12 @@ export const menu = [
       }
     ]
   },
+  {
+    label: 'SettingsNew',
+    icon: 'settings',
+    url: '/v2settings',
+    perm: 'admin:*'
+  },
   // {
   //   label: 'Update',
   //   icon: 'update',

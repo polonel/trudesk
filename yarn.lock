@@ -8507,6 +8507,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cron@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "cron@npm:2.3.1"
+  dependencies:
+    luxon: ^3.2.1
+  checksum: ac27c257cb8dba4b51978b4767119fc79bfc0dfa35ef0be2533bc4142ae006130515236e2102d04ee3ce44bffc2a4e37a3bee18a2152bbb303bf5ff944e25204
+  languageName: node
+  linkType: hard
+
 "croner@npm:~4.1.92":
   version: 4.1.97
   resolution: "croner@npm:4.1.97"
@@ -15728,6 +15737,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.2.1":
+  version: 3.3.0
+  resolution: "luxon@npm:3.3.0"
+  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:0.25.1":
   version: 0.25.1
   resolution: "magic-string@npm:0.25.1"
@@ -20118,6 +20134,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-icons@npm:^4.10.1":
+  version: 4.10.1
+  resolution: "react-icons@npm:4.10.1"
+  peerDependencies:
+    react: "*"
+  checksum: b6c8d4fe482b112e1041515d93ef7670a0af128855c926052a076b64d0b991cdd4391394b26467100f8da3859db1ebd8f9c6b7614fa5969fde83de45c71031a3
+  languageName: node
+  linkType: hard
+
 "react-idle-timer@npm:5.6.2":
   version: 5.6.2
   resolution: "react-idle-timer@npm:5.6.2"
@@ -23669,6 +23694,7 @@ __metadata:
     cookie: ^0.5.0
     cookie-parser: 1.4.6
     cookie-signature: 1.2.1
+    cron: ^2.3.1
     cross-env: 7.0.3
     csrf: 3.1.0
     css-loader: 6.7.3
@@ -23767,6 +23793,7 @@ __metadata:
     react-helmet-async: ^1.3.0
     react-hot-keys: 2.7.2
     react-html-parser: 2.0.2
+    react-icons: ^4.10.1
     react-idle-timer: 5.6.2
     react-infinite-scroller: 1.2.6
     react-markdown: 8.0.7
