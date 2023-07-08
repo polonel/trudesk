@@ -122,6 +122,7 @@
     "react-router-dom": "6.10.0",
     "react-singleton-hook": "3.4.0",
     "react-sizeme": "3.0.2",
+    "reactflow": "^11.7.4",
     "redis": "4.6.5",
     "redux": "4.2.1",
     "redux-actions": "2.6.5",

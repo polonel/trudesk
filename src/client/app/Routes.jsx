@@ -4,6 +4,7 @@ import SessionContext from './SessionContext'
 import Login from 'containers/Login'
 import ForgotPasswordContainer from 'containers/Login/forgotPassword'
 import MFAVerify from 'containers/Login/mfaVerify'
+import TestFlow from 'containers/ReactFlow/testflow'
 
 const LogoutContainer = lazy(() => import(/* webpackChunkName: "auth" */ 'containers/Logout'))
 const ProfileContainer = lazy(() => import(/* webpackChunkName:"profile" */ 'containers/Profile'))
@@ -129,6 +130,8 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'v2settings/timeanddate'} element={<SettingsTimeAndDateLazy />} />
 
         <Route path={'about'} element={<AboutContainer />} />
+
+        <Route path={'flow'} element={<TestFlow />} />
 
         <Route path={'*'} element={<NotFound />} />
       </Routes>
