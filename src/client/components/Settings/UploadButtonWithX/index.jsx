@@ -15,39 +15,61 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import axios from 'api/axios'
+
 import $ from 'jquery'
-import UIkit from 'uikit'
+import logger from '../../../logger'
 import helpers from 'lib/helpers'
 
 class UploadButtonWithX extends React.Component {
-  componentDidMount () {
+  constructor (props) {
+    super(props)
+
+    this.uploadSelect = React.createRef()
+  }
+
+  onFileChange () {
+    if (!this.uploadSelect.current) return
+    const sanitizedAllowedExt = this.props.extAllowed.replace('*.', '')
+
+    const matches = this.uploadSelect.current.files[0]?.name.match(sanitizedAllowedExt)
+    if (matches < 1) {
+      logger.error('Invalid file type: ' + sanitizedAllowedExt)
+      helpers.UI.showSnackbar('Invalid file type', true)
+      this.uploadSelect.current.value = ''
+      return
+    }
+
     const $uploadButton = $(this.uploadButton)
     const $buttonX = $(this.buttonX)
-    const $uploadSelect = $(this.uploadSelect)
 
-    const uploadLogoSettings = {
-      action: this.props.uploadAction,
-      allow: this.props.extAllowed,
-      loadstart: function () {
-        $uploadButton.text('Uploading...')
-        $uploadButton.attr('disabled', true)
-        $uploadButton.addClass('disable')
-      },
-      allcomplete: function () {
+    // Load Start
+    $uploadButton.text('Uploading...')
+    $uploadButton.attr('disabled', true)
+    $uploadButton.addClass('disable')
+
+    const formData = new FormData()
+    formData.append('file', this.uploadSelect.current.files[0])
+    axios
+      .post(this.props.uploadAction, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(() => {
         $uploadButton.text('Upload Logo')
         $uploadButton.attr('disabled', false)
         $uploadButton.removeClass('disable')
         helpers.UI.showSnackbar('Upload Complete. Reloading...', false)
-        // remove page refresh once SettingsService merge
-        // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+
         setTimeout(function () {
           window.location.reload()
         }, 1000)
         $buttonX.removeClass('hide')
-      }
-    }
-
-    UIkit.uploadSelect($uploadSelect, uploadLogoSettings)
+      })
+      .catch(err => {
+        logger.error(err)
+      })
   }
 
   render () {
@@ -73,12 +95,7 @@ class UploadButtonWithX extends React.Component {
           style={{ marginTop: '8px', textTransform: 'none' }}
         >
           {buttonText}
-          <input
-            ref={select => {
-              this.uploadSelect = select
-            }}
-            type='file'
-          />
+          <input ref={this.uploadSelect} type='file' onChange={e => this.onFileChange(e)} />
         </button>
       </div>
     )
