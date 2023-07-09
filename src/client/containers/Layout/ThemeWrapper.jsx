@@ -16,7 +16,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import TitleContext, { setTitle } from 'app/TitleContext'
-import { fetchTheme } from 'actions/common'
+import { fetchTheme, fetchViewData } from 'actions/common'
 import setTheme from '../../lib/theme'
 import colorMap from '../../lib/themeColors'
 
@@ -31,7 +31,6 @@ class ThemeWrapper extends React.Component {
   }
 
   componentDidMount () {
-    // this.props.fetchViewSettings()
     this.props.fetchTheme()
     this.loadTheme()
   }
@@ -77,8 +76,8 @@ class ThemeWrapper extends React.Component {
 
   render () {
     if (this.props.theme.loading) return null
-    // const customFavicon = this.props.theme.customFavicon || false
-    // const customFaviconUrl = customFavicon ? this.props.theme.customFaviconUrl : 'favicon.ico'
+    const customFavicon = this.props.theme.customFavicon || false
+    const customFaviconUrl = customFavicon ? this.props.theme.customFaviconUrl : '/favicon.ico'
     const title = this.props.theme.siteTitle + ' · ' || ''
     setTitle(title)
     return (
@@ -86,7 +85,7 @@ class ThemeWrapper extends React.Component {
         <TitleContext.Provider value={{ title }} displayName={'Title Context'}>
           <Helmet>
             <title>{title}</title>
-            {/*<link rel={'shortcut icon'} href={`https://files.trudesk.io/${customFaviconUrl}`} />*/}
+            <link rel={'shortcut icon'} href={customFaviconUrl} />
           </Helmet>
           {this.props.children}
         </TitleContext.Provider>

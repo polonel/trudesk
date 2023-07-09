@@ -132,7 +132,7 @@ module.exports = function (app, db, callback) {
 
         // Mobile
         app.use('/mobile', express.static(path.resolve(config.trudeskRoot(), 'mobile')))
-
+        app.use('/favicon.ico', express.static(path.resolve(config.trudeskRoot(), 'public/img/favicon.ico')))
         app.use('/assets', express.static(path.resolve(config.trudeskRoot(), 'public/uploads/assets')))
         app.use('/uploads/users', express.static(path.resolve(config.trudeskRoot(), 'public/uploads/users')))
         app.use('/uploads', middleware.hasAuth, express.static(path.resolve(config.trudeskRoot(), 'public/uploads')))
