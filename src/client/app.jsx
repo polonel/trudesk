@@ -41,7 +41,8 @@ const composeSetup =
 /*eslint-enable */
 
 // if (process.env.NODE_ENV !== 'production') {
-localStorage.setItem('debug', 'trudesk:*') // Enable logger
+localStorage.debug = 'trudesk:*'
+// localStorage.setItem('debug', 'trudesk:*') // Enable logger
 // }
 
 export const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddleware, sagaMiddleware)))

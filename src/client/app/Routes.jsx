@@ -26,6 +26,12 @@ const AboutContainer = lazy(() => import(/* webpackChunkName: "about" */ 'contai
 const SettingsTimeAndDateLazy = lazy(() =>
   import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/General/Settings-TimeAndDate')
 )
+const SettingsRebrandingLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/General/Settings-Rebranding')
+)
+const SettingsColorSchemesLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/General/Settings-ColorSchemes')
+)
 
 const TC_WithParams = props => {
   const params = useParams()
@@ -128,6 +134,8 @@ const BaseRouter = ({ user, setSession }) => {
 
         <Route path={'v2settings'} element={<SettingsV2Lazy />} />
         <Route path={'v2settings/timeanddate'} element={<SettingsTimeAndDateLazy />} />
+        <Route path={'v2settings/rebranding'} element={<SettingsRebrandingLazy />} />
+        <Route path={'v2settings/colorschemes'} element={<SettingsColorSchemesLazy />} />
 
         <Route path={'about'} element={<AboutContainer />} />
 

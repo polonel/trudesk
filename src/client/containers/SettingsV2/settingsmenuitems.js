@@ -14,7 +14,7 @@ export default [
       {
         title: 'Rebranding',
         description: 'Customize the agent portal to your branding needs.',
-        url: '/v2settings/timeanddate',
+        url: '/v2settings/rebranding',
         iconPackage: 'Md',
         icon: 'OutlineScreenshotMonitor',
         iconClass: 'c13',
@@ -23,7 +23,7 @@ export default [
       {
         title: 'Color Schemes',
         description: 'Create a customized color scheme or select a built-in scheme for your instance.',
-        url: '/v2settings/timeanddate',
+        url: '/v2settings/colorschemes',
         iconPackage: 'Ai',
         icon: 'TwotoneExperiment',
         iconClass: 'c14'

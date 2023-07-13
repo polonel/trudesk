@@ -24181,7 +24181,7 @@ __metadata:
     css-loader: 6.7.3
     csv: 6.2.10
     dayjs: ^1.11.7
-    debug: 4.3.4
+    debug: ^4.3.4
     dive: 0.5.0
     email-templates: 10.0.1
     eslint: ^8.39.0

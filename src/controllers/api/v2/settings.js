@@ -13,6 +13,9 @@
  */
 
 const path = require('path')
+const fs = require('fs')
+const Busboy = require('busboy')
+const logger = require('../../../logger')
 const sanitizeHtml = require('sanitize-html')
 const settingsUtil = require('../../../settings/settingsUtil')
 const apiUtils = require('../apiUtils')
@@ -110,7 +113,7 @@ apiSettings.theme = async (req, res) => {
       customLogo: parsed.hasCustomLogo.value,
       customLogoUrl: parsed.customLogoFilename.value,
       customFavicon: parsed.hasCustomFavicon.value,
-      customFaviconUrl: parsed.customFaviconFilename.value,
+      customFaviconUrl: '/assets/' + parsed.customFaviconFilename.value,
       siteTitle: parsed.siteTitle.value,
       autoDark: parsed.themeAutoDark.value,
       themeLight: parsed.themeLight.value,
@@ -127,6 +130,228 @@ apiSettings.theme = async (req, res) => {
   } catch (e) {
     return apiUtils.sendApiError(res, 400, e.message)
   }
+}
+
+apiSettings.uploadLogo = async (req, res) => {
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 1024 * 1024 * 3 // 3mb
+    }
+  })
+
+  const object = {}
+  let error = null
+
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+    if (mimetype.indexOf('image/') === -1) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    const savePath = path.join(__dirname, '../../../../public/uploads/assets')
+    if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
+
+    object.filePath = path.join(savePath, 'topLogo' + path.extname(filename))
+    object.filename = 'topLogo' + path.extname(filename)
+    object.mimetype = mimetype
+
+    file.on('limit', () => {
+      error = {
+        status: 400,
+        message: 'File size too large. File size limit: 3mb'
+      }
+
+      return file.resume()
+    })
+
+    file.pipe(fs.createWriteStream(object.filePath))
+  })
+
+  busboy.once('finish', () => {
+    if (error) {
+      logger.warn(error)
+      return apiUtils.sendApiError(res, error.status, error)
+    }
+
+    if (!object.filePath || !object.filename) return apiUtils.sendApiError(res, 400, 'Invalid image data')
+    if (!fs.existsSync(object.filePath)) return apiUtils.sendApiError(res, 400, 'File failed to save to disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg')
+      require('../../../helpers/utils').stripExifData(object.filePath)
+
+    settingsUtil
+      .setSetting('gen:customlogo', true)
+      .then(() => {
+        settingsUtil
+          .setSetting('gen:customlogofilename', object.filename)
+          .then(() => {
+            return apiUtils.sendApiSuccess(res, {})
+          })
+          .catch(err => {
+            return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+          })
+      })
+      .catch(err => {
+        return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+      })
+  })
+
+  req.pipe(busboy)
+}
+
+apiSettings.uploadPageLogo = async (req, res) => {
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 1024 * 1024 * 3 // 3mb
+    }
+  })
+
+  const object = {}
+  let error = null
+
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+    if (mimetype.indexOf('image/') === -1) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    const savePath = path.join(__dirname, '../../../../public/uploads/assets')
+    if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
+
+    object.filePath = path.join(savePath, 'pageLogo' + path.extname(filename))
+    object.filename = 'pageLogo' + path.extname(filename)
+    object.mimetype = mimetype
+
+    file.on('limit', () => {
+      error = {
+        status: 400,
+        message: 'File size too large. File size limit: 3mb'
+      }
+
+      return file.resume()
+    })
+
+    file.pipe(fs.createWriteStream(object.filePath))
+  })
+
+  busboy.once('finish', () => {
+    if (error) {
+      logger.warn(error)
+      return apiUtils.sendApiError(res, error.status, error)
+    }
+
+    if (!object.filePath || !object.filename) return apiUtils.sendApiError(res, 400, 'Invalid image data')
+    if (!fs.existsSync(object.filePath)) return apiUtils.sendApiError(res, 400, 'File failed to save to disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg')
+      require('../../../helpers/utils').stripExifData(object.filePath)
+
+    settingsUtil
+      .setSetting('gen:custompagelogo', true)
+      .then(() => {
+        settingsUtil
+          .setSetting('gen:custompagelogofilename', object.filename)
+          .then(() => {
+            return apiUtils.sendApiSuccess(res, {})
+          })
+          .catch(err => {
+            return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+          })
+      })
+      .catch(err => {
+        return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+      })
+  })
+
+  req.pipe(busboy)
+}
+
+apiSettings.uploadFavicon = async (req, res) => {
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 1024 * 1024 * 1 // 1mb
+    }
+  })
+
+  const object = {}
+  let error = null
+
+  busboy.on('file', function (name, file, info) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+    if (mimetype.indexOf('image/') === -1) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    const savePath = path.join(__dirname, '../../../../public/uploads/assets')
+    if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
+
+    object.filePath = path.join(savePath, 'favicon' + path.extname(filename))
+    object.filename = 'favicon' + path.extname(filename)
+    object.mimetype = mimetype
+
+    file.on('limit', () => {
+      error = {
+        status: 400,
+        message: 'File size too large. File size limit: 1mb'
+      }
+
+      return file.resume()
+    })
+
+    file.pipe(fs.createWriteStream(object.filePath))
+  })
+
+  busboy.once('finish', () => {
+    if (error) {
+      logger.warn(error)
+      return apiUtils.sendApiError(res, error.status, error)
+    }
+
+    if (!object.filePath || !object.filename) return apiUtils.sendApiError(res, 400, 'Invalid image data')
+    if (!fs.existsSync(object.filePath)) return apiUtils.sendApiError(res, 400, 'File failed to save to disk')
+    if (path.extname(object.filename) === '.jpg' || path.extname(object.filename) === '.jpeg')
+      require('../../../helpers/utils').stripExifData(object.filePath)
+
+    settingsUtil
+      .setSetting('gen:customfavicon', true)
+      .then(() => {
+        settingsUtil
+          .setSetting('gen:customfaviconfilename', object.filename)
+          .then(() => {
+            return apiUtils.sendApiSuccess(res, {})
+          })
+          .catch(err => {
+            return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+          })
+      })
+      .catch(err => {
+        return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+      })
+  })
+
+  req.pipe(busboy)
 }
 
 module.exports = apiSettings
