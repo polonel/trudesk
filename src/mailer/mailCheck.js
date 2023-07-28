@@ -23,6 +23,7 @@ const emitter = require('../emitter')
 const userSchema = require('../models/user')
 const groupSchema = require('../models/group')
 const ticketTypeSchema = require('../models/tickettype')
+const statusSchema = require('../models').Status
 const Ticket = require('../models/ticket')
 
 const mailCheck = {}
@@ -199,9 +200,9 @@ function bindImapReady () {
                 })
 
                 f.on('end', function () {
-                  mailCheck.Imap.addFlags(results, flag, function() {
+                  mailCheck.Imap.addFlags(results, flag, function () {
                     mailCheck.Imap.closeBox(true, function () {
-                      mailCheck.Imap.end();
+                      mailCheck.Imap.end()
                       handleMessages(mailCheck.messages, function () {
                         mailCheck.Imap.destroy()
                       })
@@ -346,9 +347,23 @@ function handleMessages (messages, done) {
               return callback(null, firstPriority._id)
             }
           ],
+          handleStatus: function (callback) {
+            statusSchema.getStatus(function (err, statuses) {
+              if (err) return callback(err)
+
+              const status = _.first(statuses)
+
+              if (!status) return callback(new Error('Invalid status'))
+
+              message.status = status._id
+
+              return callback(null, status._id)
+            })
+          },
           handleCreateTicket: [
             'handleGroup',
             'handlePriority',
+            'handleStatus',
             function (results, callback) {
               var HistoryItem = {
                 action: 'ticket:created',
@@ -361,7 +376,7 @@ function handleMessages (messages, done) {
                   owner: message.owner._id,
                   group: message.group._id,
                   type: message.type._id,
-                  status: 0,
+                  status: results.handleStatus,
                   priority: results.handlePriority,
                   subject: message.subject,
                   issue: message.body,
