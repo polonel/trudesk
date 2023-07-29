@@ -1,3 +1,11 @@
+## [1.2.9](https://github.com/polonel/trudesk/compare/v1.2.8...v1.2.9) (2023-07-29)
+
+
+### Bug Fixes
+
+* **mailcheck:** crash processing inbound imap email [#619](https://github.com/polonel/trudesk/issues/619) ([bb56646](https://github.com/polonel/trudesk/commit/bb56646))
+* **ui:** custom page login not showing on MFA page [#621](https://github.com/polonel/trudesk/issues/621) ([16330e9](https://github.com/polonel/trudesk/commit/16330e9))
+
 ## [1.2.8](https://github.com/polonel/trudesk/compare/v1.2.7...v1.2.8) (2023-06-22)
 
 
