@@ -19,6 +19,7 @@ const passport = require('passport')
 const winston = require('winston')
 const pkg = require('../../package')
 const xss = require('xss')
+const settingsUtil = require('../settings/settingsUtil')
 const RateLimiterMemory = require('rate-limiter-flexible').RateLimiterMemory
 
 const limiterSlowBruteByIP = new RateLimiterMemory({
@@ -107,11 +108,9 @@ mainController.dashboard = function (req, res) {
 
 mainController.loginPost = async function (req, res, next) {
   let ipAddress = req.ip
-  if (process.env.USE_XFORWARDIP == 'true') 
-    ipAddress= req.headers["x-forwarded-for"]
-  
-  if (process.env.USE_USERRATELIMIT == 'true')
-    ipAddress = ipAddress + req.body['username']
+  if (process.env.USE_XFORWARDIP == 'true') ipAddress = req.headers['x-forwarded-for']
+
+  if (process.env.USE_USERRATELIMIT == 'true') ipAddress = ipAddress + req.body['username']
 
   const [resEmailAndIP] = await Promise.all([limiterSlowBruteByIP.get(ipAddress)])
 
@@ -591,14 +590,19 @@ mainController.l2authget = function (req, res) {
   content.title = 'Login'
   content.layout = false
 
-  const settings = require('../models/setting')
-  settings.getSettingByName('mailer:enable', function (err, setting) {
+  settingsUtil.getSettings(function (err, settingsFull) {
     if (err) {
       throw new Error(err)
     }
 
-    if (!_.isNull(setting)) {
-      content.mailerEnabled = setting.value
+    const settings = settingsFull.data?.settings
+
+    if (!_.isNull(settings) && !_.isNull(settings.mailerEnabled)) {
+      content.mailerEnabled = settings.mailerEnabled.value
+    }
+    content.pageLogo = '/img/defaultLogoDark.png'
+    if (settings.hasCustomPageLogo.value && settings.customPageLogoFilename.value.length > 0) {
+      content.pageLogo = '/assets/' + settings.customPageLogoFilename.value
     }
 
     return res.render('login-otp', content)

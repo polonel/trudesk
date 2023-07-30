@@ -1,3 +1,13 @@
+## [1.2.8](https://github.com/polonel/trudesk/compare/v1.2.7...v1.2.8) (2023-06-22)
+
+
+### Bug Fixes
+
+* **mailer:** crash if no email recipients were defined ([6184e68](https://github.com/polonel/trudesk/commit/6184e68))
+* package.json & yarn.lock to reduce vulnerabilities ([ea76348](https://github.com/polonel/trudesk/commit/ea76348))
+* **tests:** status updates ([a089792](https://github.com/polonel/trudesk/commit/a089792))
+* **tickets:** customized status enhancements and fixes ([ece5b34](https://github.com/polonel/trudesk/commit/ece5b34))
+
 ## [1.2.7](https://github.com/polonel/trudesk/compare/v1.2.6...v1.2.7) (2023-04-05)
 
 
