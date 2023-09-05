@@ -75,7 +75,7 @@
     "moment": "2.29.4",
     "moment-duration-format": "2.3.2",
     "moment-timezone": "0.5.34",
-    "mongoose": "6.4.3",
+    "mongoose": "6.12.0",
     "mongoose-autopopulate": "0.16.1",
     "mongoose-lean-virtuals": "0.9.1",
     "nconf": "0.12.0",
