@@ -32,6 +32,15 @@ const SettingsRebrandingLazy = lazy(() =>
 const SettingsColorSchemesLazy = lazy(() =>
   import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/General/Settings-ColorSchemes')
 )
+const SettingsMailerLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/Email/Settings-Mailer')
+)
+const SettingsIncomingMailLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/Email/Settings-IncomingMail')
+)
+const SettingsNotificationTemplatesLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/Email/Settings-NotificationTemplates')
+)
 
 const TC_WithParams = props => {
   const params = useParams()
@@ -136,6 +145,9 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'v2settings/timeanddate'} element={<SettingsTimeAndDateLazy />} />
         <Route path={'v2settings/rebranding'} element={<SettingsRebrandingLazy />} />
         <Route path={'v2settings/colorschemes'} element={<SettingsColorSchemesLazy />} />
+        <Route path={'v2settings/mailer'} element={<SettingsMailerLazy />} />
+        <Route path={'v2settings/incomingmail'} element={<SettingsIncomingMailLazy />} />
+        <Route path={'v2settings/mailnotificationtemplates'} element={<SettingsNotificationTemplatesLazy />} />
 
         <Route path={'about'} element={<AboutContainer />} />
 

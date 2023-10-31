@@ -51,20 +51,20 @@ export default [
       {
         title: 'Incoming Mail Check',
         description: 'Configure IMAP mailbox settings for processing incoming service requests.',
-        url: '/v2settings/mailer',
+        url: '/v2settings/incomingmail',
         iconPackage: 'Tb',
         icon: 'MailCheck',
         iconClass: 'c21'
-      },
-      {
-        title: 'Notification Templates',
-        description: 'Customize templates used for email notifications',
-        url: '/v2settings/mailer',
-        iconPackage: 'Tb',
-        icon: 'MailBolt',
-        iconClass: 'c22',
-        betaBadge: true
       }
+      // {
+      //   title: 'Notification Templates',
+      //   description: 'Customize templates used for email notifications',
+      //   url: '/v2settings/mailnotificationtemplates',
+      //   iconPackage: 'Tb',
+      //   icon: 'MailBolt',
+      //   iconClass: 'c22',
+      //   betaBadge: true
+      // }
     ]
   },
   {
