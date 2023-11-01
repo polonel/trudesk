@@ -1,3 +1,10 @@
+## [1.2.10](https://github.com/polonel/trudesk/compare/v1.2.9...v1.2.10) (2023-11-01)
+
+
+### Bug Fixes
+
+* **mobile:** disable mobile view until rewrite ([f446c99](https://github.com/polonel/trudesk/commit/f446c99))
+
 ## [1.2.9](https://github.com/polonel/trudesk/compare/v1.2.8...v1.2.9) (2023-07-29)
 
 
