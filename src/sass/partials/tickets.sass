@@ -75,7 +75,7 @@ div#accountsTable_wrapper
   top: 28px
   left: -5px
   padding: 0
-  background: $page_content_right_bg
+  background: var(--pagecontentdark5)
   border: 1px solid $page_content_border_color
   +borderRadius(3px)
   z-index: 999
@@ -109,9 +109,9 @@ div#accountsTable_wrapper
   a.btn,
   button.btn,
   button
-    background: darken($page_content_title_bg, 8%)
+    background: var(--pagecontentdark10)
     display: block
-    color: automatic-text-color(darken($page_content_title_bg, 8%))
+    color: var(--pagecontentbuttontext)
     font-family: $fontFamily
     font-weight: 400
     font-size: 12px
@@ -122,7 +122,7 @@ div#accountsTable_wrapper
     line-height: 14px
 
     &:hover
-      background: darken($page_content_title_bg, 12%)
+      background: var(--tertiary)
 
     i
       font-weight: normal
@@ -450,7 +450,7 @@ div#accountsTable_wrapper
       font-size: 14px
       color: #ffffff
       padding: 3px 15px
-      background: $accent_color
+      background: var(--tertiary)
       +borderRadius(3px)
       font-weight: 400
       &.success
@@ -459,7 +459,7 @@ div#accountsTable_wrapper
           background: darken($accent_success, 5%)
 
       &:hover
-        background: darken($accent_color, 5%)
+        background: var(--tertiarydark10)
       &:active, &:focus
         outline: none
     button[type=reset]
