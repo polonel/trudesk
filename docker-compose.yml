@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   trudesk:
-    image: polonel/lastest
+    image: polonel/trudesk:lastest
     restart: always
     ports:
       - "8118:8118"
