@@ -93,7 +93,7 @@
     "passport.socketio": "3.7.0",
     "pdfkit": "0.13.0",
     "piexifjs": "1.0.6",
-    "pm2": "5.2.0",
+    "pm2": "5.3.1",
     "prop-types": "15.8.1",
     "rate-limiter-flexible": "2.3.7",
     "react": "17.0.2",
