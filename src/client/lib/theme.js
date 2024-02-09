@@ -165,6 +165,7 @@ const setTheme = colorScheme => {
   html.style.setProperty('--pagecontentdark5', pageContentDark5)
   html.style.setProperty('--pagecontentdark10', pageContentDark10)
   html.style.setProperty('--pagecontentbuttontext', automaticTextColor(pageContentLight10, primary))
+  html.style.setProperty('--pagecontentitemhover', pageContentLight10)
 }
 
 export default setTheme
