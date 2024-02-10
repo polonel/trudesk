@@ -193,18 +193,18 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn-flat {
   box-shadow: none !important;
   background: none;
-  color: $text_color;
+  color: var(--primary);
 
   &:hover, &:focus {
     //background: rgba(153, 153, 153, 0.2);
     background: darken($page_bg_color, 5%);
-    color: $text_color;
+    color: var(--primary);
   }
 
   &:active {
     //background: rgba(153, 153, 153, 0.4);
     background: darken($page_bg_color, 8%);
-    color: $text_color;
+    color: var(--primary);
   }
 }
 
@@ -221,14 +221,14 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 }
 
 .md-btn-flat-accent {
-  color: $accent_color;
+  color: var(--tertiary);
 
   &:hover, &:focus, &:active {
-    color: $accent_color;
+    color: var(--tertiary);
   }
 
   &:hover, &:focus, &:active {
-    background: automatic-text-color($accent_color)
+    background: var(--tertiaryTextColor)
   }
 }
 
@@ -236,11 +236,8 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   color: $accent_danger;
 
   &:hover, &:focus, &:active {
-    color: $accent_color;
-  }
-
-  &:hover, &:focus, &:active {
-    background: #fceaea;
+    background: #fceaea !important;
+    color: $accent_danger;
   }
 }
 
@@ -248,11 +245,8 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   color: #1976d2;
 
   &:hover, &:focus, &:active {
+    background: #e3f2fd !important;
     color: #1976d2;
-  }
-
-  &:hover, &:focus, &:active {
-    background: #e3f2fd;
   }
 }
 
@@ -260,11 +254,8 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   color: #7cb342;
 
   &:hover, &:focus, &:active {
+    background: #e1efd2 !important;
     color: #7cb342;
-  }
-
-  &:hover, &:focus, &:active {
-    background: #e1efd2;
   }
 }
 
