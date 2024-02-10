@@ -12,7 +12,7 @@
 <a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
 <a href="https://docs.trudesk.io/v1.2"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
-<sub>© 2014-2022, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
+<sub>© 2014-2024, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
 </p>
 <br />
 
@@ -24,8 +24,8 @@ Quickly resolve issues & task with an easy-to-use solution. Built with one goal 
 </p>
 
 #### Deploy Trudesk Anywhere
-**Trudesk** is built with <a href="https://nodejs.org">nodejs</a> and <a href="https://mongodb.org">mongodb</a> and can run on any cloud provider, docker, bare-metal, or even a raspberry pi.
-Take it for a spin on Ubuntu 20.04 with a one liner - <br />`curl -L -s https://storage.trudesk.io/install/ubuntu-1.2.sh | sudo bash`
+**Trudesk** is built with <a href="https://nodejs.org">NodeJS</a> and <a href="https://mongodb.org">MongoDB</a> and can run on any cloud provider, docker, bare-metal, or even a raspberry pi.
+Take it for a spin on Ubuntu 20.04 with a one-liner - <br />`curl -L -s https://storage.trudesk.io/install/ubuntu-1.2.sh | sudo bash`
 
 #### Requirements
 - NodeJS 16+
@@ -42,16 +42,9 @@ If you like what you see here, and want to help support the work being done, you
 + Refactor Codebase
 + Help Write Documentation
 
-### Sponsors
-Just a few who have made the project possible.
-<br />
-<a href="https://www.browserstack.com"><img src="https://files.trudesk.io/browserstack-logo-600x315.png" width="115" /></a>
-
-Trudesk is tested with confidence using [BrowserStack](https://browserstack.com).
-
 ### License
 
-    Copyright 2014-2022 Trudesk, Inc.
+    Copyright 2014-2024 Trudesk, Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
