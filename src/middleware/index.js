@@ -57,13 +57,13 @@ module.exports = function (app, db, callback) {
   app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
-  if (global.env === 'production') {
-    app.use(
-      expressStaticGzip(path.resolve(config.trudeskRoot(), 'dist/public'), {
-        index: false
-      })
-    )
-  } else app.use(express.static(path.resolve(config.trudeskRoot(), 'dist/public')))
+  // if (global.env === 'production') {
+  app.use(
+    expressStaticGzip(path.resolve(config.trudeskRoot(), 'dist/public'), {
+      index: false
+    })
+  )
+  // } else app.use(express.static(path.resolve(config.trudeskRoot(), 'dist/public')))
 
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
