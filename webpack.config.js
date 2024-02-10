@@ -261,7 +261,11 @@ module.exports = {
       chunks: ['js/install_trudesk'],
       chunksSortMode: 'none'
     }),
-    new CompressionPlugin()
+    new CompressionPlugin({
+      deleteOriginalAssets: true,
+      algorithm: 'gzip',
+      test: /\.(js|css)$/
+    })
   ],
   performance: {
     hints: 'warning',

@@ -38,20 +38,20 @@ module.exports = function (app, db, callback) {
   middleware = require('./middleware')
   app.disable('x-powered-by')
 
-  app.set('views', path.join(__dirname, '../views/'))
-
-  app.engine(
-    'hbs',
-    hbs.express4({
-      handlebars: insecureHandlebars,
-      defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
-      partialsDir: [path.join(__dirname, '../views/partials/'), path.join(__dirname, '../views/subviews/reports')]
-    })
-  )
-  app.set('view engine', 'hbs')
-  hbsHelpers.register(hbs.handlebars)
-  // Required to access handlebars in mail templates
-  global.Handlebars = hbs.handlebars
+  // app.set('views', path.join(__dirname, '../views/'))
+  //
+  // app.engine(
+  //   'hbs',
+  //   hbs.express4({
+  //     handlebars: insecureHandlebars,
+  //     defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
+  //     partialsDir: [path.join(__dirname, '../views/partials/'), path.join(__dirname, '../views/subviews/reports')]
+  //   })
+  // )
+  // app.set('view engine', 'hbs')
+  // hbsHelpers.register(hbs.handlebars)
+  // // Required to access handlebars in mail templates
+  // global.Handlebars = hbs.handlebars
 
   app.use(bodyParser.urlencoded({ limit: '2mb', extended: false }))
   app.use(bodyParser.json({ limit: '2mb' }))
