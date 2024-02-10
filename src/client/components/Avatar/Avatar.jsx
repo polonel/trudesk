@@ -119,6 +119,51 @@ class Avatar extends React.Component {
       })
   }
 
+  generateColor () {
+    const getHashOfString = str => {
+      let hash = 0
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash)
+      }
+
+      hash = Math.abs(hash)
+      return hash
+    }
+
+    const normalizeHash = (hash, min, max) => {
+      return Math.floor((hash % (max - min)) + min)
+    }
+
+    const hRange = [0, 360]
+    const sRange = [50, 75]
+    const lRange = [20, 50]
+
+    const generateHSL = name => {
+      const hash = getHashOfString(name)
+      const h = normalizeHash(hash, hRange[0], hRange[1])
+      const s = normalizeHash(hash, sRange[0], sRange[1])
+      const l = normalizeHash(hash, lRange[0], lRange[1])
+      return [h, s, l]
+    }
+
+    const HSLtoString = hsl => {
+      return `hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`
+    }
+
+    return HSLtoString(generateHSL(this.props.showAsNameInitialsName))
+  }
+
+  generateInitials () {
+    const splitName = this.props.showAsNameInitialsName.split(' ')
+    let name = '-'
+    if (splitName.length > 0 && splitName[0].length > 0) {
+      name = splitName[0][0]
+      if (splitName.length > 1 && splitName[1].length > 1) name += splitName[1][0]
+    }
+
+    return name
+  }
+
   render () {
     const {
       style,
@@ -129,7 +174,8 @@ class Avatar extends React.Component {
       size,
       showBorder,
       borderColor,
-      enableImageUpload
+      enableImageUpload,
+      showAsNameInitials
     } = this.props
 
     let wrapperStyle = { borderRadius: '50%' }
@@ -194,12 +240,30 @@ class Avatar extends React.Component {
               </div>
             </>
           )}
-          <img
-            className='profile-pic uk-border-circle'
-            style={{ height: size, width: size }}
-            src={`/uploads/users/${image || 'defaultProfile.jpg'}`}
-            alt=''
-          />
+          {showAsNameInitials && (
+            <div
+              className={'profile-pic uk-border-circle'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: this.generateColor(),
+                height: size,
+                width: size,
+                color: 'white'
+              }}
+            >
+              <span style={{ fontSize: 18, fontWeight: 400 }}>{this.generateInitials()}</span>
+            </div>
+          )}
+          {!showAsNameInitials && (
+            <img
+              className='profile-pic uk-border-circle'
+              style={{ height: size, width: size }}
+              src={`/uploads/users/${image || 'defaultProfile.jpg'}`}
+              alt=''
+            />
+          )}
           {showOnlineBubble && (
             <span
               ref={this.onlineBubbleRef}
@@ -230,7 +294,9 @@ Avatar.propTypes = {
   enableImageUpload: PropTypes.bool,
   style: PropTypes.object,
   overrideBubbleSize: PropTypes.number,
-  showLargerBubble: PropTypes.bool
+  showLargerBubble: PropTypes.bool,
+  showAsNameInitials: PropTypes.bool,
+  showAsNameInitialsName: PropTypes.string
 }
 
 Avatar.defaultProps = {
@@ -238,7 +304,9 @@ Avatar.defaultProps = {
   showOnlineBubble: true,
   showBorder: false,
   enableImageUpload: false,
-  showLargerBubble: false
+  showLargerBubble: false,
+  showAsNameInitials: false,
+  showAsNameInitialsName: ''
 }
 
 const mapStateToProps = state => ({

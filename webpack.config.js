@@ -262,7 +262,7 @@ module.exports = {
       chunksSortMode: 'none'
     }),
     new CompressionPlugin({
-      deleteOriginalAssets: true,
+      deleteOriginalAssets: IS_PROD,
       algorithm: 'gzip',
       test: /\.(js|css)$/
     })

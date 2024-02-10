@@ -400,7 +400,7 @@ label.md-label
     background: var(--tertiary)
 
 .uk-text-muted
-  color: automatic-text-color($page_content_bg, 'muted') !important
+  color: var(--mutedtext) !important
 
 .a-text-muted
   opacity: 0.4
@@ -778,7 +778,7 @@ textarea.review-list
 
 .no-data-available-text
   font-size: 2em
-  color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+  color: var(--mutedtext)
   font-weight: 300
   position: absolute
   top: 50%
@@ -786,7 +786,7 @@ textarea.review-list
   transform: translate(-50%, -50%)
 
 .c3-legend-item text, .c3-text.c3-empty
-  fill: var(--primary) !important
+  fill: var(--mutedtext) !important
 
 .uk-table thead th
   color: var(--mutedtext)

@@ -38,32 +38,22 @@ module.exports = function (app, db, callback) {
   middleware = require('./middleware')
   app.disable('x-powered-by')
 
-  // app.set('views', path.join(__dirname, '../views/'))
-  //
-  // app.engine(
-  //   'hbs',
-  //   hbs.express4({
-  //     handlebars: insecureHandlebars,
-  //     defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
-  //     partialsDir: [path.join(__dirname, '../views/partials/'), path.join(__dirname, '../views/subviews/reports')]
-  //   })
-  // )
-  // app.set('view engine', 'hbs')
-  // hbsHelpers.register(hbs.handlebars)
-  // // Required to access handlebars in mail templates
-  // global.Handlebars = hbs.handlebars
-
   app.use(bodyParser.urlencoded({ limit: '2mb', extended: false }))
   app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
-  // if (global.env === 'production') {
-  app.use(
-    expressStaticGzip(path.resolve(config.trudeskRoot(), 'dist/public'), {
-      index: false
-    })
-  )
-  // } else app.use(express.static(path.resolve(config.trudeskRoot(), 'dist/public')))
+  if (global.env === 'production') {
+    app.use(
+      expressStaticGzip(path.resolve(config.trudeskRoot(), 'dist/public'), {
+        enableBrotli: true,
+        orderPreference: ['br', 'gz'],
+        setHeaders: res => {
+          res.setHeaders('Cache-Control', 'public, max-age=31536000')
+        },
+        index: false
+      })
+    )
+  } else app.use(express.static(path.resolve(config.trudeskRoot(), 'dist/public')))
 
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
