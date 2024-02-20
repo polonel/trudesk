@@ -41,6 +41,12 @@ const SettingsIncomingMailLazy = lazy(() =>
 const SettingsNotificationTemplatesLazy = lazy(() =>
   import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/Email/Settings-NotificationTemplates')
 )
+const SettingsAgentsLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/Accounts/Settings-Agents')
+)
+const SettingsRolesAndPermissionsLazy = lazy(() =>
+  import(/* webpackChunkName: "settings" */ 'containers/SettingsV2/Accounts/Settings-RolesAndPermissions')
+)
 
 const TC_WithParams = props => {
   const params = useParams()
@@ -148,6 +154,9 @@ const BaseRouter = ({ user, setSession }) => {
         <Route path={'v2settings/mailer'} element={<SettingsMailerLazy />} />
         <Route path={'v2settings/incomingmail'} element={<SettingsIncomingMailLazy />} />
         <Route path={'v2settings/mailnotificationtemplates'} element={<SettingsNotificationTemplatesLazy />} />
+
+        <Route path={'v2settings/agents'} element={<SettingsAgentsLazy />} />
+        <Route path={'v2settings/roles'} element={<SettingsRolesAndPermissionsLazy />} />
 
         <Route path={'about'} element={<AboutContainer />} />
 

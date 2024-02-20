@@ -74,7 +74,7 @@ export default [
       {
         title: 'Agents',
         description: 'Manage all agents and their account and security details',
-        url: '/v2settings/mailer',
+        url: '/v2settings/agents',
         iconPackage: 'Tb',
         icon: 'UserShield',
         iconClass: 'c15'
@@ -82,7 +82,7 @@ export default [
       {
         title: 'Role & Permissions',
         description: 'Create and modify roles and permissions for your agents and requesters',
-        url: '/v2settings/mailer',
+        url: '/v2settings/roles',
         iconPackage: 'Tb',
         icon: 'LockCheck',
         iconClass: 'c16'
