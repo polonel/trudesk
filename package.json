@@ -129,7 +129,7 @@
     "tar": "6.1.11",
     "thirty-two": "1.0.2",
     "uglify-js": "3.16.2",
-    "unzipper": "0.10.11",
+    "unzipper": "0.12.1",
     "util": "0.12.4",
     "velocity-react": "1.4.3",
     "winston": "3.8.1",
