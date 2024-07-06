@@ -66,9 +66,11 @@ class FloatingLabel extends React.Component {
 
   render () {
     const { placeholder } = this.props
+    const inputId = `floating-label-input-${placeholder.replace(/\s+/g, '-').toLowerCase()}`;
     return (
       <div className={clsx('FloatLabel', this.state.isActive && 'is-active')}>
         <input
+          id={inputId}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
           placeholder={placeholder}
@@ -77,7 +79,7 @@ class FloatingLabel extends React.Component {
           onChange={this.updateValue}
           className={clsx('Input-floatLabel FloatLabel-input')}
         />
-        <label className='FloatLabel-label'>{placeholder}</label>
+        <label htmlFor={inputId} className='FloatLabel-label'>{placeholder}</label>
         {/*{touched && error && <label className='FloatLabel-label'>{placeholder + ' ' + error}</label>}*/}
       </div>
     )

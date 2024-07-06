@@ -16,7 +16,7 @@ import React from 'react'
 class LoginBackground extends React.Component {
   render () {
     return (
-      <div className='login-background' style={{ background: 'var(--pagecontentdark5)' }}>
+      <div className='login-background' style={{ background: 'var(--pagecontentdark5)' }} aria-hidden="true">
         <div
           className={'bg-dot'}
           style={{

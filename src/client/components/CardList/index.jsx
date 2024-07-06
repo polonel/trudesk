@@ -23,13 +23,13 @@ class CardList extends React.Component {
   }
 
   render () {
-    const { header, headerRightComponent, children, extraClass } = this.props
+    const { header, headerRightComponent, children, extraClass, ariaLabel = 'Card List' } = this.props
     return (
-      <div className={'md-card-list-wrapper' + (extraClass ? ' ' + extraClass : '')}>
+      <div className={'md-card-list-wrapper' + (extraClass ? ' ' + extraClass : '')} role="region" aria-label={ariaLabel}>
         <div className={'md-card-list'}>
-          {header && <div className={'md-card-list-header heading_list'}>{header}</div>}
-          {headerRightComponent && <div className={'md-card-list-header-right'}>{headerRightComponent}</div>}
-          <ul className={'hierarchical_slide'} data-delay='100ms'>
+          {header && <div className={'md-card-list-header heading_list'} role="heading" aria-level="2">{header}</div>}
+          {headerRightComponent && <div className={'md-card-list-header-right'} aria-hidden={!headerRightComponent}>{headerRightComponent}</div>}
+          <ul className={'hierarchical_slide'} data-delay='100ms' role="list" aria-label="Items">
             {children}
           </ul>
         </div>
@@ -42,7 +42,8 @@ CardList.propTypes = {
   header: PropTypes.string,
   headerRightComponent: PropTypes.element,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
-  extraClass: PropTypes.string
+  extraClass: PropTypes.string,
+  ariaLabel: PropTypes.string
 }
 
 export default CardList

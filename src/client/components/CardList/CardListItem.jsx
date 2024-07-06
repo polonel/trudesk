@@ -17,9 +17,9 @@ import PropTypes from 'prop-types'
 
 class CardListItem extends React.Component {
   render () {
-    const { children } = this.props
+    const { children, ariaLabel = 'List item'} = this.props
     return (
-      <li className={'uk-clearfix'} style={{ minHeight: 34 }}>
+      <li className={'uk-clearfix'} style={{ minHeight: 34 }} role="listitem" aria-label={ariaLabel}>
         {children}
       </li>
     )
@@ -27,7 +27,7 @@ class CardListItem extends React.Component {
 }
 
 CardListItem.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired, ariaLabel: PropTypes.string
 }
 
 export default CardListItem
