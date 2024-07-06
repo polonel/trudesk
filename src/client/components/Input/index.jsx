@@ -24,6 +24,7 @@ class Input extends React.Component {
 
   render () {
     const { id, name, type, defaultValue, showLabel, labelText, innerRef } = this.props
+    const ariaLabel = showLabel ? undefined : labelText
     return (
       <div>
         {showLabel && <label htmlFor={id}>{labelText}</label>}
@@ -35,6 +36,7 @@ class Input extends React.Component {
           type={type}
           defaultValue={defaultValue}
           onChange={e => this.handleChange(e)}
+          aria-label={ariaLabel}
         />
       </div>
     )

@@ -31,6 +31,8 @@ class DropdownItem extends React.Component {
           close-uk-dropdown={closeOnClick.toString()}
           className={(!href ? 'no-ajaxy' : '') + (extraClass ? ' ' + extraClass : '')}
           onClick={this.props.onClick}
+          role="menuitem"
+          tabIndex="0"
         >
           {text}
         </a>

@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 
 class DropdownHeader extends React.Component {
   render () {
-    return <li className={'uk-nav-header'}>{this.props.text}</li>
+    return <li className={'uk-nav-header'} role="heading" aria-level="3">{this.props.text}</li>
   }
 }
 

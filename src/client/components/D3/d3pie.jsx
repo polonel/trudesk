@@ -40,7 +40,7 @@ export default function D3Pie (props) {
 
   return (
     <div>
-      <div ref={pieChart}></div>
+      <div ref={pieChart} role="img" aria-label="Pie chart showing data distribution"></div>
     </div>
   )
 }

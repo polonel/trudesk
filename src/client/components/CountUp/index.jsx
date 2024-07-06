@@ -27,8 +27,8 @@ export default function CountUp (props) {
   }, [props.startNumber, props.endNumber])
 
   return (
-    <div>
-      <span ref={textRef}>--</span>
+    <div aria-live="polite" aria-atomic="true">
+      <span ref={textRef} aria-hidden="false">--</span>
       {props.extraText && ` ${props.extraText}`}
     </div>
   )

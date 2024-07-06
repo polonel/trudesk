@@ -26,6 +26,7 @@ class Grid extends React.Component {
           (this.props.extraClass ? ' ' + this.props.extraClass : '')
         }
         style={this.props.style}
+        role='presentation'
       >
         {this.props.children}
       </div>

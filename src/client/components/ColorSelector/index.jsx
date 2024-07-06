@@ -121,8 +121,9 @@ class ColorSelector extends React.Component {
             onClick={e => {
               this.generateRandomColor(e)
             }}
+            aria-label='Generate Random Color'
           >
-            <i className='material-icons'>refresh</i>
+            <i className='material-icons' aria-hidden="true">refresh</i>
           </button>
         </div>
         <div
@@ -142,6 +143,8 @@ class ColorSelector extends React.Component {
               data-validation='custom'
               data-validation-regexp='^\#([0-9a-fA-F]){3,6}$'
               data-validation-error-msg='Invalid HEX Color'
+              aria-required="true"
+              aria-invalid={this.state.isInvalid ? "true" : "false"}
             />
           )}
           {!this.props.validationEnabled && (
@@ -163,6 +166,7 @@ class ColorSelector extends React.Component {
             onClick={() => {
               this.revertColor()
             }}
+            aria-label="Revert to previous color"
           >
             Revert
           </button>

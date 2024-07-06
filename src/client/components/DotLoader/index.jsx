@@ -44,6 +44,8 @@ const DotLoader = ({ active, animate }) => {
         width: '100vw',
         zIndex: 99999999
       }}
+      aria-live="polite" 
+      aria-busy={active ? "true" : "false"}
     >
       <div className='shadow-wrapper'>
         <svg className='shadow'>
@@ -76,6 +78,8 @@ const DotLoader = ({ active, animate }) => {
           style={{ width: 140, height: 75 }}
           viewBox='0 0 288.9 70.1'
           preserveAspectRatio='xMidYMid meet'
+          role="img" 
+          aria-label="Loading"
         >
           <g id='g' style={{ width: '100%', height: '100%' }}>
             <circle className='s1' cx='35.9' cy='82' r='10' />
