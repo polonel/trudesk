@@ -353,6 +353,55 @@ function ticketTypeSettingDefault (callback) {
   })
 }
 
+/**
+ * Sets default status of tickets during creation.
+ * @param {Parameters<async.AsyncFunction>[0]} callback 
+ */
+function ticketStatusSettingDefault(callback) {
+  const statusSettingName = 'ticket:status:default'
+  callback = _.isFunction(callback) ? callback : () => {}
+  SettingsSchema.getSettingByName(statusSettingName, function(err, setting) { 
+    if (err) {
+      winston.warn(err)
+      return callback(err)
+    }
+
+    if (setting) {
+      return callback()
+    }
+
+    const ticketStatusSchema = require('../models/ticketStatus')
+    ticketStatusSchema.getStatus(function(err, statuses) {
+      if (err) {
+        winston.warn(err)
+        return callback(err)
+      }
+
+      const status = _.first(statuses)
+      if (!status) {
+        return callback("No Statuses Defined!")
+      }
+
+      if (!_.isObject(status) || _.isUndefined(status._id)) {
+        return callback('Invalid Status. Skipping.')
+      }
+
+      const defaultTicketStatus = new SettingsSchema({
+        name: statusSettingName,
+        value: status._id
+      })
+
+      defaultTicketStatus.save(function(err) {
+        if (err) {
+          winston.warn(err)
+            return callback(err)
+        }
+        return callback()
+      })
+    })
+  })
+}
+
 function ticketPriorityDefaults (callback) {
   var priorities = []
 
@@ -713,6 +762,9 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         return ticketPriorityDefaults(done)
+      },
+      function (done) {
+        return ticketStatusSettingDefault(done)
       },
       function (done) {
         return addedDefaultPrioritiesToTicketTypes(done)
