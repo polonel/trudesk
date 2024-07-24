@@ -202,6 +202,28 @@
     "npm/chalk": "^4.1.2"
   },
   "release": {
+    "plugins": [[
+    "@semantic-release/commit-analyzer", {
+      "preset": "angular",
+      "releaseRules": [
+        {
+          "message": "**",
+          "release": "patch"
+        },
+        {
+          "message": "fix*",
+          "release": "patch"
+        },
+        {
+          "message": "feat*",
+          "release": "patch"
+        },
+        {
+          "message": "perf*",
+          "release": "major"
+        }
+      ]
+    }]],
     "prepare": [
       "@semantic-release/changelog",
       "@semantic-release/npm",
