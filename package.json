@@ -1,6 +1,6 @@
 {
   "name": "trudesk",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "private": true,
   "engines": {
     "node": ">=16.0.0"
@@ -202,28 +202,32 @@
     "npm/chalk": "^4.1.2"
   },
   "release": {
-    "plugins": [[
-    "@semantic-release/commit-analyzer", {
-      "preset": "angular",
-      "releaseRules": [
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
         {
-          "message": "**",
-          "release": "patch"
-        },
-        {
-          "message": "fix*",
-          "release": "patch"
-        },
-        {
-          "message": "feat*",
-          "release": "patch"
-        },
-        {
-          "message": "perf*",
-          "release": "major"
+          "preset": "angular",
+          "releaseRules": [
+            {
+              "message": "**",
+              "release": "patch"
+            },
+            {
+              "message": "fix*",
+              "release": "patch"
+            },
+            {
+              "message": "feat*",
+              "release": "patch"
+            },
+            {
+              "message": "perf*",
+              "release": "major"
+            }
+          ]
         }
       ]
-    }]],
+    ],
     "prepare": [
       "@semantic-release/changelog",
       "@semantic-release/npm",
