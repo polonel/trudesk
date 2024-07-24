@@ -529,17 +529,18 @@ apiTickets.create = function (req, res) {
  }
  */
 apiTickets.createPublicTicket = function (req, res) {
-  var Chance = require('chance')
+  const Chance = require('chance')
 
-  var chance = new Chance()
-  var response = {}
+  const chance = new Chance()
+  const response = {}
   response.success = true
-  var postData = req.body
-  if (!_.isObject(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  const postData = req.body
+  if (!_.isObject(postData)) {
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  }
+  let user, group, ticket, plainTextPass
 
-  var user, group, ticket, plainTextPass
-
-  var settingSchema = require('../../../models/setting')
+  const settingSchema = require('../../../models/setting')
 
   async.waterfall(
     [
@@ -566,13 +567,13 @@ apiTickets.createPublicTicket = function (req, res) {
         })
       },
       function (roleDefault, next) {
-        var UserSchema = require('../../../models/user')
+        const UserSchema = require('../../../models/user')
         plainTextPass = chance.string({
           length: 6,
           pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
         })
 
-        var sanitizedFullname = xss(postData.user.fullname)
+        const sanitizedFullname = xss(postData.user.fullname)
 
         user = new UserSchema({
           username: postData.user.email,
@@ -592,7 +593,7 @@ apiTickets.createPublicTicket = function (req, res) {
 
       function (savedUser, next) {
         // Group Creation
-        var GroupSchema = require('../../../models/group')
+        const GroupSchema = require('../../../models/group')
         group = new GroupSchema({
           name: savedUser.email,
           members: [savedUser._id],
@@ -606,9 +607,8 @@ apiTickets.createPublicTicket = function (req, res) {
           return next(null, group, savedUser)
         })
       },
-
       function (group, savedUser, next) {
-        var settingsSchema = require('../../../models/setting')
+        const settingsSchema = require('../../../models/setting')
         settingsSchema.getSettingByName('ticket:type:default', function (err, defaultType) {
           if (err) return next(err)
 
@@ -619,48 +619,64 @@ apiTickets.createPublicTicket = function (req, res) {
           return next('Failed: Invalid Default Ticket Type.')
         })
       },
-
-      function (defaultTicketType, group, savedUser, next) {
+      function(defaultTicketType, group, savedUser, next) {
+        const TicketTypeSchema = require('../../../models/tickettype')
+        TicketTypeSchema.getType(defaultTicketType)
+          .then(type => next(null, type, group, savedUser))
+          .catch(next)
+      },
+      function(ticketType, group, savedUser, next) {
+        settingSchema.getSettingByName('ticket:status:default')
+          .then(defaultTicketStatus => {
+            if (!defaultTicketStatus) {
+              return next('Failed: Invalid Default Ticket Status')
+            }
+            return next(null, defaultTicketStatus.value, ticketType, group, savedUser)
+          })
+          .catch(next)
+      },
+      function(defaultTicketStatus, ticketType, group, savedUser, next) {
+        const TicketStatusSchema = require('../../../models/ticketStatus')
+        TicketStatusSchema.getStatusById(defaultTicketStatus)
+          .then(status => next(null, status, ticketType, group, savedUser))
+          .catch(next)
+      },
+      function(ticketStatus, ticketType, group, savedUser, next) {
         // Create Ticket
-        var ticketTypeSchema = require('../../../models/tickettype')
-        ticketTypeSchema.getType(defaultTicketType, function (err, ticketType) {
+        const TicketSchema = require('../../../models/ticket')
+        const HistoryItem = {
+          action: 'ticket:created',
+          description: 'Ticket was created.',
+          owner: savedUser._id
+        }
+        ticket = new TicketSchema({
+          owner: savedUser._id,
+          group: group._id,
+          type: ticketType._id,
+          status: ticketStatus._id,
+          priority: _.first(ticketType.priorities)._id, // TODO: change when priority order is complete!
+          subject: xss(sanitizeHtml(postData.ticket.subject).trim()),
+          issue: xss(sanitizeHtml(postData.ticket.issue).trim()),
+          history: [HistoryItem],
+          subscribers: [savedUser._id]
+        })
+
+        const marked = require('marked')
+        let tIssue = ticket.issue
+        tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+        tIssue = sanitizeHtml(tIssue).trim()
+        ticket.issue = marked.parse(tIssue)
+        ticket.issue = xss(ticket.issue)
+
+        ticket.save(function(err, t) {
           if (err) return next(err)
 
-          var TicketSchema = require('../../../models/ticket')
-          var HistoryItem = {
-            action: 'ticket:created',
-            description: 'Ticket was created.',
-            owner: savedUser._id
-          }
-          ticket = new TicketSchema({
-            owner: savedUser._id,
-            group: group._id,
-            type: ticketType._id,
-            priority: _.first(ticketType.priorities)._id, // TODO: change when priority order is complete!
-            subject: xss(sanitizeHtml(postData.ticket.subject).trim()),
-            issue: xss(sanitizeHtml(postData.ticket.issue).trim()),
-            history: [HistoryItem],
-            subscribers: [savedUser._id]
+          emitter.emit('ticket:created', {
+            hostname: req.headers.host,
+            socketId: '',
+            ticket: t
           })
-
-          var marked = require('marked')
-          var tIssue = ticket.issue
-          tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
-          tIssue = sanitizeHtml(tIssue).trim()
-          ticket.issue = marked.parse(tIssue)
-          ticket.issue = xss(ticket.issue)
-
-          ticket.save(function (err, t) {
-            if (err) return next(err)
-
-            emitter.emit('ticket:created', {
-              hostname: req.headers.host,
-              socketId: '',
-              ticket: t
-            })
-
-            return next(null, { user: savedUser, group: group, ticket: t })
-          })
+          return next(null, { user: savedUser, group, ticket: t })
         })
       }
     ],
