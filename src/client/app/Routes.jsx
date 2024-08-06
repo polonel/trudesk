@@ -93,12 +93,21 @@ const BaseRouter = ({ user, setSession }) => {
   } else {
     return (
       <Routes>
-        <Route path={'/'} element={<Navigate to={'/dashboard'} exact />} />
+        {
+          (user.role.isAdmin &&
+            <Route path={'/'} element={<Navigate to={'/dashboard'} exact />} />) || 
+          <Route path={'/'} element={<Navigate to={'/tickets'} exact />} />
+
+        }
         <Route path={'/mfa'} element={<Navigate to={'/dashboard'} exact />} />
         <Route path={'logout'} element={<LogoutContainer setSession={setSession} />} exact />
         <Route path={'profile'} element={<ProfileContainer setSession={setSession} />} exact />
-        <Route path={'dashboard'} element={<DashboardContainer />} exact />
-
+        {
+          (user.role.isAdmin &&
+            <Route path={'dashboard'} element={<DashboardContainer />} exact />
+          )
+        }
+        
         {/* TICKETS */}
         <Route path={'tickets'} element={<TC_Lazy key={0} sessionUser={user} />} exact />
         <Route path={'tickets/active'} element={<TC_Lazy key={1} view='active' sessionUser={user} />} exact />
