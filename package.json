@@ -91,7 +91,7 @@
     "passport-local": "1.0.0",
     "passport-totp": "0.0.2",
     "passport.socketio": "3.7.0",
-    "pdfkit": "0.13.0",
+    "pdfkit": "0.16.0",
     "piexifjs": "1.0.6",
     "pm2": "5.2.0",
     "prop-types": "15.8.1",
