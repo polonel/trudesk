@@ -20,7 +20,7 @@
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "8.2.1",
+    "@elastic/elasticsearch": "9.0.0",
     "@handlebars/allow-prototype-access": "1.0.5",
     "adm-zip": "0.5.9",
     "animejs": "3.0.1",
