@@ -28,7 +28,7 @@
     "archiver": "5.3.1",
     "async": "3.2.4",
     "axios": "0.27.2",
-    "bcrypt": "5.0.1",
+    "bcrypt": "6.0.0",
     "body-parser": "1.20.0",
     "busboy": "1.6.0",
     "chance": "1.1.8",
