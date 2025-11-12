@@ -61,7 +61,17 @@ export const phraseTranslations = {
   'total hours': 'horas totales',
   'time tracking': 'seguimiento de tiempo',
   'overdue tickets': 'tickets vencidos',
-  'open tickets': 'tickets abiertos'
+  'open tickets': 'tickets abiertos',
+  'default ticket type': 'tipo de ticket predeterminado',
+  'default ticket type for newly created tickets': 'tipo de ticket predeterminado para los tickets nuevos',
+  'allow public tickets': 'permitir tickets públicos',
+  'allow the creation of tickets by users that are unregistered': 'permitir la creación de tickets por usuarios no registrados',
+  'allow agents to submit tickets on behalf of user': 'permitir que los agentes envíen tickets en nombre del usuario',
+  'allow the creation of tickets by agents on behalf of users': 'permitir la creación de tickets por agentes en nombre de los usuarios',
+  'setting takes affect after refresh': 'la configuración toma efecto después de actualizar',
+  'show overdue tickets': 'mostrar tickets vencidos',
+  'enable/disable flashing of tickets based on sla time of type priority': 'habilitar/deshabilitar el parpadeo de tickets según el tiempo de sla por prioridad de tipo',
+  'if disabled, priority sla times will not mark tickets overdue': 'si está deshabilitado, los tiempos de sla por prioridad no marcarán los tickets como vencidos'
 }
 
 export const wordTranslations = {
@@ -137,6 +147,7 @@ export const wordTranslations = {
   'filter': 'filtrar',
   'filters': 'filtros',
   'clear': 'limpiar',
+  'enable': 'habilitar',
   'apply': 'aplicar',
   'export': 'exportar',
   'download': 'descargar',
