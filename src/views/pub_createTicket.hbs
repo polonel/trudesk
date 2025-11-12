@@ -298,47 +298,47 @@
                 </div>
                 <div class="uk-margin-medium-bottom">
                     <div id="captchaImage" style="margin-bottom: 10px;"></div>
-                    <label for="captcha">Please enter the letters you see above.</label>
+                    <label for="captcha">Ingresa las letras que ves arriba.</label>
                     <input id="captcha" name="captcha" class="md-input" type="text" required />
                 </div>
                 <div style="width: 25%; float: left;">
-                    <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Back</button>
+                    <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Volver</button>
                 </div>
                 <div style="width: 70%; float: right;">
-                    <button id="checkEmail" class="btn md-btn md-btn-wave md-btn-success" type="button">Next</button>
+                    <button id="checkEmail" class="btn md-btn md-btn-wave md-btn-success" type="button">Siguiente</button>
                 </div>
             </form>
 
-            <a href="#" class="no-ajaxy" id="privacyPolicyBtn">Privacy Policy</a>
+            <a href="#" class="no-ajaxy" id="privacyPolicyBtn">Política de privacidad</a>
         </div>
         <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">Issue</h2>
+            <h2 style="margin-bottom: 25px;">Solicitud</h2>
             <p style="text-align: left; margin-bottom: 25px;">
-                Please tell us about the issue you're having.
-                Remember to be as detailed as possible to ensure its resolved promptly.
+                Cuéntanos el problema que estás experimentando.
+                Recuerda ser lo más detallado posible para asegurarnos de resolverlo con rapidez.
             </p>
 
             <form id="adminAccount" class="uk-form-stacked uk-clearfix">
                 <div class="uk-margin-medium-bottom">
-                    <label for="ticket-subject">Subject</label>
+                    <label for="ticket-subject">Asunto</label>
                     <input type="text" id="ticket-subject" name="ticket-subject" class="md-input" required />
                 </div>
                 <div class="uk-margin-medium-bottom">
-                    <label for="ticket-issue">Issue</label>
+                    <label for="ticket-issue">Descripción</label>
                     <textarea name="ticket-issue" id="ticket-issue" cols="30" rows="10" class="md-input" required></textarea>
                 </div>
 
                 <div style="width: 25%; float: left;">
-                    <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Back</button>
+                    <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Volver</button>
                 </div>
                 <div style="width: 70%; float: right;">
-                    <button class="btn md-btn md-btn-wave md-btn-success" type="button" id="submit-issue">Submit Issue</button>
+                    <button class="btn md-btn md-btn-wave md-btn-success" type="button" id="submit-issue">Enviar solicitud</button>
                 </div>
             </form>
         </div>
         <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">Creating Issue...</h2>
-            <p style="text-align: left;">Thank you for submitting your issue. An email has been sent to you with login details to view and create future tickets.</p>
+            <h2 style="margin-bottom: 25px;">Creando solicitud...</h2>
+            <p style="text-align: left;">Gracias por enviar tu solicitud. Te enviamos un correo con los datos de acceso para ver y crear futuros tickets.</p>
             <div class="loader">
                 <svg style="width: 140px; " viewBox="0 0 288.9 70.1">
                     <line class="l1" x1="0" y1="0" x2="288" y2="0"></line>
@@ -346,54 +346,53 @@
             </div>
         </div>
         <div id="restartSlide" class="slide hide">
-            <h2 style="margin-bottom: 25px;">Time to Restart</h2>
-            <p style="text-align: left;"><i>So here we are, together sharpening a knife.</i> Trudesk needs to restart to come out of install mode. Just restart it and you should get a login screen. (hopefully)!</p>
-            <button class="btn md-btn md-btn-wave" type="button" id="restartTrudesk">restart me!</button>
+            <h2 style="margin-bottom: 25px;">Es hora de reiniciar</h2>
+            <p style="text-align: left;"><i>Aquí estamos, afinando detalles juntos.</i> Trudesk necesita reiniciarse para salir del modo de instalación. Solo reinícialo y deberías ver la pantalla de inicio de sesión.</p>
+            <button class="btn md-btn md-btn-wave" type="button" id="restartTrudesk">¡reiníciame!</button>
         </div>
         <div id="errorSlide" class="slide hide">
-            <h2 style="margin-bottom: 25px;">Crap! Something funky happened.</h2>
+            <h2 style="margin-bottom: 25px;">¡Ups! Algo extraño sucedió.</h2>
             <p style="text-align: justify;">
-                Alright. This entire install script is in <i>beta</i>. Didn't I mention that? Anyway, there are a couple of options below to try and resolve the issue. There are some common pit falls and workarounds
-                in the docs that may help. Submitting the issue will help identify any bugs in the script and will help others as well.
+                Este asistente de instalación está en <i>beta</i>. Hay algunas opciones a continuación para intentar resolver el problema. En la documentación encontrarás errores comunes y soluciones que pueden ayudar. Reportar el problema nos ayudará a identificar fallas y apoyar a otros usuarios.
             </p>
             <pre style="text-align: left; font-size: 11px; font-weight: normal; margin-bottom: 15px;"></pre>
             <div style="width: 100%;">
                 <a href="https://www.github.com/polonel/trudesk/issues/new" target="_blank" style="width: 100%; padding: 0; margin: 0;">
-                    <button class="btn md-btn md-btn-wave md-btn-danger" type="button" style="width: 100%; margin-bottom: 10px !important;">I think I should submit this issue.</button>
+                    <button class="btn md-btn md-btn-wave md-btn-danger" type="button" style="width: 100%; margin-bottom: 10px !important;">Creo que debo reportar este problema.</button>
                 </a>
-                <button class="btn md-btn md-btn-wave md-btn-success" type="button" style="width: 100%; margin-bottom: 10px !important;" onclick="location.reload();">I think i will start over.</button>
+                <button class="btn md-btn md-btn-wave md-btn-success" type="button" style="width: 100%; margin-bottom: 10px !important;" onclick="location.reload();">Creo que comenzaré de nuevo.</button>
                 <a href="https://github.com/polonel/trudesk/blob/master/README.md" target="_blank" style="width: 100%; padding: 0; margin: 0;">
-                    <button class="btn md-btn md-btn-wave" type="button" style="width: 100%; margin-bottom: 10px !important;">or maybe i should read the docs!</button>
+                    <button class="btn md-btn md-btn-wave" type="button" style="width: 100%; margin-bottom: 10px !important;">o tal vez debería leer la documentación.</button>
                 </a>
             </div>
         </div>
         <div id="emailExistsSlide" class="slide hide">
-            <h2 style="margin-bottom: 25px;">Email Already Exists</h2>
+            <h2 style="margin-bottom: 25px;">El correo ya existe</h2>
             <p style="text-align: justify;">
-                The email <span id="emailSpan" style="font-weight: bold;">email@email.com</span> already exists. If you already have an account using this email please login and submit your ticket.
+                El correo <span id="emailSpan" style="font-weight: bold;">email@email.com</span> ya existe. Si ya tienes una cuenta con este correo, inicia sesión y envía tu ticket.
             </p>
             <div style="width: 100%; margin-top: 50px;">
                 <a href="/login" class="no-ajaxy" style="width: 100%; padding: 0; margin: 0;">
-                    <button class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Login</button>
+                    <button class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Iniciar sesión</button>
                 </a>
-                <button class="btn md-btn md-btn-wave" type="button" style="width: 100%; margin-bottom: 10px !important;" onclick="location.reload();">Start Over</button>
+                <button class="btn md-btn md-btn-wave" type="button" style="width: 100%; margin-bottom: 10px !important;" onclick="location.reload();">Empezar de nuevo</button>
             </div>
         </div>
         <div id="ticketCreatedSlide" class="slide hide">
-            <h2 style="margin-bottom: 25px; text-align: left;">Thank you <span id="spanfullname" style="color: #2196f3;">[fullname]</span>,</h2>
+            <h2 style="margin-bottom: 25px; text-align: left;">Gracias <span id="spanfullname" style="color: #2196f3;">[fullname]</span>,</h2>
             <p style="text-align: justify;">
-                Your issue, <strong id="strongSubject">[Subject]</strong> has been submitted. Please store the following information to access and update your ticket.
+                Tu solicitud, <strong id="strongSubject">[Subject]</strong>, se ha enviado. Guarda la siguiente información para acceder y actualizar tu ticket.
             </p>
             <p style="text-align: left;">
-                Username: <strong id="strongUsername">[Username]</strong> <br>
-                Password: <strong id="strongPassword">[Password]</strong>
+                Usuario: <strong id="strongUsername">[Username]</strong> <br>
+                Contraseña: <strong id="strongPassword">[Password]</strong>
             </p>
             <p style="text-align: justify;">
-                Please follow the link below in order to login and update or view the current status of this issue.
+                Sigue el enlace a continuación para iniciar sesión y actualizar o consultar el estado actual de esta solicitud.
             </p>
             <div style="width: 100%; margin-top: 50px;">
                 <a href="/login" class="no-ajaxy" style="width: 100%; padding: 0; margin: 0;">
-                    <button class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Login</button>
+                    <button class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Iniciar sesión</button>
                 </a>
             </div>
         </div>
@@ -404,7 +403,7 @@
     <div class="white-box" style="margin-bottom: 15px;">
         {{{data.privacyPolicy}}}
     </div>
-    <button id="privacyPolicyBackBtn" class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Back</button>
+    <button id="privacyPolicyBackBtn" class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Volver</button>
 </div>
 
 

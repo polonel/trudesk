@@ -22,7 +22,18 @@
 // node_modules
 const _ = require('lodash')
 const moment = require('moment-timezone')
+const spanishLocale = require('../../shared/moment/spanishLocale')
 require('moment-duration-format')(moment)
+
+if (typeof moment.defineLocale === 'function') {
+  const locales = typeof moment.locales === 'function' ? moment.locales() : []
+  if (!locales || locales.indexOf('es') === -1) {
+    moment.defineLocale('es', spanishLocale)
+  } else {
+    moment.updateLocale('es', spanishLocale)
+  }
+  moment.locale('es')
+}
 
 // The module to be exported
 const helpers = {
@@ -533,22 +544,22 @@ const helpers = {
   },
 
   durationFormat: function (duration, parseFormat) {
-    return moment.duration(duration, parseFormat).format('Y [year], M [month], d [day], h [hour], m [min]', {
+    return moment.duration(duration, parseFormat).format('Y [años], M [meses], d [días], h [horas], m [min]', {
       trim: 'both'
     })
   },
 
   calendarDate: function (date, fallback) {
     if (_.isObject(fallback)) {
-      fallback = 'll [at] LT'
+      fallback = 'll [a las] LT'
     }
-    moment.updateLocale('en', {
+    moment.updateLocale('es', {
       calendar: {
-        sameDay: '[Today at] LT',
-        lastDay: '[Yesterday at] LT',
-        nextDay: '[Tomorrow at] LT',
-        lastWeek: '[Last] ddd [at] LT',
-        nextWeek: 'ddd [at] LT',
+        sameDay: '[Hoy a la(s)] LT',
+        lastDay: '[Ayer a la(s)] LT',
+        nextDay: '[Mañana a la(s)] LT',
+        lastWeek: '[El] ddd [pasado a la(s)] LT',
+        nextWeek: 'ddd [a la(s)] LT',
         sameElse: fallback
       }
     })
@@ -560,23 +571,23 @@ const helpers = {
 
   fromNow: function (date) {
     if (_.isUndefined(date)) {
-      return 'Never'
+      return 'Nunca'
     }
-    moment.updateLocale('en', {
+    moment.updateLocale('es', {
       relativeTime: {
-        future: 'in %s',
-        past: '%s ago',
-        s: 'a few seconds',
-        m: '1m',
-        mm: '%dm',
-        h: '1h',
-        hh: '%dh',
-        d: '1d',
-        dd: '%dd',
-        M: '1mo',
-        MM: '%dmos',
-        y: '1y',
-        yy: '%dyrs'
+        future: 'en %s',
+        past: 'hace %s',
+        s: 'unos segundos',
+        m: '1 min',
+        mm: '%d min',
+        h: '1 h',
+        hh: '%d h',
+        d: '1 día',
+        dd: '%d días',
+        M: '1 mes',
+        MM: '%d meses',
+        y: '1 año',
+        yy: '%d años'
       }
     })
 
