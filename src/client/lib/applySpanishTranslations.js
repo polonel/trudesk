@@ -42,9 +42,7 @@ const TRANSLATABLE_PROP_KEYS = new Set([
   'header',
   'emptyText',
   'description',
-  'subtitle',
-  'name',
-  'value'
+  'subtitle'
 ])
 
 function matchCapitalization (original, translation) {
