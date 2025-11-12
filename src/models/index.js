@@ -7,6 +7,7 @@ const TicketTags = require('./tag')
 const Role = require('./role')
 const Session = require('./session')
 const Setting = require('./setting')
+const Webhook = require('./webhook')
 const Group = require('./group')
 const Team = require('./team')
 const Department = require('./department')
@@ -27,5 +28,6 @@ module.exports = {
   Department,
   Message,
   Conversation,
-  Status
+  Status,
+  Webhook
 }

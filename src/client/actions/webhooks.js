@@ -1,0 +1,30 @@
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
+
+import { createAction } from 'redux-actions'
+import {
+  FETCH_WEBHOOKS,
+  CREATE_WEBHOOK,
+  UPDATE_WEBHOOK,
+  DELETE_WEBHOOK,
+  TOGGLE_WEBHOOK,
+  TEST_WEBHOOK
+} from './types'
+
+export const fetchWebhooks = createAction(FETCH_WEBHOOKS.ACTION)
+export const createWebhook = createAction(CREATE_WEBHOOK.ACTION)
+export const updateWebhook = createAction(UPDATE_WEBHOOK.ACTION)
+export const deleteWebhook = createAction(DELETE_WEBHOOK.ACTION)
+export const toggleWebhook = createAction(TOGGLE_WEBHOOK.ACTION)
+export const testWebhook = createAction(TEST_WEBHOOK.ACTION)

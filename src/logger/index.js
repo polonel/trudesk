@@ -1,5 +1,7 @@
 const Winston = require('winston')
 
+const webhookFailureLog = new Map()
+
 const logger = Winston.createLogger({
   format: Winston.format.errors({ stack: true }),
   transports: [
@@ -24,5 +26,25 @@ const logger = Winston.createLogger({
     })
   ]
 })
+
+logger.recordWebhookFailure = function (webhook, result) {
+  const key = webhook._id ? webhook._id.toString() : webhook
+  const entry = {
+    timestamp: result.timestamp || new Date(),
+    message: result.errorMessage || result.message,
+    attempt: result.attempt,
+    responseCode: result.responseCode,
+    name: webhook.name
+  }
+
+  const entries = webhookFailureLog.get(key) || []
+  entries.push(entry)
+  if (entries.length > 20) entries.shift()
+  webhookFailureLog.set(key, entries)
+}
+
+logger.getWebhookFailures = function (webhookId) {
+  return webhookFailureLog.get(webhookId.toString()) || []
+}
 
 module.exports = logger

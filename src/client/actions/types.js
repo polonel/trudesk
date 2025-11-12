@@ -142,3 +142,11 @@ export const CHANGE_DELETED_TICKETS_PAGE = defineAction('CHANGE_DELETED_TICKETS_
 export const UPDATE_PERMISSIONS = defineAction('UPDATE_PERMISSIONS', [PENDING, SUCCESS, ERROR])
 export const CREATE_ROLE = defineAction('CREATE_ROLE', [SUCCESS, ERROR])
 export const DELETE_ROLE = defineAction('DELETE_ROLE', [SUCCESS, ERROR])
+
+// Webhooks
+export const FETCH_WEBHOOKS = defineAction('FETCH_WEBHOOKS', [SUCCESS, ERROR])
+export const CREATE_WEBHOOK = defineAction('CREATE_WEBHOOK', [SUCCESS, ERROR])
+export const UPDATE_WEBHOOK = defineAction('UPDATE_WEBHOOK', [SUCCESS, ERROR])
+export const DELETE_WEBHOOK = defineAction('DELETE_WEBHOOK', [SUCCESS, ERROR])
+export const TOGGLE_WEBHOOK = defineAction('TOGGLE_WEBHOOK', [SUCCESS, ERROR])
+export const TEST_WEBHOOK = defineAction('TEST_WEBHOOK', [SUCCESS, ERROR])

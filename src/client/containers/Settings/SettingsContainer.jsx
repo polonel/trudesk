@@ -31,6 +31,7 @@ import ElasticsearchSettingsContainer from './Elasticsearch'
 import BackupRestoreSettingsContainer from './BackupRestore'
 import ServerSettingsController from './Server'
 import LegalSettingsContainer from 'containers/Settings/Legal'
+import WebhooksSettingsContainer from './Webhooks'
 
 import helpers from 'lib/helpers'
 
@@ -153,6 +154,13 @@ class SettingsContainer extends React.Component {
                   this.onMenuItemClick(e, 'legal')
                 }}
               />
+              <MenuItem
+                title='Webhooks'
+                active={this.state.activeCategory === 'settings-webhooks'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'webhooks')
+                }}
+              />
             </Menu>
           </div>
         </div>
@@ -173,6 +181,7 @@ class SettingsContainer extends React.Component {
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
               <ServerSettingsController active={this.state.activeCategory === 'settings-server'} />
               <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />
+              <WebhooksSettingsContainer active={this.state.activeCategory === 'settings-webhooks'} />
             </div>
           </div>
         </div>

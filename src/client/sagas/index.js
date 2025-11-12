@@ -25,6 +25,7 @@ import NoticeSage from './notices'
 import SearchSaga from './search'
 import MessagesSaga from './messages'
 import ReportsSaga from './reports'
+import WebhookSaga from './webhooks'
 
 export default function * IndexSagas () {
   yield all([
@@ -39,6 +40,7 @@ export default function * IndexSagas () {
     NoticeSage(),
     SearchSaga(),
     MessagesSaga(),
-    ReportsSaga()
+    ReportsSaga(),
+    WebhookSaga()
   ])
 }

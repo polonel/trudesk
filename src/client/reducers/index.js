@@ -29,6 +29,7 @@ import departmentsState from './departmentsReducer'
 import noticesState from './noticesReducer'
 import searchState from './searchReducer'
 import messagesState from './messagesReducer'
+import webhooksState from './webhooksReducer'
 
 // const IndexReducer = (state = {}, action) => {
 //   return {
@@ -59,6 +60,7 @@ const IndexReducer = combineReducers({
   teamsState,
   departmentsState,
   noticesState,
+  webhooksState,
   settings,
   tagsSettings,
   messagesState

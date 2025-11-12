@@ -20,6 +20,7 @@ const ticketTypeSchema = require('../models/tickettype')
 const roleSchema = require('../models/role')
 const roleOrderSchema = require('../models/roleorder')
 const statusSchema = require('../models/ticketStatus')
+const webhookSchema = require('../models/webhook')
 
 const util = {}
 
@@ -159,6 +160,17 @@ util.getSettings = async callback => {
         } else content.data.roles = roles
 
         content.data.settings = s
+
+        const webhooks = await webhookSchema
+          .find({})
+          .sort({ createdAt: 1 })
+          .lean()
+
+        content.data.webhooks = _.map(webhooks, hook => {
+          const serialized = _.omit(hook, ['secret'])
+          serialized.hasSecret = Boolean(hook.secret)
+          return serialized
+        })
 
         if (typeof callback === 'function') callback(null, content)
 

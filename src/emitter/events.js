@@ -19,6 +19,7 @@ const winston = require('../logger')
 const emitter = require('../emitter')
 const NotificationSchema = require('../models/notification')
 const settingsSchema = require('../models/setting')
+const webhookDispatcher = require('../helpers/webhookDispatcher')
 const Email = require('email-templates')
 const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 const socketEvents = require('../socketio/socketEventConsts')
@@ -26,11 +27,53 @@ const notifications = require('../notifications') // Load Push Events
 
 const eventTicketCreated = require('./events/event_ticket_created')
 
+function serializeUser (user) {
+  if (!user) return null
+  if (_.isString(user)) return { _id: user }
+  const obj = _.isFunction(user.toObject) ? user.toObject() : user
+  return _.pick(obj, ['_id', 'username', 'fullname', 'email'])
+}
+
+function serializeTicket (ticket) {
+  if (!ticket) return null
+  const obj = _.isFunction(ticket.toObject) ? ticket.toObject() : ticket
+  const payload = _.pick(obj, [
+    '_id',
+    'uid',
+    'subject',
+    'status',
+    'priority',
+    'type',
+    'createdAt',
+    'updatedAt',
+    'dueDate'
+  ])
+  if (obj.group) payload.group = _.pick(obj.group, ['_id', 'name'])
+  if (obj.department) payload.department = _.pick(obj.department, ['_id', 'name'])
+  payload.owner = serializeUser(obj.owner)
+  payload.assignee = serializeUser(obj.assignee)
+  payload.subscribers = _.compact(_.map(obj.subscribers || [], serializeUser))
+
+  return payload
+}
+
+function serializeComment (comment) {
+  if (!comment) return null
+  const obj = _.isFunction(comment.toObject) ? comment.toObject() : comment
+  const payload = _.pick(obj, ['_id', 'comment', 'created', 'attachments'])
+  payload.owner = serializeUser(obj.owner)
+  return payload
+}
+
 ;(function () {
   notifications.init(emitter)
 
   emitter.on('ticket:created', async function (data) {
     await eventTicketCreated(data)
+    const ticketPayload = serializeTicket(data.ticket || data)
+    webhookDispatcher
+      .dispatch('ticket:created', { ticket: ticketPayload })
+      .catch(err => winston.error('Webhook dispatch error (ticket:created): %s', err.message))
   })
 
   function sendPushNotification (tpsObj, data) {
@@ -121,11 +164,17 @@ const eventTicketCreated = require('./events/event_ticket_created')
 
   emitter.on('ticket:updated', function (ticket) {
     io.sockets.emit('$trudesk:client:ticket:updated', { ticket: ticket })
+    webhookDispatcher
+      .dispatch('ticket:updated', { ticket: serializeTicket(ticket) })
+      .catch(err => winston.error('Webhook dispatch error (ticket:updated): %s', err.message))
   })
 
   emitter.on('ticket:deleted', function (oId) {
     io.sockets.emit('ticket:delete', oId)
     io.sockets.emit('$trudesk:client:ticket:deleted', oId)
+    webhookDispatcher
+      .dispatch('ticket:deleted', { ticketId: oId })
+      .catch(err => winston.error('Webhook dispatch error (ticket:deleted): %s', err.message))
   })
 
   emitter.on('ticket:subscriber:update', function (data) {
@@ -135,6 +184,13 @@ const eventTicketCreated = require('./events/event_ticket_created')
   emitter.on('ticket:comment:added', function (ticket, comment, hostname) {
     // Goes to client
     io.sockets.emit(socketEvents.TICKETS_UPDATE, ticket)
+    webhookDispatcher
+      .dispatch('ticket:comment:added', {
+        ticket: serializeTicket(ticket),
+        comment: serializeComment(comment),
+        hostname
+      })
+      .catch(err => winston.error('Webhook dispatch error (ticket:comment:added): %s', err.message))
 
     settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey', 'mailer:enable'], function (
       err,
@@ -287,6 +343,9 @@ const eventTicketCreated = require('./events/event_ticket_created')
   emitter.on('ticket:note:added', function (ticket) {
     // Goes to client
     io.sockets.emit('updateNotes', ticket)
+    webhookDispatcher
+      .dispatch('ticket:note:added', { ticket: serializeTicket(ticket) })
+      .catch(err => winston.error('Webhook dispatch error (ticket:note:added): %s', err.message))
   })
 
   emitter.on('trudesk:profileImageUpdate', function (data) {

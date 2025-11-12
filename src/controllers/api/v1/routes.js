@@ -181,6 +181,14 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/settings/buildsass', apiv1, isAdmin, apiCtrl.settings.buildsass)
   router.put('/api/v1/settings/updateroleorder', apiv1, isAdmin, apiCtrl.settings.updateRoleOrder)
 
+  // Webhooks
+  router.get('/api/v1/webhooks', apiv1, isAdmin, apiCtrl.webhooks.list)
+  router.post('/api/v1/webhooks', apiv1, isAdmin, apiCtrl.webhooks.create)
+  router.put('/api/v1/webhooks/:id', apiv1, isAdmin, apiCtrl.webhooks.update)
+  router.delete('/api/v1/webhooks/:id', apiv1, isAdmin, apiCtrl.webhooks.remove)
+  router.post('/api/v1/webhooks/:id/toggle', apiv1, isAdmin, apiCtrl.webhooks.toggle)
+  router.post('/api/v1/webhooks/:id/test', apiv1, isAdmin, apiCtrl.webhooks.test)
+
   // Backups
   router.get('/api/v1/backups', apiv1, isAdmin, controllers.backuprestore.getBackups)
   router.post('/api/v1/backup', apiv1, isAdmin, controllers.backuprestore.runBackup)
