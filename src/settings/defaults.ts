@@ -415,8 +415,7 @@ function mailTemplates(callback: AsyncCallback) {
   )
 }
 
-function elasticSearchConfToDB(callback) {
-  const nconf = require('nconf')
+function elasticSearchConfToDB(callback: AsyncCallback) {
   const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
     host: nconf.get('elasticsearch:host') || 'http://localhost',
@@ -425,54 +424,30 @@ function elasticSearchConfToDB(callback) {
 
   nconf.set('elasticsearch', {})
 
-  async.parallel(
+  parallel(
     [
-      function (done) {
-        nconf.save(done)
-      },
-      function (done) {
-        // if (!elasticsearch.enable) return done()
+      (done: AsyncCallback) => nconf.save(done),
+      function (done: AsyncCallback) {
         SettingModel.getSettingByName('es:enable', function (err, setting) {
           if (err) return done(err)
-          if (!setting) {
-            SettingModel.create(
-              {
-                name: 'es:enable',
-                value: elasticsearch.enable,
-              },
-              done
-            )
-          } else done()
+          if (!setting) SettingModel.create({ name: 'es:enable', value: elasticsearch.enable }, done)
+          else done()
         })
       },
-      function (done) {
+      function (done: AsyncCallback) {
         if (!elasticsearch.host) elasticsearch.host = 'localhost'
         SettingModel.getSettingByName('es:host', function (err, setting) {
           if (err) return done(err)
-          if (!setting) {
-            SettingModel.create(
-              {
-                name: 'es:host',
-                value: elasticsearch.host,
-              },
-              done
-            )
-          } else done()
+          if (!setting) SettingModel.create({ name: 'es:host', value: elasticsearch.host }, done)
+          else done()
         })
       },
-      function (done) {
+      function (done: AsyncCallback) {
         if (!elasticsearch.port) return done()
         SettingModel.getSettingByName('es:port', function (err, setting) {
           if (err) return done(err)
-          if (!setting) {
-            SettingModel.create(
-              {
-                name: 'es:port',
-                value: elasticsearch.port,
-              },
-              done
-            )
-          } else done()
+          if (!setting) SettingModel.create({ name: 'es:port', value: elasticsearch.port }, done)
+          else done()
         })
       },
     ],
@@ -480,94 +455,41 @@ function elasticSearchConfToDB(callback) {
   )
 }
 
-function installationID(callback) {
-  const Chance = require('chance')
+function installationID(callback: AsyncCallback) {
   const chance = new Chance()
   SettingModel.getSettingByName('gen:installid', function (err, setting) {
     if (err) return callback(err)
-    if (!setting) {
-      SettingModel.create(
-        {
-          name: 'gen:installid',
-          value: chance.guid(),
-        },
-        callback
-      )
-    } else {
-      return callback()
-    }
+    if (!setting) SettingModel.create({ name: 'gen:installid', value: chance.guid() }, callback)
+    else return callback()
   })
 }
 
 async function maintenanceModeDefault() {
-  return new Promise<void>((resolve, reject) => {
-    ;(async () => {
-      try {
-        const setting = await SettingModel.getSettingByName('maintenanceMode:enable')
-        if (!setting) {
-          await SettingModel.create({ name: 'maintenanceMode:enable', value: false })
-          return resolve()
-        } else {
-          return resolve()
-        }
-      } catch (e) {
-        return reject(e)
-      }
-    })()
-  })
+  const setting = await SettingModel.getSettingByName('maintenanceMode:enable')
+  if (!setting) {
+    await SettingModel.create({ name: 'maintenanceMode:enable', value: false })
+  }
 }
 
-export const init = function (callback: () => void) {
+export const init = function (callback: AsyncCallback) {
   winston.debug('Checking Default Settings...')
   series(
     [
-      function (done) {
-        return createDirectories(done)
-      },
-      function (done) {
-        return downloadWin32MongoDBTools(done)
-      },
-      function (done) {
-        return rolesDefault(done)
-      },
-      function (done) {
-        return defaultUserRole(done)
-      },
-      function (done) {
-        return timezoneDefault(done)
-      },
-      function (done) {
-        return ticketTypeSettingDefault(done)
-      },
-      function (done) {
-        return defaultTicketStatus(done)
-      },
-      function (done) {
-        return ticketPriorityDefaults(done)
-      },
-      function (done) {
-        return addedDefaultPrioritiesToTicketTypes(done)
-      },
-      function (done) {
-        return checkPriorities(done)
-      },
-      function (done) {
-        return normalizeTags(done)
-      },
-      function (done) {
-        return mailTemplates(done)
-      },
-      function (done) {
-        return elasticSearchConfToDB(done)
-      },
-      function (done) {
-        return maintenanceModeDefault().then(() => {
-          done()
-        })
-      },
-      function (done) {
-        return installationID(done)
-      },
+      createDirectories,
+      downloadWin32MongoDBTools,
+      rolesDefault,
+      defaultUserRole,
+      timezoneDefault,
+      ticketTypeSettingDefault,
+      defaultTicketStatus,
+      ticketPriorityDefaults,
+      addedDefaultPrioritiesToTicketTypes,
+      checkPriorities,
+      normalizeTags,
+      mailTemplates,
+      elasticSearchConfToDB,
+      maintenanceModeDefault,
+      installationID,
     ],
     function (err) {
       if (err) winston.warn(err)
@@ -579,4 +501,3 @@ export const init = function (callback: () => void) {
 settingsDefaults.init = init
 
 export default settingsDefaults
-module.exports = settingsDefaults
