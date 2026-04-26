@@ -106,9 +106,9 @@ viewController.getData = function (request, cb) {
                 } else {
                   viewdata.ticketSettings.playNewTicketSound = true
                 }
-              })
 
-              return done()
+                return done()
+              })
             },
             function (done) {
               settingSchema.getSettingByName('ticket:minlength:subject', function (err, setting) {
@@ -233,7 +233,7 @@ viewController.getData = function (request, cb) {
           })
         })
       },
-      async function () {
+      async function (callback) {
         try {
           const hasCustomFavicon = await settingSchema.getSettingByName('gen:customfavicon')
           viewdata.hasCustomFavicon = hasCustomFavicon && hasCustomFavicon.value === true
@@ -245,8 +245,11 @@ viewController.getData = function (request, cb) {
             if (faviconFilename && faviconFilename.value) viewdata.favicon = `/assets/${faviconFilename.value}`
             else viewdata.favicon = '/img/favicon.ico'
           }
+
+          return callback()
         } catch (e) {
           viewdata.favicon = '/img/favicon.ico'
+          return callback()
         }
       },
       function (callback) {
