@@ -16,7 +16,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import TitleContext, { setTitle } from 'app/TitleContext'
-import { fetchTheme, fetchViewData } from 'actions/common'
+import { fetchTheme } from 'actions/common'
 import setTheme from '../../lib/theme'
 import colorMap from '../../lib/themeColors'
 

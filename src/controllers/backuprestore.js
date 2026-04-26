@@ -127,8 +127,6 @@ backupRestore.deleteBackup = function (req, res) {
 }
 
 backupRestore.restoreBackup = function (req, res) {
-  const database = require('../database')
-
   const file = req.body.file
   if (!file) return res.status(400).json({ success: false, error: 'Invalid File' })
 
