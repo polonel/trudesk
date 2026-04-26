@@ -13,18 +13,39 @@
  **/
 
 import { DocumentType } from '@typegoose/typegoose'
-import async, { series } from 'async'
+import { parallel, series } from 'async'
 import fs from 'fs-extra'
 import _ from 'lodash'
 import moment from 'moment-timezone'
-import type { Types } from "mongoose"
+import type { Types } from 'mongoose'
 import path from 'path'
 import config from '../config'
 import { trudeskDatabase } from '../database'
 import winston from '../logger'
-import { PriorityModel, RoleModel, SettingModel, TicketModel, TicketStatusModel, TicketTagModel, TicketTypeModel } from '../models'
-import type { TicketTypeClass } from "../models/tickettype"
+import {
+  PriorityModel,
+  RoleModel,
+  RoleOrderModel,
+  SettingModel,
+  TemplateModel,
+  TicketModel,
+  TicketStatusModel,
+  TicketTagModel,
+  TicketTypeModel,
+} from '../models'
+import type { TicketTypeClass } from '../models/tickettype'
 import { TicketStatusClass } from '../models/ticketStatus'
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const nconf = require('nconf')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Chance = require('chance')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const newTicketTemplate = require('./json/mailer-new-ticket')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const passwordResetTemplate = require('./json/mailer-password-reset')
+
+type AsyncCallback = (err?: Error | null) => void
 
 type DefaultGrants = {
   userGrants: Array<string>
@@ -33,11 +54,11 @@ type DefaultGrants = {
 }
 
 type SettingsDefaults = {
-  init?: (callback: any) => void
+  init?: (callback: AsyncCallback) => void
   roleDefaults?: DefaultGrants
 }
 
-const settingsDefaults : SettingsDefaults = {}
+const settingsDefaults: SettingsDefaults = {}
 const roleDefaults: DefaultGrants = {
   userGrants: ['tickets:create view update', 'comments:create view update'],
   supportGrants: [
@@ -68,8 +89,8 @@ const roleDefaults: DefaultGrants = {
 
 settingsDefaults.roleDefaults = roleDefaults
 
-function rolesDefault(callback: () => void) {
-  async.series(
+function rolesDefault(callback: AsyncCallback) {
+  series(
     [
       function (done) {
         RoleModel.getRoleByName('User', function (err, role) {
@@ -77,24 +98,13 @@ function rolesDefault(callback: () => void) {
           if (role) return done()
 
           RoleModel.create(
-            {
-              name: 'User',
-              description: 'Default role for users',
-              grants: roleDefaults.userGrants,
-            },
+            { name: 'User', description: 'Default role for users', grants: roleDefaults.userGrants },
             function (err, userRole) {
               if (err) return done(err)
               SettingModel.getSettingByName('role:user:default', function (err, roleUserDefault) {
                 if (err) return done(err)
                 if (roleUserDefault) return done()
-
-                SettingModel.create(
-                  {
-                    name: 'role:user:default',
-                    value: userRole._id,
-                  },
-                  done
-                )
+                SettingModel.create({ name: 'role:user:default', value: userRole._id }, done)
               })
             }
           )
