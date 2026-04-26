@@ -61,6 +61,18 @@ export class GroupModelClass {
     return this.find({ members: userId }).sort('name').exec()
   }
 
+  public static async getAllGroupsOfUserNoPopulate(
+    this: ReturnModelType<typeof GroupModelClass>,
+    userId: Types.ObjectId | string
+  ) {
+    if (!userId) throw new Error('Invalid UserId')
+
+    return this.aggregate([
+      { $match: { members: userId } },
+      { $sort: { name: 1 } },
+    ]).exec()
+  }
+
   public static async getWithObject(this: ReturnModelType<typeof GroupModelClass>, obj: GroupQueryObject) {
     const limit = obj.limit ? Number(obj.limit) : 100
     const page = obj.page ? Number(obj.page) : 0
