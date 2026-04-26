@@ -12,15 +12,15 @@
 
  **/
 
-const _ = require('lodash')
-const path = require('path')
-const nconf = require('nconf')
-const winston = require('../logger')
-const elasticsearch = require('@elastic/elasticsearch')
-const ESErrors = require('@elastic/elasticsearch').errors
-const emitter = require('../emitter')
-const moment = require('moment-timezone')
-const settingUtil = require('../settings/settingsUtil')
+import _ from 'lodash'
+import path from 'path'
+import nconf from 'nconf'
+import winston from '../logger'
+import elasticsearch from '@elastic/elasticsearch'
+import emitter from '../emitter'
+import moment from 'moment-timezone'
+import settingUtil from '../settings/settingsUtil'
+import { TicketModel as ticketSchema } from '../models'
 
 const ES = {}
 ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
@@ -76,8 +76,6 @@ ES.testConnection = async callback => {
 }
 
 ES.setupHooks = () => {
-  const ticketSchema = require('../models/ticket')
-
   emitter.on('ticket:deleted', async _id => {
     if (_.isUndefined(_id)) return false
 

@@ -1,44 +1,74 @@
-const async = require('async')
-const elasticsearch = require('@elastic/elasticsearch')
-const winston = require('../logger')
-const moment = require('moment-timezone')
-const database = require('../database')
+import elasticsearch from '@elastic/elasticsearch'
+import winston from '../logger'
+import moment from 'moment-timezone'
+import { init as dbInit } from '../database'
+import settingSchema from '../models/setting'
+import { UserModel, TicketModel } from '../models'
 
 global.env = process.env.NODE_ENV || 'production'
 
-const ES = {}
-ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
+const ES = {
+  indexName: process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk',
+  esclient: null,
+  mongodb: null,
+  timezone: 'UTC'
+}
 
-function setupTimezone (callback) {
-  return new Promise((resolve, reject) => {
-    ;(async () => {
-      const settingsSchema = require('../models/setting')
-      try {
-        const setting = await settingsSchema.getSettingByName('gen:timezone')
-        let tz = 'UTC'
-        if (setting && setting.value) tz = setting.value
-
-        ES.timezone = tz
-
-        if (typeof callback === 'function') return callback(null, tz)
-
-        return resolve(tz)
-      } catch (e) {
-        if (typeof callback === 'function') return callback(e)
-        return reject(e)
+const INDEX_BODY = {
+  settings: {
+    index: { number_of_replicas: 0 },
+    analysis: {
+      filter: {
+        leadahead: { type: 'edge_ngram', min_gram: 1, max_gram: 20 },
+        email: {
+          type: 'pattern_capture',
+          preserve_original: true,
+          patterns: ['([^@]+)', '(\\p{L}+)', '(\\d+)', '@(.+)']
+        } 
+      },
+      analyzer: {
+        leadahead: { type: 'custom', tokenizer: 'standard', filter: ['lowercase', 'leadahead'] },
+        email: { tokenizer: 'uax_url_email', filter: ['email', 'lowercase', 'unique'] }
       }
-    })()
+    }
+  },
+  mappings: {
+    properties: {
+      type: { type: 'keyword' },
+      uid: { type: 'text', analyzer: 'leadahead', search_analyzer: 'standard' },
+      subject: { type: 'text', analyzer: 'leadahead', search_analyzer: 'standard' },
+      issue: { type: 'text', analyzer: 'leadahead', search_analyzer: 'standard' },
+      dateFormatted: { type: 'text', analyzer: 'leadahead', search_analyzer: 'standard' },
+      comments: {
+        properties: {
+          comment: { type: 'text', analyzer: 'leadahead', search_analyzer: 'standard' },
+          owner: { properties: { email: { type: 'text', analyzer: 'email' } } }
+        }
+      },
+      notes: {
+        properties: {
+          note: { type: 'text', analyzer: 'leadahead', search_analyzer: 'standard' },
+          owner: { properties: { email: { type: 'text', analyzer: 'email' } } }
+        }
+      },
+      owner: { properties: { email: { type: 'text', analyzer: 'email' } } }
+    }
+  }  
+}
+
+function setupDatabase () {
+  return new Promise((resolve, reject) => {
+    dbInit((err, db) => {
+      if (err) return reject(err)
+      ES.mongodb = db
+      resolve(db)
+    }, process.env.MONGODB_URI)
   })
 }
 
-function setupDatabase (callback) {
-  database.init(function (err, db) {
-    if (err) return callback(err)
-
-    ES.mongodb = db
-
-    return callback(null, db)
-  }, process.env.MONGODB_URI)
+async function setupTimezone () {
+  const setting = await settingSchema.getSettingByName('gen:timezone')
+  ES.timezone = (setting && setting.value) ? setting.value : 'UTC'
 }
 
 function setupClient () {
@@ -50,325 +80,143 @@ function setupClient () {
   })
 }
 
-async function deleteIndex (callback) {
-  try {
-    const exists = await ES.esclient.indices.exists({ index: ES.indexName })
-    if (exists) {
-      await ES.esclient.indices.delete({ index: ES.indexName })
-
-      if (typeof callback === 'function') callback()
-    } else {
-      if (typeof callback === 'function') callback()
-    }
-  } catch (e) {
-    if (typeof callback === 'function') callback(e)
-
-    winston.error(e)
+async function deleteIndex () {
+  const exists = await ES.esclient.indices.exists({ index: ES.indexName })
+  if (exists) {
+    await ES.esclient.indices.delete({ index: ES.indexName })
   }
 }
 
-async function createIndex (callback) {
-  try {
-    await ES.esclient.indices.create({
-      index: ES.indexName,
-      body: {
-        settings: {
-          index: {
-            number_of_replicas: 0
-          },
-          analysis: {
-            filter: {
-              leadahead: {
-                type: 'edge_ngram',
-                min_gram: 1,
-                max_gram: 20
-              },
-              email: {
-                type: 'pattern_capture',
-                preserve_original: true,
-                patterns: ['([^@]+)', '(\\p{L}+)', '(\\d+)', '@(.+)']
-              }
-            },
-            analyzer: {
-              leadahead: {
-                type: 'custom',
-                tokenizer: 'standard',
-                filter: ['lowercase', 'leadahead']
-              },
-              email: {
-                tokenizer: 'uax_url_email',
-                filter: ['email', 'lowercase', 'unique']
-              }
-            }
-          }
-        },
-        mappings: {
-          properties: {
-            type: {
-              type: 'keyword'
-            },
-            uid: {
-              type: 'text',
-              analyzer: 'leadahead',
-              search_analyzer: 'standard'
-            },
-            subject: {
-              type: 'text',
-              analyzer: 'leadahead',
-              search_analyzer: 'standard'
-            },
-            issue: {
-              type: 'text',
-              analyzer: 'leadahead',
-              search_analyzer: 'standard'
-            },
-            dateFormatted: {
-              type: 'text',
-              analyzer: 'leadahead',
-              search_analyzer: 'standard'
-            },
-            comments: {
-              properties: {
-                comment: {
-                  type: 'text',
-                  analyzer: 'leadahead',
-                  search_analyzer: 'standard'
-                },
-                owner: {
-                  properties: {
-                    email: {
-                      type: 'text',
-                      analyzer: 'email'
-                    }
-                  }
-                }
-              }
-            },
-            notes: {
-              properties: {
-                note: {
-                  type: 'text',
-                  analyzer: 'leadahead',
-                  search_analyzer: 'standard'
-                },
-                owner: {
-                  properties: {
-                    email: {
-                      type: 'text',
-                      analyzer: 'email'
-                    }
-                  }
-                }
-              }
-            },
-            owner: {
-              properties: {
-                email: {
-                  type: 'text',
-                  analyzer: 'email'
-                }
-              }
-            }
-          }
-        }
-      }
-    })
+async function createIndex () {
+  await ES.esclient.indices.create({ index: ES.indexName, body: INDEX_BODY })
+}
 
-    if (typeof callback === 'function') callback()
-  } catch (e) {
-    if (typeof callback === 'function') callback(e)
+async function flushBulk (bulk) {
+  if (bulk.length === 0) return []
+  await ES.esclient.bulk({ body: bulk, timeout: '3m' })
+  winston.debug(`Sent ${bulk.length/2} documents to Elasticsearch!`)
+  return []
+}
 
-    winston.error(e)
+function buildPersonShape (doc) {
+  return {
+    _id: doc._id,
+    fullname: doc.fullname,
+    username: doc.username,
+    email: doc.email,
+    role: doc.role,
+    title: doc.title
   }
 }
 
-async function sendAndEmptyQueue (bulk) {
+function crawlUsers () {
+  let count = 0
+  const startTime = Date.now()
+  const stream = UserModel.find({ deleted: false }).lean().cursor()
+  let bulk = []
+
   return new Promise((resolve, reject) => {
-    ;(async () => {
-      try {
-        if (bulk.length > 0) {
-          await ES.esclient.bulk({ body: bulk, timeout: '3m' })
-          winston.debug(`Sent ${bulk.length} documents to Elasticsearch!`)
-
-          return resolve([])
-        } else return resolve([])
-      } catch (e) {
-        process.send({ success: false })
-        return process.exit()
-      }
-    })()
+    stream
+      .on('data', async (doc) => {
+        stream.pause()
+        count += 1
+        bulk.push({ index: { _index: ES.indexName, _id: doc._id } })
+        bulk.push({
+          datatype: 'user',
+          username: doc.username,
+          email: doc.email,
+          fullname: doc.fullname,
+          title: doc.title,
+          role: doc.role
+        })
+        if (count % 200 === 0) bulk = await flushBulk(bulk)
+        stream.resume()
+      })
+      .on('error', reject)
+      .on('close', async () => {
+        await flushBulk(bulk)
+        winston.debug(`Document Count: ${count}`)
+        winston.debug(`Duration: ${Date.now() - startTime}ms`)
+        resolve()
+      })
   })
 }
 
-function crawlUsers (callback) {
-  const Model = require('../models').UserModel
+function crawlTickets () {
   let count = 0
-  const startTime = new Date().getTime()
-  const stream = Model.find({ deleted: false })
-    .lean()
-    .cursor()
-
-  let bulk = []
-
-  stream
-    .on('data', async function (doc) {
-      count += 1
-      bulk.push({ index: { _index: ES.indexName, _type: 'doc', _id: doc._id } })
-      bulk.push({
-        datatype: 'user',
-        username: doc.username,
-        email: doc.email,
-        fullname: doc.fullname,
-        title: doc.title,
-        role: doc.role
-      })
-
-      if (count % 200 === 1) bulk = await sendAndEmptyQueue(bulk)
-    })
-    .on('error', function (err) {
-      winston.error(err)
-      // Send Error Occurred - Kill Process
-      throw err
-    })
-    .on('close', async function () {
-      winston.debug('Document Count: ' + count)
-      winston.debug('Duration is: ' + (new Date().getTime() - startTime))
-      bulk = await sendAndEmptyQueue(bulk)
-
-      return callback()
-    })
-}
-
-function crawlTickets (callback) {
-  const Model = require('../models/ticket')
-  let count = 0
-  const startTime = new Date().getTime()
-  const stream = Model.find({ deleted: false })
+  const startTime = Date.now()
+  const stream = TicketModel.find({ deleted: false })
     .populate('owner group comments.owner notes.owner tags priority type status')
     .lean()
     .cursor()
-
   let bulk = []
 
-  stream
-    .on('data', async doc => {
-      stream.pause()
-      count += 1
+  return new Promise((resolve, reject) => {
+    stream
+      .on('data', async (doc) => {
+        stream.pause()
+        count += 1
 
-      bulk.push({ index: { _index: ES.indexName, _id: doc._id } })
-      const comments = []
-      if (doc.comments !== undefined) {
-        doc.comments.forEach(function (c) {
-          comments.push({
+        bulk.push({ index: { _index: ES.indexName, _id: doc._id } })
+        bulk.push({
+          type: 'ticket',
+          uid: doc.uid,
+          owner: buildPersonShape(doc.owner),
+          group: { _id: doc.group._id, name: doc.group.name },
+          issue: doc.issue,
+          subject: doc.subject,
+          date: doc.date,
+          dateFormatted: moment.utc(doc.date).tz(ES.timezone).format('MMMM D YYYY'),
+          priority: { _id: doc.priority._id, name: doc.priority.name, htmlColor: doc.priority.htmlColor },
+          ticketType: { _id: doc.type._id, name: doc.type.name },
+          status: { _id: doc.status._id, name: doc.status.name, htmlColor: doc.status.htmlColor, uid: doc.status.uid },
+          deleted: doc.deleted,
+          comments: (doc.comments || []).map(c => ({
             comment: c.comment,
             _id: c._id,
             deleted: c.deleted,
             date: c.date,
-            owner: {
-              _id: c.owner._id,
-              fullname: c.owner.fullname,
-              username: c.owner.username,
-              email: c.owner.email,
-              role: c.owner.role,
-              title: c.owner.title
-            }
-          })
+            owner: buildPersonShape(c.owner)
+          })),
+          notes: doc.notes,
+          tags: doc.tags
         })
-      }
-      bulk.push({
-        type: 'ticket',
-        uid: doc.uid,
-        owner: {
-          _id: doc.owner._id,
-          fullname: doc.owner.fullname,
-          username: doc.owner.username,
-          email: doc.owner.email,
-          role: doc.owner.role,
-          title: doc.owner.title
-        },
-        group: {
-          _id: doc.group._id,
-          name: doc.group.name
-        },
-        issue: doc.issue,
-        subject: doc.subject,
-        date: doc.date,
-        dateFormatted: moment
-          .utc(doc.date)
-          .tz(ES.timezone)
-          .format('MMMM D YYYY'),
-        priority: {
-          _id: doc.priority._id,
-          name: doc.priority.name,
-          htmlColor: doc.priority.htmlColor
-        },
-        ticketType: { _id: doc.type._id, name: doc.type.name },
-        status: { _id: doc.status._id, name: doc.status.name, htmlColor: doc.status.htmlColor, uid: doc.status.uid },
-        deleted: doc.deleted,
-        comments: comments,
-        notes: doc.notes,
-        tags: doc.tags
+
+        if (count % 200 === 0) bulk = await flushBulk(bulk)
+        stream.resume()
       })
-
-      if (count % 200 === 1) bulk = await sendAndEmptyQueue(bulk)
-
-      stream.resume()
-    })
-    .on('err', function (err) {
-      winston.error(err)
-      // Send Error Occurred - Kill Process
-      throw err
-    })
-    .on('close', async () => {
-      winston.debug('Document Count: ' + count)
-      winston.debug('Duration is: ' + (new Date().getTime() - startTime))
-      bulk = await sendAndEmptyQueue(bulk)
-      callback()
-    })
+      .on('error', reject)
+      .on('close', async () => {
+        await flushBulk(bulk)
+        winston.debug(`Document Count: ${count}`)
+        winston.debug(`Duration: ${Date.now() - startTime}ms`)
+        resolve()
+      })
+  })
 }
 
-function rebuild (callback) {
-  async.series(
-    [
-      function (next) {
-        setupDatabase(next)
-      },
-      function (next) {
-        setupTimezone(next)
-      },
-      function (next) {
-        deleteIndex(next)
-      },
-      function (next) {
-        createIndex(next)
-      },
-      function (next) {
-        crawlTickets(next)
-      }
-    ],
-    function (err) {
-      if (err) winston.error(err)
-
-      return callback(err)
-    }
-  )
+async function rebuild () {
+  await setupDatabase()
+  await setupTimezone()
+  await deleteIndex()
+  await createIndex()
+  // await crawlUsers()
+  await crawlTickets()
 }
 
-;(function () {
+;(async function () {
   winston.info('Starting Elasticsearch index rebuild...')
   setupClient()
-  rebuild(function (err) {
-    if (err) {
-      process.send({ success: false, error: err })
-      return process.exit(0)
-    }
-
-    winston.info('Elasticsearch rebuild completed successful.')
-
-    //  Kill it in 10sec to offset refresh timers
-    setTimeout(function () {
+  try {
+    await rebuild()
+    winston.info('Elasticsearch rebuild completed successfully.')
+    setTimeout(() => {
       process.send({ success: true })
-      return process.exit()
+      process.exit(0)
     }, 6000)
-  })
+  } catch (err) {
+    winston.error(err)
+    process.send({ success: false, error: err })
+    process.exit(0)
+  }
 })()
