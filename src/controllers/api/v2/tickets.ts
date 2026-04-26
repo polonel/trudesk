@@ -113,11 +113,11 @@ const ticketCreate = async (req: TypedRequestBody<TicketCreateBody>, res: Expres
       owner: requestUser._id
     }
 
-    const ticket = TicketModel(postTicket)
+    const ticket = new TicketModel(postTicket)
     if (postTicket.owner)
-      ticket.owner = postTicket.owner
+      ticket.owner = postTicket.owner as any
     else
-      ticket.owner = requestUser._id
+      ticket.owner = requestUser._id as any
 
     ticket.subject = sanitizeHtml(ticket.subject).trim()
     ticket.status = statuses[0]?._id
@@ -126,7 +126,7 @@ const ticketCreate = async (req: TypedRequestBody<TicketCreateBody>, res: Expres
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
     tIssue = sanitizeHtml(tIssue).trim()
     ticket.issue = xss(marked.parse(tIssue))
-    ticket.history = [HistoryItem]
+    ticket.history = [HistoryItem] as any
     ticket.subscribers = [user._id]
 
     let savedTicket = await ticket.save()
