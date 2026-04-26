@@ -12,188 +12,121 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-const _ = require('lodash')
-const fs = require('fs-extra')
-const path = require('path')
-const spawn = require('child_process').spawn
-const os = require('os')
-const async = require('async')
-const AdmZip = require('adm-zip')
-const database = require('../database')
-const winston = require('../logger')
-const config = require('../config')
+import fs from 'fs-extra'
+import path from 'path'
+import { spawn } from 'child_process'
+import os from 'os'
+import { promisify } from 'util'
+import AdmZip from 'adm-zip'
+import rimrafCb from 'rimraf'
+import { init as dbInit, trudeskDatabase } from '../database'
+import winston from '../logger'
+import config from '../config'
 
 global.env = process.env.NODE_ENV || 'production'
+
+const rimraf = promisify(rimrafCb)
+
+const root = () => config.trudeskRoot()
 
 let CONNECTION_URI = null
 let databaseName = null
 
-function cleanup (callback) {
-  const rimraf = require('rimraf')
-  rimraf(path.resolve(config.trudeskRoot(), 'restores/restore_*'), callback)
+async function cleanup () {
+  await rimraf(path.resolve(root(), 'restores/restore_*'))
 }
 
-function cleanUploads (callback) {
-  const rimraf = require('rimraf')
-  rimraf(path.resolve(config.trudeskRoot(), 'public/uploads/*'), callback)
+async function cleanUploads () {
+  await rimraf(path.resolve(root(), 'public/uploads/*'))
 }
 
-function copyUploads (file, callback) {
-  async.parallel(
-    [
-      function (done) {
-        fs.copy(
-          path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/assets/'),
-          path.resolve(config.trudeskRoot(), 'public/uploads/assets/'),
-          done
-        )
-      },
-      function (done) {
-        fs.copy(
-          path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/users/'),
-          path.resolve(config.trudeskRoot(), 'public/uploads/users/'),
-          done
-        )
-      },
-      function (done) {
-        fs.copy(
-          path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/tickets/'),
-          path.resolve(config.trudeskRoot(), 'public/uploads/tickets/'),
-          done
-        )
-      }
-    ],
-    callback
-  )
+async function copyUploads (file) {
+  const restoreBase = path.resolve(root(), `restores/restore_${file}`)
+  const uploadsBase = path.resolve(root(), 'public/uploads')
+
+  await Promise.all([
+    fs.copy(path.join(restoreBase, 'assets'), path.join(uploadsBase, 'assets')),
+    fs.copy(path.join(restoreBase, 'users'), path.join(uploadsBase, 'users')),
+    fs.copy(path.join(restoreBase, 'tickets'), path.join(uploadsBase, 'tickets'))
+  ])
 }
 
-function extractArchive (file, callback) {
-  const zip = new AdmZip(path.resolve(config.trudeskRoot(), 'backups/', file))
-  zip.extractAllTo(path.resolve(config.trudeskRoot(), 'restores/restore_' + file + '/'), true)
-
-  if (_.isFunction(callback)) {
-    return callback()
-  }
+function extractArchive (file) {
+  const zip = new AdmZip(path.resolve(root(), 'backups', file))
+  zip.extractAllTo(path.resolve(root(), `restores/restore_${file}/`), true)
 }
 
-function cleanMongoDb (callback) {
-  database.trudeskDatabase.connection.db.dropDatabase(callback)
+async function cleanMongoDb () {
+  await trudeskDatabase.connection.db.dropDatabase()
 }
 
-function runRestore (file, callback) {
-  const platform = os.platform()
-  winston.info('Starting Restore... (' + platform + ')')
+function runRestore (file) {
+  return new Promise((resolve, reject) => {
+    const platform = os.platform()
+    winston.info(`Starting Restore... (${platform})`)
 
-  const dbName = fs.readdirSync(path.resolve(config.trudeskRoot(), 'restores/restore_' + file, 'database'))[0]
-  if (!dbName) {
-    return callback(new Error('Invalid Backup. Unable to get DBName'))
-  }
+    const dbName = fs.readdirSync(path.resolve(root(), `restores/restore_${file}`, 'database'))[0]
+    if (!dbName) return reject(new Error('Invalid Backup. Unable to get DBName'))
 
-  const options = [
-    '--uri',
-    CONNECTION_URI,
-    '-d',
-    databaseName,
-    path.resolve(config.trudeskRoot(), 'restores/restore_' + file, 'database', dbName),
-    '--noIndexRestore'
-  ]
-  let mongorestore = null
-  if (platform === 'win32') {
-    mongorestore = spawn(path.resolve(config.trudeskRoot(), 'src/backup/bin', platform, 'mongorestore'), options, {
-      env: { PATH: process.env.PATH }
+    const options = [
+      '--uri', CONNECTION_URI,
+      '-d', databaseName,
+      path.resolve(root(), `restores/restore_${file}`, 'database', dbName),
+      '--noIndexRestore'
+    ]
+
+    const mongorestore = platform === 'win32'
+      ? spawn(path.resolve(root(), 'src/backup/bin', platform, 'mongorestore'), options, { env: { PATH: process.env.PATH } })
+      : spawn('mongorestore', options, { env: { PATH: process.env.PATH } })
+
+    mongorestore.stdout.on('data', data => winston.debug(data.toString()))
+    mongorestore.stderr.on('data', data => winston.debug(data.toString()))
+    mongorestore.on('exit', code => {
+      if (code === 0) resolve()
+      else reject(new Error(`mongorestore failed with code ${code}`))
     })
-  } else {
-    mongorestore = spawn('mongorestore', options, { env: { PATH: process.env.PATH } })
-  }
-
-  mongorestore.stdout.on('data', function (data) {
-    winston.debug(data.toString())
-  })
-
-  mongorestore.stderr.on('data', function (data) {
-    winston.debug(data.toString())
-  })
-
-  mongorestore.on('exit', function (code) {
-    if (code === 0) {
-      callback(null, 'done')
-    } else {
-      callback(new Error('mongorestore falied with code ' + code))
-    }
   })
 }
 
-(function () {
+function initDatabase (uri, opts) {
+  return new Promise((resolve, reject) => {
+    dbInit((err, db) => {
+      if (err) return reject(err)
+      if (!db) return reject(new Error('Unable to open database'))
+      resolve(db)
+    }, uri, opts)
+  })
+}
+
+;(async function () {
   CONNECTION_URI = process.env.MONGOURI
   if (!CONNECTION_URI) return process.send({ success: false, error: 'Invalid connection uri' })
 
   const FILE = process.env.FILE
   if (!FILE) return process.send({ success: false, error: 'Invalid File' })
 
-  if (!fs.existsSync(path.resolve(config.trudeskRoot(), 'backups', FILE))) {
+  if (!fs.existsSync(path.resolve(root(), 'backups', FILE))) {
     return process.send({ success: false, error: 'FILE NOT FOUND' })
   }
 
-  const options = {
-    keepAlive: true,
-    connectTimeoutMS: 5000
+  try {
+    await initDatabase(CONNECTION_URI, { keepAlive: true, connectTimeoutMS: 5000 })
+
+    databaseName = trudeskDatabase.connection.db.databaseName
+    if (!databaseName) throw new Error('Unable to get database name')
+
+    fs.ensureDirSync(path.resolve(root(), 'restores'))
+
+    await cleanup()
+    await cleanUploads()
+    extractArchive(FILE)
+    await cleanMongoDb()
+    await runRestore(FILE)
+    await copyUploads(FILE)
+    await cleanup()
+
+    process.send({ success: true })
+  } catch (err) {
+    process.send({ success: false, error: err })
   }
-  database.init(
-    function (e, db) {
-      if (e) {
-        return process.send({ success: false, error: e })
-      }
-
-      if (!db) {
-        return process.send({
-          success: false,
-          error: { message: 'Unable to open database' }
-        })
-      }
-
-      databaseName = database.trudeskDatabase.connection.db.databaseName
-      if (!databaseName) {
-        return process.send({
-          success: false,
-          error: { message: 'Unable to get database name' }
-        })
-      }
-
-      fs.ensureDirSync(path.resolve(config.trudeskRoot(), 'restores'))
-
-      async.series(
-        [
-          function (next) {
-            // Clean any old restores hanging around
-            cleanup(next)
-          },
-          function (next) {
-            cleanUploads(next)
-          },
-          function (next) {
-            extractArchive(FILE, next)
-          },
-          function (next) {
-            cleanMongoDb(next)
-          },
-          function (next) {
-            runRestore(FILE, next)
-          },
-          function (next) {
-            copyUploads(FILE, next)
-          },
-          function (next) {
-            cleanup(next)
-          }
-        ],
-        function (err) {
-          if (err) return process.send({ success: false, error: err })
-
-          return process.send({ success: true })
-        }
-      )
-    },
-    CONNECTION_URI,
-    options
-  )
 })()
