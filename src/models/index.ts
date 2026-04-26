@@ -12,9 +12,7 @@ import { GroupModelClass } from './group'
 import { TeamModelClass } from './team'
 import { UserModelClass } from './user'
 import { DepartmentModelClass } from './department'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Message from './chat/message'
+import { MessageClass } from './chat/message'
 import { ConversationModelClass } from './chat/conversation'
 import { NoticeClass } from './notice'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -35,7 +33,7 @@ export const GroupModel = getModelForClass(GroupModelClass)
 export const TeamModel = getModelForClass(TeamModelClass)
 export const UserModel = getModelForClass(UserModelClass)
 export const DepartmentModel = getModelForClass(DepartmentModelClass)
-export const MessageModel = Message
+export const MessageModel = getModelForClass(MessageClass)
 export const ConversationModel = getModelForClass(ConversationModelClass)
 export const NoticeModel = getModelForClass(NoticeClass)
 export const NotificationModel = getModelForClass(NotificationModelClass)
