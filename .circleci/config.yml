@@ -5,7 +5,7 @@ orbs:
 executors:
   docker-executor:
     docker:
-      - image: cimg/node:20
+      - image: cimg/node:20.20
     working_directory: ~/trudesk
 
 commands:
@@ -27,7 +27,7 @@ commands:
 jobs:
   build_general:
     docker:
-    - image: cimg/node:20
+    - image: cimg/node:20.20
     - image: mongo:5.0
     working_directory: ~/trudesk
     steps:
@@ -55,7 +55,7 @@ jobs:
             docker push polonel/trudesk:next
   build_develop:
     docker:
-    - image: cimg/node:20
+    - image: cimg/node:20.20
     - image: mongo:5.0
     working_directory: ~/trudesk
     resource_class: medium+
@@ -77,7 +77,7 @@ jobs:
     parallelism: 2
   build_production:
     docker:
-    - image: cimg/node:20
+    - image: cimg/node:20.20
     - image: mongo:5.0
     working_directory: ~/trudesk
     resource_class: large
