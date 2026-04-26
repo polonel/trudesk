@@ -113,72 +113,50 @@ function rolesDefault(callback: AsyncCallback) {
       function (done) {
         RoleModel.getRoleByName('Support', function (err, role) {
           if (err) return done(err)
-          if (role) {
-            return done()
-            // role.updateGrants(supportGrants, done);
-          } else
-            RoleModel.create(
-              {
-                name: 'Support',
-                description: 'Default role for agents',
-                grants: roleDefaults.supportGrants,
-              },
-              done
-            )
+          if (role) return done()
+          RoleModel.create(
+            { name: 'Support', description: 'Default role for agents', grants: roleDefaults.supportGrants },
+            done
+          )
         })
       },
       function (done) {
         RoleModel.getRoleByName('Admin', function (err, role) {
           if (err) return done(err)
           if (role) return done()
-          // role.updateGrants(adminGrants, done);
-          else {
-            RoleModel.create(
-              {
-                name: 'Admin',
-                description: 'Default role for admins',
-                grants: roleDefaults.adminGrants,
-              },
-              done
-            )
-          }
+          RoleModel.create(
+            { name: 'Admin', description: 'Default role for admins', grants: roleDefaults.adminGrants },
+            done
+          )
         })
       },
       function (done) {
-        var roleOrderSchema = require('../models/roleorder')
-        roleOrderSchema.getOrder(function (err, roleOrder) {
+        ;(RoleOrderModel as any).getOrder(function (err: Error, roleOrder: any) {
           if (err) return done(err)
           if (roleOrder) return done()
 
           RoleModel.getRoles(function (err, roles) {
             if (err) return done(err)
 
-            var roleOrder = []
-            roleOrder.push(_.find(roles, { name: 'Admin' })._id)
-            roleOrder.push(_.find(roles, { name: 'Support' })._id)
-            roleOrder.push(_.find(roles, { name: 'User' })._id)
-
-            roleOrderSchema.create(
-              {
-                order: roleOrder,
-              },
-              done
-            )
+            const order = [
+              _.find(roles, { name: 'Admin' })?._id,
+              _.find(roles, { name: 'Support' })?._id,
+              _.find(roles, { name: 'User' })?._id,
+            ]
+            ;(RoleOrderModel as any).create({ order }, done)
           })
         })
       },
     ],
     function (err) {
       if (err) throw err
-
       return callback()
     }
   )
 }
 
-function defaultUserRole(callback) {
-  var roleOrderSchema = require('../models/roleorder')
-  roleOrderSchema.getOrderLean(function (err, roleOrder) {
+function defaultUserRole(callback: AsyncCallback) {
+  ;(RoleOrderModel as any).getOrderLean(function (err: Error, roleOrder: any) {
     if (err) return callback(err)
     if (!roleOrder) return callback()
 
@@ -186,473 +164,249 @@ function defaultUserRole(callback) {
       if (err) return callback(err)
       if (roleDefault) return callback()
 
-      var lastId = _.last(roleOrder.order)
-      SettingModel.create(
-        {
-          name: 'role:user:default',
-          value: lastId,
-        },
-        callback
-      )
+      const lastId = _.last(roleOrder.order)
+      SettingModel.create({ name: 'role:user:default', value: lastId }, callback)
     })
   })
 }
 
-function createDirectories(callback) {
-  async.parallel(
+function createDirectories(callback: AsyncCallback) {
+  parallel(
     [
-      function (done) {
-        fs.ensureDir(path.resolve(config.trudeskRoot(), 'backups'), done)
-      },
-      function (done) {
-        fs.ensureDir(path.resolve(config.trudeskRoot(), 'restores'), done)
-      },
+      (done: AsyncCallback) => fs.ensureDir(path.resolve(config.trudeskRoot(), 'backups'), done),
+      (done: AsyncCallback) => fs.ensureDir(path.resolve(config.trudeskRoot(), 'restores'), done),
     ],
     callback
   )
 }
 
-function downloadWin32MongoDBTools(callback) {
-  var http = require('http')
-  var os = require('os')
-  var semver = require('semver')
+function downloadWin32MongoDBTools(callback: AsyncCallback) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const os = require('os')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const semver = require('semver')
   const dbVersion = trudeskDatabase.version || '5.0.6'
-  var fileVersion = semver.major(dbVersion) + '.' + semver.minor(dbVersion)
+  const fileVersion = semver.major(dbVersion) + '.' + semver.minor(dbVersion)
 
-  if (os.platform() === 'win32') {
-    winston.debug('MongoDB version ' + fileVersion + ' detected.')
-    var filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
-    var savePath = path.resolve(config.trudeskRoot(), 'src/backup/bin/win32/')
-    fs.ensureDirSync(savePath)
-    if (
-      !fs.existsSync(path.join(savePath, 'mongodump.exe')) ||
-      !fs.existsSync(path.join(savePath, 'mongorestore.exe'))
-    ) {
-      winston.debug('Windows platform detected. Downloading MongoDB Tools [' + filename + ']')
-      fs.emptyDirSync(savePath)
-      var unzipper = require('unzipper')
-      var file = fs.createWriteStream(path.join(savePath, filename))
-      http
-        .get('http://storage.trudesk.io/tools/' + filename, function (response) {
-          response.pipe(file)
-          file.on('finish', function () {
-            file.close()
-          })
-          file.on('close', function () {
-            fs.createReadStream(path.join(savePath, filename))
-              .pipe(unzipper.Extract({ path: savePath }))
-              .on('close', function () {
-                fs.unlink(path.join(savePath, filename), callback)
-              })
-          })
-        })
-        .on('error', function (err) {
-          fs.unlink(path.join(savePath, filename))
-          winston.debug(err)
-          return callback()
-        })
-    } else {
-      return callback()
-    }
-  } else {
+  if (os.platform() !== 'win32') return callback()
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const http = require('http')
+  winston.debug('MongoDB version ' + fileVersion + ' detected.')
+  const filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
+  const savePath = path.resolve(config.trudeskRoot(), 'src/backup/bin/win32/')
+  fs.ensureDirSync(savePath)
+
+  if (
+    fs.existsSync(path.join(savePath, 'mongodump.exe')) &&
+    fs.existsSync(path.join(savePath, 'mongorestore.exe'))
+  ) {
     return callback()
   }
+
+  winston.debug('Windows platform detected. Downloading MongoDB Tools [' + filename + ']')
+  fs.emptyDirSync(savePath)
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const unzipper = require('unzipper')
+  const file = fs.createWriteStream(path.join(savePath, filename))
+  http
+    .get('http://storage.trudesk.io/tools/' + filename, function (response: any) {
+      response.pipe(file)
+      file.on('finish', () => file.close())
+      file.on('close', () => {
+        fs.createReadStream(path.join(savePath, filename))
+          .pipe(unzipper.Extract({ path: savePath }))
+          .on('close', () => fs.unlink(path.join(savePath, filename), callback))
+      })
+    })
+    .on('error', function (err: Error) {
+      fs.unlink(path.join(savePath, filename))
+      winston.debug(err)
+      return callback()
+    })
 }
 
-function timezoneDefault(callback) {
+function timezoneDefault(callback: AsyncCallback) {
   SettingModel.getSettingByName('gen:timezone', function (err, setting) {
     if (err) {
       winston.warn(err)
-      if (_.isFunction(callback)) return callback(err)
-      return false
+      return callback(err)
     }
 
     if (!setting) {
-      var defaultTimezone = new SettingModel({
-        name: 'gen:timezone',
-        value: 'America/New_York',
-      })
-
+      const defaultTimezone = new SettingModel({ name: 'gen:timezone', value: 'America/New_York' })
       defaultTimezone.save(function (err, setting) {
         if (err) {
           winston.warn(err)
-          if (_.isFunction(callback)) return callback(err)
+          return callback(err)
         }
-
         winston.debug('Timezone set to ' + setting.value)
         moment.tz.setDefault(setting.value)
-
         global.timezone = setting.value
-
-        if (_.isFunction(callback)) return callback()
+        return callback()
       })
     } else {
       winston.debug('Timezone set to ' + setting.value)
       moment.tz.setDefault(setting.value)
-
       global.timezone = setting.value
-
-      if (_.isFunction(callback)) return callback()
+      return callback()
     }
   })
 }
 
-function showTourSettingDefault(callback) {
+function showTourSettingDefault(callback: AsyncCallback) {
   SettingModel.getSettingByName('showTour:enable', function (err, setting) {
     if (err) {
       winston.warn(err)
-      if (_.isFunction(callback)) return callback(err)
-      return false
+      return callback(err)
     }
 
     if (!setting) {
-      var defaultShowTour = new SettingModel({
-        name: 'showTour:enable',
-        value: 0,
-      })
-
+      const defaultShowTour = new SettingModel({ name: 'showTour:enable', value: 0 })
       defaultShowTour.save(function (err) {
         if (err) {
           winston.warn(err)
-          if (_.isFunction(callback)) return callback(err)
+          return callback(err)
         }
-
-        if (_.isFunction(callback)) return callback()
+        return callback()
       })
-    } else if (_.isFunction(callback)) return callback()
+    } else {
+      return callback()
+    }
   })
 }
 
-function ticketTypeSettingDefault(callback: any) {
+function ticketTypeSettingDefault(callback: AsyncCallback) {
   SettingModel.getSettingByName('ticket:type:default', async function (err, setting) {
     if (err) {
       winston.warn(err)
-      if (_.isFunction(callback)) {
-        return callback(err)
-      }
+      return callback(err)
     }
 
     if (!setting) {
       try {
         const types = await TicketTypeModel.getTypes()
         const type = _.first(types) as TicketTypeClass
-        if (!type) throw new Error('Invalid Type. Skipping.')
-        if (!_.isObject(type) || _.isUndefined(type._id))
-            throw new Error('Invalid Type. Skipping.')
+        if (!type || !_.isObject(type) || _.isUndefined(type._id))
+          throw new Error('Invalid Type. Skipping.')
 
-        const defaultTicketType = new SettingModel({
-          name: 'ticket:type:default',
-          value: type._id,
-        })
-
+        const defaultTicketType = new SettingModel({ name: 'ticket:type:default', value: type._id })
         await defaultTicketType.save()
-
-        if (typeof callback === 'function') return callback()
+        return callback()
       } catch (err) {
         winston.warn(err)
-        if (_.isFunction(callback)) {
-          return callback(err)
-        }
-        return false
+        return callback(err as Error)
       }
     } else {
-      if (_.isFunction(callback)) {
-        return callback()
-      }
+      return callback()
     }
   })
 }
 
-async function defaultTicketStatus(callback: any) {
-  const statuses = new Array<DocumentType<TicketStatusClass>>()
+async function defaultTicketStatus() {
+  const statuses: DocumentType<TicketStatusClass>[] = []
 
-  const newStatus = new TicketStatusModel({
-    name: 'New',
-    htmlColor: '#29b955',
-    uid: 0,
-    order: 0,
-    slatimer: false,
-    isResolved: false,
-    isLocked: true
-  })
+  const newStatus = new TicketStatusModel({ name: 'New', htmlColor: '#29b955', uid: 0, order: 0, slatimer: false, isResolved: false, isLocked: true })
+  const openStatus = new TicketStatusModel({ name: 'Open', htmlColor: '#d32f2f', uid: 1, order: 1, slatimer: true, isResolved: false, isLocked: true })
+  const pendingStatus = new TicketStatusModel({ name: 'Pending', htmlColor: '#2196F3', uid: 2, order: 2, slatimer: false, isResolved: false, isLocked: true })
+  const closedStatus = new TicketStatusModel({ name: 'Closed', htmlColor: '#CCCCCC', uid: 3, order: 3, slatimer: false, isResolved: true, isLocked: true })
 
-  const openStatus = new TicketStatusModel({
-    name: 'Open',
-    htmlColor: '#d32f2f',
-    uid: 1,
-    order: 1,
-    slatimer: true,
-    isResolved: false,
-    isLocked: true
-  })
+  const hasNewStatus = (await TicketStatusModel.countDocuments({ name: 'New', isLocked: true, uid: 0 })) > 0
+  if (!hasNewStatus) statuses.push(newStatus)
 
-  const pendingStatus = new TicketStatusModel({
-    name: 'Pending',
-    htmlColor: '#2196F3',
-    uid: 2,
-    order: 2,
-    slatimer: false,
-    isResolved: false,
-    isLocked: true
-  })
+  const hasOpenStatus = (await TicketStatusModel.countDocuments({ name: 'Open', isLocked: true, uid: 1 })) > 0
+  if (!hasOpenStatus) statuses.push(openStatus)
 
-  const closedStatus = new TicketStatusModel({
-    name: 'Closed',
-    htmlColor: '#CCCCCC',
-    uid: 3,
-    order: 3,
-    slatimer: false,
-    isResolved: true,
-    isLocked: true
-  })
+  const hasPendingStatus = (await TicketStatusModel.countDocuments({ name: 'Pending', isLocked: true, uid: 2 })) > 0
+  if (!hasPendingStatus) statuses.push(pendingStatus)
 
-  const hasNewStatus = await TicketStatusModel.countDocuments({name: 'New', isLocked: true, uid: 0}).count() > 0
-  if (!hasNewStatus)
-    statuses.push(newStatus)
+  const hasClosedStatus = (await TicketStatusModel.countDocuments({ name: 'Closed', isLocked: true, uid: 3 })) > 0
+  if (!hasClosedStatus) statuses.push(closedStatus)
 
-  const hasOpenStatus = await TicketStatusModel.countDocuments({name: 'Open', isLocked: true, uid: 1}).count() > 0
-  if (!hasOpenStatus)
-    statuses.push(openStatus)
-
-  const hasPendingStatus = await TicketStatusModel.countDocuments({name: 'Pending', isLocked: true, uid: 2}).count() > 0
-  if (!hasPendingStatus)
-    statuses.push(pendingStatus)
-
-  const hasClosedStatus = await TicketStatusModel.countDocuments({name: 'Closed', isLocked: true, uid: 3}).count() > 0
-  if (!hasClosedStatus)
-    statuses.push(closedStatus)
-
-  const p1 = new Promise<void>((resolve, reject) => {
-    ;(async() => {
-      try {
-        statuses.forEach(async (i: DocumentType<TicketStatusClass>) => {
-          await i.save()
-        })
-
-        return resolve()
-      } catch (e) {
-        return reject(e)
-      }
-    })()
-  })
-
-  Promise.all([p1]).then(() => {
-    callback()
-  }).catch((err) => callback(err))
+  await Promise.all(statuses.map(s => s.save()))
 }
 
-async function ticketPriorityDefaults(callback: any) {
-  const priorities = []
+async function ticketPriorityDefaults() {
+  const priorities = [
+    new PriorityModel({ name: 'Normal', migrationNum: 1, default: true }),
+    new PriorityModel({ name: 'Urgent', migrationNum: 2, htmlColor: '#8e24aa', default: true }),
+    new PriorityModel({ name: 'Critical', migrationNum: 3, htmlColor: '#e65100', default: true }),
+  ]
 
-  const normal = new PriorityModel({
-    name: 'Normal',
-    migrationNum: 1,
-    default: true,
-  })
-
-  const urgent = new PriorityModel({
-    name: 'Urgent',
-    migrationNum: 2,
-    htmlColor: '#8e24aa',
-    default: true,
-  })
-
-  const critical = new PriorityModel({
-    name: 'Critical',
-    migrationNum: 3,
-    htmlColor: '#e65100',
-    default: true,
-  })
-
-  priorities.push(normal)
-  priorities.push(urgent)
-  priorities.push(critical)
-
-  priorities.forEach(async (item) => {
-    try {
-      const priority = await PriorityModel.findOne({ migrationNum: item.migrationNum })
-      if (!priority)
-        await item.save()
-    } catch (err) {
-      winston.error(`Error: ${err}`)
-    }
-  }, Error())
-
-  return callback()
-}
-
-function normalizeTags(callback : any) {
-  TicketTagModel.find({}, function (err, tags) {
-    if (err) return callback(err)
-    async.each(
-      tags,
-      function (tag, next) {
-        tag.save(next)
-      },
-      callback
-    )
-  })
-}
-
-function checkPriorities(callback: any) {
-  let migrateP1 = false
-  let migrateP2 = false
-  let migrateP3 = false
-
-  async.parallel(
-    [
-      function (done) {
-        TicketModel.collection.countDocuments({ priority: 1 }).then(function (count) {
-          migrateP1 = count > 0
-          return done()
-        })
-      },
-      function (done) {
-        TicketModel.collection.countDocuments({ priority: 2 }).then(function (count) {
-          migrateP2 = count > 0
-          return done()
-        })
-      },
-      function (done) {
-        TicketModel.collection.countDocuments({ priority: 3 }).then(function (count) {
-          migrateP3 = count > 0
-          return done()
-        })
-      },
-    ],
-    function () {
-      const p1 = new Promise<void>((resolve, reject) => {
-        (async ():Promise<void> => {
-          if (!migrateP1) return resolve()
-          try {
-            const normal = await PriorityModel.getByMigrationNum(1)
-            if (!normal) throw new Error('Invalid priority!')
-            winston.debug('Converting Priority: Normal')
-
-            const res = await TicketModel.collection
-              .updateMany({ priority: 1 }, { $set: { priority: normal._id } })
-
-            if (res && res.result) {
-              if (res.result.ok === 1) {
-                return resolve()
-              }
-
-              winston.warn(res.message)
-              return resolve(res.message)
-            }
-          } catch (err: any) {
-            winston.warn(err.message)
-            return reject(err)
-          }
-        })()
-      })
-
-      const p2 = new Promise<void>((resolve, reject) => {
-        (async ():Promise<void> => {
-          if (!migrateP1) return resolve()
-          try {
-            const urgent = await PriorityModel.getByMigrationNum(2)
-            if (!urgent) throw new Error('Invalid priority!')
-            winston.debug('Converting Priority: Urgent')
-
-            const res = await TicketModel.collection
-              .updateMany({ priority: 1 }, { $set: { priority: urgent._id } })
-
-            if (res && res.result) {
-              if (res.result.ok === 1) {
-                return resolve()
-              }
-
-              winston.warn(res.message)
-              return resolve(res.message)
-            }
-          } catch (err: any) {
-            winston.warn(err.message)
-            return reject(err)
-          }
-        })()
-      })
-
-      const p3 = new Promise<void>((resolve, reject) => {
-        (async ():Promise<void> => {
-          if (!migrateP1) return resolve()
-          try {
-            const critical = await PriorityModel.getByMigrationNum(3)
-            if (!critical) throw new Error('Invalid priority!')
-            winston.debug('Converting Priority: Critical')
-
-            const res = await TicketModel.collection
-              .updateMany({ priority: 1 }, { $set: { priority: critical._id } })
-
-            if (res && res.result) {
-              if (res.result.ok === 1) {
-                return resolve()
-              }
-
-              winston.warn(res.message)
-              return resolve(res.message)
-            }
-          } catch (err: any) {
-            winston.warn(err.message)
-            return reject(err)
-          }
-        })()
-      })
-
-      Promise.all([p1, p2, p3]).then(() => {
-        callback()
-      }).catch(err => callback(err))
-    }
+  await Promise.all(
+    priorities.map(async item => {
+      const existing = await PriorityModel.findOne({ migrationNum: item.migrationNum })
+      if (!existing) await item.save()
+    })
   )
 }
 
-async function addedDefaultPrioritiesToTicketTypes(callback: any) {
-  try {
-    let priorities = await PriorityModel.find({ default: true })
-    priorities = _.sortBy(priorities, 'migrationNum')
-    const types = await TicketTypeModel.getTypes()
-    for (const type of types) {
-      let prioritiesToAdd: Types.ObjectId[] = []
-      if (!type.priorities || type.priorities.length < 1) {
-        type.priorities = []
-        prioritiesToAdd = _.map(priorities, '_id')
-      }
+async function normalizeTags() {
+  const tags = await TicketTagModel.find({})
+  await Promise.all(tags.map(tag => tag.save()))
+}
 
-      if (prioritiesToAdd.length > 1) {
-        type.priorities = _.concat(type.priorities, prioritiesToAdd)
-        await type.save()
-      }
-    }
+async function checkPriorities() {
+  const [countP1, countP2, countP3] = await Promise.all([
+    TicketModel.collection.countDocuments({ priority: 1 }),
+    TicketModel.collection.countDocuments({ priority: 2 }),
+    TicketModel.collection.countDocuments({ priority: 3 }),
+  ])
 
-    return callback()
-  } catch (err) {
-    return callback(err)
+  if (countP1 > 0) {
+    const normal = await PriorityModel.getByMigrationNum(1)
+    if (!normal) throw new Error('Invalid priority: Normal')
+    winston.debug('Converting Priority: Normal')
+    await TicketModel.collection.updateMany({ priority: 1 }, { $set: { priority: normal._id } })
+  }
+
+  if (countP2 > 0) {
+    const urgent = await PriorityModel.getByMigrationNum(2)
+    if (!urgent) throw new Error('Invalid priority: Urgent')
+    winston.debug('Converting Priority: Urgent')
+    await TicketModel.collection.updateMany({ priority: 2 }, { $set: { priority: urgent._id } })
+  }
+
+  if (countP3 > 0) {
+    const critical = await PriorityModel.getByMigrationNum(3)
+    if (!critical) throw new Error('Invalid priority: Critical')
+    winston.debug('Converting Priority: Critical')
+    await TicketModel.collection.updateMany({ priority: 3 }, { $set: { priority: critical._id } })
   }
 }
 
-function mailTemplates(callback) {
-  var newTicket = require('./json/mailer-new-ticket')
-  var passwordReset = require('./json/mailer-password-reset')
-  var templateSchema = require('../models/template')
-  async.parallel(
-    [
-      function (done) {
-        templateSchema.findOne({ name: newTicket.name }, function (err, templates) {
-          if (err) return done(err)
-          if (!templates || templates.length < 1) {
-            return templateSchema.create(newTicket, done)
-          }
+async function addedDefaultPrioritiesToTicketTypes() {
+  let priorities = await PriorityModel.find({ default: true })
+  priorities = _.sortBy(priorities, 'migrationNum')
+  const types = await TicketTypeModel.getTypes()
+  for (const type of types) {
+    let prioritiesToAdd: Types.ObjectId[] = []
+    if (!type.priorities || type.priorities.length < 1) {
+      type.priorities = []
+      prioritiesToAdd = _.map(priorities, '_id')
+    }
 
+    if (prioritiesToAdd.length > 1) {
+      type.priorities = _.concat(type.priorities, prioritiesToAdd)
+      await type.save()
+    }
+  }
+}
+
+function mailTemplates(callback: AsyncCallback) {
+  parallel(
+    [
+      function (done: AsyncCallback) {
+        ;(TemplateModel as any).findOne({ name: newTicketTemplate.name }, function (err: Error, template: any) {
+          if (err) return done(err)
+          if (!template) return (TemplateModel as any).create(newTicketTemplate, done)
           return done()
         })
       },
-      function (done) {
-        templateSchema.findOne({ name: passwordReset.name }, function (err, templates) {
+      function (done: AsyncCallback) {
+        ;(TemplateModel as any).findOne({ name: passwordResetTemplate.name }, function (err: Error, template: any) {
           if (err) return done(err)
-          if (!templates || templates.length < 1) {
-            return templateSchema.create(passwordReset, done)
-          }
-
+          if (!template) return (TemplateModel as any).create(passwordResetTemplate, done)
           return done()
         })
       },
