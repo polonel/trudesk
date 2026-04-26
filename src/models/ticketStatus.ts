@@ -26,7 +26,6 @@ const COLLECTION = 'statuses'
   if (!_.isUndefined(this.uid) || this.uid)
     return
 
-  // @ts-ignore
   const res = await Counters.increment('status')
   this.uid = res.value.next
   if (!this.uid)
