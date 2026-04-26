@@ -30,7 +30,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
-const passportConfig = require('../passport')()
+const passportConfig = require('../passport').default()
 
 let middleware = {}
 
