@@ -14,7 +14,7 @@
 
 const winston = require('../../../logger')
 const apiUtils = require('../apiUtils')
-const Notice = require('../../../models/notice')
+const { NoticeModel: Notice } = require('../../../models')
 
 const apiNotices = {}
 

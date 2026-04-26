@@ -15,7 +15,7 @@
 import _ from 'lodash'
 import logger from '../../../logger'
 import es from '../../../elasticsearch'
-import ticketSchema from '../../../models/ticket'
+import { TicketModel as ticketSchema } from '../../../models'
 import { DepartmentModel, GroupModel } from '../../../models'
 import apiUtils from '../apiUtils'
 

@@ -125,7 +125,7 @@ installController.install = function (req, res) {
   const roleOrderSchema = require('../models/roleorder')
   const UserSchema = require('../models').UserModel
   const GroupSchema = require('../models/group')
-  const Counters = require('../models/counters')
+  const Counters = require('../models/counters').default
   const TicketTypeSchema = require('../models').TicketTypeModel
   const SettingsSchema = require('../models/setting')
 
