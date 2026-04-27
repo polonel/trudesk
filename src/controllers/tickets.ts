@@ -1,0 +1,735 @@
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ */
+
+import async from 'async'
+import path from 'path'
+import _ from 'lodash'
+import winston from '../logger'
+import { GroupModel, DepartmentModel } from '../models'
+import permissions from '../permissions'
+import xss from 'xss'
+import fs from 'fs-extra'
+
+const ticketSchema = require('../models/ticket')
+
+const ticketsController: Record<string, any> = {}
+
+ticketsController.content = {}
+
+ticketsController.pubNewIssue = function (_req: any, res: any) {
+  const marked = require('marked')
+  const settings = require('../models/setting')
+  settings.getSettingByName('allowPublicTickets:enable', function (err: any, setting: any) {
+    if (err) return handleError(res, err)
+    if (setting && setting.value === true) {
+      settings.getSettingByName('legal:privacypolicy', function (err: any, privacyPolicy: any) {
+        if (err) return handleError(res, err)
+
+        const content: Record<string, any> = {}
+        content.title = 'New Issue'
+        content.layout = false
+        content.data = {}
+        if (privacyPolicy === null || _.isUndefined(privacyPolicy.value)) {
+          content.data.privacyPolicy = 'No Privacy Policy has been set.'
+        } else {
+          content.data.privacyPolicy = xss(marked.parse(privacyPolicy.value))
+        }
+
+        return res.render('pub_createTicket', content)
+      })
+    } else {
+      return res.redirect('/')
+    }
+  })
+}
+
+ticketsController.getByStatus = function (req: any, _res: any, next: any) {
+  const url = require('url')
+  let page = req.params.page
+  if (_.isUndefined(page)) page = 0
+
+  const processor: Record<string, any> = {}
+  processor.title = 'Tickets'
+  processor.nav = 'tickets'
+  processor.subnav = 'tickets-'
+  processor.renderpage = 'tickets'
+  processor.pagetype = 'active'
+  processor.object = {
+    limit: 50,
+    page: page,
+    status: []
+  }
+
+  const fullUrl = url.format({
+    protocol: req.protocol,
+    host: req.get('host'),
+    pathname: req.originalUrl
+  })
+
+  const pathname = new url.URL(fullUrl).pathname
+  const arr = pathname.split('/')
+  let tType = 'new'
+  let s = 0
+  if (_.size(arr) > 2) tType = arr[2]
+
+  switch (tType) {
+    case 'open':
+      s = 1
+      break
+    case 'pending':
+      s = 2
+      break
+    case 'closed':
+      s = 3
+      break
+  }
+
+  processor.subnav += tType
+  processor.pagetype = tType
+  processor.object.status.push(s)
+
+  req.processor = processor
+  return next()
+}
+
+ticketsController.getActive = function (req: any, _res: any, next: any) {
+  let page = req.params.page
+  if (_.isUndefined(page)) page = 0
+
+  const processor: Record<string, any> = {}
+  processor.title = 'Tickets'
+  processor.nav = 'tickets'
+  processor.subnav = 'tickets-active'
+  processor.renderpage = 'tickets'
+  processor.pagetype = 'active'
+  processor.object = {
+    limit: 50,
+    page: page,
+    status: { isResolved: false }
+  }
+
+  req.processor = processor
+
+  return next()
+}
+
+ticketsController.getAssigned = function (req: any, _res: any, next: any) {
+  let page = req.params.page
+  if (_.isUndefined(page)) page = 0
+
+  const processor: Record<string, any> = {}
+  processor.title = 'Tickets'
+  processor.nav = 'tickets'
+  processor.subnav = 'tickets-assigned'
+  processor.renderpage = 'tickets'
+  processor.pagetype = 'assigned'
+  processor.object = {
+    limit: 50,
+    page: page,
+    status: { isResolved: false },
+    assignedSelf: true,
+    user: req.user._id
+  }
+
+  req.processor = processor
+
+  return next()
+}
+
+ticketsController.getUnassigned = function (req: any, _res: any, next: any) {
+  let page = req.params.page
+  if (_.isUndefined(page)) page = 0
+
+  const processor: Record<string, any> = {}
+  processor.title = 'Tickets'
+  processor.nav = 'tickets'
+  processor.subnav = 'tickets-unassigned'
+  processor.renderpage = 'tickets'
+  processor.pagetype = 'unassigned'
+  processor.object = {
+    limit: 50,
+    page: page,
+    status: [0, 1, 2],
+    unassigned: true,
+    user: req.user._id
+  }
+
+  req.processor = processor
+
+  return next()
+}
+
+ticketsController.filter = function (req: any, _res: any, next: any) {
+  let page = req.query.page
+  if (_.isUndefined(page)) page = 0
+
+  const queryString = req.query
+  const uid = queryString.uid
+  const subject = queryString.fs
+  const issue = queryString.it
+  const dateStart = queryString.ds
+  const dateEnd = queryString.de
+  let status = queryString.st
+  let priority = queryString.pr
+  let groups = queryString.gp
+  let types = queryString.tt
+  let tags = queryString.tag
+  let assignee = queryString.au
+
+  const rawNoPage = req.originalUrl.replace(/[?&]page=[^&#]*(#.*)?$/, '$1').replace(/([?&])page=[^&]*&/, '$1')
+
+  if (!_.isUndefined(status)) status = xss(status)
+  if (!_.isUndefined(status) && !_.isArray(status)) status = [status]
+  if (!_.isUndefined(priority)) priority = xss(priority)
+  if (!_.isUndefined(priority) && !_.isArray(priority)) priority = [priority]
+  if (!_.isUndefined(groups)) groups = xss(groups)
+  if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups]
+  if (!_.isUndefined(types)) types = xss(types)
+  if (!_.isUndefined(types) && !_.isArray(types)) types = [types]
+  if (!_.isUndefined(tags)) tags = xss(tags)
+  if (!_.isUndefined(tags) && !_.isArray(tags)) tags = [tags]
+  if (!_.isUndefined(assignee)) assignee = xss(assignee)
+  if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee]
+
+  const filter = {
+    uid: uid,
+    subject: xss(subject),
+    issue: issue,
+    date: {
+      start: dateStart,
+      end: dateEnd
+    },
+    status: status,
+    priority: priority,
+    groups: groups,
+    tags: tags,
+    types: types,
+    assignee: assignee,
+    raw: rawNoPage
+  }
+
+  const processor: Record<string, any> = {}
+  processor.title = 'Tickets'
+  processor.nav = 'tickets'
+  processor.renderpage = 'tickets'
+  processor.pagetype = 'filter'
+  processor.filter = filter
+  processor.object = {
+    limit: 50,
+    page: page,
+    status: filter.status,
+    user: req.user._id,
+    filter: filter
+  }
+
+  req.processor = processor
+
+  return next()
+}
+
+ticketsController.processor = function (req: any, res: any) {
+  const processor = req.processor
+  if (_.isUndefined(processor)) return res.redirect('/')
+
+  const content: Record<string, any> = {}
+  content.title = processor.title
+  content.nav = processor.nav
+  content.subnav = processor.subnav
+  content.view = processor.pagetype
+
+  content.data = {}
+  content.data.user = req.user
+  content.data.common = req.viewdata
+
+  const object = processor.object
+  content.data.page = object.page
+  content.data.filter = object.filter
+
+  return res.render(processor.renderpage, content)
+}
+
+ticketsController.pdf = function (req: any, res: any) {
+  const TicketPDFGenerator = require('../pdf/ticketGenerator')
+  let uid = null
+  try {
+    uid = parseInt(req.params.uid)
+  } catch (e) {
+    winston.warn(e)
+    return res.status(404).send('Invalid Ticket UID')
+  }
+
+  ticketSchema.getTicketByUid(uid, function (err: any, ticket: any) {
+    if (err) return handleError(res, err)
+
+    const ticketGenerator = new TicketPDFGenerator(ticket)
+
+    ticketGenerator.generate(function (err: any, obj: any) {
+      if (err) return res.redirect('/tickets')
+
+      return res.writeHead(200, obj.headers).end(obj.data)
+    })
+  })
+}
+
+ticketsController.print = function (req: any, res: any) {
+  const user = req.user
+  let uid = null
+  try {
+    uid = parseInt(req.params.uid)
+  } catch (e) {
+    winston.warn(e)
+    return res.redirect('/tickets')
+  }
+
+  const content: Record<string, any> = {}
+  content.title = 'Tickets - ' + req.params.uid
+  content.nav = 'tickets'
+
+  content.data = {}
+  content.data.user = req.user
+  content.data.common = req.viewdata
+  content.data.ticket = {}
+
+  ticketSchema.getTicketByUid(uid, function (err: any, ticket: any) {
+    if (err) return handleError(res, err)
+    if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
+
+    const hasPublic = permissions.canThis(user.role, 'tickets:public')
+    let hasAccess = false
+    async.series(
+      [
+        async function (next: any) {
+          try {
+            if (user.role.isAdmin || user.role.isAgent) {
+              const groups = await DepartmentModel.getDepartmentGroupsOfUser(user._id)
+              const gIds = groups.map((g: any) => g._id)
+
+              if (_.some(gIds, ticket.group._id)) {
+                if (!permissions.canThis(user.role, 'tickets:notes')) {
+                  ticket.notes = []
+                }
+
+                hasAccess = true
+                return next()
+              } else {
+                return next('UNAUTHORIZED_GROUP_ACCESS')
+              }
+            } else {
+              return next()
+            }
+          } catch (e) {
+            return res.redirect('/tickets')
+          }
+        },
+        function (next: any) {
+          if (hasAccess) return next()
+
+          const members = ticket.group.members.map(function (m: any) {
+            return m._id.toString()
+          })
+
+          if (!members.includes(user._id.toString())) {
+            if (ticket.group.public && hasPublic) {
+              // Blank to bypass
+            } else {
+              return next('UNAUTHORIZED_GROUP_ACCESS')
+            }
+          }
+
+          if (!permissions.canThis(user.role, 'tickets:notes')) {
+            ticket.notes = []
+          }
+
+          return next()
+        }
+      ],
+      function (err: any) {
+        if (err) {
+          if (err === 'UNAUTHORIZED_GROUP_ACCESS')
+            winston.warn(
+              'User tried to access ticket outside of group - UserId: ' + user._id + ' (' + user.username + ')'
+            )
+
+          return res.redirect('/tickets')
+        }
+
+        content.data.ticket = ticket
+        content.data.ticket.priorityname = ticket.priority.name
+        content.data.ticket.tagsArray = ticket.tags
+        content.data.ticket.commentCount = _.size(ticket.comments)
+        content.layout = 'layout/print'
+
+        return res.render('subviews/printticket', content)
+      }
+    )
+  })
+}
+
+ticketsController.single = function (req: any, res: any) {
+  const user = req.user
+  const uid = req.params.id
+  if (isNaN(uid)) {
+    return res.redirect('/tickets')
+  }
+
+  const content: Record<string, any> = {}
+  content.title = 'Tickets - ' + req.params.id
+  content.nav = 'tickets'
+
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.ticket = {}
+
+  ticketSchema.getTicketByUid(uid, async function (err: any, ticket: any) {
+    if (err) return handleError(res, err)
+    if (!ticket) return res.redirect('/tickets')
+
+    try {
+      let groups: any[]
+      if (!user.role.isAdmin && !user.role.isAgent) groups = await GroupModel.getAllGroupsOfUserNoPopulate(user._id)
+      else groups = await DepartmentModel.getDepartmentGroupsOfUser(user._id)
+
+      const hasPublic = permissions.canThis(user.role, 'tickets:public')
+      const groupIds = groups.map((g: any) => g._id.toString())
+
+      if (!groupIds.includes(ticket.group._id.toString())) {
+        if (ticket.group.public && !hasPublic) {
+          winston.warn('User access ticket outside of group - UserId: ' + user._id)
+          return res.redirect('/tickets')
+        }
+      }
+
+      if (
+        ticket.owner._id.toString() !== req.user._id.toString() &&
+        !permissions.canThis(user.role, 'tickets:viewall')
+      ) {
+        winston.warn('User trying to access ticket outside of permission: ' + user._id)
+        return res.redirect('/tickets')
+      }
+
+      if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
+      if (!permissions.canThis(user.role, 'ticket:notes')) ticket.notes = []
+
+      content.data.ticket = ticket
+      content.data.ticket.priorityname = ticket.priority.name
+
+      return res.render('subviews/singleticket', content)
+    } catch (e) {
+      winston.warn(e)
+      return res.redirect('/tickets')
+    }
+  })
+}
+
+ticketsController.uploadImageMDE = function (req: any, res: any) {
+  const Chance = require('chance')
+  const chance = new Chance()
+  const Busboy = require('busboy')
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 5 * 1024 * 1024
+    }
+  })
+
+  const object: Record<string, any> = {}
+  let error: any
+
+  object.ticketId = req.headers.ticketid
+  if (!object.ticketId) return res.status(400).json({ success: false })
+
+  busboy.on('file', function (_name: string, file: any, info: any) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+    if (mimetype.indexOf('image/') === -1) {
+      error = {
+        status: 500,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    const ext = path.extname(filename)
+    const allowedExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.jpe',
+      '.jif',
+      '.jfif',
+      '.jfi',
+      '.png',
+      '.gif',
+      '.webp',
+      '.tiff',
+      '.tif',
+      '.bmp',
+      '.dib',
+      '.heif',
+      '.heic'
+    ]
+
+    if (!allowedExtensions.includes(ext.toLocaleLowerCase())) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
+    const sanitizedFilename = chance.hash({ length: 20 }) + ext
+    if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
+
+    object.filePath = path.join(savePath, 'inline_' + sanitizedFilename)
+    object.filename = sanitizedFilename
+    object.mimetype = mimetype
+
+    if (fs.existsSync(object.filePath)) {
+      error = {
+        status: 500,
+        message: 'File already exists'
+      }
+
+      return file.resume()
+    }
+
+    file.on('limit', function () {
+      error = {
+        status: 500,
+        message: 'File too large'
+      }
+
+      if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath)
+
+      return file.resume()
+    })
+
+    file.pipe(fs.createWriteStream(object.filePath))
+  })
+
+  busboy.on('finish', function () {
+    if (error) return res.status(error.status).send(error.message)
+
+    if (_.isUndefined(object.ticketId) || _.isUndefined(object.filename) || _.isUndefined(object.filePath)) {
+      return res.status(400).send('Invalid Form Data')
+    }
+
+    if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
+
+    const fileUrl = '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename
+
+    return res.json({ filename: fileUrl, ticketId: object.ticketId })
+  })
+
+  req.pipe(busboy)
+}
+
+ticketsController.uploadAttachment = function (req: any, res: any) {
+  const Busboy = require('busboy')
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1,
+      fileSize: 10 * 1024 * 1024
+    }
+  })
+
+  const object: Record<string, any> = {
+    ownerId: req.user._id
+  }
+  let error: any
+
+  const events: any[] = []
+
+  busboy.on('field', function (fieldname: string, val: string) {
+    if (fieldname === 'ticketId') object.ticketId = val
+    if (fieldname === 'ownerId') object.ownerId = val
+  })
+
+  busboy.on('file', function (_name: string, file: any, info: any) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+
+    if (
+      mimetype.indexOf('image/') === -1 &&
+      mimetype.indexOf('text/plain') === -1 &&
+      mimetype.indexOf('audio/mpeg') === -1 &&
+      mimetype.indexOf('audio/mp3') === -1 &&
+      mimetype.indexOf('audio/wav') === -1 &&
+      mimetype.indexOf('application/x-zip-compressed') === -1 &&
+      mimetype.indexOf('application/pdf') === -1 &&
+      mimetype.indexOf('application/msword') === -1 &&
+      mimetype.indexOf('application/vnd.openxmlformats-officedocument.wordprocessingml.document') === -1 &&
+      mimetype.indexOf('application/vnd.ms-excel') === -1 &&
+      mimetype.indexOf('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') === -1
+    ) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    const savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
+    let sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
+
+    const ext = path.extname(sanitizedFilename)
+    const allowedExts = [
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.tif',
+      '.gif',
+      '.doc',
+      '.docx',
+      '.xlsx',
+      '.xls',
+      '.pdf',
+      '.zip',
+      '.rar',
+      '.7z',
+      '.mp3',
+      '.wav',
+      '.txt',
+      '.mp4',
+      '.avi',
+      '.mpeg',
+      '.eps',
+      '.ai',
+      '.psd'
+    ]
+
+    if (!allowedExts.includes(ext)) {
+      error = {
+        status: 400,
+        message: 'Invalid File Type'
+      }
+
+      return file.resume()
+    }
+
+    if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
+
+    object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+    object.filename = sanitizedFilename.replace('/', '').replace('..', '')
+    object.mimetype = mimetype
+
+    if (fs.existsSync(object.filePath)) {
+      const Chance = require('chance')
+      const chance = new Chance()
+      sanitizedFilename = chance.hash({ length: 15 }) + '-' + sanitizedFilename
+      object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename)
+      object.filename = sanitizedFilename
+    }
+
+    if (fs.existsSync(object.filePath)) {
+      error = {
+        status: 400,
+        message: 'File already exists'
+      }
+
+      return file.resume()
+    }
+
+    file.on('limit', function () {
+      error = {
+        status: 400,
+        message: 'File too large'
+      }
+
+      if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath)
+
+      return file.resume()
+    })
+
+    const fstream = fs.createWriteStream(object.filePath)
+    events.push(function (cb: any) {
+      fstream.on('finish', cb)
+    })
+
+    file.pipe(fstream)
+  })
+
+  busboy.on('finish', function () {
+    async.series(events, function () {
+      if (error) return res.status(error.status).send(error.message)
+
+      if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
+        fs.unlinkSync(object.filePath)
+        return res.status(400).send('Invalid Form Data')
+      }
+
+      if (!fs.existsSync(object.filePath)) {
+        winston.warn('Unable to save file to disk: ' + object.filePath)
+        return res.status(500).send('File Failed to Save to Disk')
+      }
+
+      ticketSchema.getTicketById(object.ticketId, function (err: any, ticket: any) {
+        if (err) {
+          winston.warn(err)
+          return res.status(500).send(err.message)
+        }
+
+        const attachment = {
+          owner: object.ownerId,
+          name: object.filename,
+          path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
+          type: object.mimetype
+        }
+        ticket.attachments.push(attachment)
+
+        const historyItem = {
+          action: 'ticket:added:attachment',
+          description: 'Attachment ' + object.filename + ' was added.',
+          owner: object.ownerId
+        }
+        ticket.history.push(historyItem)
+
+        ticket.updated = Date.now()
+        ticket.save(function (err: any, t: any) {
+          if (err) {
+            fs.unlinkSync(object.filePath)
+            winston.warn(err)
+            return res.status(500).send(err.message)
+          }
+
+          const returnData = {
+            ticket: t
+          }
+
+          return res.json(returnData)
+        })
+      })
+    })
+  })
+
+  req.pipe(busboy)
+}
+
+function handleError(res: any, err: any) {
+  if (err) {
+    winston.warn(err)
+    if (!err.status) res.status = 500
+    else res.status = err.status
+    return res.render('error', {
+      layout: false,
+      error: err,
+      message: err.message
+    })
+  }
+}
+
+module.exports = ticketsController

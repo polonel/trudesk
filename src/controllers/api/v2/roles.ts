@@ -34,7 +34,7 @@ apiRoles.update = async (req: any, res: any) => {
   const data = req.body
   if (!_id || !data) return apiUtils.sendApiError_InvalidPostData(res)
 
-  const hierarchy = data.hierarchy ? data.hierarchy : false
+  const hierarchy = !!data.hierarchy
   const cleaned = _.omit(data, ['_id', 'hierarchy'])
   const grants = permissions.buildGrants(cleaned)
 
@@ -78,6 +78,8 @@ apiRoles.updateOrder = async (req: any, res: any) => {
   }
 }
 
-apiRoles.delete = async (req: any, res: any) => {}
+apiRoles.delete = async (_req: any, _res: any) => {
+  // TODO: Implement role deletion
+}
 
 module.exports = apiRoles

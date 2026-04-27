@@ -34,22 +34,23 @@ apiSettings.get = async (req: any, res: any) => {
       const dbSettings = await settingsUtil.getSettings()
       if (!dbSettings) return apiUtils.sendApiError(res, 400, { message: 'Invalid Settings' })
 
-      if (!req.user?.role?.isAdmin) {
-        delete dbSettings.settings.mailerHost
-        delete dbSettings.settings.mailerSSL
-        delete dbSettings.settings.mailerPort
-        delete dbSettings.settings.mailerUsername
-        delete dbSettings.settings.mailerPassword
-        delete dbSettings.settings.mailerFrom
-        delete dbSettings.settings.mailerCheckEnabled
-        delete dbSettings.settings.mailerCheckPolling
-        delete dbSettings.settings.mailerCheckHost
-        delete dbSettings.settings.mailerCheckPort
-        delete dbSettings.settings.mailerCheckPassword
-        delete dbSettings.settings.mailerCheckTicketType
-        delete dbSettings.settings.mailerCheckTicketPriority
-        delete dbSettings.settings.mailerCheckCreateAccount
-        delete dbSettings.settings.mailerCheckDeleteMessage
+      if (!req.user?.role?.isAdmin && dbSettings.settings) {
+        const s = dbSettings.settings as Partial<typeof dbSettings.settings>
+        delete s.mailerHost
+        delete s.mailerSSL
+        delete s.mailerPort
+        delete s.mailerUsername
+        delete s.mailerPassword
+        delete s.mailerFrom
+        delete s.mailerCheckEnabled
+        delete s.mailerCheckPolling
+        delete s.mailerCheckHost
+        delete s.mailerCheckPort
+        delete s.mailerCheckPassword
+        delete s.mailerCheckTicketType
+        delete s.mailerCheckTicketPriority
+        delete s.mailerCheckCreateAccount
+        delete s.mailerCheckDeleteMessage
 
         delete dbSettings.mailTemplates
       }

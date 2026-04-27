@@ -1,0 +1,190 @@
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
+
+import _ from 'lodash'
+import permissions from '../permissions'
+import settingsUtil from '../settings/settingsUtil'
+
+const settingsController: Record<string, any> = {}
+
+settingsController.content = {}
+
+function initViewContent(view: string, req: any): Record<string, any> {
+  const content: Record<string, any> = {}
+  content.title = 'Settings'
+  content.nav = 'settings'
+  content.subnav = 'settings-' + view
+
+  content.data = {}
+  content.data.user = req.user
+  content.data.common = req.viewdata
+
+  return content
+}
+
+function checkPerms(req: any, role: string): boolean {
+  const user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, role)) {
+    req.flash('message', 'Permission Denied.')
+
+    return false
+  }
+
+  return true
+}
+
+function handleError(res: any, err: any) {
+  if (err) {
+    return res.render('error', {
+      layout: false,
+      error: err,
+      message: err.message
+    })
+  }
+}
+
+function renderView(res: any, content: Record<string, any>) {
+  settingsUtil.getSettings(function (err: any, returnedContent: any) {
+    if (err) return handleError(res, err)
+
+    content.data.settings = returnedContent.settings
+    content.data.ticketTypes = returnedContent.ticketTypes
+    content.data.priorities = returnedContent.priorities
+    content.data.mailTemplates = returnedContent.mailTemplates
+    content.data.tags = returnedContent.tags
+    content.data.status = returnedContent.status
+
+    return res.render('settings', content)
+  })
+}
+
+settingsController.general = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:view')) return res.redirect('/')
+
+  const content = initViewContent('general', req)
+
+  renderView(res, content)
+}
+
+settingsController.accounts = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:view')) return res.redirect('/')
+
+  const content = initViewContent('accounts', req)
+
+  renderView(res, content)
+}
+
+settingsController.appearance = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:view')) return res.redirect('/')
+
+  const content = initViewContent('appearance', req)
+
+  renderView(res, content)
+}
+
+settingsController.ticketSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings')
+
+  const content = initViewContent('tickets', req)
+
+  renderView(res, content)
+}
+
+settingsController.mailerSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings')
+
+  const content = initViewContent('mailer', req)
+
+  renderView(res, content)
+}
+
+settingsController.permissionsSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:permissions')) return res.redirect('/settings')
+
+  const content = initViewContent('permissions', req)
+
+  renderView(res, content)
+}
+
+settingsController.notificationsSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings')
+
+  const content = initViewContent('notifications', req)
+
+  renderView(res, content)
+}
+
+settingsController.elasticsearchSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:elasticsearch')) return res.redirect('/settings')
+
+  const content = initViewContent('elasticsearch', req)
+
+  renderView(res, content)
+}
+
+settingsController.tpsSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings')
+
+  const content = initViewContent('tps', req)
+
+  renderView(res, content)
+}
+
+settingsController.backupSettings = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:backup')) return res.redirect('/settings')
+
+  const content = initViewContent('backup', req)
+
+  renderView(res, content)
+}
+
+settingsController.serverSettings = function (req: any, res: any) {
+  const content = initViewContent('server', req)
+
+  renderView(res, content)
+}
+
+settingsController.legal = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings')
+
+  const content = initViewContent('legal', req)
+
+  renderView(res, content)
+}
+
+settingsController.logs = function (req: any, res: any) {
+  if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings')
+
+  const content = initViewContent('logs', req)
+
+  const fs = require('fs')
+  const path = require('path')
+  const AnsiUp = require('ansi_up')
+  const ansiUp = new AnsiUp.default()
+  const file = path.join(__dirname, '../../logs/output.log')
+
+  fs.readFile(file, 'utf-8', function (err: any, data: any) {
+    if (err) {
+      content.data.logFileContent = err
+      return res.render('logs', content)
+    }
+
+    content.data.logFileContent = data.toString().trim()
+    content.data.logFileContent = ansiUp.ansi_to_html(content.data.logFileContent)
+
+    return res.render('logs', content)
+  })
+}
+
+module.exports = settingsController

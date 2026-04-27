@@ -19,7 +19,7 @@ import type { UserModelClass } from "./user"
 
 const COLLECTION = 'sessions_jwt'
 
-interface ISession extends Document {
+export interface ISession extends Document {
   _id: string
   user: Types.ObjectId | UserModelClass
   expires: Date

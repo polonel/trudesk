@@ -20,7 +20,7 @@ const COLLECTION = 'role_order'
 export interface IRoleOrder extends Document {
   order: Array<Types.ObjectId>
 
-  updateOrder(): void
+  updateOrder(order: Array<Types.ObjectId>, callback?: (err?: CallbackError, result?: HydratedDocument<IRoleOrder>) => void): Promise<HydratedDocument<IRoleOrder>>
 
   getHierarchy(): Array<IRoleOrder>
 }
@@ -60,10 +60,9 @@ schema.static('getOrderLean', function (callback) {
     .exec(callback)
 })
 
-schema.method('updateOrder', function (order: Array<string>, callback?: (err?: CallbackError, result?: HydratedDocument<IRoleOrder>) => void) {
+schema.method('updateOrder', function (order: Array<Types.ObjectId>, callback?: (err?: CallbackError, result?: HydratedDocument<IRoleOrder>) => void) {
   return new Promise<IRoleOrder>((resolve, reject) => {
     (async () => {
-      this.order = order
       try {
         this.order = order
 

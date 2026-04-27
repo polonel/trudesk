@@ -96,7 +96,7 @@ commonV2.token = async (req: any, res: any) => {
     if (!decoded || !(decoded as any).s) return apiUtils.sendApiError(res, 401)
     const sessionId = (decoded as any).s
 
-    let session = await SessionModel.findOne({ _id: sessionId })
+    const session = await SessionModel.findOne({ _id: sessionId })
     if (!session) {
       res.cookie('_rft_', null, { maxAge: 0 })
       return apiUtils.sendApiError(res, 401)
@@ -131,13 +131,13 @@ commonV2.viewData = async (req: any, res: any) => {
   return apiUtils.sendApiSuccess(res, { viewdata: req.viewdata })
 }
 
-commonV2.getReleases = async (req: any, res: any) => {
+commonV2.getReleases = async (_req: any, res: any) => {
   let releaseChannel = config.get('trudesk')?.release
   if (!releaseChannel) releaseChannel = 'stable'
   return apiUtils.sendApiSuccess(res, { currentVersion: pkg.version, releaseChannel, releases: getReleases() })
 }
 
-commonV2.aboutStats = async (req: any, res: any) => {
+commonV2.aboutStats = async (_req: any, res: any) => {
   try {
     const stats: Record<string, any> = {
       version: 'v' + pkg.version

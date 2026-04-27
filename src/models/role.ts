@@ -29,12 +29,16 @@ export interface IRole extends Document {
   // Virtuals
   isAdmin: boolean
   isAgent: boolean
+
+  // Instance methods
+  updateGrants(grants: Array<string>, callback: () => void): void
+  updateGrantsAndHierarchy(grants: Array<string>, hierarchy: boolean, callback?: () => void): Promise<IRole>
 }
 
 interface IRoleMethods {
   updateGrants(grants: Array<string>, callback: () => void): void
 
-  updateGrantsAndHierarchy(grants: Array<string>, hierarchy: boolean, callback: () => void): void
+  updateGrantsAndHierarchy(grants: Array<string>, hierarchy: boolean, callback?: () => void): Promise<HydratedDocument<IRole>>
 }
 
 export interface IRoleModel extends Model<IRole, Record<string, never>, IRoleMethods> {
@@ -111,7 +115,10 @@ roleSchema.method('updateGrants', function (grants, callback) {
 roleSchema.method('updateGrantsAndHierarchy', function (grants, hierarchy, callback) {
   this.grants = grants
   this.hierarchy = hierarchy
-  this.save(callback)
+  if (typeof callback === 'function') {
+    return this.save(callback)
+  }
+  return this.save()
 })
 
 roleSchema.static('getRoles', function getRoles(callback) {

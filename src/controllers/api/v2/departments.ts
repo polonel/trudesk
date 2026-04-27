@@ -18,7 +18,7 @@ import logger from '../../../logger'
 
 const apiDepartments: Record<string, any> = {}
 
-apiDepartments.get = async (req: any, res: any) => {
+apiDepartments.get = async (_req: any, res: any) => {
   try {
     const departments = await DepartmentModel.find({})
 

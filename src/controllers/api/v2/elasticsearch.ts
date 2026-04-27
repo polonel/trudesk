@@ -21,13 +21,13 @@ import apiUtils from '../apiUtils'
 
 const apiElasticSearch: Record<string, any> = {}
 
-apiElasticSearch.rebuild = (req: any, res: any) => {
+apiElasticSearch.rebuild = (_req: any, res: any) => {
   es.rebuildIndex()
 
   return apiUtils.sendApiSuccess(res)
 }
 
-apiElasticSearch.status = async (req: any, res: any) => {
+apiElasticSearch.status = async (_req: any, res: any) => {
   const response: Record<string, any> = {}
 
   try {
@@ -49,7 +49,7 @@ apiElasticSearch.status = async (req: any, res: any) => {
       new Promise((resolve, reject) => {
         ;(async () => {
           try {
-            const ticketCount = await ticketSchema.getCount()
+            const ticketCount = await ticketSchema.getCount(_.noop)
             resolve(ticketCount)
           } catch (e) {
             reject(e)

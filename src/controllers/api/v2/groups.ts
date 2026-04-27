@@ -13,8 +13,7 @@
  */
 
 import apiUtils from '../apiUtils'
-import Ticket from '../../../models/ticket'
-import { GroupModel, DepartmentModel } from '../../../models'
+import { GroupModel, DepartmentModel, TicketModel } from '../../../models'
 
 const apiGroupModels: Record<string, any> = {}
 
@@ -87,7 +86,7 @@ apiGroupModels.delete = function (req: any, res: any) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Ticket.countDocuments({ group: { $in: [id] } }, function (err: any, tickets: number) {
+  TicketModel.countDocuments({ group: { $in: [id] } }, function (err: any, tickets: number) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
     if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete GroupModel with tickets.')
 

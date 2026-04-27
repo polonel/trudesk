@@ -7,18 +7,25 @@
  *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
- *  Updated:    1/15/20, 1:23 AM
- *  Copyright (c) 2014-2020 Trudesk, Inc. All rights reserved.
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import mailCheck from '../../../mailer/mailCheck'
-import apiUtils from '../apiUtils'
+const pluginsController: Record<string, any> = {}
 
-const mailerApi: Record<string, any> = {}
+pluginsController.get = function (req: any, res: any) {
+  const content: Record<string, any> = {}
+  content.title = 'Plugins'
+  content.nav = 'plugins'
 
-mailerApi.check = function (_req: any, res: any) {
-  mailCheck.refetch()
-  return apiUtils.sendApiSuccess(res)
+  content.data = {}
+  content.data.user = req.user
+  content.data.common = req.viewdata
+  content.data.plugins = {}
+  content.data.plugins.installed = JSON.stringify((global as any).plugins, null, 2)
+
+  res.render('plugins', content)
 }
 
-module.exports = mailerApi
+module.exports = pluginsController

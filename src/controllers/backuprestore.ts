@@ -1,0 +1,267 @@
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
+
+import _ from 'lodash'
+import fs from 'fs-extra'
+import path from 'path'
+import async from 'async'
+import moment from 'moment'
+import logger from '../logger'
+import config from '../config'
+
+const backupRestore: Record<string, any> = {}
+
+function formatBytes(bytes: number, fixed?: number): string {
+  if (!fixed) fixed = 2
+  if (bytes < 1024) return bytes + ' Bytes'
+  if (bytes < 1048576) return (bytes / 1024).toFixed(fixed) + ' KB'
+  if (bytes < 1073741824) return (bytes / 1048576).toFixed(fixed) + ' MB'
+
+  return (bytes / 1073741824).toFixed(fixed) + ' GB'
+}
+
+backupRestore.getBackups = function (_req: any, res: any) {
+  fs.readdir(path.resolve(config.trudeskRoot(), 'backups'), function (err: any, files: string[]) {
+    if (err) return res.status(400).json({ error: err })
+
+    files = files.filter(function (file) {
+      return path.extname(file).toLowerCase() === '.zip'
+    })
+
+    let fileWithStats: any[] = []
+    async.forEach(
+      files,
+      function (f: string, next: any) {
+        fs.stat(path.resolve(config.trudeskRoot(), 'backups/', f), function (err: any, stats: any) {
+          if (err) return next(err)
+
+          const obj: Record<string, any> = {}
+          obj.size = stats.size
+          obj.sizeFormat = formatBytes(obj.size, 1)
+          obj.filename = f
+          obj.time = stats.mtime
+
+          fileWithStats.push(obj)
+
+          return next()
+        })
+      },
+      function (err: any) {
+        if (err) return res.status(400).json({ success: false, error: err })
+        fileWithStats = _.sortBy(fileWithStats, function (o) {
+          return moment(o.time)
+        }).reverse()
+        return res.json({ success: true, files: fileWithStats })
+      }
+    )
+  })
+}
+
+backupRestore.runBackup = function (_req: any, res: any) {
+  const database = require('../database')
+  const child = require('child_process').fork(path.join(__dirname, '../backup/backup'), {
+    env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.getConnectionUri(), PATH: process.env.PATH }
+  })
+  global.forks.push({ name: 'backup', fork: child })
+
+  let result: any = null
+
+  child.on('message', function (data: any) {
+    child.kill('SIGINT')
+    global.forks = _.remove(global.forks, function (f) {
+      return f.fork !== child
+    })
+
+    if (data.error) {
+      logger.warn(data.error)
+      result = { success: false, error: data.error }
+    }
+
+    if (data.success) {
+      result = { success: true }
+    } else {
+      logger.warn(data)
+      result = { success: false, error: data }
+    }
+  })
+
+  child.on('close', function () {
+    if (!result) {
+      return res.status(500).json({ success: false, error: { message: 'An Unknown Error Occurred' } })
+    }
+
+    if (result.error) {
+      logger.warn(result)
+      return res.status(400).json(result)
+    }
+
+    return res.json(result)
+  })
+}
+
+backupRestore.deleteBackup = function (req: any, res: any) {
+  let filename = req.params.backup
+  if (_.isUndefined(filename) || !fs.existsSync(path.resolve(config.trudeskRoot(), 'backups/', filename))) {
+    return res.status(400).json({ success: false, error: 'Invalid Filename' })
+  }
+
+  filename = filename.replace('..', '')
+
+  fs.unlink(path.resolve(config.trudeskRoot(), 'backups/', filename), function (err: any) {
+    if (err) return res.status(400).json({ success: false, error: err })
+
+    return res.json({ success: true })
+  })
+}
+
+backupRestore.restoreBackup = function (req: any, res: any) {
+  const file = req.body.file
+  if (!file) return res.status(400).json({ success: false, error: 'Invalid File' })
+
+  const child = require('child_process').fork(path.resolve(__dirname, '../backup/restore'), {
+    env: {
+      FORK: 1,
+      NODE_ENV: global.env,
+      MONGOURI: global.CONNECTION_URI,
+      FILE: file,
+      PATH: process.env.PATH
+    }
+  })
+  global.forks.push({ name: 'restore', fork: child })
+
+  let result: any = null
+
+  child.on('message', function (data: any) {
+    child.kill('SIGINT')
+    global.forks = _.remove(global.forks, function (f) {
+      return f.fork !== child
+    })
+
+    if (data.error) {
+      result = { success: false, error: data.error }
+      return
+    }
+
+    if (data.success) {
+      const cache = _.find(global.forks, function (f) {
+        return f.name === 'cache'
+      })
+
+      if (cache && cache.fork) {
+        cache.fork.send({ name: 'cache:refresh:force' })
+      }
+
+      require('../permissions').flushRoles(function () {}) // eslint-disable-line @typescript-eslint/no-empty-function
+
+      result = { success: true }
+    } else {
+      result = { success: false, error: data.error }
+    }
+  })
+
+  child.on('close', function () {
+    if (!result) {
+      return res.status(500).json({ success: false, error: 'An Unknown Error Occurred' })
+    }
+
+    if (result.error) {
+      return res.status(400).json(result)
+    }
+
+    return res.json(result)
+  })
+}
+
+backupRestore.hasBackupTools = function (_req: any, res: any) {
+  if (require('os').platform() === 'win32') {
+    return res.json({ success: true })
+  }
+
+  require('child_process').exec('mongodump --version', function (err: any) {
+    if (err) return res.status(400).json({ success: false, error: err })
+
+    return res.json({ success: true })
+  })
+}
+
+backupRestore.uploadBackup = function (req: any, res: any) {
+  const Busboy = require('busboy')
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      files: 1
+    }
+  })
+
+  const allowedExts = ['.zip']
+
+  const object: Record<string, any> = {}
+  let error: any
+
+  busboy.on('file', function (_name: any, file: any, info: any) {
+    const filename = info.filename
+    const mimetype = info.mimeType
+    const ext = path.extname(filename)
+
+    if (!allowedExts.includes(ext)) {
+      error = {
+        status: 400,
+        message: 'Invalid file type. Zip Required'
+      }
+
+      return file.resume()
+    }
+
+    if (
+      mimetype.indexOf('application/zip') === -1 &&
+      mimetype.indexOf('application/x-compressed') === -1 &&
+      mimetype.indexOf('application/x-zip-compressed') === -1 &&
+      mimetype.indexOf('application/octet-stream') === -1 &&
+      mimetype.indexOf('multipart/x-zip')
+    ) {
+      error = {
+        status: 400,
+        message: 'Invalid file type. Zip Required.'
+      }
+
+      return file.resume()
+    }
+
+    const savePath = path.resolve(config.trudeskRoot(), 'backups')
+    fs.ensureDirSync(savePath)
+
+    object.filePath = path.join(savePath, filename)
+    object.filename = filename.replace('/', '').replace('..', '')
+    object.mimetype = mimetype
+
+    file.pipe(fs.createWriteStream(object.filePath))
+  })
+
+  busboy.on('finish', function () {
+    if (error) return res.status(error.status).json({ success: false, error: error.message })
+
+    if (_.isUndefined(object.filePath) || _.isUndefined(object.filename)) {
+      return res.status(400).json({ success: false, error: 'Invalid Form Data' })
+    }
+
+    if (!fs.existsSync(object.filePath))
+      return res.status(400).json({ success: false, error: 'File failed to save to disk' })
+
+    return res.json({ success: true })
+  })
+
+  req.pipe(busboy)
+}
+
+module.exports = backupRestore

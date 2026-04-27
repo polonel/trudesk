@@ -74,3 +74,4 @@ stats\.json
 
 *.heapsnapshot
 .claude
+.claudeignore

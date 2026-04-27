@@ -177,7 +177,7 @@ function isAdminSync(roleId: string | Types.ObjectId): boolean {
   return role.isAdmin
 }
 
-function buildGrants(obj: { k: string; v: string }): string[] {
+function buildGrants(obj: Record<string, string[]>): string[] {
   return _.map(obj, function (v, k) {
     return k + ':' + _.join(v, ' ')
   })

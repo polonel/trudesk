@@ -36,7 +36,7 @@ apiNotices.create = async (req: any, res: any) => {
   }
 }
 
-apiNotices.get = function (req: any, res: any) {
+apiNotices.get = function (_req: any, res: any) {
   Notice.find({}, function (err: any, notices: any) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
 
@@ -72,7 +72,7 @@ apiNotices.activate = function (req: any, res: any) {
   })
 }
 
-apiNotices.clear = function (req: any, res: any) {
+apiNotices.clear = function (_req: any, res: any) {
   Notice.updateMany({}, { active: false }, function (err: any) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
 

@@ -5,21 +5,21 @@ import { Server } from "socket.io";
 import type { IRole } from "../models/role";
 import type { IRoleOrder } from "../models/roleorder";
 
-export declare global {
-  const forks: Array<NamedChildProcess>
-  const env: string
-  const timezone: string
-  const cache: NodeCache
+declare global {
+  var forks: Array<NamedChildProcess>
+  var env: string
+  var timezone: string
+  var cache: NodeCache
 
   //Database
-  const CONNECTION_URI: string
-  const dbConnection: Connection | null
-  const roles: Array<IRole> | undefined
-  const roleOrder: IRoleOrder | undefined
+  var CONNECTION_URI: string
+  var dbConnection: Connection | null
+  var roles: Array<IRole> | undefined
+  var roleOrder: IRoleOrder | undefined
 
   // Socket.io
-  const io: Server
-  const socketServer: any
+  var io: Server
+  var socketServer: any
 }
 
 export type NamedChildProcess = {
