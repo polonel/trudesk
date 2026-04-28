@@ -14,8 +14,10 @@
 
 import path from 'path'
 import fs from 'fs'
+// @ts-ignore: busboy lacks type declarations
 import Busboy from 'busboy'
 import logger from '../../../logger'
+// @ts-ignore: sanitize-html lacks type declarations
 import sanitizeHtml from 'sanitize-html'
 import settingsUtil from '../../../settings/settingsUtil'
 import apiUtils from '../apiUtils'
@@ -31,8 +33,8 @@ apiSettings.get = async (req: any, res: any) => {
       const dbSettings = await SettingModel.getSettingsByName(querySettings, null, 'name value')
       return apiUtils.sendApiSuccess(res, { settings: dbSettings })
     } else {
-      const dbSettings = await settingsUtil.getSettings()
-      if (!dbSettings) return apiUtils.sendApiError(res, 400, { message: 'Invalid Settings' })
+      const dbSettings = await settingsUtil.getSettings(() => undefined)
+      if (!dbSettings) return apiUtils.sendApiError(res, 400, 'Invalid Settings')
 
       if (!req.user?.role?.isAdmin && dbSettings.settings) {
         const s = dbSettings.settings as Partial<typeof dbSettings.settings>
@@ -93,26 +95,26 @@ apiSettings.updateBatch = async (req: any, res: any) => {
   }
 }
 
-apiSettings.theme = async (req: any, res: any) => {
+apiSettings.theme = async (_req: any, res: any) => {
   try {
-    const content = await settingsUtil.getSettings()
-    const parsed = content.settings
+    const content = await settingsUtil.getSettings(() => undefined)
+    const parsed = content.settings || {}
 
     const theme = {
-      customLogo: parsed.hasCustomLogo.value,
-      customLogoUrl: parsed.customLogoFilename.value,
-      customFavicon: parsed.hasCustomFavicon.value,
-      customFaviconUrl: '/assets/' + parsed.customFaviconFilename.value,
-      siteTitle: parsed.siteTitle.value,
-      autoDark: parsed.themeAutoDark.value,
-      themeLight: parsed.themeLight.value,
-      themeDark: parsed.themeDark.value,
-      headerBG: parsed.colorHeaderBG.value,
-      headerPrimary: parsed.colorHeaderPrimary.value,
-      primary: parsed.colorPrimary.value,
-      secondary: parsed.colorSecondary.value,
-      tertiary: parsed.colorTertiary.value,
-      quaternary: parsed.colorQuaternary.value
+      customLogo: (parsed as any).hasCustomLogo?.value,
+      customLogoUrl: (parsed as any).customLogoFilename?.value,
+      customFavicon: (parsed as any).hasCustomFavicon?.value,
+      customFaviconUrl: '/assets/' + (parsed as any).customFaviconFilename?.value,
+      siteTitle: (parsed as any).siteTitle?.value,
+      autoDark: (parsed as any).themeAutoDark?.value,
+      themeLight: (parsed as any).themeLight?.value,
+      themeDark: (parsed as any).themeDark?.value,
+      headerBG: (parsed as any).colorHeaderBG?.value,
+      headerPrimary: (parsed as any).colorHeaderPrimary?.value,
+      primary: (parsed as any).colorPrimary?.value,
+      secondary: (parsed as any).colorSecondary?.value,
+      tertiary: (parsed as any).colorTertiary?.value,
+      quaternary: (parsed as any).colorQuaternary?.value
     }
 
     return apiUtils.sendApiSuccess(res, { theme })
@@ -133,7 +135,7 @@ apiSettings.uploadLogo = async (req: any, res: any) => {
   const object: Record<string, any> = {}
   let error: any = null
 
-  busboy.on('file', function (name: string, file: any, info: any) {
+  busboy.on('file', function (_name: string, file: any, info: any) {
     const filename = info.filename
     const mimetype = info.mimeType
     if (mimetype.indexOf('image/') === -1) {
@@ -184,11 +186,11 @@ apiSettings.uploadLogo = async (req: any, res: any) => {
             return apiUtils.sendApiSuccess(res, {})
           })
           .catch(() => {
-            return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+            return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
           })
       })
       .catch(() => {
-        return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+        return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
       })
   })
 
@@ -207,7 +209,7 @@ apiSettings.uploadPageLogo = async (req: any, res: any) => {
   const object: Record<string, any> = {}
   let error: any = null
 
-  busboy.on('file', function (name: string, file: any, info: any) {
+  busboy.on('file', function (_name: string, file: any, info: any) {
     const filename = info.filename
     const mimetype = info.mimeType
     if (mimetype.indexOf('image/') === -1) {
@@ -258,11 +260,11 @@ apiSettings.uploadPageLogo = async (req: any, res: any) => {
             return apiUtils.sendApiSuccess(res, {})
           })
           .catch(() => {
-            return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+            return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
           })
       })
       .catch(() => {
-        return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+        return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
       })
   })
 
@@ -281,7 +283,7 @@ apiSettings.uploadFavicon = async (req: any, res: any) => {
   const object: Record<string, any> = {}
   let error: any = null
 
-  busboy.on('file', function (name: string, file: any, info: any) {
+  busboy.on('file', function (_name: string, file: any, info: any) {
     const filename = info.filename
     const mimetype = info.mimeType
     if (mimetype.indexOf('image/') === -1) {
@@ -332,11 +334,11 @@ apiSettings.uploadFavicon = async (req: any, res: any) => {
             return apiUtils.sendApiSuccess(res, {})
           })
           .catch(() => {
-            return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+            return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
           })
       })
       .catch(() => {
-        return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
+        return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
       })
   })
 

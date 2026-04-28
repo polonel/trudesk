@@ -61,7 +61,7 @@ apiMessages.startConversation = async (req: any, res: any) => {
       return apiUtils.sendApiSuccess(res, { conversation: cSave })
     }
   } catch (err: any) {
-    return apiUtils.sendApiError(res, 400, { error: err.message })
+    return apiUtils.sendApiError(res, 400, err.message)
   }
 
   return apiUtils.sendApiSuccess(res)
@@ -184,12 +184,12 @@ apiMessages.send = async (req: any, res: any) => {
   try {
     // Cast to any — ConversationModelClass doesn't declare mongoose Document methods
     const convo = (await ConversationModel.findOne({ _id: cId })) as any
-    if (!convo) return apiUtils.sendApiError(res, 404, { error: 'Invalid Conversation' })
+    if (!convo) return apiUtils.sendApiError(res, 404, 'Invalid Conversation')
 
     convo.updatedAt = new Date()
     const savedConvo = await convo.save()
     const user = await UserModel.findOne({ _id: owner })
-    if (!user) return apiUtils.sendApiError(res, 404, { error: 'Invalid Conversation' })
+    if (!user) return apiUtils.sendApiError(res, 404, 'Invalid Conversation')
 
     const _Message = new MessageModel({
       conversation: savedConvo._id,
@@ -202,7 +202,7 @@ apiMessages.send = async (req: any, res: any) => {
     return apiUtils.sendApiSuccess(res, { message: mSave })
   } catch (err: any) {
     logger.debug(err)
-    return apiUtils.sendApiError(res, 400, { error: err.message })
+    return apiUtils.sendApiError(res, 400, err.message)
   }
 }
 
@@ -218,7 +218,7 @@ apiMessages.deleteConversation = async (req: any, res: any) => {
       return item.userId.toString() === user._id.toString()
     })
     if (idx === -1) {
-      return apiUtils.sendApiError(res, 400, { error: 'Unable to attach to userMeta' })
+      return apiUtils.sendApiError(res, 400, 'Unable to attach to userMeta')
     }
 
     convo.userMeta[idx].deletedAt = new Date()

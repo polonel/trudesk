@@ -4,7 +4,7 @@
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+   888 .  888      888   888  888   888  888    .o o.  )88b 888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
  Created:    02/24/18
@@ -89,98 +89,84 @@ const roleDefaults: DefaultGrants = {
 
 settingsDefaults.roleDefaults = roleDefaults
 
-function rolesDefault(callback: AsyncCallback) {
-  series(
-    [
-      function (done) {
-        RoleModel.getRoleByName('User', function (err, role) {
-          if (err) return done(err)
-          if (role) return done()
+async function rolesDefault(): Promise<void> {
+  const tasks = [
+    async () => {
+      const role = await RoleModel.getRoleByName('User')
+      if (role) return
+      
+      const userRole = await RoleModel.create({
+        name: 'User',
+        description: 'Default role for users',
+        grants: roleDefaults.userGrants
+      })
+      
+      const roleUserDefault = await SettingModel.getSettingByName('role:user:default')
+      if (!roleUserDefault) {
+        await SettingModel.create({ name: 'role:user:default', value: userRole._id })
+      }
+    },
+    async () => {
+      const role = await RoleModel.getRoleByName('Support')
+      if (role) return
+      
+      await RoleModel.create({
+        name: 'Support',
+        description: 'Default role for agents',
+        grants: roleDefaults.supportGrants
+      })
+    },
+    async () => {
+      const role = await RoleModel.getRoleByName('Admin')
+      if (role) return
+      
+      await RoleModel.create({
+        name: 'Admin',
+        description: 'Default role for admins',
+        grants: roleDefaults.adminGrants
+      })
+    },
+    async () => {
+      const roleOrder = await (RoleOrderModel as any).getOrder()
+      if (roleOrder) return
 
-          RoleModel.create(
-            { name: 'User', description: 'Default role for users', grants: roleDefaults.userGrants },
-            function (err, userRole) {
-              if (err) return done(err)
-              SettingModel.getSettingByName('role:user:default', function (err, roleUserDefault) {
-                if (err) return done(err)
-                if (roleUserDefault) return done()
-                SettingModel.create({ name: 'role:user:default', value: userRole._id }, done)
-              })
-            }
-          )
-        })
-      },
-      function (done) {
-        RoleModel.getRoleByName('Support', function (err, role) {
-          if (err) return done(err)
-          if (role) return done()
-          RoleModel.create(
-            { name: 'Support', description: 'Default role for agents', grants: roleDefaults.supportGrants },
-            done
-          )
-        })
-      },
-      function (done) {
-        RoleModel.getRoleByName('Admin', function (err, role) {
-          if (err) return done(err)
-          if (role) return done()
-          RoleModel.create(
-            { name: 'Admin', description: 'Default role for admins', grants: roleDefaults.adminGrants },
-            done
-          )
-        })
-      },
-      function (done) {
-        ;(RoleOrderModel as any).getOrder(function (err: Error, roleOrder: any) {
-          if (err) return done(err)
-          if (roleOrder) return done()
-
-          RoleModel.getRoles(function (err, roles) {
-            if (err) return done(err)
-
-            const order = [
-              _.find(roles, { name: 'Admin' })?._id,
-              _.find(roles, { name: 'Support' })?._id,
-              _.find(roles, { name: 'User' })?._id,
-            ]
-            ;(RoleOrderModel as any).create({ order }, done)
-          })
-        })
-      },
-    ],
-    function (err) {
-      if (err) throw err
-      return callback()
+      const roles = await RoleModel.getRoles()
+      
+      const order = [
+        _.find(roles, { name: 'Admin' })?._id,
+        _.find(roles, { name: 'Support' })?._id,
+        _.find(roles, { name: 'User' })?._id,
+      ]
+      
+      await (RoleOrderModel as any).create({ order })
     }
-  )
+  ]
+
+  // Execute tasks sequentially
+  for (const task of tasks) {
+    await task()
+  }
 }
 
-function defaultUserRole(callback: AsyncCallback) {
-  ;(RoleOrderModel as any).getOrderLean(function (err: Error, roleOrder: any) {
-    if (err) return callback(err)
-    if (!roleOrder) return callback()
+async function defaultUserRole(): Promise<void> {
+  const roleOrder = await (RoleOrderModel as any).getOrderLean()
+  if (!roleOrder) return
 
-    SettingModel.getSettingByName('role:user:default', function (err, roleDefault) {
-      if (err) return callback(err)
-      if (roleDefault) return callback()
+  const roleDefault = await SettingModel.getSettingByName('role:user:default')
+  if (roleDefault) return
 
-      const lastId = _.last(roleOrder.order)
-      SettingModel.create({ name: 'role:user:default', value: lastId }, callback)
-    })
-  })
+  const lastId = _.last(roleOrder.order)
+  await SettingModel.create({ name: 'role:user:default', value: lastId })
 }
 
-function createDirectories(callback: AsyncCallback) {
-  parallel(
-    [
-      (done: AsyncCallback) => fs.ensureDir(path.resolve(config.trudeskRoot(), 'backups'), done),
-      (done: AsyncCallback) => fs.ensureDir(path.resolve(config.trudeskRoot(), 'restores'), done),
-    ],
-    callback
-  )
+async function createDirectories(): Promise<void> {
+  await Promise.all([
+    fs.ensureDir(path.resolve(config.trudeskRoot(), 'backups')),
+    fs.ensureDir(path.resolve(config.trudeskRoot(), 'restores'))
+  ])
 }
 
-function downloadWin32MongoDBTools(callback: AsyncCallback) {
+async function downloadWin32MongoDBTools(): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const os = require('os')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -188,7 +174,7 @@ function downloadWin32MongoDBTools(callback: AsyncCallback) {
   const dbVersion = trudeskDatabase.version || '5.0.6'
   const fileVersion = semver.major(dbVersion) + '.' + semver.minor(dbVersion)
 
-  if (os.platform() !== 'win32') return callback()
+  if (os.platform() !== 'win32') return
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const http = require('http')
@@ -201,7 +187,7 @@ function downloadWin32MongoDBTools(callback: AsyncCallback) {
     fs.existsSync(path.join(savePath, 'mongodump.exe')) &&
     fs.existsSync(path.join(savePath, 'mongorestore.exe'))
   ) {
-    return callback()
+    return
   }
 
   winston.debug('Windows platform detected. Downloading MongoDB Tools [' + filename + ']')
@@ -216,94 +202,57 @@ function downloadWin32MongoDBTools(callback: AsyncCallback) {
       file.on('close', () => {
         fs.createReadStream(path.join(savePath, filename))
           .pipe(unzipper.Extract({ path: savePath }))
-          .on('close', () => fs.unlink(path.join(savePath, filename), callback))
+          .on('close', () => fs.unlink(path.join(savePath, filename), () => {}))
       })
     })
     .on('error', function (err: Error) {
       fs.unlink(path.join(savePath, filename))
       winston.debug(err)
-      return callback()
     })
 }
 
-function timezoneDefault(callback: AsyncCallback) {
-  SettingModel.getSettingByName('gen:timezone', function (err, setting) {
-    if (err) {
-      winston.warn(err)
-      return callback(err)
-    }
-
-    if (!setting) {
-      const defaultTimezone = new SettingModel({ name: 'gen:timezone', value: 'America/New_York' })
-      defaultTimezone.save(function (err, setting) {
-        if (err) {
-          winston.warn(err)
-          return callback(err)
-        }
-        winston.debug('Timezone set to ' + setting.value)
-        moment.tz.setDefault(setting.value)
-        global.timezone = setting.value
-        return callback()
-      })
-    } else {
-      winston.debug('Timezone set to ' + setting.value)
-      moment.tz.setDefault(setting.value)
-      global.timezone = setting.value
-      return callback()
-    }
-  })
+async function timezoneDefault(): Promise<void> {
+  const setting = await SettingModel.getSettingByName('gen:timezone')
+  if (!setting) {
+    const defaultTimezone = new SettingModel({ name: 'gen:timezone', value: 'America/New_York' })
+    const savedSetting = await defaultTimezone.save()
+    winston.debug('Timezone set to ' + savedSetting.value)
+    moment.tz.setDefault(savedSetting.value)
+    global.timezone = savedSetting.value
+  } else {
+    winston.debug('Timezone set to ' + setting.value)
+    moment.tz.setDefault(setting.value)
+    global.timezone = setting.value
+  }
 }
 
-function showTourSettingDefault(callback: AsyncCallback) {
-  SettingModel.getSettingByName('showTour:enable', function (err, setting) {
-    if (err) {
-      winston.warn(err)
-      return callback(err)
-    }
-
-    if (!setting) {
-      const defaultShowTour = new SettingModel({ name: 'showTour:enable', value: 0 })
-      defaultShowTour.save(function (err) {
-        if (err) {
-          winston.warn(err)
-          return callback(err)
-        }
-        return callback()
-      })
-    } else {
-      return callback()
-    }
-  })
+async function showTourSettingDefault(): Promise<void> {
+  const setting = await SettingModel.getSettingByName('showTour:enable')
+  if (!setting) {
+    const defaultShowTour = new SettingModel({ name: 'showTour:enable', value: 0 })
+    await defaultShowTour.save()
+  }
 }
 
-function ticketTypeSettingDefault(callback: AsyncCallback) {
-  SettingModel.getSettingByName('ticket:type:default', async function (err, setting) {
-    if (err) {
+async function ticketTypeSettingDefault(): Promise<void> {
+  const setting = await SettingModel.getSettingByName('ticket:type:default')
+  if (!setting) {
+    try {
+      const types = await TicketTypeModel.getTypes()
+      const type = _.first(types) as TicketTypeClass
+      if (!type || !_.isObject(type) || _.isUndefined(type._id))
+        throw new Error('Invalid Type. Skipping.')
+
+      const defaultTicketType = new SettingModel({ name: 'ticket:type:default', value: type._id })
+      await defaultTicketType.save()
+    } catch (err) {
       winston.warn(err)
-      return callback(err)
+      throw err
     }
-
-    if (!setting) {
-      try {
-        const types = await TicketTypeModel.getTypes()
-        const type = _.first(types) as TicketTypeClass
-        if (!type || !_.isObject(type) || _.isUndefined(type._id))
-          throw new Error('Invalid Type. Skipping.')
-
-        const defaultTicketType = new SettingModel({ name: 'ticket:type:default', value: type._id })
-        await defaultTicketType.save()
-        return callback()
-      } catch (err) {
-        winston.warn(err)
-        return callback(err as Error)
-      }
-    } else {
-      return callback()
-    }
-  })
+  }
 }
 
-async function defaultTicketStatus() {
+async function defaultTicketStatus(): Promise<void> {
   const statuses: DocumentType<TicketStatusClass>[] = []
 
   const newStatus = new TicketStatusModel({ name: 'New', htmlColor: '#29b955', uid: 0, order: 0, slatimer: false, isResolved: false, isLocked: true })
@@ -326,7 +275,7 @@ async function defaultTicketStatus() {
   await Promise.all(statuses.map(s => s.save()))
 }
 
-async function ticketPriorityDefaults() {
+async function ticketPriorityDefaults(): Promise<void> {
   const priorities = [
     new PriorityModel({ name: 'Normal', migrationNum: 1, default: true }),
     new PriorityModel({ name: 'Urgent', migrationNum: 2, htmlColor: '#8e24aa', default: true }),
@@ -341,12 +290,12 @@ async function ticketPriorityDefaults() {
   )
 }
 
-async function normalizeTags() {
+async function normalizeTags(): Promise<void> {
   const tags = await TicketTagModel.find({})
   await Promise.all(tags.map(tag => tag.save()))
 }
 
-async function checkPriorities() {
+async function checkPriorities(): Promise<void> {
   const [countP1, countP2, countP3] = await Promise.all([
     TicketModel.collection.countDocuments({ priority: 1 }),
     TicketModel.collection.countDocuments({ priority: 2 }),
@@ -375,7 +324,7 @@ async function checkPriorities() {
   }
 }
 
-async function addedDefaultPrioritiesToTicketTypes() {
+async function addedDefaultPrioritiesToTicketTypes(): Promise<void> {
   let priorities = await PriorityModel.find({ default: true })
   priorities = _.sortBy(priorities, 'migrationNum')
   const types = await TicketTypeModel.getTypes()
@@ -393,29 +342,29 @@ async function addedDefaultPrioritiesToTicketTypes() {
   }
 }
 
-function mailTemplates(callback: AsyncCallback) {
-  parallel(
-    [
-      function (done: AsyncCallback) {
-        ;(TemplateModel as any).findOne({ name: newTicketTemplate.name }, function (err: Error, template: any) {
-          if (err) return done(err)
-          if (!template) return (TemplateModel as any).create(newTicketTemplate, done)
-          return done()
-        })
-      },
-      function (done: AsyncCallback) {
-        ;(TemplateModel as any).findOne({ name: passwordResetTemplate.name }, function (err: Error, template: any) {
-          if (err) return done(err)
-          if (!template) return (TemplateModel as any).create(passwordResetTemplate, done)
-          return done()
-        })
-      },
-    ],
-    callback
-  )
+async function mailTemplates(): Promise<void> {
+  const tasks = [
+    async () => {
+      const template = await (TemplateModel as any).findOne({ name: newTicketTemplate.name })
+      if (!template) {
+        await (TemplateModel as any).create(newTicketTemplate)
+      }
+    },
+    async () => {
+      const template = await (TemplateModel as any).findOne({ name: passwordResetTemplate.name })
+      if (!template) {
+        await (TemplateModel as any).create(passwordResetTemplate)
+      }
+    }
+  ]
+
+  // Execute tasks sequentially
+  for (const task of tasks) {
+    await task()
+  }
 }
 
-function elasticSearchConfToDB(callback: AsyncCallback) {
+async function elasticSearchConfToDB(): Promise<void> {
   const elasticsearch = {
     enable: nconf.get('elasticsearch:enable') || false,
     host: nconf.get('elasticsearch:host') || 'http://localhost',
@@ -424,78 +373,79 @@ function elasticSearchConfToDB(callback: AsyncCallback) {
 
   nconf.set('elasticsearch', {})
 
-  parallel(
-    [
-      (done: AsyncCallback) => nconf.save(done),
-      function (done: AsyncCallback) {
-        SettingModel.getSettingByName('es:enable', function (err, setting) {
-          if (err) return done(err)
-          if (!setting) SettingModel.create({ name: 'es:enable', value: elasticsearch.enable }, done)
-          else done()
-        })
-      },
-      function (done: AsyncCallback) {
-        if (!elasticsearch.host) elasticsearch.host = 'localhost'
-        SettingModel.getSettingByName('es:host', function (err, setting) {
-          if (err) return done(err)
-          if (!setting) SettingModel.create({ name: 'es:host', value: elasticsearch.host }, done)
-          else done()
-        })
-      },
-      function (done: AsyncCallback) {
-        if (!elasticsearch.port) return done()
-        SettingModel.getSettingByName('es:port', function (err, setting) {
-          if (err) return done(err)
-          if (!setting) SettingModel.create({ name: 'es:port', value: elasticsearch.port }, done)
-          else done()
-        })
-      },
-    ],
-    callback
-  )
+  await Promise.all([
+    nconf.save(),
+    async () => {
+      const setting = await SettingModel.getSettingByName('es:enable')
+      if (!setting) {
+        await SettingModel.create({ name: 'es:enable', value: elasticsearch.enable })
+      }
+    },
+    async () => {
+      if (!elasticsearch.host) elasticsearch.host = 'localhost'
+      const setting = await SettingModel.getSettingByName('es:host')
+      if (!setting) {
+        await SettingModel.create({ name: 'es:host', value: elasticsearch.host })
+      }
+    },
+    async () => {
+      if (!elasticsearch.port) return
+      const setting = await SettingModel.getSettingByName('es:port')
+      if (!setting) {
+        await SettingModel.create({ name: 'es:port', value: elasticsearch.port.toString() })
+      }
+    }
+  ])
 }
 
-function installationID(callback: AsyncCallback) {
+async function installationID(): Promise<void> {
   const chance = new Chance()
-  SettingModel.getSettingByName('gen:installid', function (err, setting) {
-    if (err) return callback(err)
-    if (!setting) SettingModel.create({ name: 'gen:installid', value: chance.guid() }, callback)
-    else return callback()
-  })
+  const setting = await SettingModel.getSettingByName('gen:installid')
+  if (!setting) {
+    await SettingModel.create({ name: 'gen:installid', value: chance.guid() })
+  }
 }
 
-async function maintenanceModeDefault() {
+async function maintenanceModeDefault(): Promise<void> {
   const setting = await SettingModel.getSettingByName('maintenanceMode:enable')
   if (!setting) {
     await SettingModel.create({ name: 'maintenanceMode:enable', value: false })
   }
 }
 
-export const init = function (callback: AsyncCallback) {
+export function init(callback: AsyncCallback): void {
   winston.debug('Checking Default Settings...')
-  series(
-    [
-      createDirectories,
-      downloadWin32MongoDBTools,
-      rolesDefault,
-      defaultUserRole,
-      timezoneDefault,
-      ticketTypeSettingDefault,
-      defaultTicketStatus,
-      ticketPriorityDefaults,
-      addedDefaultPrioritiesToTicketTypes,
-      checkPriorities,
-      normalizeTags,
-      mailTemplates,
-      elasticSearchConfToDB,
-      maintenanceModeDefault,
-      installationID,
-    ],
-    function (err) {
-      if (err) winston.warn(err)
-      if (typeof callback === 'function') return callback()
+  
+  const promise = async () => {
+    try {
+      await createDirectories()
+      await downloadWin32MongoDBTools()
+      await rolesDefault()
+      await defaultUserRole()
+      await timezoneDefault()
+      await ticketTypeSettingDefault()
+      await defaultTicketStatus()
+      await ticketPriorityDefaults()
+      await addedDefaultPrioritiesToTicketTypes()
+      await checkPriorities()
+      await normalizeTags()
+      await mailTemplates()
+      await elasticSearchConfToDB()
+      await maintenanceModeDefault()
+      await installationID()
+      
+      if (typeof callback === 'function') {
+        callback()
+      }
+    } catch (err) {
+      winston.warn(err)
+      if (typeof callback === 'function') {
+        callback(err as Error)
+      }
     }
-  )
+  }
+
+  promise()
 }
 
 settingsDefaults.init = init

@@ -57,7 +57,7 @@ apiElasticSearch.status = async (_req: any, res: any) => {
         })()
       })
 
-    const [__, indexCount, ticketCount] = await Promise.all([es.checkConnection(), getIndexCountData(), getDBCount()])
+    const [, indexCount, ticketCount] = await Promise.all([es.checkConnection(), getIndexCountData(), getDBCount()])
     response.indexCount = indexCount
     response.dbCount = ticketCount
     response.esStatus = (global as any).esStatus
@@ -131,12 +131,11 @@ apiElasticSearch.search = async (req: any, res: any) => {
 
     if (!es || !es.esclient) return apiUtils.sendApiError(res, 400, 'Elasticsearch is not configured')
 
-    es.esclient.search(obj).then((r: any) => {
-      return res.send(r)
-    })
+    const r = await es.esclient.search(obj)
+    return res.send(r)
   } catch (e: any) {
     logger.debug(e)
-    return apiUtils.sendApiError(res, 500, { error: e })
+    return apiUtils.sendApiError(res, 500, e.message || String(e))
   }
 }
 

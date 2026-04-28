@@ -78,8 +78,8 @@ apiRoles.updateOrder = async (req: any, res: any) => {
   }
 }
 
-apiRoles.delete = async (_req: any, _res: any) => {
-  // TODO: Implement role deletion
+apiRoles.delete = async (_req: any, res: any) => {
+  return apiUtils.sendApiError(res, 501, 'Not yet implemented')
 }
 
 module.exports = apiRoles

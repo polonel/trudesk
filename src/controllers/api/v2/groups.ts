@@ -17,19 +17,18 @@ import { GroupModel, DepartmentModel, TicketModel } from '../../../models'
 
 const apiGroupModels: Record<string, any> = {}
 
-apiGroupModels.create = function (req: any, res: any) {
+apiGroupModels.create = async function (req: any, res: any) {
   const postGroupModel = req.body
   if (!postGroupModel) return apiUtils.sendApiError_InvalidPostData(res)
 
-  GroupModel.create(postGroupModel, function (err: any, GroupModel: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    const group = await GroupModel.create(postGroupModel)
+    const populatedGroup = await group.populate('members sendMailTo')
 
-    GroupModel.populate('members sendMailTo', function (err: any, GroupModel: any) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res, { group: GroupModel })
-    })
-  })
+    return apiUtils.sendApiSuccess(res, { group: populatedGroup })
+  } catch (e: any) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
 apiGroupModels.get = async function (req: any, res: any) {
@@ -56,47 +55,45 @@ apiGroupModels.get = async function (req: any, res: any) {
   }
 }
 
-apiGroupModels.update = function (req: any, res: any) {
+apiGroupModels.update = async function (req: any, res: any) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid GroupModel Id')
 
   const putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
-  GroupModel.findOne({ _id: id }, function (err: any, GroupModel: any) {
-    if (err || !GroupModel) return apiUtils.sendApiError(res, 400, 'Invalid GroupModel')
+  try {
+    const group = await GroupModel.findOne({ _id: id })
+    if (!group) return apiUtils.sendApiError(res, 400, 'Invalid GroupModel')
 
-    if (putData.name) GroupModel.name = putData.name
-    if (putData.members) GroupModel.members = putData.members
-    if (putData.sendMailTo) GroupModel.sendMailTo = putData.sendMailTo
+    if (putData.name) group.name = putData.name
+    if (putData.members) group.members = putData.members
+    if (putData.sendMailTo) group.sendMailTo = putData.sendMailTo
 
-    GroupModel.save(function (err: any, GroupModel: any) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
+    const savedGroup = await group.save()
+    const populatedGroup = await savedGroup.populate('members sendMailTo')
 
-      GroupModel.populate('members sendMailTo', function (err: any, GroupModel: any) {
-        if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-        return apiUtils.sendApiSuccess(res, { group: GroupModel })
-      })
-    })
-  })
+    return apiUtils.sendApiSuccess(res, { group: populatedGroup })
+  } catch (e: any) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
-apiGroupModels.delete = function (req: any, res: any) {
+apiGroupModels.delete = async function (req: any, res: any) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  TicketModel.countDocuments({ group: { $in: [id] } }, function (err: any, tickets: number) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    const tickets = await TicketModel.countDocuments({ group: { $in: [id] } })
     if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete GroupModel with tickets.')
 
-    GroupModel.deleteOne({ _id: id }, function (err: any, success: any) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-      if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete GroupModel. Contact your administrator.')
+    const success = await GroupModel.deleteOne({ _id: id })
+    if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete GroupModel. Contact your administrator.')
 
-      return apiUtils.sendApiSuccess(res, { _id: id })
-    })
-  })
+    return apiUtils.sendApiSuccess(res, { _id: id })
+  } catch (e: any) {
+    return apiUtils.sendApiError(res, 500, e.message)
+  }
 }
 
 module.exports = apiGroupModels

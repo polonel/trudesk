@@ -21,10 +21,11 @@ import { SessionModel, TicketModel, UserModel } from '../../../models'
 import jwt from 'jsonwebtoken'
 import config from '../../../config'
 import { getReleases } from '../../../memory/releases_inmemory'
+import type { Request, Response } from 'express'
 
 const commonV2: Record<string, any> = {}
 
-commonV2.login = async (req: any, res: any) => {
+commonV2.login = async (req: Request, res: Response) => {
   const username = req.body.username
   const password = req.body.password
 
@@ -38,8 +39,8 @@ commonV2.login = async (req: any, res: any) => {
       return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
 
     if (user.hasL2Auth) {
-      const auth = apiUtils.generateMFAToken(user._id)
-      return apiUtils.sendApiSuccess(res, { uid: user._id, mfa: true, auth })
+      const auth = apiUtils.generateMFAToken(user._id.toString())
+      return apiUtils.sendApiSuccess(res, { uid: user._id.toString(), mfa: true, auth } as any)
     }
 
     const hash = crypto.createHash('sha256')
@@ -47,8 +48,7 @@ commonV2.login = async (req: any, res: any) => {
     const session = await SessionModel.create({
       user: user._id,
       refreshToken: hash.update(user._id.toString()).digest('hex'),
-      exp: moment()
-        .utc()
+      exp: moment.utc()
         .add(96, 'hours')
         .toDate()
     })
@@ -74,7 +74,7 @@ commonV2.logout = async (req: any, res: any) => {
     const rftJWT = req.cookies['_rft_']
     if (!rftJWT) return apiUtils.sendApiSuccess(res)
 
-    const decoded = await jwt.verify(rftJWT, config.get('tokens:secret'))
+    const decoded = jwt.verify(rftJWT, config.get('tokens:secret'), {})
     if (!decoded) return apiUtils.sendApiSuccess(res)
     const sessionId = (decoded as any).s
 
@@ -92,28 +92,28 @@ commonV2.token = async (req: any, res: any) => {
   const refreshToken = req.cookies['_rft_']
   if (!refreshToken) return apiUtils.sendApiSuccess(res)
   try {
-    const decoded = jwt.verify(refreshToken, config.get('tokens:secret'))
-    if (!decoded || !(decoded as any).s) return apiUtils.sendApiError(res, 401)
+    const decoded = jwt.verify(refreshToken, config.get('tokens:secret'), {})
+    if (!decoded || !(decoded as any).s) return apiUtils.sendApiError(res, 401, 'Invalid Token')
     const sessionId = (decoded as any).s
 
     const session = await SessionModel.findOne({ _id: sessionId })
     if (!session) {
       res.cookie('_rft_', null, { maxAge: 0 })
-      return apiUtils.sendApiError(res, 401)
+       return apiUtils.sendApiError(res, 401, 'Session not found')
     }
 
     const expDate = new Date(session.exp)
     if (expDate < new Date(Date.now())) {
       await SessionModel.deleteOne({ _id: sessionId })
       res.cookie('_rft_', null, { maxAge: 0 })
-      return apiUtils.sendApiError(res, 401)
+       return apiUtils.sendApiError(res, 401, 'Session expired')
     }
 
     const user = await UserModel.findOne({ _id: session.user })
     if (!user) {
       res.cookie('_rft_', null, { maxAge: 0 })
       await SessionModel.deleteOne({ _id: sessionId })
-      return apiUtils.sendApiError(res, 401)
+       return apiUtils.sendApiError(res, 401, 'User not found')
     }
 
     const tokens = await apiUtils.generateJWTToken(user, session)
@@ -155,7 +155,7 @@ commonV2.aboutStats = async (_req: any, res: any) => {
     stats.agentCount = agents ? agents.length : 0
     return apiUtils.sendApiSuccess(res, { stats })
   } catch (e: any) {
-    return apiUtils.sendApiError(res, 500, e)
+     return apiUtils.sendApiError(res, 500, e.message || e)
   }
 }
 

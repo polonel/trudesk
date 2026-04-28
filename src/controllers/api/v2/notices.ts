@@ -36,59 +36,66 @@ apiNotices.create = async (req: any, res: any) => {
   }
 }
 
-apiNotices.get = function (_req: any, res: any) {
-  Notice.find({}, function (err: any, notices: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+apiNotices.get = async function (_req: any, res: any) {
+  try {
+    const notices = await Notice.find({})
 
-    return apiUtils.sendApiSuccess(res, { notices: notices })
-  })
+    return apiUtils.sendApiSuccess(res, { notices })
+  } catch (err: any) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
-apiNotices.update = function (req: any, res: any) {
+apiNotices.update = async function (req: any, res: any) {
   const id = req.params.id
   const payload = req.body
   if (!id || !payload || !payload.name || !payload.message || !payload.color || !payload.fontColor)
     return apiUtils.sendApiError_InvalidPostData(res)
 
-  Notice.findOneAndUpdate({ _id: id }, payload, { new: true }, function (err: any, updatedNotice: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    const updatedNotice = await Notice.findOneAndUpdate({ _id: id }, payload, { new: true })
 
     return apiUtils.sendApiSuccess(res, { notice: updatedNotice })
-  })
+  } catch (err: any) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
-apiNotices.activate = function (req: any, res: any) {
+apiNotices.activate = async function (req: any, res: any) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Notice.updateMany({}, { active: false }, function (err: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-    Notice.findOneAndUpdate({ _id: id }, { active: true }, function (err: any) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res)
-    })
-  })
-}
-
-apiNotices.clear = function (_req: any, res: any) {
-  Notice.updateMany({}, { active: false }, function (err: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    await Notice.updateMany({}, { active: false })
+    await Notice.findOneAndUpdate({ _id: id }, { active: true })
 
     return apiUtils.sendApiSuccess(res)
-  })
+  } catch (err: any) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
-apiNotices.delete = function (req: any, res: any) {
+apiNotices.clear = async function (_req: any, res: any) {
+  try {
+    await Notice.updateMany({}, { active: false })
+
+    return apiUtils.sendApiSuccess(res)
+  } catch (err: any) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
+}
+
+apiNotices.delete = async function (req: any, res: any) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Notice.findOneAndDelete({ _id: id }, function (err: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  try {
+    await Notice.findOneAndDelete({ _id: id })
 
     return apiUtils.sendApiSuccess(res)
-  })
+  } catch (err: any) {
+    return apiUtils.sendApiError(res, 500, err.message)
+  }
 }
 
 module.exports = apiNotices
