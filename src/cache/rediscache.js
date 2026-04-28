@@ -27,7 +27,7 @@ client.on('error', function (err) {
 
 const redisCache = {}
 
-redisCache.setCache = function (key, value, callback, ttl) {
+redisCache.setCache = async function (key, value, callback, ttl) {
   if (!_.isArray(value)) {
     value = [value]
   }
@@ -43,20 +43,47 @@ redisCache.setCache = function (key, value, callback, ttl) {
     //     importMulti.expire(rake('$trudesk', key), 600);
     // });
 
-    importMulti.exec(function (err) {
-      if (err) return callback(err)
-
+    try {
+      await new Promise((resolve, reject) => {
+        importMulti.exec(function (err) {
+          if (err) return reject(err)
+          resolve()
+        })
+      })
+      
       client.quit()
-
-      return callback()
-    })
+    } catch (err) {
+      if (callback) callback(err)
+      throw err
+    }
   } else {
-    return client.set(key, value)
+    try {
+      await new Promise((resolve, reject) => {
+        client.set(key, value, function (err, result) {
+          if (err) return reject(err)
+          resolve(result)
+        })
+      })
+    } catch (err) {
+      if (callback) callback(err)
+      throw err
+    }
   }
 }
 
-redisCache.getCache = function (key, callback) {
-  return client.hgetall(key, callback)
+redisCache.getCache = async function (key) {
+  try {
+    const result = await new Promise((resolve, reject) => {
+      client.hgetall(key, function (err, result) {
+        if (err) return reject(err)
+        resolve(result)
+      })
+    })
+    
+    return result
+  } catch (err) {
+    throw err
+  }
 }
 
 function rake () {

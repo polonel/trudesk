@@ -42,7 +42,7 @@ const passwordComplexityOptions = [
 
 const passwordComplexity = {}
 
-passwordComplexity.validate = password => {
+passwordComplexity.validate = (password) => {
   const response = passwordStrength(password, passwordComplexityOptions)
   return !(response.id === 0 || response.id === 1)
 }

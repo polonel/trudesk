@@ -16,64 +16,53 @@ import _ from 'lodash'
 import moment from 'moment'
 import { TicketModel } from '../models'
 
-const init = (tickets, timespan, callback) => {
-  return new Promise((resolve, reject) => {
-    ;(async () => {
-      try {
-        let tags = []
-        let $tickets = []
-        if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 365
+const init = async (tickets, timespan) => {
+  let tags = []
+  let $tickets = []
+  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 365
 
-        let today = moment()
-          .hour(23)
-          .minute(59)
-          .second(59)
-        const tsDate = today
-          .clone()
-          .subtract(timespan, 'd')
-          .toDate()
-          .getTime()
-        today = today.toDate().getTime()
+  let today = moment()
+    .hour(23)
+    .minute(59)
+    .second(59)
+  const tsDate = today
+    .clone()
+    .subtract(timespan, 'd')
+    .toDate()
+    .getTime()
+  today = today.toDate().getTime()
 
-        if (tickets) {
-          $tickets = await TicketModel.populate(tickets, { path: 'tags' })
-        } else {
-          let tickets = await TicketModel.getForCache()
-          $tickets = await TicketModel.populate(tickets, { path: 'tags' })
-        }
+  if (tickets) {
+    $tickets = await TicketModel.populate(tickets, { path: 'tags' })
+  } else {
+    let tickets = await TicketModel.getForCache()
+    $tickets = await TicketModel.populate(tickets, { path: 'tags' })
+  }
 
-        let t = []
-        $tickets = _.filter($tickets, v => v.date < today && v.date > tsDate)
+  let t = []
+  $tickets = _.filter($tickets, v => v.date < today && v.date > tsDate)
 
-        for (const ticket of $tickets) {
-          _.each(ticket.tags, tag => {
-            t.push(tag.name)
-          })
-        }
+  for (const ticket of $tickets) {
+    _.each(ticket.tags, tag => {
+      t.push(tag.name)
+    })
+  }
 
-        tags = _.reduce(
-          t,
-          (counts, key) => {
-            counts[key]++
-            return counts
-          },
-          _.fromPairs(_.map(t, key => [key, 0]))
-        )
+  tags = _.reduce(
+    t,
+    (counts, key) => {
+      counts[key]++
+      return counts
+    },
+    _.fromPairs(_.map(t, key => [key, 0]))
+  )
 
-        tags = _.fromPairs(_.sortBy(_.toPairs(tags), a => a[1]).reverse())
+  tags = _.fromPairs(_.sortBy(_.toPairs(tags), a => a[1]).reverse())
 
-        t = null
-        $tickets = null
+  t = null
+  $tickets = null
 
-        if (typeof callback === 'function') callback(null, tags)
-
-        return resolve(tags)
-      } catch (e) {
-        if (typeof callback === 'function') callback(e)
-        return reject(e)
-      }
-    })()
-  })
+  return tags
 }
 
 module.exports = init

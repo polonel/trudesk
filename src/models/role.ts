@@ -64,7 +64,7 @@ export interface IRoleModel extends Model<IRole, Record<string, never>, IRoleMet
 
   getRoleByName(
     name: string,
-    callback: (err: CallbackError, role: HydratedDocument<IRole>) => void
+    callback?: (err: CallbackError, role: HydratedDocument<IRole>) => void
   ): Promise<HydratedDocument<IRole>>
 }
 
