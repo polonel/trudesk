@@ -11,10 +11,10 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment, createRef } from 'react'
+import React, { createRef } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { observable, computed, makeObservable } from 'mobx'
+import { observable, computed, makeObservable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { getSession } from 'app/SessionContext'
 import sortBy from 'lodash/sortBy'
@@ -55,7 +55,7 @@ import TruTabSelectors from 'components/TruTabs/TruTabSelectors'
 import TruTabWrapper from 'components/TruTabs/TruTabWrapper'
 
 import axios from 'api/axios'
-import history from 'lib/lib-history'
+import libHistory from 'lib/lib-history'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
 import UIkit from 'uikit'
@@ -68,19 +68,19 @@ const fetchTicket = parent => {
   axios
     .get(`/api/v2/tickets/${parent.props.ticketUid}`)
     .then(res => {
-      // setTimeout(() => {
-      parent.ticket = res.data.ticket
-      parent.isSubscribed =
-        parent.ticket && parent.ticket.subscribers.findIndex(i => i._id === parent.props.shared.sessionUser._id) !== -1
-      // }, 3000)
+      runInAction(() => {
+        parent.ticket = res.data.ticket
+        parent.isSubscribed =
+          parent.ticket &&
+          parent.ticket.subscribers.findIndex(i => i._id === parent.props.shared.sessionUser._id) !== -1
+      })
     })
     .catch(error => {
-      console.log(error)
-      if (error.response.status === 404) helpers.UI.showSnackbar('404: Ticket not found', true)
-      if (error.response.status === 403 || error.response.status === 404) {
-        history.push('/tickets')
-      }
       Log.error(error)
+      if (error.response?.status === 404) helpers.UI.showSnackbar('404: Ticket not found', true)
+      if (error.response?.status === 403 || error.response?.status === 404) {
+        libHistory.push('/tickets')
+      }
     })
 }
 
@@ -88,7 +88,7 @@ const showPriorityConfirm = () => {
   UIkit.modal.confirm(
     'Selected Priority does not exist for this ticket type. Priority has reset to the default for this type.' +
       '<br><br><strong>Please select a new priority</strong>',
-    () => {},
+    undefined,
     { cancelButtonClass: 'uk-hidden' }
   )
 }
@@ -114,23 +114,15 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
   }
 
-  @computed
-  get notesTagged () {
+  @computed get notesTagged () {
     this.ticket.notes.forEach(i => (i.isNote = true))
-
     return this.ticket.notes
   }
 
   @computed get commentsAndNotes () {
     if (!this.ticket) return []
-    if (!helpers.canUser('tickets:notes', true)) {
-      return sortBy(this.ticket.comments, 'date')
-    }
-
-    let commentsAndNotes = union(this.ticket.comments, this.notesTagged)
-    commentsAndNotes = sortBy(commentsAndNotes, 'date')
-
-    return commentsAndNotes
+    if (!helpers.canUser('tickets:notes', true)) return sortBy(this.ticket.comments, 'date')
+    return sortBy(union(this.ticket.comments, this.notesTagged), 'date')
   }
 
   @computed get hasCommentsOrNotes () {
@@ -139,13 +131,14 @@ class SingleTicketContainer extends React.Component {
   }
 
   componentDidMount () {
-    this.props.socket.on(TICKETS_UPDATE, this.onUpdateTicket)
-    this.props.socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
-    this.props.socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
-    this.props.socket.on(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
-    this.props.socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
-    this.props.socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
-    this.props.socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
+    const { socket } = this.props
+    socket.on(TICKETS_UPDATE, this.onUpdateTicket)
+    socket.on(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
+    socket.on(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
+    socket.on(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
+    socket.on(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
+    socket.on(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
+    socket.on(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
 
     fetchTicket(this)
     this.props.fetchTicketTypes()
@@ -159,57 +152,56 @@ class SingleTicketContainer extends React.Component {
   }
 
   componentWillUnmount () {
-    this.props.socket.off(TICKETS_UPDATE, this.onUpdateTicket)
-    this.props.socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
-    this.props.socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
-    this.props.socket.off(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
-    this.props.socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
-    this.props.socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
-    this.props.socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
+    const { socket } = this.props
+    socket.off(TICKETS_UPDATE, this.onUpdateTicket)
+    socket.off(TICKETS_ASSIGNEE_UPDATE, this.onUpdateAssignee)
+    socket.off(TICKETS_UI_TYPE_UPDATE, this.onUpdateTicketType)
+    socket.off(TICKETS_UI_PRIORITY_UPDATE, this.onUpdateTicketPriority)
+    socket.off(TICKETS_UI_GROUP_UPDATE, this.onUpdateTicketGroup)
+    socket.off(TICKETS_UI_DUEDATE_UPDATE, this.onUpdateTicketDueDate)
+    socket.off(TICKETS_UI_TAGS_UPDATE, this.onUpdateTicketTags)
 
     this.props.unloadGroups()
   }
 
   onUpdateTicket (data) {
-    if (this.ticket._id === data._id) {
-      this.ticket = data
-    }
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket = data })
   }
 
   onSocketUpdateComments (data) {
-    if (this.ticket._id === data._id) this.ticket.comments = data.comments
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.comments = data.comments })
   }
 
   onUpdateTicketNotes (data) {
-    if (this.ticket._id === data._id) this.ticket.notes = data.notes
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.notes = data.notes })
   }
 
   onUpdateAssignee (data) {
-    if (this.ticket._id === data._id) {
+    if (this.ticket._id !== data._id) return
+    runInAction(() => {
       this.ticket.assignee = data.assignee
-      if (this.ticket.assignee && this.ticket.assignee._id === this.props.shared.sessionUser._id)
-        this.isSubscribed = true
-    }
+      if (this.ticket.assignee?._id === this.props.shared.sessionUser._id) this.isSubscribed = true
+    })
   }
 
   onUpdateTicketType (data) {
-    if (this.ticket._id === data._id) this.ticket.type = data.type
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.type = data.type })
   }
 
   onUpdateTicketPriority (data) {
-    if (this.ticket._id === data._id) this.ticket.priority = data.priority
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.priority = data.priority })
   }
 
   onUpdateTicketGroup (data) {
-    if (this.ticket._id === data._id) this.ticket.group = data.group
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.group = data.group })
   }
 
   onUpdateTicketDueDate (data) {
-    if (this.ticket._id === data._id) this.ticket.dueDate = data.dueDate
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.dueDate = data.dueDate })
   }
 
   onUpdateTicketTags (data) {
-    if (this.ticket._id === data._id) this.ticket.tags = data.tags
+    if (this.ticket._id === data._id) runInAction(() => { this.ticket.tags = data.tags })
   }
 
   onCommentNoteSubmit (e, type) {
@@ -223,18 +215,16 @@ class SingleTicketContainer extends React.Component {
         note: isNote && this.noteMDE.getEditorText()
       })
       .then(res => {
-        if (res && res.data && res.data.success) {
-          if (isNote) {
-            this.ticket.notes = res.data.ticket.notes
-            this.noteMDE.setEditorText('')
-          } else {
-            this.ticket.comments = res.data.ticket.comments
-            this.commentMDE.setEditorText('')
-          }
-
-          helpers.scrollToBottom('.page-content-right', true)
-          this.ticket.history = res.data.ticket.history
+        if (!res?.data?.success) return
+        if (isNote) {
+          this.ticket.notes = res.data.ticket.notes
+          this.noteMDE.setEditorText('')
+        } else {
+          this.ticket.comments = res.data.ticket.comments
+          this.commentMDE.setEditorText('')
         }
+        helpers.scrollToBottom('.page-content-right', true)
+        this.ticket.history = res.data.ticket.history
       })
       .catch(error => {
         Log.error(error)
@@ -254,339 +244,471 @@ class SingleTicketContainer extends React.Component {
       .then(res => {
         if (res.data.success && res.data.ticket) {
           this.ticket.subscribers = res.data.ticket.subscribers
-          this.isSubscribed = this.ticket.subscribers.findIndex(i => i._id === this.props.shared.sessionUser._id) !== -1
+          this.isSubscribed =
+            this.ticket.subscribers.findIndex(i => i._id === this.props.shared.sessionUser._id) !== -1
         }
       })
-      .catch(error => {
-        Log.error(error.response || error)
-      })
+      .catch(error => Log.error(error.response || error))
   }
 
-  transferToThirdParty (e) {
+  transferToThirdParty () {
     this.props.transferToThirdParty({ uid: this.ticket.uid })
   }
 
-  render () {
-    const mappedGroups = this.props.groupsState
-      ? this.props.groupsState.groups.map(group => {
-          return { text: group.get('name'), value: group.get('_id') }
+  emitEditCommentNote (item) {
+    this.editorWindow.openEditorWindow({
+      showSubject: false,
+      text: !item.isNote ? item.comment : item.note,
+      onPrimaryClick: data => {
+        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
+          _id: this.ticket._id,
+          item: item._id,
+          isNote: item.isNote,
+          value: data.text
         })
-      : []
-
-    const mappedTypes = this.props.ticketTypes
-      ? this.props.ticketTypes.map(type => {
-          return { text: type.get('name'), value: type.get('_id'), raw: type.toJS() }
-        })
-      : []
-
-    // Perms
-    const hasTicketUpdate = this.ticket && this.ticket.status !== 3 && helpers.canUser('tickets:update')
-    const statusObj = this.ticket ? this.props.ticketStatuses.find(s => s.get('_id') === this.ticket.status._id) : null
-
-    const hasTicketStatusUpdate = () => {
-      const isAgent = this.props.sessionUser ? this.props.sessionUser.role.isAgent : false
-      const isAdmin = this.props.sessionUser ? this.props.sessionUser.role.isAdmin : false
-      if (isAgent || isAdmin) {
-        return helpers.canUser('tickets:update')
-      } else {
-        if (!this.ticket || !this.props.sessionUser) return false
-        return helpers.hasPermOverRole(this.ticket.owner.role, this.props.sessionUser.role, 'tickets:update', false)
       }
-    }
+    })
+  }
+
+  emitRemoveCommentNote (item) {
+    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
+      _id: this.ticket._id,
+      value: item._id,
+      isNote: item.isNote
+    })
+  }
+
+  renderCommentNotePartial (item, statusObj, isNote) {
+    const dateFormat = `${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`
+    return (
+      <CommentNotePartial
+        key={item._id}
+        ticketStatus={statusObj}
+        ticketSubject={this.ticket.subject}
+        comment={item}
+        isNote={isNote !== undefined ? isNote : item.isNote}
+        dateFormat={dateFormat}
+        onEditClick={() => this.emitEditCommentNote(item)}
+        onRemoveClick={() => this.emitRemoveCommentNote(item)}
+      />
+    )
+  }
+
+  renderLeftPanel (mappedTypes, mappedGroups, hasTicketUpdate) {
+    const { socket, common } = this.props
+    const { ticket } = this
 
     return (
-      <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
+      <div
+        className='uk-float-left page-title page-title-small noshadow nopadding relative'
+        style={{ width: 360, maxWidth: 360, minWidth: 360 }}
+      >
+        <div className='page-title-border-right relative' style={{ padding: '0 30px' }}>
+          <p>Ticket #{ticket.uid}</p>
+          <StatusSelector
+            ticketId={ticket._id}
+            status={typeof ticket.status === 'object' ? ticket.status._id : ticket.status}
+            socket={socket}
+            onStatusChange={status => runInAction(() => { this.ticket.status = status })}
+            hasPerm={this.hasTicketStatusUpdate()}
+          />
+        </div>
+
+        <div className='page-content-left full-height scrollable'>
+          <div className='ticket-details-wrap uk-position-relative uk-clearfix'>
+            {/* Assignee */}
+            <div className='ticket-assignee-wrap uk-clearfix' style={{ paddingRight: 30 }}>
+              <h4>Assignee</h4>
+              <div className='ticket-assignee uk-clearfix'>
+                {hasTicketUpdate ? (
+                  <a
+                    role='button'
+                    title='Set Assignee'
+                    style={{ float: 'left' }}
+                    className='relative no-ajaxy'
+                    onClick={() => socket.emit(TICKETS_ASSIGNEE_LOAD)}
+                  >
+                    <PDropdownTrigger target={this.assigneeDropdownPartial}>
+                      <Avatar
+                        image={ticket.assignee?.image}
+                        showOnlineBubble={ticket.assignee !== undefined}
+                        userId={ticket.assignee?._id}
+                      />
+                      <span className='drop-icon material-icons'>keyboard_arrow_down</span>
+                    </PDropdownTrigger>
+                  </a>
+                ) : (
+                  <Avatar
+                    image={ticket.assignee?.image}
+                    showOnlineBubble={ticket.assignee !== undefined}
+                    userId={ticket.assignee?._id}
+                  />
+                )}
+                <div className='ticket-assignee-details'>
+                  {ticket.assignee ? (
+                    <>
+                      <h3>{ticket.assignee.fullname}</h3>
+                      <a
+                        className='comment-email-link uk-text-truncate uk-display-inline-block'
+                        href={`mailto:${ticket.assignee.email}`}
+                      >
+                        {ticket.assignee.email}
+                      </a>
+                      <span className='uk-display-block'>{ticket.assignee.title}</span>
+                    </>
+                  ) : (
+                    <h3>No User Assigned</h3>
+                  )}
+                </div>
+              </div>
+
+              {hasTicketUpdate && (
+                <AssigneeDropdownPartial
+                  forwardedRef={this.assigneeDropdownPartial}
+                  ticketId={ticket._id}
+                  onClearClick={() => runInAction(() => { this.ticket.assignee = undefined })}
+                  onAssigneeClick={({ agent }) => runInAction(() => { this.ticket.assignee = agent })}
+                />
+              )}
+            </div>
+
+            {/* Type / Priority / Group / Due Date / Tags */}
+            <div className='uk-width-1-1 padding-left-right-15'>
+              <div className='tru-card ticket-details uk-clearfix'>
+                <div className='uk-width-1-2 uk-float-left nopadding'>
+                  <div className='marginright5'>
+                    <span>Type</span>
+                    {hasTicketUpdate ? (
+                      <select
+                        value={ticket.type._id}
+                        onChange={e => {
+                          const type = this.props.ticketTypes.find(t => t.get('_id') === e.target.value)
+                          const hasPriority =
+                            type.get('priorities').findIndex(p => p.get('_id') === ticket.priority._id) !== -1
+                          if (!hasPriority) {
+                            socket.emit(TICKETS_PRIORITY_SET, {
+                              _id: ticket._id,
+                              value: type.get('priorities').find(() => true)
+                            })
+                            showPriorityConfirm()
+                          }
+                          socket.emit(TICKETS_TYPE_SET, { _id: ticket._id, value: e.target.value })
+                        }}
+                      >
+                        {mappedTypes.map(type => (
+                          <option key={type.value} value={type.value}>
+                            {type.text}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className='input-box'>{ticket.type.name}</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className='uk-width-1-2 uk-float-left nopadding'>
+                  <div className='marginleft5'>
+                    <span>Priority</span>
+                    {hasTicketUpdate ? (
+                      <select
+                        name='tPriority'
+                        id='tPriority'
+                        value={ticket.priority._id}
+                        onChange={e =>
+                          socket.emit(TICKETS_PRIORITY_SET, { _id: ticket._id, value: e.target.value })
+                        }
+                      >
+                        {ticket.type?.priorities?.map(priority => (
+                          <option key={priority._id} value={priority._id}>
+                            {priority.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className='input-box'>{ticket.priority.name}</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className='uk-width-1-1 nopadding uk-clearfix'>
+                  <span>Group</span>
+                  {hasTicketUpdate ? (
+                    <select
+                      value={ticket.group._id}
+                      onChange={e => socket.emit(TICKETS_GROUP_SET, { _id: ticket._id, value: e.target.value })}
+                    >
+                      {mappedGroups.map(group => (
+                        <option key={group.value} value={group.value}>
+                          {group.text}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className='input-box'>{ticket.group.name}</div>
+                  )}
+                </div>
+
+                <div className='uk-width-1-1 p-0'>
+                  <span>Due Date</span> {hasTicketUpdate && <span>-&nbsp;</span>}
+                  {hasTicketUpdate ? (
+                    <div className='uk-display-inline'>
+                      <a
+                        role='button'
+                        onClick={e => {
+                          e.preventDefault()
+                          socket.emit(TICKETS_DUEDATE_SET, { _id: ticket._id, value: undefined })
+                        }}
+                      >
+                        Clear
+                      </a>
+                      <DatePicker
+                        name='ticket_due_date'
+                        format={helpers.getShortDateFormat()}
+                        value={ticket.dueDate}
+                        small={true}
+                        onChange={e => {
+                          const dueDate = moment(e.target.value, helpers.getShortDateFormat()).utc().toISOString()
+                          socket.emit(TICKETS_DUEDATE_SET, { _id: ticket._id, value: dueDate })
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className='input-box'>
+                      {helpers.formatDate(ticket.dueDate, common.get('shortDateFormat'))}
+                    </div>
+                  )}
+                </div>
+
+                <div className='uk-width-1-1 nopadding'>
+                  <span>
+                    Tags
+                    {hasTicketUpdate && (
+                      <>
+                        <span> - </span>
+                        <div id='editTags' className='uk-display-inline'>
+                          <a
+                            role='button'
+                            style={{ fontSize: 11 }}
+                            className='no-ajaxy'
+                            onClick={() =>
+                              this.props.showModal('ADD_TAGS_MODAL', {
+                                ticketId: ticket._id,
+                                currentTags: ticket.tags.map(tag => tag._id)
+                              })
+                            }
+                          >
+                            Edit Tags
+                          </a>
+                        </div>
+                      </>
+                    )}
+                  </span>
+                  <div className='tag-list uk-clearfix'>
+                    {ticket.tags?.map(tag => (
+                      <div key={tag._id} className='item'>
+                        {tag.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {helpers.canUser('agent:*', true) && (
+              <div className='uk-width-1-1 padding-left-right-15'>
+                <div className='tru-card ticket-details pr-0 pb-0' style={{ height: 250 }}>
+                  Ticket History
+                  <hr style={{ padding: 0, margin: 0 }} />
+                  <div className='history-items scrollable' style={{ paddingTop: 12 }}>
+                    {ticket.history?.map(item => (
+                      <div key={item._id} className='history-item'>
+                        <time dateTime={helpers.formatDate(item.date, common.get('longDateFormat'))} />
+                        <em>
+                          Action by: <span>{item.owner.fullname}</span>
+                        </em>
+                        <p>{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderCommentsTabs (statusObj) {
+    const dateFormat = `${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`
+    const { ticket } = this
+
+    return (
+      <TruTabWrapper>
+        <TruTabSelectors style={{ marginLeft: 110 }}>
+          <TruTabSelector selectorId={0} label='All' active={true} showBadge={true} badgeText={this.commentsAndNotes.length} />
+          <TruTabSelector
+            selectorId={1}
+            label='Comments'
+            showBadge={true}
+            badgeText={ticket.comments?.length ?? 0}
+          />
+          {helpers.canUser('tickets:notes', true) && (
+            <TruTabSelector selectorId={2} label='Notes' showBadge={true} badgeText={ticket.notes?.length ?? 0} />
+          )}
+        </TruTabSelectors>
+
+        <TruTabSection sectionId={0} active={true}>
+          <div className='all-comments'>
+            {this.commentsAndNotes.map(item => this.renderCommentNotePartial(item, statusObj))}
+          </div>
+        </TruTabSection>
+
+        <TruTabSection sectionId={1}>
+          <div className='comments'>
+            {ticket.comments?.map(comment => (
+              <CommentNotePartial
+                key={comment._id}
+                ticketStatus={statusObj}
+                ticketSubject={ticket.subject}
+                comment={comment}
+                dateFormat={dateFormat}
+                onEditClick={() => this.emitEditCommentNote(comment)}
+                onRemoveClick={() => this.emitRemoveCommentNote(comment)}
+              />
+            ))}
+          </div>
+        </TruTabSection>
+
+        <TruTabSection sectionId={2}>
+          <div className='notes'>
+            {ticket.notes?.map(note => (
+              <CommentNotePartial
+                key={note._id}
+                ticketStatus={statusObj}
+                ticketSubject={ticket.subject}
+                comment={note}
+                isNote={true}
+                dateFormat={dateFormat}
+                onEditClick={() => this.emitEditCommentNote(note)}
+                onRemoveClick={() => this.emitRemoveCommentNote(note)}
+              />
+            ))}
+          </div>
+        </TruTabSection>
+      </TruTabWrapper>
+    )
+  }
+
+  renderReplyForm () {
+    const { ticket } = this
+    const canComment = helpers.canUser('comments:create', true)
+    const canNote = helpers.canUser('tickets:notes', true)
+
+    if (ticket.status.isResolved !== false || (!canComment && !canNote)) return null
+
+    return (
+      <div className='uk-width-1-1 ticket-reply uk-clearfix'>
+        <Avatar image={this.props.shared.sessionUser.image} showOnlineBubble={false} />
+        <TruTabWrapper style={{ paddingLeft: 85 }}>
+          <TruTabSelectors showTrack={false}>
+            {canComment && <TruTabSelector selectorId={0} label='Comment' active={true} />}
+            {canNote && (
+              <TruTabSelector selectorId={1} label='Internal Note' active={!canComment} />
+            )}
+          </TruTabSelectors>
+
+          <TruTabSection sectionId={0} style={{ paddingTop: 0 }} active={canComment}>
+            <form onSubmit={e => this.onCommentNoteSubmit(e, 'comment')}>
+              <EasyMDE
+                allowImageUpload={true}
+                inlineImageUploadUrl={`/api/v2/tickets/${ticket.uid}/upload/inline`}
+                inlineImageUploadHeaders={{
+                  ticketid: ticket._id,
+                  Authorization: `Bearer ${getSession()?.token}`
+                }}
+                ref={r => (this.commentMDE = r)}
+              />
+              <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
+                <div className='uk-float-right'>
+                  <button type='submit' className='uk-button uk-button-accent' style={{ padding: '10px 15px' }}>
+                    Post Comment
+                  </button>
+                </div>
+              </div>
+            </form>
+          </TruTabSection>
+
+          <TruTabSection sectionId={1} style={{ paddingTop: 0 }} active={!canComment && canNote}>
+            <form onSubmit={e => this.onCommentNoteSubmit(e, 'note')}>
+              <EasyMDE
+                allowImageUpload={true}
+                inlineImageUploadUrl='/tickets/uploadmdeimage'
+                inlineImageUploadHeaders={{ ticketid: ticket._id }}
+                ref={r => (this.noteMDE = r)}
+              />
+              <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
+                <div className='uk-float-right'>
+                  <button type='submit' className='uk-button uk-button-accent' style={{ padding: '10px 15px' }}>
+                    Save Note
+                  </button>
+                </div>
+              </div>
+            </form>
+          </TruTabSection>
+        </TruTabWrapper>
+      </div>
+    )
+  }
+
+  hasTicketStatusUpdate () {
+    const { sessionUser } = this.props
+    const isAgent = sessionUser?.role.isAgent ?? false
+    const isAdmin = sessionUser?.role.isAdmin ?? false
+    if (isAgent || isAdmin) return helpers.canUser('tickets:update')
+    if (!this.ticket || !sessionUser) return false
+    return helpers.hasPermOverRole(this.ticket.owner.role, sessionUser.role, 'tickets:update', false)
+  }
+
+  render () {
+    const { ticket } = this
+    const { common, groupsState, ticketTypes, socket } = this.props
+
+    const mappedGroups = groupsState?.groups.map(g => ({ text: g.get('name'), value: g.get('_id') })) ?? []
+    const mappedTypes = ticketTypes?.map(t => ({ text: t.get('name'), value: t.get('_id'), raw: t.toJS() })) ?? []
+
+    const hasTicketUpdate = ticket && ticket.status !== 3 && helpers.canUser('tickets:update')
+    const ticketStatusId = ticket ? (typeof ticket.status === 'object' ? ticket.status._id : ticket.status) : null
+    const statusObj = ticketStatusId ? this.props.ticketStatuses.find(s => s.get('_id') === ticketStatusId) : null
+
+    return (
+      <div className='uk-clearfix uk-position-relative' style={{ width: '100%', height: '100vh' }}>
         <TitleContext.Consumer>
           {({ title }) => (
             <Helmet>
-              <title>{`${title} Ticket ${this.ticket ? this.ticket.uid : ''}`}</title>
+              <title>{`${title} Ticket ${ticket ? ticket.uid : ''}`}</title>
             </Helmet>
           )}
         </TitleContext.Consumer>
 
-        {!this.ticket && <SpinLoader active={true} />}
-        {this.ticket && (
-          <Fragment>
-            <div className={'page-content'}>
-              <div
-                className='uk-float-left page-title page-title-small noshadow nopadding relative'
-                style={{ width: 360, maxWidth: 360, minWidth: 360 }}
-              >
-                <div className='page-title-border-right relative' style={{ padding: '0 30px' }}>
-                  <p>Ticket #{this.ticket.uid}</p>
-                  <StatusSelector
-                    ticketId={this.ticket._id}
-                    status={this.ticket.status._id}
-                    socket={this.props.socket}
-                    onStatusChange={status => (this.ticket.status = status)}
-                    hasPerm={hasTicketStatusUpdate()}
-                  />
-                </div>
-                {/*  Left Side */}
-                <div className='page-content-left full-height scrollable'>
-                  <div className='ticket-details-wrap uk-position-relative uk-clearfix'>
-                    <div className='ticket-assignee-wrap uk-clearfix' style={{ paddingRight: 30 }}>
-                      <h4>Assignee</h4>
-                      <div className='ticket-assignee uk-clearfix'>
-                        {hasTicketUpdate && (
-                          <a
-                            role='button'
-                            title='Set Assignee'
-                            style={{ float: 'left' }}
-                            className='relative no-ajaxy'
-                            onClick={() => this.props.socket.emit(TICKETS_ASSIGNEE_LOAD)}
-                          >
-                            <PDropdownTrigger target={this.assigneeDropdownPartial}>
-                              <Avatar
-                                image={this.ticket.assignee && this.ticket.assignee.image}
-                                showOnlineBubble={this.ticket.assignee !== undefined}
-                                userId={this.ticket.assignee && this.ticket.assignee._id}
-                              />
-                              <span className='drop-icon material-icons'>keyboard_arrow_down</span>
-                            </PDropdownTrigger>
-                          </a>
-                        )}
-                        {!hasTicketUpdate && (
-                          <Avatar
-                            image={this.ticket.assignee && this.ticket.assignee.image}
-                            showOnlineBubble={this.ticket.assignee !== undefined}
-                            userId={this.ticket.assignee && this.ticket.assignee._id}
-                          />
-                        )}
-                        <div className='ticket-assignee-details'>
-                          {!this.ticket.assignee && <h3>No User Assigned</h3>}
-                          {this.ticket.assignee && (
-                            <Fragment>
-                              <h3>{this.ticket.assignee.fullname}</h3>
-                              <a
-                                className='comment-email-link uk-text-truncate uk-display-inline-block'
-                                href={`mailto:${this.ticket.assignee.email}`}
-                              >
-                                {this.ticket.assignee.email}
-                              </a>
-                              <span className={'uk-display-block'}>{this.ticket.assignee.title}</span>
-                            </Fragment>
-                          )}
-                        </div>
-                      </div>
+        {!ticket && <SpinLoader active={true} />}
+        {ticket && (
+          <>
+            <div className='page-content'>
+              {this.renderLeftPanel(mappedTypes, mappedGroups, hasTicketUpdate)}
 
-                      {hasTicketUpdate && (
-                        <AssigneeDropdownPartial
-                          forwardedRef={this.assigneeDropdownPartial}
-                          ticketId={this.ticket._id}
-                          onClearClick={() => (this.ticket.assignee = undefined)}
-                          onAssigneeClick={({ agent }) => (this.ticket.assignee = agent)}
-                        />
-                      )}
-                    </div>
-
-                    <div className='uk-width-1-1 padding-left-right-15'>
-                      <div className='tru-card ticket-details uk-clearfix'>
-                        {/* Type */}
-                        <div className='uk-width-1-2 uk-float-left nopadding'>
-                          <div className='marginright5'>
-                            <span>Type</span>
-                            {hasTicketUpdate && (
-                              <select
-                                value={this.ticket.type._id}
-                                onChange={e => {
-                                  const type = this.props.ticketTypes.find(t => t.get('_id') === e.target.value)
-
-                                  const priority = type
-                                    .get('priorities')
-                                    .findIndex(p => p.get('_id') === this.ticket.priority._id)
-
-                                  const hasPriority = priority !== -1
-
-                                  if (!hasPriority) {
-                                    this.props.socket.emit(TICKETS_PRIORITY_SET, {
-                                      _id: this.ticket._id,
-                                      value: type.get('priorities').find(() => true)
-                                    })
-
-                                    showPriorityConfirm()
-                                  }
-
-                                  this.props.socket.emit(TICKETS_TYPE_SET, {
-                                    _id: this.ticket._id,
-                                    value: e.target.value
-                                  })
-                                }}
-                              >
-                                {mappedTypes &&
-                                  mappedTypes.map(type => (
-                                    <option key={type.value} value={type.value}>
-                                      {type.text}
-                                    </option>
-                                  ))}
-                              </select>
-                            )}
-                            {!hasTicketUpdate && <div className='input-box'>{this.ticket.type.name}</div>}
-                          </div>
-                        </div>
-                        {/* Priority */}
-                        <div className='uk-width-1-2 uk-float-left nopadding'>
-                          <div className='marginleft5'>
-                            <span>Priority</span>
-                            {hasTicketUpdate && (
-                              <select
-                                name='tPriority'
-                                id='tPriority'
-                                value={this.ticket.priority._id}
-                                onChange={e =>
-                                  this.props.socket.emit(TICKETS_PRIORITY_SET, {
-                                    _id: this.ticket._id,
-                                    value: e.target.value
-                                  })
-                                }
-                              >
-                                {this.ticket.type &&
-                                  this.ticket.type.priorities &&
-                                  this.ticket.type.priorities.map(priority => (
-                                    <option key={priority._id} value={priority._id}>
-                                      {priority.name}
-                                    </option>
-                                  ))}
-                              </select>
-                            )}
-                            {!hasTicketUpdate && <div className={'input-box'}>{this.ticket.priority.name}</div>}
-                          </div>
-                        </div>
-                        {/*  Group */}
-                        <div className='uk-width-1-1 nopadding uk-clearfix'>
-                          <span>Group</span>
-                          {hasTicketUpdate && (
-                            <select
-                              value={this.ticket.group._id}
-                              onChange={e => {
-                                this.props.socket.emit(TICKETS_GROUP_SET, {
-                                  _id: this.ticket._id,
-                                  value: e.target.value
-                                })
-                              }}
-                            >
-                              {mappedGroups &&
-                                mappedGroups.map(group => (
-                                  <option key={group.value} value={group.value}>
-                                    {group.text}
-                                  </option>
-                                ))}
-                            </select>
-                          )}
-                          {!hasTicketUpdate && <div className={'input-box'}>{this.ticket.group.name}</div>}
-                        </div>
-                        {/*  Due Date */}
-                        <div className='uk-width-1-1 p-0'>
-                          <span>Due Date</span> {hasTicketUpdate && <span>-&nbsp;</span>}
-                          {hasTicketUpdate && (
-                            <div className={'uk-display-inline'}>
-                              <a
-                                role={'button'}
-                                onClick={e => {
-                                  e.preventDefault()
-                                  this.props.socket.emit(TICKETS_DUEDATE_SET, {
-                                    _id: this.ticket._id,
-                                    value: undefined
-                                  })
-                                }}
-                              >
-                                Clear
-                              </a>
-                              <DatePicker
-                                name={'ticket_due_date'}
-                                format={helpers.getShortDateFormat()}
-                                value={this.ticket.dueDate}
-                                small={true}
-                                onChange={e => {
-                                  const dueDate = moment(e.target.value, helpers.getShortDateFormat())
-                                    .utc()
-                                    .toISOString()
-
-                                  this.props.socket.emit(TICKETS_DUEDATE_SET, { _id: this.ticket._id, value: dueDate })
-                                }}
-                              />
-                            </div>
-                          )}
-                          {!hasTicketUpdate && (
-                            <div className='input-box'>
-                              {helpers.formatDate(this.ticket.dueDate, this.props.common.get('shortDateFormat'))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Tags */}
-                        <div className='uk-width-1-1 nopadding'>
-                          <span>
-                            Tags
-                            {hasTicketUpdate && (
-                              <Fragment>
-                                <span> - </span>
-                                <div id='editTags' className={'uk-display-inline'}>
-                                  <a
-                                    role={'button'}
-                                    style={{ fontSize: 11 }}
-                                    className='no-ajaxy'
-                                    onClick={() => {
-                                      this.props.showModal('ADD_TAGS_MODAL', {
-                                        ticketId: this.ticket._id,
-                                        currentTags: this.ticket.tags.map(tag => tag._id)
-                                      })
-                                    }}
-                                  >
-                                    Edit Tags
-                                  </a>
-                                </div>
-                              </Fragment>
-                            )}
-                          </span>
-                          <div className='tag-list uk-clearfix'>
-                            {this.ticket.tags &&
-                              this.ticket.tags.map(tag => (
-                                <div key={tag._id} className='item'>
-                                  {tag.name}
-                                </div>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {helpers.canUser('agent:*', true) && (
-                      <div className='uk-width-1-1 padding-left-right-15'>
-                        <div className='tru-card ticket-details pr-0 pb-0' style={{ height: 250 }}>
-                          Ticket History
-                          <hr style={{ padding: 0, margin: 0 }} />
-                          <div className='history-items scrollable' style={{ paddingTop: 12 }}>
-                            {this.ticket.history &&
-                              this.ticket.history.map(item => (
-                                <div key={item._id} className='history-item'>
-                                  <time
-                                    dateTime={helpers.formatDate(item.date, this.props.common.get('longDateFormat'))}
-                                  />
-                                  <em>
-                                    Action by: <span>{item.owner.fullname}</span>
-                                  </em>
-                                  <p>{item.description}</p>
-                                </div>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
               {/* Right Side */}
               <div className='page-message nopadding' style={{ marginLeft: 360 }}>
                 <div className='page-title-right noshadow'>
-                  {this.props.common.get('hasThirdParty') && (
+                  {common.get('hasThirdParty') && (
                     <div className='page-top-comments uk-float-right'>
                       <a
                         role='button'
                         className='btn md-btn-primary no-ajaxy'
                         onClick={e => {
                           e.preventDefault()
-                          this.transferToThirdParty(e)
+                          this.transferToThirdParty()
                         }}
                       >
                         Transfer to ThirdParty
@@ -610,7 +732,7 @@ class SingleTicketContainer extends React.Component {
                     style={{ marginRight: 10, position: 'relative', top: 18 }}
                   >
                     <input
-                      id={'subscribeSwitch'}
+                      id='subscribeSwitch'
                       type='checkbox'
                       name='subscribeSwitch'
                       className='onoffswitch-checkbox'
@@ -627,7 +749,7 @@ class SingleTicketContainer extends React.Component {
                       {helpers.canUser('tickets:print') && (
                         <li className='pagination'>
                           <a
-                            href={`/tickets/print/${this.ticket.uid}`}
+                            href={`/tickets/print/${ticket.uid}`}
                             className='btn no-ajaxy'
                             style={{ borderRadius: 3, marginRight: 5 }}
                             rel='noopener noreferrer'
@@ -640,244 +762,33 @@ class SingleTicketContainer extends React.Component {
                     </ul>
                   </div>
                 </div>
+
                 <div className='page-content-right full-height scrollable'>
                   <div className='comments-wrapper'>
-                    <IssuePartial
-                      ticketId={this.ticket._id}
-                      status={statusObj}
-                      owner={this.ticket.owner}
-                      subject={this.ticket.subject}
-                      issue={this.ticket.issue}
-                      date={this.ticket.date}
-                      dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get('timeFormat')}`}
-                      attachments={this.ticket.attachments}
-                      editorWindow={this.editorWindow}
-                      socket={this.props.socket}
-                    />
-
-                    {/* Tabs */}
-                    {this.hasCommentsOrNotes && (
-                      <TruTabWrapper>
-                        <TruTabSelectors style={{ marginLeft: 110 }}>
-                          <TruTabSelector
-                            selectorId={0}
-                            label='All'
-                            active={true}
-                            showBadge={true}
-                            badgeText={this.commentsAndNotes.length}
-                          />
-                          <TruTabSelector
-                            selectorId={1}
-                            label='Comments'
-                            showBadge={true}
-                            badgeText={this.ticket ? this.ticket.comments && this.ticket.comments.length : 0}
-                          />
-                          {helpers.canUser('tickets:notes', true) && (
-                            <TruTabSelector
-                              selectorId={2}
-                              label='Notes'
-                              showBadge={true}
-                              badgeText={this.ticket ? this.ticket.notes && this.ticket.notes.length : 0}
-                            />
-                          )}
-                        </TruTabSelectors>
-
-                        {/* Tab Sections */}
-                        <TruTabSection sectionId={0} active={true}>
-                          <div className='all-comments'>
-                            {this.commentsAndNotes.map(item => (
-                              <CommentNotePartial
-                                key={item._id}
-                                ticketStatus={statusObj}
-                                ticketSubject={this.ticket.subject}
-                                comment={item}
-                                isNote={item.isNote}
-                                dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
-                                  'timeFormat'
-                                )}`}
-                                onEditClick={() => {
-                                  this.editorWindow.openEditorWindow({
-                                    showSubject: false,
-                                    text: !item.isNote ? item.comment : item.note,
-                                    onPrimaryClick: data => {
-                                      this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
-                                        _id: this.ticket._id,
-                                        item: item._id,
-                                        isNote: item.isNote,
-                                        value: data.text
-                                      })
-                                    }
-                                  })
-                                }}
-                                onRemoveClick={() => {
-                                  this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
-                                    _id: this.ticket._id,
-                                    value: item._id,
-                                    isNote: item.isNote
-                                  })
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </TruTabSection>
-                        <TruTabSection sectionId={1}>
-                          <div className='comments'>
-                            {this.ticket &&
-                              this.ticket.comments.map(comment => (
-                                <CommentNotePartial
-                                  key={comment._id}
-                                  ticketStatus={statusObj}
-                                  ticketSubject={this.ticket.subject}
-                                  comment={comment}
-                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
-                                    'timeFormat'
-                                  )}`}
-                                  onEditClick={() => {
-                                    this.editorWindow.openEditorWindow({
-                                      showSubject: false,
-                                      text: comment.comment,
-                                      onPrimaryClick: data => {
-                                        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
-                                          _id: this.ticket._id,
-                                          item: comment._id,
-                                          isNote: comment.isNote,
-                                          value: data.text
-                                        })
-                                      }
-                                    })
-                                  }}
-                                  onRemoveClick={() => {
-                                    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
-                                      _id: this.ticket._id,
-                                      value: comment._id,
-                                      isNote: comment.isNote
-                                    })
-                                  }}
-                                />
-                              ))}
-                          </div>
-                        </TruTabSection>
-                        <TruTabSection sectionId={2}>
-                          <div className='notes'>
-                            {this.ticket &&
-                              this.ticket.notes.map(note => (
-                                <CommentNotePartial
-                                  key={note._id}
-                                  ticketStatus={statusObj}
-                                  ticketSubject={this.ticket.subject}
-                                  comment={note}
-                                  isNote={true}
-                                  dateFormat={`${this.props.common.get('longDateFormat')}, ${this.props.common.get(
-                                    'timeFormat'
-                                  )}`}
-                                  onEditClick={() => {
-                                    this.editorWindow.openEditorWindow({
-                                      showSubject: false,
-                                      text: note.note,
-                                      onPrimaryClick: data => {
-                                        this.props.socket.emit(TICKETS_COMMENT_NOTE_SET, {
-                                          _id: this.ticket._id,
-                                          item: note._id,
-                                          isNote: note.isNote,
-                                          value: data.text
-                                        })
-                                      }
-                                    })
-                                  }}
-                                  onRemoveClick={() => {
-                                    this.props.socket.emit(TICKETS_COMMENT_NOTE_REMOVE, {
-                                      _id: this.ticket._id,
-                                      value: note._id,
-                                      isNote: note.isNote
-                                    })
-                                  }}
-                                />
-                              ))}
-                          </div>
-                        </TruTabSection>
-                      </TruTabWrapper>
+                    {statusObj && (
+                      <IssuePartial
+                        ticketId={ticket._id}
+                        status={statusObj}
+                        owner={ticket.owner}
+                        subject={ticket.subject}
+                        issue={ticket.issue}
+                        date={ticket.date}
+                        dateFormat={`${common.get('longDateFormat')}, ${common.get('timeFormat')}`}
+                        attachments={ticket.attachments}
+                        editorWindow={this.editorWindow}
+                        socket={socket}
+                      />
                     )}
 
-                    {/* Comment / Notes Form */}
-                    {this.ticket.status.isResolved === false &&
-                      (helpers.canUser('comments:create', true) || helpers.canUser('tickets:notes', true)) && (
-                        <div className='uk-width-1-1 ticket-reply uk-clearfix'>
-                          <Avatar image={this.props.shared.sessionUser.image} showOnlineBubble={false} />
-                          <TruTabWrapper style={{ paddingLeft: 85 }}>
-                            <TruTabSelectors showTrack={false}>
-                              {helpers.canUser('comments:create', true) && (
-                                <TruTabSelector selectorId={0} label={'Comment'} active={true} />
-                              )}
-                              {helpers.canUser('tickets:notes', true) && (
-                                <TruTabSelector
-                                  selectorId={1}
-                                  label={'Internal Note'}
-                                  active={!helpers.canUser('comments:create', true)}
-                                />
-                              )}
-                            </TruTabSelectors>
-                            <TruTabSection
-                              sectionId={0}
-                              style={{ paddingTop: 0 }}
-                              active={helpers.canUser('comments:create', true)}
-                            >
-                              <form onSubmit={e => this.onCommentNoteSubmit(e, 'comment')}>
-                                <EasyMDE
-                                  allowImageUpload={true}
-                                  inlineImageUploadUrl={`/api/v2/tickets/${this.ticket.uid}/upload/inline`}
-                                  inlineImageUploadHeaders={{
-                                    ticketid: this.ticket._id,
-                                    Authorization: `Bearer ${getSession()?.token}`
-                                  }}
-                                  ref={r => (this.commentMDE = r)}
-                                />
-                                <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
-                                  <div className='uk-float-right'>
-                                    <button
-                                      type='submit'
-                                      className='uk-button uk-button-accent'
-                                      style={{ padding: '10px 15px' }}
-                                    >
-                                      Post Comment
-                                    </button>
-                                  </div>
-                                </div>
-                              </form>
-                            </TruTabSection>
-                            <TruTabSection
-                              sectionId={1}
-                              style={{ paddingTop: 0 }}
-                              active={!helpers.canUser('comments:create') && helpers.canUser('tickets:notes', true)}
-                            >
-                              <form onSubmit={e => this.onCommentNoteSubmit(e, 'note')}>
-                                <EasyMDE
-                                  allowImageUpload={true}
-                                  inlineImageUploadUrl={'/tickets/uploadmdeimage'}
-                                  inlineImageUploadHeaders={{ ticketid: this.ticket._id }}
-                                  ref={r => (this.noteMDE = r)}
-                                />
-                                <div className='uk-width-1-1 uk-clearfix' style={{ marginTop: 50 }}>
-                                  <div className='uk-float-right'>
-                                    <button
-                                      type='submit'
-                                      className='uk-button uk-button-accent'
-                                      style={{ padding: '10px 15px' }}
-                                    >
-                                      Save Note
-                                    </button>
-                                  </div>
-                                </div>
-                              </form>
-                            </TruTabSection>
-                          </TruTabWrapper>
-                        </div>
-                      )}
+                    {this.hasCommentsOrNotes && statusObj && this.renderCommentsTabs(statusObj)}
+
+                    {this.renderReplyForm()}
                   </div>
                 </div>
               </div>
             </div>
-            <OffCanvasEditor primaryLabel={'Save Edit'} ref={r => (this.editorWindow = r)} />
-          </Fragment>
+            <OffCanvasEditor primaryLabel='Save Edit' ref={r => (this.editorWindow = r)} />
+          </>
         )}
       </div>
     )

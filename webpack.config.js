@@ -88,7 +88,7 @@ module.exports = {
       serverSocket: path.resolve(__dirname, 'src/socketio')
     },
 
-    extensions: ['.js', '.jsx', '.ts', 'tsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
   externals: {
     // These are bunbled already
@@ -129,6 +129,14 @@ module.exports = {
         type: 'asset/resource',
         generator: {
           filename: 'img/[name][ext][query]'
+        }
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader',
+          options: { transpileOnly: true }
         }
       },
       {

@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
@@ -32,148 +32,124 @@ import TableCell from 'components/Table/TableCell'
 import TableHeader from 'components/Table/TableHeader'
 import ButtonGroup from 'components/ButtonGroup'
 
-class TeamsContainer extends React.Component {
-  constructor (props) {
-    super(props)
-  }
+function TeamsContainer ({ teamsState, fetchTeams, unloadTeams, deleteTeam, showModal }) {
+  useEffect(() => {
+    fetchTeams({ page: 0, limit: 1000 })
+    return () => unloadTeams()
+  }, [])
 
-  componentDidMount () {
-    this.props.fetchTeams({ page: 0, limit: 1000 })
-  }
-
-  componentDidUpdate () {
+  useEffect(() => {
     helpers.resizeFullHeight()
-  }
+  })
 
-  componentWillUnmount () {
-    this.props.unloadTeams()
-  }
-
-  onCreateTeamClick (e) {
+  const onCreateTeamClick = e => {
     e.preventDefault()
-    this.props.showModal('CREATE_TEAM')
+    showModal('CREATE_TEAM')
   }
 
-  onEditTeamClick (team) {
-    if (team.members) {
-      team.members = team.members.map(m => {
-        return m._id
-      })
-    } else {
-      team.members = []
-    }
-
-    this.props.showModal('EDIT_TEAM', { team })
+  const onEditTeamClick = team => {
+    const members = team.members ? team.members.map(m => m._id) : []
+    showModal('EDIT_TEAM', { team: { ...team, members } })
   }
 
-  onDeleteTeamClick (_id) {
+  const onDeleteTeamClick = _id => {
     UIKit.modal.confirm(
       `<h2>Are you sure?</h2>
         <p style="font-size: 15px;">
-            <span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span> 
+            <span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span>
         </p>
         <p style="font-size: 12px;">
             Agents may lose access to resources once this team is deleted.
         </p>
         `,
-      () => {
-        this.props.deleteTeam({ _id })
-      },
-      {
-        labels: { Ok: 'Yes', Cancel: 'No' },
-        confirmButtonClass: 'md-btn-danger'
-      }
+      () => deleteTeam({ _id }),
+      { labels: { Ok: 'Yes', Cancel: 'No' }, confirmButtonClass: 'md-btn-danger' }
     )
   }
 
-  render () {
-    const tableItems = this.props.teamsState.teams.map(team => {
-      return (
-        <TableRow key={team.get('_id')} className={'vam nbb'}>
-          <TableCell style={{ fontWeight: 500, padding: '18px 15px' }}>{team.get('name')}</TableCell>
-          <TableCell style={{ padding: '13px 8px 8px 8px' }}>
-            {team.get('members') &&
-              team.get('members').size > 0 &&
-              team
-                .get('members')
-                .filter(user => {
-                  return !user.get('deleted')
-                })
-                .map(user => {
-                  const profilePic = user.get('image') || 'defaultProfile.jpg'
-                  return (
-                    <div
-                      key={user.get('_id')}
-                      className={'uk-float-left uk-position-relative mb-10'}
-                      data-uk-tooltip={'{pos: "bottom"}'}
-                      title={user.get('fullname')}
-                    >
-                      <Avatar image={profilePic} userId={user.get('_id')} size={25} style={{ marginRight: 5 }} />
-                    </div>
-                  )
-                })}
-          </TableCell>
-          <TableCell style={{ textAlign: 'right', paddingRight: 15 }}>
-            <ButtonGroup>
-              {helpers.canUser('teams:update', true) && (
-                <Button text={'Edit'} small={true} waves={true} onClick={() => this.onEditTeamClick(team.toJS())} />
-              )}
-              {helpers.canUser('teams:delete', true) && (
-                <Button
-                  text={'Delete'}
-                  style={'danger'}
-                  small={true}
-                  waves={true}
-                  onClick={() => this.onDeleteTeamClick(team.get('_id'))}
-                />
-              )}
-            </ButtonGroup>
-          </TableCell>
-        </TableRow>
-      )
-    })
-
-    return (
-      <div>
-        <PageTitle
-          title={'Teams'}
-          shadow={true}
-          rightComponent={
-            <div className={'uk-grid uk-grid-collapse'}>
-              <div className={'uk-width-1-1 mt-15 uk-text-right'}>
-                <Button
-                  text={'Create'}
-                  flat={false}
-                  small={true}
-                  waves={false}
-                  extraClass={'hover-accent'}
-                  onClick={e => this.onCreateTeamClick(e)}
+  const tableItems = teamsState.teams.map(team => (
+    <TableRow key={team.get('_id')} className={'vam nbb'}>
+      <TableCell style={{ fontWeight: 500, padding: '18px 15px' }}>{team.get('name')}</TableCell>
+      <TableCell style={{ padding: '13px 8px 8px 8px' }}>
+        {team.get('members')?.size > 0 &&
+          team
+            .get('members')
+            .filter(user => !user.get('deleted'))
+            .map(user => (
+              <div
+                key={user.get('_id')}
+                className={'uk-float-left uk-position-relative mb-10'}
+                data-uk-tooltip={'{pos: "bottom"}'}
+                title={user.get('fullname')}
+              >
+                <Avatar
+                  image={user.get('image') || 'defaultProfile.jpg'}
+                  userId={user.get('_id')}
+                  size={25}
+                  style={{ marginRight: 5 }}
                 />
               </div>
+            ))}
+      </TableCell>
+      <TableCell style={{ textAlign: 'right', paddingRight: 15 }}>
+        <ButtonGroup>
+          {helpers.canUser('teams:update', true) && (
+            <Button text={'Edit'} small={true} waves={true} onClick={() => onEditTeamClick(team.toJS())} />
+          )}
+          {helpers.canUser('teams:delete', true) && (
+            <Button
+              text={'Delete'}
+              style={'danger'}
+              small={true}
+              waves={true}
+              onClick={() => onDeleteTeamClick(team.get('_id'))}
+            />
+          )}
+        </ButtonGroup>
+      </TableCell>
+    </TableRow>
+  ))
+
+  return (
+    <div>
+      <PageTitle
+        title={'Teams'}
+        shadow={true}
+        rightComponent={
+          <div className={'uk-grid uk-grid-collapse'}>
+            <div className={'uk-width-1-1 mt-15 uk-text-right'}>
+              <Button
+                text={'Create'}
+                flat={false}
+                small={true}
+                waves={false}
+                extraClass={'hover-accent'}
+                onClick={onCreateTeamClick}
+              />
             </div>
-          }
-        />
-        <PageContent id={'teams-page-content'} padding={0} paddingBottom={0}>
-          <Table
-            headers={[
-              <TableHeader key={0} width={'25%'} height={40} text={'Name'} padding={'8px 8px 8px 15px'} />,
-              <TableHeader key={1} width={'50%'} text={'Team Members'} />,
-              <TableHeader key={2} width={130} text={'Team Actions'} />
-            ]}
-          >
-            {this.props.teamsState.teams.size < 1 && (
-              <TableRow>
-                <TableCell colSpan={3}>
-                  <h5 style={{ paddingLeft: 8 }}>No Teams</h5>
-                </TableCell>
-              </TableRow>
-            )}
-            {tableItems}
-          </Table>
-        </PageContent>
-      </div>
-    )
-  }
+          </div>
+        }
+      />
+      <PageContent id={'teams-page-content'} padding={0} paddingBottom={0}>
+        <Table
+          headers={[
+            <TableHeader key={0} width={'25%'} height={40} text={'Name'} padding={'8px 8px 8px 15px'} />,
+            <TableHeader key={1} width={'50%'} text={'Team Members'} />,
+            <TableHeader key={2} width={130} text={'Team Actions'} />
+          ]}
+        >
+          {teamsState.teams.size < 1 && (
+            <TableRow>
+              <TableCell colSpan={3}>
+                <h5 style={{ paddingLeft: 8 }}>No Teams</h5>
+              </TableCell>
+            </TableRow>
+          )}
+          {tableItems}
+        </Table>
+      </PageContent>
+    </div>
+  )
 }
 
 TeamsContainer.propTypes = {

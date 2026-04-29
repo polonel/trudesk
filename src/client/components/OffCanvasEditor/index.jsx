@@ -13,7 +13,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeObservable, observable } from 'mobx'
+import { makeObservable, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 
 import EasyMDE from 'components/EasyMDE'
@@ -39,7 +39,7 @@ class OffCanvasEditor extends React.Component {
   componentDidMount () {
     helpers.UI.inputs()
     $('.off-canvas-bottom').DivResizer({})
-    this.showSubject = this.props.showSubject
+    runInAction(() => { this.showSubject = this.props.showSubject })
   }
 
   componentDidUpdate () {
@@ -58,12 +58,13 @@ class OffCanvasEditor extends React.Component {
   }
 
   openEditorWindow (data) {
-    this.subjectText = data.subject || ''
-    this.mdeText = data.text || ''
+    runInAction(() => {
+      this.subjectText = data.subject || ''
+      this.mdeText = data.text || ''
+      this.showSubject = data.showSubject !== undefined ? data.showSubject : true
+      this.onPrimaryClick = data.onPrimaryClick || null
+    })
     this.editor.setEditorText(this.mdeText)
-    this.showSubject = data.showSubject !== undefined ? data.showSubject : true
-
-    this.onPrimaryClick = data.onPrimaryClick || null
 
     $(this.editorWindow)
       .removeClass('closed')
@@ -89,7 +90,7 @@ class OffCanvasEditor extends React.Component {
                 id='edit-subject-input'
                 className='md-input mb-10'
                 value={this.subjectText}
-                onChange={e => (this.subjectText = e.target.value)}
+                onChange={e => runInAction(() => { this.subjectText = e.target.value })}
               />
             </div>
           )}
@@ -100,7 +101,7 @@ class OffCanvasEditor extends React.Component {
                   showStatusBar={false}
                   defaultValue={this.mdeText}
                   value={this.mdeText}
-                  onChange={val => (this.mdeText = val)}
+                  onChange={val => runInAction(() => { this.mdeText = val })}
                   ref={r => (this.editor = r)}
                   allowImageUpload={this.props.allowUploads}
                   inlineImageUploadUrl={this.props.uploadURL}

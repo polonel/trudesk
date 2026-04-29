@@ -1,17 +1,4 @@
-/*
- *       .                             .o8                     oooo
- *    .o8                             "888                     `888
- *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
- *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
- *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
- *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
- *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- *  ========================================================================
- *  Updated:    6/23/19 6:12 PM
- *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
- */
-
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
@@ -27,38 +14,39 @@ import helpers from 'lib/helpers'
 
 import { TICKETS_UI_TAGS_UPDATE } from 'serverSocket/socketEventConsts'
 
-class AddTagsModal extends React.Component {
-  componentDidMount () {
-    this.props.getTagsWithPage({ limit: -1, page: 0 })
-  }
+function AddTagsModal ({ ticketId, currentTags, tagsSettings, socket, getTagsWithPage, showModal, hideModal }) {
+  const selectRef = useRef(null)
+  const closeBtnRef = useRef(null)
 
-  componentDidUpdate () {
+  useEffect(() => {
+    getTagsWithPage({ limit: -1, page: 0 })
+  }, [])
+
+  useEffect(() => {
     helpers.setupChosen()
-    if (!$(this.select).val() && this.props.currentTags && this.props.currentTags.length > 0)
-      $(this.select).val(this.props.currentTags)
+    if (!$(selectRef.current).val() && currentTags && currentTags.length > 0)
+      $(selectRef.current).val(currentTags)
 
-    $(this.select).trigger('chosen:updated')
-  }
+    $(selectRef.current).trigger('chosen:updated')
+  })
 
-  onCreateTagClicked (e) {
+  const onCreateTagClicked = e => {
     e.preventDefault()
-    this.props.hideModal()
+    hideModal()
     setTimeout(() => {
-      this.props.showModal('CREATE_TAG')
+      showModal('CREATE_TAG')
     }, 300)
   }
 
-  onSubmit (e) {
+  const onSubmit = e => {
     e.preventDefault()
     let selectedTags = $(e.target.tags).val()
     if (!selectedTags) selectedTags = []
     axios
-      .put(`/api/v2/tickets/${this.props.ticketId}`, {
-        tags: selectedTags
-      })
+      .put(`/api/v2/tickets/${ticketId}`, { tags: selectedTags })
       .then(() => {
-        this.props.socket.emit(TICKETS_UI_TAGS_UPDATE, { ticketId: this.props.ticketId })
-        this.closeButton.click()
+        socket.emit(TICKETS_UI_TAGS_UPDATE, { ticketId })
+        if (closeBtnRef.current) closeBtnRef.current.click()
       })
       .catch(error => {
         Log.error(error)
@@ -66,16 +54,12 @@ class AddTagsModal extends React.Component {
       })
   }
 
-  onClearClicked () {
+  const onClearClicked = () => {
     axios
-      .put(`/api/v2/tickets/${this.props.ticketId}`, {
-        tags: []
-      })
+      .put(`/api/v2/tickets/${ticketId}`, { tags: [] })
       .then(() => {
-        $(this.select)
-          .val('')
-          .trigger('chosen:updated')
-        this.props.socket.emit(TICKETS_UI_TAGS_UPDATE, { ticketId: this.props.ticketId })
+        $(selectRef.current).val('').trigger('chosen:updated')
+        socket.emit(TICKETS_UI_TAGS_UPDATE, { ticketId })
       })
       .catch(error => {
         Log.error(error)
@@ -83,76 +67,62 @@ class AddTagsModal extends React.Component {
       })
   }
 
-  render () {
-    const mappedTags =
-      this.props.tagsSettings.tags &&
-      this.props.tagsSettings.tags
-        .map(tag => {
-          return {
-            text: tag.get('name'),
-            value: tag.get('_id')
-          }
-        })
-        .toArray()
+  const mappedTags =
+    tagsSettings.tags &&
+    tagsSettings.tags
+      .map(tag => ({ text: tag.get('name'), value: tag.get('_id') }))
+      .toArray()
 
-    return (
-      <BaseModal options={{ bgclose: false }}>
-        <div className={'uk-clearfix'}>
-          <h5 style={{ fontWeight: 300 }}>Add Tags</h5>
-          <div>
-            <form className='nomargin' onSubmit={e => this.onSubmit(e)}>
-              <div className='search-container'>
-                <select
-                  name='tags'
-                  id='tags'
-                  className='chosen-select'
-                  multiple
-                  data-placeholder=' '
-                  data-noresults='No Tags Found for '
-                  ref={r => (this.select = r)}
-                >
-                  {mappedTags.map(tag => (
-                    <option key={tag.value} value={tag.value}>
-                      {tag.text}
-                    </option>
-                  ))}
-                </select>
-                <button type='button' style={{ borderRadius: 0 }} onClick={e => this.onCreateTagClicked(e)}>
-                  <i className='material-icons' style={{ marginRight: 0 }}>
-                    add
-                  </i>
-                </button>
-              </div>
+  return (
+    <BaseModal options={{ bgclose: false }}>
+      <div className={'uk-clearfix'}>
+        <h5 style={{ fontWeight: 300 }}>Add Tags</h5>
+        <div>
+          <form className='nomargin' onSubmit={onSubmit}>
+            <div className='search-container'>
+              <select
+                name='tags'
+                id='tags'
+                className='chosen-select'
+                multiple
+                data-placeholder=' '
+                data-noresults='No Tags Found for '
+                ref={selectRef}
+              >
+                {mappedTags && mappedTags.map(tag => (
+                  <option key={tag.value} value={tag.value}>
+                    {tag.text}
+                  </option>
+                ))}
+              </select>
+              <button type='button' style={{ borderRadius: 0 }} onClick={onCreateTagClicked}>
+                <i className='material-icons' style={{ marginRight: 0 }}>
+                  add
+                </i>
+              </button>
+            </div>
 
-              <div className='left' style={{ marginTop: 15 }}>
-                <Button
-                  type={'button'}
-                  text={'Clear'}
-                  small={true}
-                  flat={true}
-                  style={'danger'}
-                  onClick={e => this.onClearClicked(e)}
-                />
-              </div>
-              <div className='right' style={{ marginTop: 15 }}>
-                <Button
-                  type={'button'}
-                  text={'Cancel'}
-                  style={'secondary'}
-                  small={true}
-                  flat={true}
-                  waves={true}
-                  extraClass={'uk-modal-close'}
-                  ref={r => (this.closeButton = r)}
-                />
-                <Button type={'submit'} text={'Save Tags'} style={'success'} small={true} waves={true} />
-              </div>
-            </form>
-          </div>
+            <div className='left' style={{ marginTop: 15 }}>
+              <Button type={'button'} text={'Clear'} small={true} flat={true} style={'danger'} onClick={onClearClicked} />
+            </div>
+            <div className='right' style={{ marginTop: 15 }}>
+              <Button
+                type={'button'}
+                text={'Cancel'}
+                style={'secondary'}
+                small={true}
+                flat={true}
+                waves={true}
+                extraClass={'uk-modal-close'}
+                ref={closeBtnRef}
+              />
+              <Button type={'submit'} text={'Save Tags'} style={'success'} small={true} waves={true} />
+            </div>
+          </form>
         </div>
-      </BaseModal>
-    )
-  }
+      </div>
+    </BaseModal>
+  )
 }
 
 AddTagsModal.propTypes = {

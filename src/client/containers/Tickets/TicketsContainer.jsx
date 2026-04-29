@@ -176,13 +176,6 @@ class TicketsContainer extends React.Component {
 
   onSearchKeypress (e) {
     if (this.searchTerm.length > 3) this.props.fetchSearchResults({ term: this.searchTerm })
-
-    // e.persist()
-    // if (e.charCode === 13) {
-    //   const searchString = e.target.value
-    //   if (searchString.length < 1) this.props.unloadTickets().then(this.props.fetchTickets({ type: this.props.view }))
-    //   else this.props.unloadTickets().then(this.props.fetchTickets({ type: 'search', searchString }))
-    // }
   }
 
   _selectAll () {
@@ -212,19 +205,14 @@ class TicketsContainer extends React.Component {
   }
 
   render () {
-    const loadingItems = []
-    for (let i = 0; i < 51; i++) {
-      const cells = []
-      for (let k = 0; k < 10; k++) {
-        cells.push(
-          <TableCell key={k} className={'vam'}>
-            <div className={'loadingTextAnimation'} />
-          </TableCell>
-        )
-      }
-
-      loadingItems.push(<TableRow key={Math.random()}>{cells}</TableRow>)
-    }
+    const loadingCells = Array.from({ length: 10 }, (_, k) => (
+      <TableCell key={k} className={'vam'}>
+        <div className={'loadingTextAnimation'} />
+      </TableCell>
+    ))
+    const loadingItems = Array.from({ length: 51 }, (_, i) => (
+      <TableRow key={i}>{loadingCells}</TableRow>
+    ))
 
     const selectAllCheckbox = (
       <div style={{ marginLeft: 17 }}>

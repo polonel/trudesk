@@ -11,10 +11,8 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { observer } from 'mobx-react'
-import { makeObservable, observable } from 'mobx'
 
 import Avatar from 'components/Avatar/Avatar'
 import ReactHtmlParser from 'react-html-parser'
@@ -25,80 +23,40 @@ import helpers from 'lib/helpers'
 import axios from 'axios'
 import Log from '../../logger'
 
-const setupImages = parent => {
-  const imagesEl = parent.issueBody.querySelectorAll('img:not(.hasLinked)')
-  imagesEl.forEach(i => helpers.setupImageLink(i))
-}
+function IssuePartial ({ ticketId, status, owner, subject, issue, date, dateFormat, attachments: attachmentsProp, editorWindow, socket }) {
+  const [attachments, setAttachments] = useState(attachmentsProp || [])
+  const issueBodyRef = useRef(null)
+  const attachmentInputRef = useRef(null)
 
-const setupLinks = parent => {
-  const linksEl = parent.issueBody.querySelectorAll('a')
-  linksEl.forEach(i => helpers.setupLinkWarning(i))
-}
+  useEffect(() => {
+    setAttachments(attachmentsProp || [])
+  }, [attachmentsProp])
 
-@observer
-class IssuePartial extends React.Component {
-  @observable ticketId = ''
-  @observable status = null
-  @observable owner = null
-  @observable subject = ''
-  @observable issue = ''
-  @observable attachments = []
+  useEffect(() => {
+    if (!issueBodyRef.current) return
+    issueBodyRef.current.querySelectorAll('img:not(.hasLinked)').forEach(i => helpers.setupImageLink(i))
+    issueBodyRef.current.querySelectorAll('a').forEach(i => helpers.setupLinkWarning(i))
+  }, [issue])
 
-  constructor (props) {
-    super(props)
-    makeObservable(this)
-
-    this.ticketId = this.props.ticketId
-    this.status = this.props.status
-    this.owner = this.props.owner
-    this.subject = this.props.subject
-    this.issue = this.props.issue
-    this.attachments = this.props.attachments
-
-    this.onUpdateTicketAttachments = this.onUpdateTicketAttachments.bind(this)
-  }
-
-  componentDidMount () {
-    setupImages(this)
-    setupLinks(this)
-
-    this.props.socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
-  }
-
-  componentDidUpdate (prevProps) {
-    if (prevProps.ticketId !== this.props.ticketId) this.ticketId = this.props.ticketId
-    if (prevProps.status !== this.props.status) this.status = this.props.status
-    if (prevProps.owner !== this.props.owner) this.owner = this.props.owner
-    if (prevProps.subject !== this.props.subject) this.subject = this.props.subject
-    if (prevProps.issue !== this.props.issue) this.issue = this.props.issue
-    if (prevProps.attachments !== this.props.attachments) this.attachments = this.props.attachments
-  }
-
-  componentWillUnmount () {
-    this.props.socket.off(TICKETS_UI_ATTACHMENTS_UPDATE, this.onUpdateTicketAttachments)
-  }
-
-  onUpdateTicketAttachments (data) {
-    if (this.ticketId === data.ticket._id) {
-      this.attachments = data.ticket.attachments
+  useEffect(() => {
+    const onUpdateTicketAttachments = data => {
+      if (ticketId === data.ticket._id) setAttachments(data.ticket.attachments)
     }
-  }
+    socket.on(TICKETS_UI_ATTACHMENTS_UPDATE, onUpdateTicketAttachments)
+    return () => socket.off(TICKETS_UI_ATTACHMENTS_UPDATE, onUpdateTicketAttachments)
+  }, [socket, ticketId])
 
-  onAttachmentInputChange (e) {
+  const onAttachmentInputChange = e => {
     const formData = new FormData()
-    const attachmentFile = e.target.files[0]
-    formData.append('ticketId', this.ticketId)
-    formData.append('attachment', attachmentFile)
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    formData.append('ticketId', ticketId)
+    formData.append('attachment', e.target.files[0])
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
     axios
       .post(`/tickets/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'CSRF-TOKEN': token
-        }
+        headers: { 'Content-Type': 'multipart/form-data', 'CSRF-TOKEN': token }
       })
       .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+        socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
         helpers.UI.showSnackbar('Attachment Successfully Uploaded')
       })
       .catch(error => {
@@ -108,11 +66,11 @@ class IssuePartial extends React.Component {
       })
   }
 
-  removeAttachment (e, attachmentId) {
+  const removeAttachment = attachmentId => {
     axios
-      .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
+      .delete(`/api/v1/tickets/${ticketId}/attachments/remove/${attachmentId}`)
       .then(() => {
-        this.props.socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: this.ticketId })
+        socket.emit(TICKETS_UI_ATTACHMENTS_UPDATE, { _id: ticketId })
         helpers.UI.showSnackbar('Attachment Removed')
       })
       .catch(error => {
@@ -122,84 +80,74 @@ class IssuePartial extends React.Component {
       })
   }
 
-  render () {
-    return (
-      <div className='initial-issue uk-clearfix'>
-        <Avatar image={this.owner.image} userId={this.owner._id} />
-        {/* Issue */}
-        <div className='issue-text'>
-          <h3 className='subject-text'>{this.subject}</h3>
-          <a href={`mailto:${this.owner.email}`}>
-            {this.owner.fullname} &lt;{this.owner.email}&gt;
-          </a>
-          <br />
-          <time dateTime={helpers.formatDate(this.props.date, 'YYYY-MM-DD HH:mm')}>
-            {helpers.formatDate(this.props.date, this.props.dateFormat)}
-          </time>
-          <br />
-          {/* Attachments */}
-          <ul className='attachments'>
-            {this.attachments &&
-              this.attachments.map(attachment => (
-                <li key={attachment._id}>
-                  <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
-                    {attachment.name}
-                  </a>
-                  {this.status.get('isResolved') === false && (
-                    <a
-                      role='button'
-                      className={'remove-attachment'}
-                      onClick={e => this.removeAttachment(e, attachment._id)}
-                    >
-                      <i className='fa fa-remove' />
-                    </a>
-                  )}
-                </li>
-              ))}
-          </ul>
-          <div className='issue-body' ref={r => (this.issueBody = r)}>
-            {ReactHtmlParser(this.issue)}
-          </div>
+  const canEdit = status.get('isResolved') === false && helpers.hasPermOverRole(owner.role, null, 'tickets:update', true)
+
+  return (
+    <div className='initial-issue uk-clearfix'>
+      <Avatar image={owner.image} userId={owner._id} />
+      <div className='issue-text'>
+        <h3 className='subject-text'>{subject}</h3>
+        <a href={`mailto:${owner.email}`}>
+          {owner.fullname} &lt;{owner.email}&gt;
+        </a>
+        <br />
+        <time dateTime={helpers.formatDate(date, 'YYYY-MM-DD HH:mm')}>
+          {helpers.formatDate(date, dateFormat)}
+        </time>
+        <br />
+        <ul className='attachments'>
+          {attachments?.map(attachment => (
+            <li key={attachment._id}>
+              <a href={attachment.path} className='no-ajaxy' rel='noopener noreferrer' target='_blank'>
+                {attachment.name}
+              </a>
+              {status.get('isResolved') === false && (
+                <a
+                  role='button'
+                  className={'remove-attachment'}
+                  onClick={() => removeAttachment(attachment._id)}
+                >
+                  <i className='fa fa-remove' />
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+        <div className='issue-body' ref={issueBodyRef}>
+          {ReactHtmlParser(issue)}
         </div>
-        {/* Permissions on Fragment for edit */}
-        {this.status.get('isResolved') === false &&
-          helpers.hasPermOverRole(this.props.owner.role, null, 'tickets:update', true) && (
-            <Fragment>
-              <div
-                className={'edit-issue'}
-                onClick={() => {
-                  if (this.props.editorWindow)
-                    this.props.editorWindow.openEditorWindow({
-                      subject: this.subject,
-                      text: this.issue,
-                      onPrimaryClick: data => {
-                        this.props.socket.emit(TICKETS_ISSUE_SET, {
-                          _id: this.ticketId,
-                          value: data.text,
-                          subject: data.subjectText
-                        })
-                      }
-                    })
-                }}
-              >
-                <i className='material-icons'>&#xE254;</i>
-              </div>
-              <form className='form nomargin' encType='multipart/form-data'>
-                <div className='add-attachment' onClick={e => this.attachmentInput.click()}>
-                  <i className='material-icons'>&#xE226;</i>
-                </div>
-                <input
-                  ref={r => (this.attachmentInput = r)}
-                  className='hide'
-                  type='file'
-                  onChange={e => this.onAttachmentInputChange(e)}
-                />
-              </form>
-            </Fragment>
-          )}
       </div>
-    )
-  }
+      {canEdit && (
+        <>
+          <div
+            className={'edit-issue'}
+            onClick={() => {
+              editorWindow?.openEditorWindow({
+                subject,
+                text: issue,
+                onPrimaryClick: data => {
+                  socket.emit(TICKETS_ISSUE_SET, { _id: ticketId, value: data.text, subject: data.subjectText })
+                }
+              })
+            }}
+          >
+            <i className='material-icons'>&#xE254;</i>
+          </div>
+          <form className='form nomargin' encType='multipart/form-data'>
+            <div className='add-attachment' onClick={() => attachmentInputRef.current?.click()}>
+              <i className='material-icons'>&#xE226;</i>
+            </div>
+            <input
+              ref={attachmentInputRef}
+              className='hide'
+              type='file'
+              onChange={onAttachmentInputChange}
+            />
+          </form>
+        </>
+      )}
+    </div>
+  )
 }
 
 IssuePartial.propTypes = {

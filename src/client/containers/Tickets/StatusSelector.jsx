@@ -11,126 +11,100 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { observer } from 'mobx-react'
-import { observable, makeObservable } from 'mobx'
 import { connect } from 'react-redux'
 
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts'
 import { fetchTicketStatus } from 'actions/tickets'
 
-@observer
-class StatusSelector extends React.Component {
-  @observable status = null
+function StatusSelector ({ ticketId, status: statusProp, onStatusChange, hasPerm, socket, fetchTicketStatus, ticketStatuses }) {
+  const [status, setStatus] = useState(statusProp)
+  const [isOpen, setIsOpen] = useState(false)
+  const selectorRef = useRef(null)
 
-  constructor (props) {
-    super(props)
-    makeObservable(this)
+  useEffect(() => {
+    setStatus(statusProp)
+  }, [statusProp])
 
-    this.status = this.props.status
+  useEffect(() => {
+    fetchTicketStatus()
+  }, [])
 
-    this.onDocumentClick = this.onDocumentClick.bind(this)
-    this.onUpdateTicketStatus = this.onUpdateTicketStatus.bind(this)
-  }
-
-  componentDidMount () {
-    document.addEventListener('click', this.onDocumentClick)
-
-    this.props.socket.on(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus)
-    this.props.fetchTicketStatus()
-  }
-
-  componentDidUpdate (prevProps) {
-    if (prevProps.status !== this.props.status) this.status = this.props.status
-  }
-
-  componentWillUnmount () {
-    document.removeEventListener('click', this.onDocumentClick)
-    this.props.socket.off(TICKETS_UI_STATUS_UPDATE, this.onUpdateTicketStatus)
-  }
-
-  onDocumentClick (e) {
-    if (!this.selectorButton.contains(e.target) && this.dropMenu.classList.contains('shown')) this.forceClose()
-  }
-
-  onUpdateTicketStatus (data) {
-    if (this.props.ticketId === data.tid) {
-      this.status = data.status
-      if (this.props.onStatusChange) this.props.onStatusChange(this.status)
+  useEffect(() => {
+    const onUpdateTicketStatus = data => {
+      if (ticketId === data.tid) {
+        setStatus(data.status)
+        if (onStatusChange) onStatusChange(data.status)
+      }
     }
-  }
+    socket.on(TICKETS_UI_STATUS_UPDATE, onUpdateTicketStatus)
+    return () => socket.off(TICKETS_UI_STATUS_UPDATE, onUpdateTicketStatus)
+  }, [socket, ticketId, onStatusChange])
 
-  toggleDropMenu (e) {
+  useEffect(() => {
+    if (!isOpen) return
+    const onDocumentClick = e => {
+      if (selectorRef.current && !selectorRef.current.contains(e.target)) setIsOpen(false)
+    }
+    document.addEventListener('click', onDocumentClick)
+    return () => document.removeEventListener('click', onDocumentClick)
+  }, [isOpen])
+
+  const toggleDropMenu = e => {
     e.stopPropagation()
-    if (!this.props.hasPerm) return
-    const hasHide = this.dropMenu.classList.contains('hide')
-    const hasShown = this.dropMenu.classList.contains('shown')
-    hasHide ? this.dropMenu.classList.remove('hide') : this.dropMenu.classList.add('hide')
-    hasShown ? this.dropMenu.classList.remove('shown') : this.dropMenu.classList.add('shown')
+    if (hasPerm) setIsOpen(prev => !prev)
   }
 
-  forceClose () {
-    this.dropMenu.classList.remove('shown')
-    this.dropMenu.classList.add('hide')
+  const changeStatus = newStatus => {
+    if (!hasPerm) return
+    socket.emit(TICKETS_STATUS_SET, { _id: ticketId, value: newStatus })
+    setIsOpen(false)
   }
 
-  changeStatus (status) {
-    if (!this.props.hasPerm) return
+  const currentStatus = ticketStatuses ? ticketStatuses.find(s => s.get('_id') === status) : null
 
-    this.props.socket.emit(TICKETS_STATUS_SET, { _id: this.props.ticketId, value: status })
-    this.forceClose()
-  }
-
-  render () {
-    const currentStatus = this.props.ticketStatuses
-      ? this.props.ticketStatuses.find(s => s.get('_id') === this.status)
-      : null
-
-    return (
-      <div className='floating-ticket-status'>
-        <div
-          title='Change Status'
-          className={clsx(`ticket-status`, this.props.hasPerm && `cursor-pointer`)}
-          style={{ color: 'white', background: currentStatus != null ? currentStatus.get('htmlColor') : '#000000' }}
-          onClick={e => this.toggleDropMenu(e)}
-          ref={r => (this.selectorButton = r)}
-        >
-          <span>{currentStatus != null ? currentStatus.get('name') : 'Unknown'}</span>
-        </div>
-
-        {this.props.hasPerm && (
-          <span className='drop-icon material-icons' style={{ left: 'auto', right: 22, bottom: -18 }}>
-            keyboard_arrow_down
-          </span>
-        )}
-
-        <div
-          id={'statusSelect'}
-          ref={r => (this.dropMenu = r)}
-          className='hide'
-          style={{ height: 25 * this.props.ticketStatuses.size + 25 }}
-        >
-          <ul>
-            {this.props.ticketStatuses.map(
-              s =>
-                s && (
-                  <li
-                    key={s.get('_id')}
-                    className='ticket-status'
-                    onClick={() => this.changeStatus(s.get('_id'))}
-                    style={{ color: 'white', background: s.get('htmlColor') }}
-                  >
-                    <span>{s.get('name')}</span>
-                  </li>
-                )
-            )}
-          </ul>
-        </div>
+  return (
+    <div className='floating-ticket-status' ref={selectorRef}>
+      <div
+        title='Change Status'
+        className={clsx('ticket-status', hasPerm && 'cursor-pointer')}
+        style={{ color: 'white', background: currentStatus != null ? currentStatus.get('htmlColor') : '#000000' }}
+        onClick={toggleDropMenu}
+      >
+        <span>{currentStatus != null ? currentStatus.get('name') : 'Unknown'}</span>
       </div>
-    )
-  }
+
+      {hasPerm && (
+        <span className='drop-icon material-icons' style={{ left: 'auto', right: 22, bottom: -18 }}>
+          keyboard_arrow_down
+        </span>
+      )}
+
+      <div
+        id={'statusSelect'}
+        className={isOpen ? 'shown' : 'hide'}
+        style={{ height: 25 * ticketStatuses.size + 25 }}
+      >
+        <ul>
+          {ticketStatuses.map(
+            s =>
+              s && (
+                <li
+                  key={s.get('_id')}
+                  className='ticket-status'
+                  onClick={() => changeStatus(s.get('_id'))}
+                  style={{ color: 'white', background: s.get('htmlColor') }}
+                >
+                  <span>{s.get('name')}</span>
+                </li>
+              )
+          )}
+        </ul>
+      </div>
+    </div>
+  )
 }
 
 StatusSelector.propTypes = {
@@ -143,14 +117,12 @@ StatusSelector.propTypes = {
   ticketStatuses: PropTypes.object.isRequired
 }
 
-const mapStateToProps = state => ({
-  ticketStatuses: state.ticketsState.ticketStatuses
-})
-
 StatusSelector.defaultProps = {
   hasPerm: false
 }
 
-export default connect(mapStateToProps, {
-  fetchTicketStatus
-})(StatusSelector)
+const mapStateToProps = state => ({
+  ticketStatuses: state.ticketsState.ticketStatuses
+})
+
+export default connect(mapStateToProps, { fetchTicketStatus })(StatusSelector)

@@ -73,5 +73,9 @@ public/uploads/assets/upload/
 stats\.json
 
 *.heapsnapshot
+
+#AI Files
 .claude
 .claudeignore
+.clinerules
+.clineignore
