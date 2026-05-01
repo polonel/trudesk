@@ -1,248 +1,160 @@
 /* eslint-disable no-unused-expressions */
 /* globals server socketServer */
 
-import { TicketTypeModel } from '../src/models'
-var expect = require('chai').expect
-var winston = require('../src/logger')
-var async = require('async')
-var mongoose = require('mongoose')
-var path = require('path')
-var _ = require('lodash')
+import { TicketTypeModel, UserModel, GroupModel } from '../src/models'
+import mongoose from 'mongoose'
+import _ from 'lodash'
+import { MongoMemoryServer } from 'mongodb-memory-server'
 
-// Preload Models
+const expect = require('chai').expect
+const path = require('path')
+
+require('../src/config').default.loadConfig()
 require('../src/models')
-const { webServerListen } = require('../src/webserver')
 
-var database, db
-var TEST_DB_NAME = 'polonel_trudesk31908899'
-// var CONNECTION_URI = 'mongodb://192.168.4.187:27017/' + TEST_DB_NAME
-var CONNECTION_URI = 'mongodb://localhost:27017/' + TEST_DB_NAME
+const TEST_DB_NAME = 'polonel_trudesk31908899'
 
-// Global Setup for tests
-before(function (done) {
-  this.timeout(15000) // Make it a longer timeout since we have to start the web server
+let database, db, mongod, CONNECTION_URI
+
+before(async function () {
+  this.timeout(15000)
+
   delete require.cache[require.resolve('../src/database')]
   delete require.cache[require.resolve('mongoose')]
-  mongoose = require('mongoose')
+
   database = require('../src/database')
+  await mongoose.connection.close()
 
-  mongoose.connection.close()
-  database.init(function (err, d) {
-    expect(err).to.not.exist
-    expect(d).to.be.a('object')
-    expect(d.connection).to.exist
+  mongod = new MongoMemoryServer({
+    binary: {
+      version: "5.0.6",
+    }
+  })
 
-    db = d
+  await mongod.start();
 
-    async.series(
-      [
-        function (cb) {
-          if (mongoose.connection.db.namespace !== TEST_DB_NAME) {
-            return cb('Invalid Test Database. Existing...')
-          }
+  CONNECTION_URI = mongod.getUri() + TEST_DB_NAME;
 
-          return cb()
-        },
-        function (cb) {
-          var counter = require('../src/models/counters')
-          counter.create(
-            {
-              _id: 'tickets',
-              next: 1000
-            },
-            function (err) {
-              expect(err).to.not.exist
+  await new Promise((resolve, reject) => {
+    database.init(function (err, d) {
+      if (err) return reject(err)
+      expect(d).to.be.a('object')
+      expect(d.connection).to.exist
+      db = d
+      resolve()
+    }, CONNECTION_URI)
+  })
 
-              cb()
-            }
-          )
-        },
-        function (cb) {
-          const typePromise = TicketTypeModel.insertMany([{ name: 'Task' }, { name: 'Issue' }])
-          Promise.resolve(typePromise)
-            .then(() => {
-              return cb()
-            })
-            .catch(e => {
-              return cb(e)
-            })
-        },
-        function (cb) {
-          require('../src/settings/defaults').init(cb)
-        },
-        function (cb) {
-          var roleSchema = require('../src/models/role')
-          roleSchema.getRoles(function (err, r) {
-            expect(err).to.not.exist
-            expect(r).to.be.a('array')
+  if (mongoose.connection.db.namespace !== TEST_DB_NAME) {
+    throw new Error('Invalid Test Database. Exiting...')
+  }
 
-            global.roles = r
+  const counter = require('../src/models/counters')
+  await counter.default.setCounter('tickets', 1000)
 
-            cb()
-          })
-        },
-        function (cb) {
-          const { UserModel } = require('../src/models')
-          var adminRole = _.find(global.roles, { normalized: 'admin' })
-          expect(adminRole).to.exist
-          UserModel.create(
-            {
-              username: 'trudesk',
-              password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
-              fullname: 'Trudesk',
-              email: 'trudesk@trudesk.io',
-              role: adminRole._id,
-              accessToken: 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
-            },
-            function (err, user) {
-              expect(err).to.not.exist
-              expect(user).to.be.a('object')
+  await TicketTypeModel.insertMany([{ name: 'Task' }, { name: 'Issue' }])
 
-              cb()
-            }
-          )
-        },
-        function (cb) {
-          var { UserModel } = require('../src/models')
-          var supportRole = _.find(global.roles, { normalized: 'support' })
-          expect(supportRole).to.exist
-          global.supportRoleId = supportRole._id
+  await new Promise((resolve, reject) => {
+    require('../src/settings/defaults').init(err => (err ? reject(err) : resolve()))
+  })
 
-          UserModel.create(
-            {
-              username: 'fake.user',
-              password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
-              fullname: 'Fake user',
-              email: 'fake.user@trudesk.io',
-              role: supportRole._id,
-              accessToken: '456'
-            },
-            function (err, user) {
-              expect(err).to.not.exist
-              expect(user).to.be.a('object')
-
-              cb()
-            }
-          )
-        },
-        function (cb) {
-          var { UserModel } = require('../src/models')
-          var userRole = _.find(global.roles, { normalized: 'user' })
-          expect(userRole).to.exist
-          global.userRoleId = userRole._id
-          UserModel.create(
-            {
-              username: 'deleted.user',
-              password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
-              fullname: 'Deleted User',
-              email: 'deleted.user@trudesk.io',
-              role: userRole._id,
-              accessToken: '123',
-              deleted: true
-            },
-            function (err, user) {
-              expect(err).to.not.exist
-              expect(user).to.be.a('object')
-
-              cb()
-            }
-          )
-        },
-        function (cb) {
-          var { GroupModel } = require('../src/models')
-          GroupModel.create(
-            {
-              name: 'TEST'
-            },
-            function (err, group) {
-              expect(err).to.not.exist
-              expect(group).to.be.a('object')
-
-              cb()
-            }
-          )
-        },
-        function (cb) {
-          var ws = require('../src/webserver')
-          ws.init(
-            db,
-            function (err) {
-              expect(err).to.not.exist
-              ws.webServerListen(function (err) {
-                expect(err).to.not.exist
-                global.server = ws.default.server
-
-                const { SocketServer } = require('../src/socketserver')
-                SocketServer(ws)
-
-                cb()
-              })
-            },
-            3111
-          )
-        }
-      ],
-      function (err) {
-        if (err) {
-          console.log(err)
-          return done(err)
-        }
-
-        done()
-      }
-    )
-  }, CONNECTION_URI)
-})
-
-// Global Teardown for tests
-after(function (done) {
-  this.timeout(5000)
-  mongoose.connection.dropDatabase(function () {
-    mongoose.connection.close(function () {
-      global.socketServer.eventLoop.stop()
-      global.server.close()
-
-      done()
+  const roleSchema = require('../src/models/role')
+  global.roles = await new Promise((resolve, reject) => {
+    roleSchema.getRoles(function (err, r) {
+      if (err) return reject(err)
+      expect(r).to.be.a('array')
+      resolve(r)
     })
+  })
+
+  const adminRole = _.find(global.roles, { normalized: 'admin' })
+  expect(adminRole).to.exist
+  await UserModel.collection.insertOne({
+    username: 'trudesk',
+    password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
+    fullname: 'Trudesk',
+    email: 'trudesk@trudesk.io',
+    role: adminRole._id,
+    accessToken: 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
+    deleted: false
+  })
+
+  const supportRole = _.find(global.roles, { normalized: 'support' })
+  expect(supportRole).to.exist
+  global.supportRoleId = supportRole._id
+  await UserModel.collection.insertOne({
+    username: 'fake.user',
+    password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
+    fullname: 'Fake user',
+    email: 'fake.user@trudesk.io',
+    role: supportRole._id,
+    accessToken: '456',
+    deleted: false
+  })
+
+  const userRole = _.find(global.roles, { normalized: 'user' })
+  expect(userRole).to.exist
+  global.userRoleId = userRole._id
+  await UserModel.collection.insertOne({
+    username: 'deleted.user',
+    password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
+    fullname: 'Deleted User',
+    email: 'deleted.user@trudesk.io',
+    role: userRole._id,
+    accessToken: '123',
+    deleted: true
+  })
+
+  await GroupModel.create({ name: 'TEST' })
+
+  const ws = require('../src/testserver')
+  await new Promise((resolve, reject) => {
+    ws.init(
+      db,
+      function (err) {
+        if (err) return reject(err)
+        ws.webServerListen(function (err) {
+          if (err) return reject(err)
+          global.server = ws.default.server
+          const { SocketServer } = require('../src/socketserver')
+          SocketServer(ws)
+          resolve()
+        })
+      },
+      3111
+    )
   })
 })
 
-// Start DB Tests
+after(async function () {
+  this.timeout(5000)
+  await mongoose.connection.dropDatabase()
+  global.socketServer.eventLoop.stop()
+  await mongoose.connection.close()
+  global.server.close()
+  
+  await mongod.stop();
+})
+
 describe('Database', function () {
   beforeEach(function (done) {
-    // Need to invalid Database Module before each test runs.
     delete require.cache[path.join(__dirname, '../src/database')]
     database = require('../src/database')
-
     done()
   })
 
-  it('should connect without error', function (done) {
-    async.series(
-      [
-        function (cb) {
-          database.init(function (err, db) {
-            expect(err).to.not.exist
-            expect(db).to.be.a('object')
-            expect(db.connection._readyState).to.equal(1)
+  it('should connect without error', async function () {
+    const connect = () =>
+      new Promise((resolve, reject) => {
+        database.init(function (err, db) {
+          if (err) return reject(err)
+          expect(db).to.be.a('object')
+          expect(db.connection._readyState).to.equal(1)
+          resolve()
+        }, CONNECTION_URI)
+      })
 
-            cb()
-          }, CONNECTION_URI)
-        },
-        function (cb) {
-          // Test rerunning init and getting DB back without calling connect.
-          database.init(function (err, db) {
-            expect(err).to.not.exist
-            expect(db).to.be.a('object')
-            expect(db.connection._readyState).to.equal(1)
-
-            cb()
-          }, CONNECTION_URI)
-        }
-      ],
-      function (err) {
-        done()
-      }
-    )
+    await connect()
+    await connect()
   })
 })

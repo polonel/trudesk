@@ -87,8 +87,8 @@ apiGroupModels.delete = async function (req: any, res: any) {
     const tickets = await TicketModel.countDocuments({ group: { $in: [id] } })
     if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete GroupModel with tickets.')
 
-    const success = await GroupModel.deleteOne({ _id: id })
-    if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete GroupModel. Contact your administrator.')
+    const result = await GroupModel.deleteOne({ _id: id })
+    if (!result || result.deletedCount < 1) return apiUtils.sendApiError(res, 400, 'Unable to delete GroupModel. Group not found.')
 
     return apiUtils.sendApiSuccess(res, { _id: id })
   } catch (e: any) {

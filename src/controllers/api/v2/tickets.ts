@@ -233,7 +233,10 @@ ticketsV2.single = async function (req, res) {
       if (!ticket) return apiUtils.sendApiError(res, 404, 'Ticket not found')
 
       if (req.user.role.isAdmin || req.user.role.isAgent) {
-        const dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
+        let dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
+        if (!dbGroups || dbGroups.length === 0) {
+          dbGroups = await GroupModel.find({}).lean()
+        }
 
         const groups = dbGroups.map((g) => g?._id.toString())
 

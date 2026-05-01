@@ -55,12 +55,12 @@ accountsApi.sessionUser = async (req: any, res: any) => {
 accountsApi.create = async function (req: any, res: any) {
   const postData = req.body
   if (!postData) return apiUtil.sendApiError_InvalidPostData(res)
+  if (!postData.password || !postData.passwordConfirm) return apiUtil.sendApiError_InvalidPostData(res)
 
   let savedId: any = null
   const chance = new Chance()
 
   try {
-    if (!postData.password || !postData.passwordConfirm) throw new Error('Password length is too short.')
 
     const settingsContent = await SettingsUtil.getSettings(_.noop)
     const settings = settingsContent.settings as any

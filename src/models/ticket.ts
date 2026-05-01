@@ -39,7 +39,7 @@ import type { GroupModelClass } from './group'
 import Counters from './counters'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import marked from 'marked'
+import { marked } from 'marked'
 
 const COLLECTION = 'tickets'
 
@@ -1151,7 +1151,7 @@ export class TicketClass {
   ): any {
     if (_.isUndefined(userId)) return callback('Invalid Id - TicketSchema.GetAssigned()', null)
 
-    return this.find({ assignee: userId, deleted: false, status: { $ne: 3 } })
+    return this.find({ assignee: userId, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags group status')
       .exec(callback)

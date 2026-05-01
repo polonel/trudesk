@@ -26,6 +26,8 @@ function mainRoutes (router: Router, middleware: RouteMiddlewareType, controller
   router.get('/healthz', (_req: Request, res: Response) => res.status(200).send('OK'))
   router.get('/version', (_req: Request, res: Response) => res.json({ version: packagejson.version }))
   router.get('/install', (_req: Request, res: Response) => res.redirect('/'))
+  router.post('/login', controllers.main.loginPost)
+  router.get('/logout', controllers.main.logout)
 
   router.post('/resetpassword', controllers.main.forgotPass)
   router.get('/resetpassword/:hash', controllers.main.resetPass)

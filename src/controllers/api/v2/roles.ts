@@ -39,7 +39,7 @@ apiRoles.update = async (req: any, res: any) => {
   const grants = permissions.buildGrants(cleaned)
 
   try {
-    const role = await RoleModel.findOne({ _id: data._id })
+    const role = await RoleModel.findOne({ _id })
     if (!role) throw new Error('Invalid Role')
 
     await role.updateGrantsAndHierarchy(grants, hierarchy)

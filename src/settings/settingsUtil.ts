@@ -219,4 +219,7 @@ export const SettingsUtil: ISettingsUtil = {
 
 export default SettingsUtil
 
-module.exports = SettingsUtil
+// CJS interop: callers using require('./settingsUtil') get the object directly;
+// add .SettingsUtil so named destructuring also works.
+const _cjsExport = Object.assign(SettingsUtil, { SettingsUtil })
+module.exports = _cjsExport
