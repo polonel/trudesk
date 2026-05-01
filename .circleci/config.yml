@@ -28,14 +28,13 @@ jobs:
   build_general:
     docker:
     - image: cimg/node:20.20
-    - image: mongo:5.0
     working_directory: ~/trudesk
     steps:
     - checkout
     - yarninstall
-#    - run:
-#        name: Run Tests
-#        command: yarn run test
+    - run:
+        name: Run Tests
+        command: yarn run test
     - run:
         name: Run Build
         command: yarn run build
