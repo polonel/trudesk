@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* globals server socketServer */
 
-import { TicketTypeModel, UserModel, GroupModel } from '../src/models'
-import mongoose from 'mongoose'
-import _ from 'lodash'
-import { MongoMemoryServer } from 'mongodb-memory-server'
+const { TicketTypeModel, UserModel, GroupModel } = require('../src/models')
+const mongoose = require('mongoose')
+const _ = require('lodash')
+const { MongoMemoryServer } = require('mongodb-memory-server')
 
 const expect = require('chai').expect
 const path = require('path')
