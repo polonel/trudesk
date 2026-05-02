@@ -40,7 +40,7 @@ jobs:
           sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
     - run:
         name: Build frontend for tests
-        command: yarn run webpackdist
+        command: yarn run webpackdev
     - run:
         name: Run Tests
         command: yarn run test

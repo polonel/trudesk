@@ -317,9 +317,7 @@
         "shortnames": true
       },
       "mongodbMemoryServer": {
-        "version": "5.0",
-        "platform": "win32",
-        "arch": "x64"
+        "version": "5.0.6"
       }
     }
   },
