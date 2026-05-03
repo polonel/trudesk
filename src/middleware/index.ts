@@ -13,6 +13,7 @@
  */
 
 import path from 'path'
+import fs from 'fs'
 import express, { Application, NextFunction, Request, RequestHandler, Response } from 'express'
 import expressStaticGzip from 'express-static-gzip'
 import mongoose from 'mongoose'
@@ -120,7 +121,29 @@ export default function (
     })
   })
 
-  app.use('/mobile', express.static(path.resolve(config.trudeskRoot(), 'mobile')))
+  // Walk up from __dirname to find project root (works for both ts-node src/ and compiled dist/src/)
+  const _findMobileDist = () => {
+    for (const levels of [2, 3, 4]) {
+      const parts = Array.from({ length: levels }, () => '..')
+      const candidate = path.resolve(__dirname, ...parts, 'mobile-pwa', 'dist')
+      if (fs.existsSync(candidate)) return candidate
+    }
+    return path.resolve(__dirname, '..', '..', '..', 'mobile-pwa', 'dist')
+  }
+  const mobileDist = _findMobileDist()
+  if (global.env === 'production') {
+    app.use('/mobile', expressStaticGzip(mobileDist, {
+      enableBrotli: true,
+      orderPreference: ['br', 'gz'],
+      serveStatic: { maxAge: 31536000, cacheControl: true },
+      index: false
+    }))
+  } else {
+    app.use('/mobile', express.static(mobileDist))
+  }
+  app.use('/mobile', (_req: Request, res: Response) => {
+    res.sendFile(path.join(mobileDist, 'index.html'))
+  })
   app.use('/favicon.ico', express.static(path.resolve(config.trudeskRoot(), 'public/img/favicon.ico')))
   app.use('/assets', express.static(path.resolve(config.trudeskRoot(), 'public/uploads/assets')))
   app.use('/uploads/users', express.static(path.resolve(config.trudeskRoot(), 'public/uploads/users')))

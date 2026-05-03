@@ -1,0 +1,39 @@
+{
+  "name": "trudesk-mobile-pwa",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.22.3",
+    "@tanstack/react-query": "5.28.4",
+    "zustand": "4.5.2",
+    "socket.io-client": "4.6.1",
+    "axios": "1.6.8",
+    "jwt-decode": "4.0.0",
+    "dayjs": "1.11.10",
+    "dompurify": "3.1.0",
+    "clsx": "2.1.0",
+    "@headlessui/react": "1.7.19",
+    "@heroicons/react": "2.1.1"
+  },
+  "devDependencies": {
+    "vite": "5.1.6",
+    "@vitejs/plugin-react": "4.2.1",
+    "vite-plugin-pwa": "0.19.8",
+    "vite-plugin-compression": "0.5.1",
+    "tailwindcss": "3.4.1",
+    "postcss": "8.4.37",
+    "autoprefixer": "10.4.19",
+    "typescript": "5.4.2",
+    "@types/react": "18.2.67",
+    "@types/react-dom": "18.2.22",
+    "@types/dompurify": "3.0.5"
+  }
+}

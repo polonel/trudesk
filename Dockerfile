@@ -15,9 +15,12 @@ RUN yarn plugin import workspace-tools
 RUN yarn workspaces focus --all --production
 RUN cp -R node_modules prod_node_modules
 RUN yarn install
+WORKDIR /usr/src/trudesk/mobile-pwa
+RUN npm install
+WORKDIR /usr/src/trudesk
 RUN yarn build
 RUN rm -rf node_modules && mv prod_node_modules node_modules
-RUN rm -rf .yarn/cache
+RUN rm -rf .yarn/cache mobile-pwa/node_modules
 
 FROM node:16.14-alpine
 WORKDIR /usr/src/trudesk

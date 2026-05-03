@@ -20,7 +20,6 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "importsNotUsedAsValues": "error",
     "checkJs": false,
     // Everything below are custom changes for this app
     // Below line is needed for Typegoose
