@@ -72,6 +72,9 @@ public/uploads/assets/upload/
 
 stats\.json
 
+#Mobile
+mobile-pwa/dist/
+
 *.heapsnapshot
 
 #AI Files

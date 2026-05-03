@@ -233,6 +233,11 @@ ticketsV2.single = async function (req, res) {
       if (!ticket) return apiUtils.sendApiError(res, 404, 'Ticket not found')
 
       if (req.user.role.isAdmin || req.user.role.isAgent) {
+        // Tickets with no group are accessible to all agents/admins
+        if (!ticket.group) {
+          return apiUtils.sendApiSuccess(res, { ticket })
+        }
+
         let dbGroups = await DepartmentModel.getDepartmentGroupsOfUser(req.user._id)
         if (!dbGroups || dbGroups.length === 0) {
           dbGroups = await GroupModel.find({}).lean()
@@ -246,6 +251,14 @@ ticketsV2.single = async function (req, res) {
           return apiUtils.sendApiError(res, 403, 'Forbidden')
         }
       } else {
+        // Tickets with no group: allow if the user is the owner
+        if (!ticket.group) {
+          const isOwner = ticket.owner?._id.toString() === req.user._id.toString()
+          return isOwner
+            ? apiUtils.sendApiSuccess(res, { ticket })
+            : apiUtils.sendApiError(res, 403, 'Forbidden')
+        }
+
         const userGroups = await GroupModel.getAllGroupsOfUser(req.user._id)
 
         const groupIds = userGroups.map(function (m) {
