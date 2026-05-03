@@ -32,6 +32,11 @@ jobs:
     steps:
     - checkout
     - yarninstall
+    - run:
+        name: Mobile NPM packages
+        command: |
+          cd mobile-pwa && npm install
+          
     # We need to install libssl1.1 as a temp work around to support Mongodb 5. While we migrate.
     - run:
         name: Install libssl1.1
