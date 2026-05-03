@@ -681,33 +681,42 @@ export class TicketClass {
   public addSubscriber(
     this: DocumentType<TicketClass>,
     userId: Types.ObjectId,
-    callback: (err: null, ticket: DocumentType<TicketClass>) => void
-  ): void {
+    callback?: (err: null, ticket: DocumentType<TicketClass>) => void
+  ): Promise<DocumentType<TicketClass>> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
-    const hasSub = _.some(self.subscribers, (i: any) => i._id.toString() === userId.toString())
+    return new Promise((resolve, reject) => {
+      const hasSub = _.some(self.subscribers, (i: any) => i._id.toString() === userId.toString())
 
-    if (!hasSub) {
-      self.subscribers.push(userId as any)
-    }
+      if (!hasSub) {
+        self.subscribers.push(userId as any)
+      }
 
-    return callback(null, self)
+      if (typeof callback === 'function') return callback(null, self)
+      resolve(self)
+    })
   }
 
   public removeSubscriber(
     this: DocumentType<TicketClass>,
     userId: Types.ObjectId,
-    callback: (err: null, ticket: DocumentType<TicketClass>) => void
-  ): void {
+    callback?: (err: null, ticket: DocumentType<TicketClass>) => void
+  ): Promise<DocumentType<TicketClass>> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
-    const user = _.find(self.subscribers, (i: any) => i._id.toString() === userId.toString())
+    return new Promise((resolve, reject) => {
+      const user = _.find(self.subscribers, (i: any) => i._id.toString() === userId.toString())
 
-    if (_.isUndefined(user) || _.isEmpty(user) || _.isNull(user)) return callback(null, self)
+      if (_.isUndefined(user) || _.isEmpty(user) || _.isNull(user)) {
+        if (typeof callback === 'function') return callback(null, self)
+        return resolve(self)
+      }
 
-    self.subscribers = _.reject(self.subscribers, (i: any) => i._id.toString() === userId.toString()) as any
+      self.subscribers = _.reject(self.subscribers, (i: any) => i._id.toString() === userId.toString()) as any
 
-    return callback(null, self)
+      if (typeof callback === 'function') return callback(null, self)
+      resolve(self)
+    })
   }
 
   // Static Methods

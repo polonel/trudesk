@@ -561,7 +561,7 @@ class SingleTicketContainer extends React.Component {
 
         <TruTabSection sectionId={0} active={true}>
           <div className='all-comments'>
-            {this.commentsAndNotes.map(item => this.renderCommentNotePartial(item, statusObj))}
+            {this.commentsAndNotes.map(item => this.renderCommentNotePartial(item, statusObj, item.isNote ?? false))}
           </div>
         </TruTabSection>
 
@@ -573,6 +573,7 @@ class SingleTicketContainer extends React.Component {
                 ticketStatus={statusObj}
                 ticketSubject={ticket.subject}
                 comment={comment}
+                isNote={false}
                 dateFormat={dateFormat}
                 onEditClick={() => this.emitEditCommentNote(comment)}
                 onRemoveClick={() => this.emitRemoveCommentNote(comment)}
