@@ -281,16 +281,47 @@ ticketsV2.update = async function (req, res) {
   const uid = req.params.uid
   const putTicket = req.body.ticket
   if (!uid || !putTicket) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
-  
-  // todo: complete this...
+
   try {
     let ticket = await TicketModel.getTicketByUid(uid)
+    if (!ticket) return apiUtils.sendApiError(res, 404, 'Ticket not found')
+
+    const historyItems: { action: string; description: string; owner: any }[] = []
+
+    if (putTicket.status !== undefined) {
+      ticket.status = putTicket.status
+      historyItems.push({ action: 'ticket:set:status', description: 'Status updated', owner: req.user._id })
+    }
+    if (putTicket.type !== undefined) {
+      ticket.type = putTicket.type
+      historyItems.push({ action: 'ticket:set:type', description: 'Type updated', owner: req.user._id })
+    }
+    if (putTicket.priority !== undefined) {
+      ticket.priority = putTicket.priority
+      historyItems.push({ action: 'ticket:set:priority', description: 'Priority updated', owner: req.user._id })
+    }
+    if (putTicket.group !== undefined) {
+      ticket.group = putTicket.group || undefined
+      historyItems.push({ action: 'ticket:set:group', description: 'Group updated', owner: req.user._id })
+    }
+    if (putTicket.assignee !== undefined) {
+      ticket.assignee = putTicket.assignee || undefined
+      historyItems.push({ action: 'ticket:set:assignee', description: 'Assignee updated', owner: req.user._id })
+    }
+
+    ticket.updated = Date.now()
+    for (const h of historyItems) ticket.history.push(h)
+
+    await ticket.save()
+    ticket = await TicketModel.getTicketByUid(uid)
+
+    emitter.emit('ticket:updated', ticket)
+    if (global.io) global.io.sockets.emit('$trudesk:tickets:update', ticket)
 
     return apiUtils.sendApiSuccess(res, { ticket })
   } catch (e) {
-    return apiUtils.sendApiError(res, 400, e)
+    return apiUtils.sendApiError(res, 400, e.message)
   }
-
 }
 
 ticketsV2.batchUpdate = function (req, res) {

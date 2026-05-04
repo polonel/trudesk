@@ -40,11 +40,18 @@ accountsApi.sessionUser = async (req: any, res: any) => {
 
     groups = groups.map((g: any) => g._id)
 
-    const clonedUser: any = dbUser.toObject()
+    const clonedUser: any = dbUser.toObject({ virtuals: true })
     delete clonedUser.__v
     delete clonedUser.iOSDeviceTokens
     delete clonedUser.deleted
     clonedUser.groups = groups
+
+    // Ensure role virtuals (isAdmin, isAgent) are serialised even if nested populate didn't include them
+    if (clonedUser.role && typeof clonedUser.role === 'object') {
+      const liveRole = dbUser.role as IRoleModel
+      clonedUser.role.isAdmin = liveRole.isAdmin ?? false
+      clonedUser.role.isAgent = liveRole.isAgent ?? false
+    }
 
     return res.json(clonedUser)
   } catch (error: any) {

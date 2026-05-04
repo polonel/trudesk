@@ -1,6 +1,7 @@
 import api from './axios'
 import type { Ticket, TicketListResponse, TicketStatus, TicketType } from '../types/ticket'
 import type { TicketGroup } from '../types/ticket'
+import type { User } from '../types/user'
 
 export async function getTickets(params: {
   type?: string
@@ -60,4 +61,9 @@ export async function getGroups(): Promise<TicketGroup[]> {
 export async function getTags(): Promise<string[]> {
   const res = await api.get('/api/v2/tags/limit')
   return res.data.tags ?? []
+}
+
+export async function getAgents(): Promise<User[]> {
+  const res = await api.get('/api/v2/accounts', { params: { type: 'agents', limit: -1 } })
+  return res.data.accounts ?? []
 }
