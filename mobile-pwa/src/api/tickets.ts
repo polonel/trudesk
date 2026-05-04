@@ -24,6 +24,7 @@ export async function createTicket(data: {
   type: string
   priority: string
   group?: string
+  owner?: string
   tags?: string[]
 }): Promise<Ticket> {
   const res = await api.post('/api/v2/tickets/create', data)
@@ -67,3 +68,4 @@ export async function getAgents(): Promise<User[]> {
   const res = await api.get('/api/v2/accounts', { params: { type: 'agents', limit: -1 } })
   return res.data.accounts ?? []
 }
+

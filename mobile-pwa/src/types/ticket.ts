@@ -23,6 +23,7 @@ export interface TicketPriority {
 export interface TicketGroup {
   _id: string
   name: string
+  members?: Array<{ _id: string; fullname: string; username: string; image?: string }>
 }
 
 export interface TicketComment {
