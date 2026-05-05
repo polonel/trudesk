@@ -37,6 +37,10 @@ module.exports = function (grunt) {
         },
         tasks: [
           {
+            grunt: false,
+            args: ['shell:mobileBuild']
+          },
+          {
             grunt: true,
             args: ['shell:tsDev']
           },
@@ -131,7 +135,8 @@ module.exports = function (grunt) {
       webpackDist: 'yarn run webpackdist',
       tsbuild: 'yarn tsc -p .',
       tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" src/app.ts',
-      remove_dev_js: 'rimraf dist/public/js/**/*.js'
+      remove_dev_js: 'rimraf dist/public/js/**/*.js',
+      mobileBuild: 'yarn run mobile:build'
     },
 
     copy: {
