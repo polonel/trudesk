@@ -13,7 +13,7 @@
  */
 
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { applyMiddleware, createStore, compose } from 'redux'
 import { Provider } from 'react-redux'
 import createSagaMiddleware from 'redux-saga'
@@ -80,11 +80,11 @@ if (document.getElementById('modal-wrapper')) {
       <ModalRoot />
     </Provider>
   )
-  ReactDOM.render(RootModal, document.getElementById('modal-wrapper'))
+  createRoot(document.getElementById('modal-wrapper')).render(RootModal)
 }
 
 if (document.getElementById('trudesk')) {
   const AppWithStore = <App store={store} />
 
-  ReactDOM.render(AppWithStore, document.getElementById('trudesk'))
+  createRoot(document.getElementById('trudesk')).render(AppWithStore)
 }

@@ -12,7 +12,7 @@
  */
 
 import { createContext } from 'react'
-import jwt_decode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import axios from 'api/axios'
 
 import { store } from 'app'
@@ -30,7 +30,7 @@ export function getSession () {
   //     const response = await axios.post('/api/v2/token')
   //     const data = response.data
   //     if (data && data.token) {
-  //       const decoded = jwt_decode(data.token)
+  //       const decoded = jwtDecode(data.token)
   //       if (decoded.user) {
   //         const saveData = { user: decoded.user, token: data.token }
   //
@@ -56,7 +56,7 @@ export function saveSession (session) {
     throw new Error('Invalid Session')
   }
 
-  const decoded = jwt_decode(session.token)
+  const decoded = jwtDecode(session.token)
   if (!decoded.user) throw new Error('Invalid Session')
 
   memory.data = { user: decoded.user, token: session.token }
@@ -82,7 +82,7 @@ export async function forceRefreshSession () {
         const response = await axios.post('/api/v2/token')
         const data = response.data
         if (data && data.token) {
-          const decoded = jwt_decode(data.token)
+          const decoded = jwtDecode(data.token)
           if (decoded.user) {
             const saveData = { user: decoded.user, token: data.token }
             memory.data = saveData

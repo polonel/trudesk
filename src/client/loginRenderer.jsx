@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import React from 'react'
 
 import LoginContainer from 'containers/Login'
@@ -8,7 +8,7 @@ export default function init() {
   if (document.getElementById('login-container')) {
     const aur = document.getElementById('login-container').getAttribute('data-aur')
     const me = document.getElementById('login-container').getAttribute('data-me')
-    ReactDOM.render(<LoginContainer aur={aur} me={me} />, document.getElementById('login-container'))
+    createRoot(document.getElementById('login-container')).render(<LoginContainer aur={aur} me={me} />)
   }
 }
 

@@ -13,7 +13,7 @@
  */
 
 import { Provider } from 'react-redux'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import React from 'react'
 
 import DashboardContainer from 'containers/Dashboard'
@@ -40,7 +40,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(DashboardContainerWithProvider, document.getElementById('dashboard-container'))
+    createRoot(document.getElementById('dashboard-container')).render(DashboardContainerWithProvider)
   }
 
   if (document.getElementById('tickets-container')) {
@@ -55,7 +55,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(TicketsContainerWithProvider, document.getElementById('tickets-container'))
+    createRoot(document.getElementById('tickets-container')).render(TicketsContainerWithProvider)
   }
 
   if (document.getElementById('single-ticket-container')) {
@@ -67,7 +67,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(SingleTicketContainerWithProvider, document.getElementById('single-ticket-container'))
+    createRoot(document.getElementById('single-ticket-container')).render(SingleTicketContainerWithProvider)
   }
 
   if (document.getElementById('profile-container')) {
@@ -77,7 +77,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(ProfileContainerWithProvider, document.getElementById('profile-container'))
+    createRoot(document.getElementById('profile-container')).render(ProfileContainerWithProvider)
   }
 
   if (document.getElementById('accounts-container')) {
@@ -89,7 +89,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(AccountsContainerWithProvider, document.getElementById('accounts-container'))
+    createRoot(document.getElementById('accounts-container')).render(AccountsContainerWithProvider)
   }
 
   if (document.getElementById('accounts-import-container')) {
@@ -99,7 +99,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(AccountsImportContainerWithProvider, document.getElementById('accounts-import-container'))
+    createRoot(document.getElementById('accounts-import-container')).render(AccountsImportContainerWithProvider)
   }
 
   if (document.getElementById('groups-container')) {
@@ -109,7 +109,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(GroupsContainerWithProvider, document.getElementById('groups-container'))
+    createRoot(document.getElementById('groups-container')).render(GroupsContainerWithProvider)
   }
 
   if (document.getElementById('teams-container')) {
@@ -119,7 +119,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(TeamsContainerWithProvider, document.getElementById('teams-container'))
+    createRoot(document.getElementById('teams-container')).render(TeamsContainerWithProvider)
   }
 
   if (document.getElementById('departments-container')) {
@@ -129,7 +129,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(TeamsContainerWithProvider, document.getElementById('departments-container'))
+    createRoot(document.getElementById('departments-container')).render(TeamsContainerWithProvider)
   }
 
   if (document.getElementById('messages-container')) {
@@ -141,7 +141,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(MessagesContainterWithProvider, document.getElementById('messages-container'))
+    createRoot(document.getElementById('messages-container')).render(MessagesContainterWithProvider)
   }
 
   if (document.getElementById('notices-container')) {
@@ -151,7 +151,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(NoticeContainerWithProvider, document.getElementById('notices-container'))
+    createRoot(document.getElementById('notices-container')).render(NoticeContainerWithProvider)
   }
 
   if (document.getElementById('reports-container')) {
@@ -161,7 +161,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(ReportsContainerWithProvider, document.getElementById('reports-container'))
+    createRoot(document.getElementById('reports-container')).render(ReportsContainerWithProvider)
   }
 
   if (document.getElementById('settings-container')) {
@@ -171,7 +171,7 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(SettingsContainerWithProvider, document.getElementById('settings-container'))
+    createRoot(document.getElementById('settings-container')).render(SettingsContainerWithProvider)
   }
 
   if (document.getElementById('about-container')) {
@@ -181,6 +181,6 @@ export default function (store) {
       </Provider>
     )
 
-    ReactDOM.render(AboutContainerWithProvider, document.getElementById('about-container'))
+    createRoot(document.getElementById('about-container')).render(AboutContainerWithProvider)
   }
 }

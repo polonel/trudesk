@@ -15,7 +15,7 @@
 import type { Socket } from 'socket.io'
 import utils from '../helpers/utils'
 import path from 'path'
-import AnsiUp from 'ansi_up'
+import { AnsiUp } from 'ansi_up'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Tail } from 'tail'

@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { history } from 'lib/lib-history'
 import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom'
 
@@ -29,5 +29,5 @@ const InstallApp = () => {
 
 if (document.getElementById('trudesk-install')) {
   const app = <InstallApp />
-  ReactDOM.render(app, document.getElementById('trudesk-install'))
+  createRoot(document.getElementById('trudesk-install')).render(app)
 }

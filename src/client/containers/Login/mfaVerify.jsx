@@ -15,7 +15,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { connect } from 'react-redux'
-import jwt_decode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 import Button from 'components/Button'
 import Form from 'components/Form'
@@ -59,7 +59,7 @@ const MFAVerify = props => {
     const authToken = searchParams.get('auth')
     try {
       if (!authToken) return navigate('/')
-      const decoded = jwt_decode(authToken)
+      const decoded = jwtDecode(authToken)
       if (!decoded.exp || !decoded.uid || !decoded.hash) return navigate('/')
       if (Date.now() >= decoded.exp * 1000) return navigate('/')
       setAuth(authToken)

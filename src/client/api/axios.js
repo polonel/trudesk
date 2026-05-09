@@ -12,7 +12,7 @@
  */
 
 import { clearSession, getSession, saveSession } from 'app/SessionContext'
-import jwt_decode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 // eslint-disable-next-line import/no-named-as-default
 import history from 'lib/lib-history'
 
@@ -30,7 +30,7 @@ customAxios.interceptors.request.use(
     // Check for expired token
     let token = getSession().token
     if (token) {
-      const decoded = jwt_decode(token)
+      const decoded = jwtDecode(token)
       if (decoded.exp * 1000 < Date.now()) {
         // console.log('Token is expired. We are going to grab a new one')
         try {
