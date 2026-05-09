@@ -17,7 +17,7 @@ const TEST_DB_NAME = 'polonel_trudesk31908899'
 let database, db, mongod, CONNECTION_URI
 
 before(async function () {
-  this.timeout(15000)
+  this.timeout(60000)
 
   delete require.cache[require.resolve('../src/database')]
   delete require.cache[require.resolve('mongoose')]

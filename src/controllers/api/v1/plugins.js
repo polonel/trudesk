@@ -18,7 +18,7 @@ var path = require('path')
 
 var fs = require('fs')
 
-var request = require('request')
+var axios = require('axios').default
 
 var rimraf = require('rimraf')
 
@@ -32,98 +32,88 @@ var pluginPath = path.join(__dirname, '../../../../plugins')
 
 var pluginServerUrl = 'http://plugins.trudesk.io'
 
-apiPlugins.installPlugin = function (req, res) {
+apiPlugins.installPlugin = async function (req, res) {
   var packageid = req.params.packageid
 
-  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (err, response) {
-    if (err) return res.status(400).json({ success: false, error: err })
+  let pluginRes
+  try {
+    pluginRes = await axios.get(pluginServerUrl + '/api/plugin/package/' + packageid)
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message || err })
+  }
 
-    var plugin = JSON.parse(response.body).plugin
+  var plugin = pluginRes.data.plugin
 
-    if (!plugin || !plugin.url) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl
-      })
-    }
+  if (!plugin || !plugin.url) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl
+    })
+  }
 
-    request
-      .get(pluginServerUrl + '/plugin/download/' + plugin.url)
-      .on('response', function (response) {
+  // Download the tarball as a stream and pipe to disk
+  var downloadPromise = new Promise((resolve, reject) => {
+    axios.get(pluginServerUrl + '/plugin/download/' + plugin.url, { responseType: 'stream' })
+      .then(response => {
         var fws = fs.createWriteStream(path.join(pluginPath, plugin.url))
+        response.data.pipe(fws)
 
-        response.pipe(fws)
-
-        response.on('end', function () {
-          // Extract plugin
-          var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase())
-          rimraf(pluginExtractFolder, function (error) {
-            if (error) winston.debug(error)
-            if (error)
-              return res.json({
-                success: false,
-                error: 'Unable to remove plugin directory.'
-              })
-
-            var fileFullPath = path.join(pluginPath, plugin.url)
-            mkdirp.sync(pluginExtractFolder)
-
-            tar.extract(
-              {
-                C: pluginExtractFolder,
-                file: path.join(pluginPath, plugin.url)
-              },
-              function () {
-                rimraf(fileFullPath, function (err) {
-                  if (err) return res.status(400).json({ success: false, error: err })
-
-                  request.get(
-                    pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads',
-                    function () {
-                      res.json({ success: true, plugin: plugin })
-                      restartServer()
-                    }
-                  )
-                })
-              }
-            )
-          })
-        })
-
-        response.on('error', function (err) {
-          return res.status(400).json({ success: false, error: err })
-        })
+        response.data.on('end', resolve)
+        response.data.on('error', reject)
       })
-      .on('error', function (err) {
-        return res.status(400).json({ success: false, error: err })
-      })
+      .catch(reject)
   })
+
+  try {
+    await downloadPromise()
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message || err })
+  }
+
+  // Extract plugin
+  var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase())
+  try {
+    await new Promise((resolve, reject) => rimraf(pluginExtractFolder, reject))
+    mkdirp.sync(pluginExtractFolder)
+
+    var fileFullPath = path.join(pluginPath, plugin.url)
+    await tar.extract({ C: pluginExtractFolder, file: path.join(pluginPath, plugin.url) })
+    await new Promise((resolve, reject) => rimraf(fileFullPath, reject))
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message || err })
+  }
+
+  // Fire-and-forget download counter increment
+  axios.get(pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads').catch(() => {})
+
+  res.json({ success: true, plugin: plugin })
+  restartServer()
 }
 
-apiPlugins.removePlugin = function (req, res) {
+apiPlugins.removePlugin = async function (req, res) {
   var packageid = req.params.packageid
 
-  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (err, response, body) {
-    if (err) return res.status(400).json({ success: false, error: err })
+  let pluginRes
+  try {
+    pluginRes = await axios.get(pluginServerUrl + '/api/plugin/package/' + packageid)
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message || err })
+  }
 
-    var plugin = JSON.parse(body).plugin
+  var plugin = pluginRes.data.plugin
 
-    if (plugin === null) {
-      return res.json({ success: false, error: 'Invalid Plugin' })
-    }
+  if (plugin === null) {
+    return res.json({ success: false, error: 'Invalid Plugin' })
+  }
 
-    rimraf(path.join(pluginPath, plugin.name.toLowerCase()), function (err) {
-      if (err) winston.debug(err)
-      if (err)
-        return res.json({
-          success: false,
-          error: 'Unable to remove plugin directory.'
-        })
-
-      res.json({ success: true })
-      restartServer()
-    })
-  })
+  try {
+    await new Promise((resolve, reject) => rimraf(path.join(pluginPath, plugin.name.toLowerCase()), reject))
+    res.json({ success: true })
+    restartServer()
+  } catch (err) {
+    winston.debug(err)
+    return res.json({ success: false, error: 'Unable to remove plugin directory.' })
+  }
 }
 
 function restartServer () {

@@ -12,8 +12,8 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+import axios from 'axios'
 import winston from 'winston'
-import * as request from 'request'
 
 interface NotificationData {
   hostname?: string
@@ -46,26 +46,18 @@ export function pushNotification(tpsUsername: string, tpsApiKey: string, notific
     (body.data as any).ticketUid = notification.data.ticketUid
   }
 
-  request(
-    {
-      url: 'http://push.trudesk.io/api/pushNotification',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        accesstoken: tpsApiKey
-      },
-      body: JSON.stringify(body)
-    },
-    function (err: any, response: any) {
-      if (err) {
-        winston.debug(err)
-      } else {
-        if (response.statusCode === 401) {
-          winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.')
-        }
-      }
+  axios.post('http://push.trudesk.io/api/pushNotification', body, {
+    headers: {
+      'Content-Type': 'application/json',
+      accesstoken: tpsApiKey
     }
-  )
+  }).catch((err) => {
+    if (axios.isAxiosError(err) && err.response?.status === 401) {
+      winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.')
+    } else {
+      winston.debug(err)
+    }
+  })
 }
 
 export function init(): void {

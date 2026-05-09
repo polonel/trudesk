@@ -12,23 +12,18 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
+var fs = require('fs')
 var path = require('path')
-var sass = require('node-sass')
+const sass = require('sass')
 var settingUtil = require('../settings/settingsUtil')
 var config = require('../config')
-var strip = require('strip-comments')
 
 var buildsass = {}
 
-var sassOptionsDefaults = {
-  indentedSyntax: true,
-  includePaths: [path.resolve(config.trudeskRoot(), 'src/sass')],
-  outputStyle: 'compressed',
-}
+const sassDir = path.resolve(config.trudeskRoot(), 'src/sass')
 
 function sassVariable(name, value) {
-  return '$' + name + ': ' + value + '\n'
+  return '$' + name + ': ' + value + ';'
 }
 
 function sassVariables(variablesObj) {
@@ -39,30 +34,57 @@ function sassVariables(variablesObj) {
     .join('\n')
 }
 
-function sassImport(path) {
-  return "@import '" + path + "'\n"
+function sassImport(entryPath) {
+  return "@import '" + entryPath + "'\n"
 }
 
-function dynamicSass(entry, vars, success, error) {
+/**
+ * Compile Sass by injecting dynamic variables as inline content.
+ * Uses the legacy API's `data` option (equivalent to node-sass) for in-memory compilation.
+ */
+function callDynamicSass(entry, vars, success, error) {
   var dataString = sassVariables(vars) + sassImport(entry)
 
-  var sassOptions = _.assign({}, sassOptionsDefaults, {
-    data: dataString,
-  })
+  const options = {
+    style: 'compressed',
+    indentedSyntax: true,
+    quietDeps: true,
+    silenceDeprecations: ['import'],
+    loadPaths: [sassDir],
+  }
 
-  sass.render(sassOptions, function (err, result) {
-    return err ? error(err) : success(result.css.toString())
-  })
+  if (Object.keys(vars).length > 0) {
+    // Dynamic variables present — use legacy API which supports `data` for inline content.
+    try {
+      const result = sass.compileString(dataString, options)
+      success(result.css)
+    } catch (e) {
+      process.nextTick(error, e)
+    }
+  } else {
+    // No dynamic variables — compile the entry file directly.
+    var entryFile = path.join(sassDir, entry)
+    sass.compileAsync(entryFile, options).then(
+      function (result) {
+        try {
+          success(result.css)
+        } catch (e) {
+          return Promise.reject(e)
+        }
+      }
+    ).catch(function (err) {
+      process.nextTick(error, err)
+    })
+  }
 }
 
 function save(result) {
-  var fs = require('fs')
   var themeCss = path.resolve(config.trudeskRoot(), 'public/css/app.min.css')
   fs.writeFileSync(themeCss, result)
 }
 
 buildsass.buildDefault = function (callback) {
-  dynamicSass(
+  callDynamicSass(
     'app.sass',
     {},
     function (result) {
@@ -78,7 +100,7 @@ buildsass.build = function (callback) {
     if (!err && s) {
       var settings = s.settings
 
-      dynamicSass(
+      callDynamicSass(
         'app.sass',
         {
           header_background: settings.colorHeaderBG.value,
@@ -96,7 +118,7 @@ buildsass.build = function (callback) {
       )
     } else {
       // Build Defaults
-      dynamicSass(
+      callDynamicSass(
         'app.sass',
         {},
         function (result) {

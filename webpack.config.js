@@ -25,6 +25,10 @@ module.exports = {
   resolve: {
     modules: [path.resolve(__dirname, 'src/client/lib/'), 'node_modules'],
     alias: {
+      // React 17 ships jsx-runtime as CJS; webpack fullySpecified mode needs explicit resolution
+      // React 17 ships jsx-runtime as a .js file; webpack fullySpecified mode needs explicit resolution
+      'react/jsx-runtime': path.resolve(__dirname, 'node_modules/react/jsx-runtime.js'),
+      'react/jsx-dev-runtime': path.resolve(__dirname, 'node_modules/react/jsx-dev-runtime.js'),
       // client side
       handlebars: 'vendor/handlebars/handlebars',
       jquery: 'vendor/jquery/jquery',
