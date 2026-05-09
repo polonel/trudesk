@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useTicketList } from '../hooks/useTickets'
 import { useSocket } from '../hooks/useSocket'
 import { getStatuses } from '../api/tickets'
-import type { TicketFilterType } from '../types/ticket'
+import type { Ticket, TicketFilterType, TicketListResponse } from '../types/ticket'
 import TicketCard from '../components/TicketCard'
 import PullToRefresh from '../components/PullToRefresh'
 import { TicketCardSkeleton } from '../components/Skeleton'
@@ -35,12 +35,37 @@ export default function TicketListScreen() {
   // Real-time updates
   useEffect(() => {
     if (!socket) return
-    const invalidate = () => qc.invalidateQueries({ queryKey: ['tickets'] })
-    socket.on('TICKETS_CREATED', invalidate)
-    socket.on('TICKETS_UPDATE', invalidate)
+
+    // Ticket updated — patch in-place across every cached filter page so there
+    // is no refetch, no flash, and infinite-scroll pagination is not reset.
+    const handleUpdate = (updated: Ticket) => {
+      qc.setQueriesData<InfiniteData<TicketListResponse>>(
+        { queryKey: ['tickets'], type: 'active' },
+        (old) => {
+          if (!old) return old
+          return {
+            ...old,
+            pages: old.pages.map(page => ({
+              ...page,
+              tickets: page.tickets.map(t => t._id === updated._id ? updated : t),
+            })),
+          }
+        }
+      )
+    }
+
+    // New ticket created — invalidate so the query refetches from page 1 in
+    // the background; TanStack Query keeps the current list visible until
+    // fresh data arrives (no loading flash).
+    const handleCreated = () => {
+      qc.invalidateQueries({ queryKey: ['tickets'] })
+    }
+
+    socket.on('$trudesk:tickets:update', handleUpdate)
+    socket.on('$trudesk:tickets:created', handleCreated)
     return () => {
-      socket.off('TICKETS_CREATED', invalidate)
-      socket.off('TICKETS_UPDATE', invalidate)
+      socket.off('$trudesk:tickets:update', handleUpdate)
+      socket.off('$trudesk:tickets:created', handleCreated)
     }
   }, [socket, qc])
 

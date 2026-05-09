@@ -1,37 +1,47 @@
-import { useEffect, useRef } from 'react'
-import { io, Socket } from 'socket.io-client'
+import { useEffect, useState } from 'react'
+import { io, type Socket } from 'socket.io-client'
 import { useQueryClient } from '@tanstack/react-query'
 
-let socket: Socket | null = null
+// Module-level singleton — one connection for the entire PWA session.
+let singleton: Socket | null = null
+
+function getOrCreateSocket(): Socket {
+  if (!singleton) {
+    singleton = io('/', {
+      path: '/socket.io',
+      transports: ['polling', 'websocket'],
+      // Do NOT pass token in query — rely on _rft_ httpOnly cookie only.
+      withCredentials: true,
+    })
+  }
+  return singleton
+}
 
 export function useSocket() {
   const queryClient = useQueryClient()
-  const socketRef = useRef<Socket | null>(null)
+
+  // Initialise with the existing singleton so components that mount after
+  // the first connection get a non-null value on their very first render.
+  const [socket, setSocket] = useState<Socket | null>(singleton)
 
   useEffect(() => {
-    if (!socket) {
-      socket = io('/', {
-        path: '/socket.io',
-        transports: ['polling', 'websocket'],
-        // Do NOT pass token in query — use _rft_ cookie only
-      })
+    const s = getOrCreateSocket()
+
+    // If this component mounted before the singleton existed, update state
+    // so it (and any children) receive the socket reference.
+    if (!socket) setSocket(s)
+
+    const handleConnect = () => {
+      queryClient.invalidateQueries()
     }
 
-    socketRef.current = socket
-
-    socket.on('connect', () => {
-      queryClient.invalidateQueries()
-    })
-
-    socket.on('disconnect', () => {
-      // offline banner handled by components subscribing to socket state
-    })
+    s.on('connect', handleConnect)
 
     return () => {
-      socket?.off('connect')
-      socket?.off('disconnect')
+      s.off('connect', handleConnect)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryClient])
 
-  return socketRef.current
+  return socket
 }
