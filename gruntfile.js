@@ -168,7 +168,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin'])
   grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'parallel:web'])
-  grunt.registerTask('build', ['shell:tsbuild', 'copy', 'uglify:uikit', 'shell:webpackDist'])
+  grunt.registerTask('build', ['shell:tsbuild', 'copy', 'uglify:uikit', 'shell:webpackDist', 'shell:mobileBuild'])
   grunt.registerTask('devbuild', ['shell:webpackDev'])
   grunt.registerTask('default', ['server'])
 }

@@ -29,7 +29,7 @@ jobs:
     docker:
     - image: cimg/node:20.20
     working_directory: ~/trudesk
-    resource_class: large
+    resource_class: medium+
     steps:
     - checkout
     - yarninstall
@@ -53,6 +53,12 @@ jobs:
     - run:
         name: Run Build
         command: yarn run build
+    - run:
+       name: Run Codacy
+       command: yarn run coverage
+    - coverage-reporter/send_report:
+        coverage-reports: './coverage/lcov.info'
+        project-token: $CODACY_PROJECT_TOKEN
   build_docker_next:
     executor: docker-executor
     steps:

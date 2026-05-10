@@ -8,7 +8,7 @@
   "bin": "./dist/src/app.js",
   "scripts": {
     "start": "node ./dist/src/app",
-    "build": "npm run clean && grunt build --force && npm run mobile:build",
+    "build": "npm run clean && grunt build --force",
     "mobile:dev": "cd mobile-pwa && npm run dev",
     "mobile:build": "cd mobile-pwa && npm run build",
     "test": "ts-mocha --recursive",
