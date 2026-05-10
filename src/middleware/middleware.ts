@@ -243,7 +243,7 @@ middleware.apiv2 = function (req, res, next) {
   // ByPass auth if user is set through session
   if (req.user) return next()
 
-  passport.authenticate('jwt', { session: true }, function (err, user) {
+  passport.authenticate('jwt', { session: true }, function (err: any, user: any) {
     if (err && err.type === 'exp')
       return res.status(401).json({ success: false, error: { type: 'exp', message: 'invalid_token' } })
     if (err) winston.debug(err)
