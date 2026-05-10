@@ -72,7 +72,8 @@ ES.testConnection = async (callback?: (error?: any) => void): Promise<void> => {
         else ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port')
 
         ES.esclient = new elasticsearch.Client({
-          node: ES.host
+          node: ES.host,
+          serverMode: 'stack'
         })
 
         await checkConnection()
@@ -210,7 +211,8 @@ ES.buildClient = (host: string): void => {
   ES.esclient = new elasticsearch.Client({
     node: host,
     pingTimeout: 10000,
-    maxRetries: 5
+    maxRetries: 5,
+    serverMode: 'stack'
   })
 }
 

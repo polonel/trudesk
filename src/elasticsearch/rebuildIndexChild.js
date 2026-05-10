@@ -76,7 +76,8 @@ function setupClient () {
     node: process.env.ELASTICSEARCH_URI,
     pingTimeout: 10000,
     requestTimeout: 10000,
-    maxRetries: 5
+    maxRetries: 5,
+    serverMode: 'es8'
   })
 }
 
