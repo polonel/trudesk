@@ -176,9 +176,7 @@ accountsController.profile = function (req: any, res: any) {
   async.parallel(
     {
       account: function (callback: any) {
-        userSchema.findOne({ _id: req.user._id }, '+accessToken +tOTPKey', function (err: any, obj: any) {
-          callback(err, obj)
-        })
+        userSchema.findOne({ _id: req.user._id }).select('+accessToken +tOTPKey').exec().then((obj: any) => callback(null, obj)).catch((err: any) => callback(err))
       }
     },
     function (err: any, result: any) {
@@ -525,16 +523,14 @@ accountsController.uploadImage = function (req: any, res: any) {
     userSchema.getUser(object._id).then(function (user: any) {
       user.image = object.filename
 
-      user.save(function (err: any) {
-        if (err) return handleError(res, err)
-
+      user.save().then(function () {
         emitter.emit('trudesk:profileImageUpdate', {
           userid: user._id,
           img: user.image
         })
 
         return res.status(200).send('/uploads/users/' + object.filename)
-      })
+      }).catch(function (err: any) { return handleError(res, err) })
     }).catch(function (err: any) {
       return handleError(res, err)
     })

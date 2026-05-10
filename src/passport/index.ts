@@ -56,20 +56,22 @@ export default function (): passport.PassportStatic {
         passwordField: 'login-password',
         passReqToCallback: true
       },
-      (req: Request, username: string, password: string, done: LocalVerifyDone) => {
-        UserModel.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
-          .select('+password +tOTPKey +tOTPPeriod')
-          .exec((err: Error | null, user: any) => {
-            if (err) return done(err)
+      async (req: Request, username: string, password: string, done: LocalVerifyDone) => {
+        try {
+          const user = await UserModel.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
+            .select('+password +tOTPKey +tOTPPeriod')
+            .exec()
 
-            if (!user || user.deleted || !UserModel.validatePassword(password, user.password)) {
-              return done(null, false, { flash: 'Invalid Username/Password' })
-            }
+          if (!user || user.deleted || !UserModel.validatePassword(password, (user as any).password)) {
+            return done(null, false, { flash: 'Invalid Username/Password' })
+          }
 
-            req.user = user
+          req.user = user
 
-            return done(null, user)
-          })
+          return done(null, user)
+        } catch (err: any) {
+          return done(err)
+        }
       }
     )
   )
@@ -78,16 +80,21 @@ export default function (): passport.PassportStatic {
     'totp',
     new TotpStrategy.Strategy(
       { window: 6 },
-      (user: any, done: TotpVerifyDone) => {
+      async (user: any, done: TotpVerifyDone) => {
         if (!user.hasL2Auth) return done(false)
 
-        UserModel.findOne({ _id: user._id }, '+tOTPKey +tOTPPeriod', (err: Error | null, user: any) => {
-          if (err) return done(err)
+        try {
+          const u = await UserModel.findOne({ _id: user._id })
+            .select('+tOTPKey +tOTPPeriod')
+            .exec()
 
-          if (!user.tOTPPeriod) user.tOTPPeriod = 30
+          if (!u) return done(false)
+          if (!(u as any).tOTPPeriod) (u as any).tOTPPeriod = 30
 
-          return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod)
-        })
+          return done(null, base32.decode((u as any).tOTPKey).toString(), (u as any).tOTPPeriod)
+        } catch (err: any) {
+          return done(err)
+        }
       }
     )
   )

@@ -13,7 +13,7 @@ import { sendMessage } from 'actions/messages'
 import { setSessionUser } from 'actions/common'
 
 import axios from 'axios'
-import anime from 'animejs'
+import { animate } from 'animejs'
 import $ from 'jquery'
 import 'autogrow'
 import helpers from 'lib/helpers'
@@ -104,7 +104,7 @@ class ChatWindow extends React.Component {
 
     if (this.containerRef.current) {
       const topValue = this.containerRef.current.offsetTop
-      anime({
+      animate({
         targets: this.containerRef.current,
         top: topValue === -280 ? '-29px' : '-280px',
         duration: 250,

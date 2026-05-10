@@ -32,16 +32,14 @@ const templateSchema = new Schema({
   data: { type: Object, required: true }
 })
 
-templateSchema.pre('save', function (next) {
+templateSchema.pre('save', async function () {
   this.name = this.name.trim()
-
-  return next()
 })
 
-templateSchema.statics.get = function (name: string, callback: (err: Error | null, result?: any) => void) {
-  return this.model(COLLECTION)
-    .findOne({ name: name })
-    .exec(callback)
+templateSchema.statics.get = function (name: string, callback?: (err: Error | null, result?: any) => void) {
+  const p = this.model(COLLECTION).findOne({ name: name }).exec()
+  if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
+  return p
 }
 
 export default mongoose.model<TemplateDocument>(COLLECTION, templateSchema)

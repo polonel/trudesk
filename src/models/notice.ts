@@ -15,10 +15,9 @@ import utils from '../helpers/utils'
 
 const COLLECTION = 'notices'
 
-@pre<NoticeClass>('save', function (this: DocumentType<NoticeClass>, next) {
+@pre<NoticeClass>('save', async function (this: DocumentType<NoticeClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
   this.message = utils.sanitizeFieldPlainText(this.message.trim())
-  return next()
 })
 @modelOptions({ options: { customName: COLLECTION } })
 export class NoticeClass {

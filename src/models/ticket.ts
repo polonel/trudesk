@@ -144,10 +144,10 @@ function buildQueryWithObject(SELF: any, grpId: any[], object: TicketQueryObject
   if (!_.isUndefined(this.uid) || this.uid) return
 
   const res = await Counters.increment('tickets')
-  this.uid = res.value.next
+  this.uid = res.next
   if (_.isUndefined(this.uid)) throw new Error('Invalid UID.')
 })
-@post<TicketClass>('save', async function (doc: DocumentType<TicketClass>, next) {
+@post<TicketClass>('save', async function (doc: DocumentType<TicketClass>) {
   if (!(doc as any).wasNew) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const emitter = require('../emitter')
@@ -171,9 +171,6 @@ function buildQueryWithObject(SELF: any, grpId: any[], object: TicketQueryObject
     } catch (err) {
       winston.warn('WARNING: ' + err)
     }
-    return next()
-  } else {
-    return next()
   }
 })
 @modelOptions({ options: { customName: COLLECTION }, schemaOptions: { toJSON: { virtuals: true } } })
@@ -455,18 +452,15 @@ export class TicketClass {
     const self = this
     self.group = groupId as any
 
-    ;(self as any).populate('group', function (err: Error | null, ticket: DocumentType<TicketClass>) {
-      if (err) return callback(err)
-
+    ;(self as any).populate('group').then((ticket: DocumentType<TicketClass>) => {
       const historyItem = {
         action: 'ticket:set:group',
         description: 'Ticket Group set to: ' + (ticket.group as any).name,
         owner: ownerId
       }
       self.history.push(historyItem as any)
-
       return callback(null, ticket)
-    })
+    }).catch((err: Error) => callback(err))
   }
 
   public setTicketDueDate(
@@ -722,49 +716,43 @@ export class TicketClass {
   // Static Methods
 
   public static getAll(this: ReturnModelType<typeof TicketClass>, callback?: any): any {
-    return this.find({ deleted: false })
+    const p = this.find({ deleted: false })
       .populate('owner assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
       .populate('type tags group')
       .sort({ status: 1 })
       .lean()
-      .exec(callback)
+      .exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+    return p
   }
 
   public static getForCache(
     this: ReturnModelType<typeof TicketClass>,
     callback?: (err: Error | null, tickets?: any[]) => void
   ): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      ;(async () => {
-        try {
-          const t365 = moment.utc().hour(23).minute(59).second(50).subtract(365, 'd').toDate()
-          const query = this.find({ date: { $gte: t365 }, deleted: false }).sort('date').lean()
-
-          if (typeof callback === 'function') return query.exec(callback)
-
-          const results = await query.exec()
-          return resolve(results)
-        } catch (err: any) {
-          if (typeof callback === 'function') return callback(err)
-          return reject(err)
-        }
-      })()
-    })
+    const t365 = moment.utc().hour(23).minute(59).second(50).subtract(365, 'd').toDate()
+    const p = this.find({ date: { $gte: t365 }, deleted: false }).sort('date').lean().exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r as any[])).catch(e => callback(e)) as any
+    return p as any
   }
 
   public static getAllNoPopulate(this: ReturnModelType<typeof TicketClass>, callback?: any): any {
-    return this.find({ deleted: false }).sort({ status: 1 }).lean().exec(callback)
+    const p = this.find({ deleted: false }).sort({ status: 1 }).lean().exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+    return p
   }
 
   public static getAllByStatus(this: ReturnModelType<typeof TicketClass>, status: any | any[], callback?: any): any {
     if (!_.isArray(status)) status = [status]
 
-    return this.find({ status: { $in: status }, deleted: false })
+    const p = this.find({ status: { $in: status }, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags group')
       .sort({ status: 1 })
       .lean()
-      .exec(callback)
+      .exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+    return p
   }
 
   public static getTickets(
@@ -775,11 +763,12 @@ export class TicketClass {
     if (_.isUndefined(grpIds)) return callback('Invalid GroupId - TicketSchema.GetTickets()', null)
     if (!_.isArray(grpIds)) return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()', null)
 
-    return this.find({ group: { $in: grpIds }, deleted: false })
+    const p = this.find({ group: { $in: grpIds }, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags group')
       .sort({ status: 1 })
-      .exec(callback)
+      .exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static getTicketsByDepartments(
@@ -795,10 +784,9 @@ export class TicketClass {
     const self = this
 
     if (_.some(departments, { allGroups: true })) {
-      GroupModel.find({}, function (err: Error | null, groups: any) {
-        if (err) return callback({ error: err })
+      GroupModel.find({}).exec().then((groups: any) => {
         return self.getTicketsWithObject(groups, object, callback)
-      })
+      }).catch((err: Error) => callback({ error: err }))
     } else {
       const groups = _.flattenDeep(
         departments.map((d: any) => d.groups.map((g: any) => g._id))
@@ -822,9 +810,8 @@ export class TicketClass {
             throw new Error('Invalid parameter in - TicketSchema.GetTicketsWithObject()')
 
           const query = buildQueryWithObject(self, grpId, object)
-          if (typeof callback === 'function') return query.exec(callback)
-
           const resTickets = await query.exec()
+          if (typeof callback === 'function') return callback(null, resTickets)
           return resolve(resTickets)
         } catch (e: any) {
           if (typeof callback === 'function') return callback(e)
@@ -849,9 +836,8 @@ export class TicketClass {
             throw new Error('Invalid parameter in - TicketSchema.GetCountWithObject()')
 
           const query = buildQueryWithObject(self, grpId, object, true)
-          if (typeof callback === 'function') return query.lean().exec(callback)
-
           const count = await query.lean().exec()
+          if (typeof callback === 'function') return callback(null, count)
           return resolve(count)
         } catch (e: any) {
           if (typeof callback === 'function') return callback(e)
@@ -870,24 +856,30 @@ export class TicketClass {
     if (_.isUndefined(grpId)) return callback('Invalid GroupId - TicketSchema.GetTickets()', null)
     if (!_.isArray(grpId)) return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()', null)
 
-    return this.find({ group: { $in: grpId }, status, deleted: false })
+    const p = this.find({ group: { $in: grpId }, status, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags group status')
       .sort({ uid: -1 })
-      .exec(callback)
+      .exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static getTicketByUid(
     this: ReturnModelType<typeof TicketClass>,
     uid: number,
-    callback: (err: Error | string | null, ticket?: any) => void
+    callback?: (err: Error | string | null, ticket?: any) => void
   ): any {
-    if (_.isUndefined(uid)) return callback('Invalid Uid - TicketSchema.GetTicketByUid()', null)
+    if (_.isUndefined(uid)) {
+      if (typeof callback === 'function') return callback('Invalid Uid - TicketSchema.GetTicketByUid()', null)
+      return Promise.reject(new Error('Invalid Uid - TicketSchema.GetTicketByUid()'))
+    }
 
-    return this.findOne({ uid, deleted: false })
+    const p = this.findOne({ uid, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags group status')
-      .exec(callback)
+      .exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+    return p
   }
 
   public static async getTicketById(
@@ -916,11 +908,11 @@ export class TicketClass {
           })
 
         try {
-          if (typeof callback === 'function') return q.exec(callback as any)
           const result = await q.exec()
+          if (typeof callback === 'function') return callback(null, result)
           return resolve(result)
         } catch (e: any) {
-          if (typeof callback === 'function') callback(e)
+          if (typeof callback === 'function') return callback(e)
           winston.warn(e)
           return reject(e)
         }
@@ -935,7 +927,7 @@ export class TicketClass {
   ): any {
     if (_.isUndefined(userId)) return callback('Invalid Requester Id - TicketSchema.GetTicketsByRequester()', null)
 
-    return this.find({ owner: userId, deleted: false })
+    const p = this.find({ owner: userId, deleted: false })
       .limit(10000)
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags status')
@@ -947,7 +939,8 @@ export class TicketClass {
           { path: 'sendMailTo', model: UserModel, select: '-__v -iOSDeviceTokens -accessToken -tOTPKey' }
         ]
       })
-      .exec(callback)
+      .exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static getTicketsWithSearchString(
@@ -970,33 +963,27 @@ export class TicketClass {
             .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
             .populate('type tags group status')
             .limit(100)
-            .exec(function (err: Error | null, results: any) {
-              if (err) return cb(err)
-              tickets.push(results)
-              return cb(null)
-            })
+            .exec()
+            .then((results: any) => { tickets.push(results); cb(null) })
+            .catch((err: Error) => cb(err))
         },
         function (cb: (err?: Error | null) => void) {
           self.find({ group: { $in: grps }, deleted: false, subject: { $regex: search, $options: 'i' } })
             .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
             .populate('type tags group status')
             .limit(100)
-            .exec(function (err: Error | null, results: any) {
-              if (err) return cb(err)
-              tickets.push(results)
-              return cb(null)
-            })
+            .exec()
+            .then((results: any) => { tickets.push(results); cb(null) })
+            .catch((err: Error) => cb(err))
         },
         function (cb: (err?: Error | null) => void) {
           self.find({ group: { $in: grps }, deleted: false, issue: { $regex: search, $options: 'i' } })
             .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
             .populate('type tags group status')
             .limit(100)
-            .exec(function (err: Error | null, results: any) {
-              if (err) return cb(err)
-              tickets.push(results)
-              return cb(null)
-            })
+            .exec()
+            .then((results: any) => { tickets.push(results); cb(null) })
+            .catch((err: Error) => cb(err))
         }
       ],
       function (err) {
@@ -1020,11 +1007,13 @@ export class TicketClass {
     async.waterfall(
       [
         function (next: (err: Error | null, tickets?: any) => void) {
-          return self
+          self
             .find({ group: { $in: grpId }, status: { $in: [0, 1] }, deleted: false })
             .select('_id date updated')
             .lean()
-            .exec(next)
+            .exec()
+            .then((r: any) => next(null, r))
+            .catch((e: Error) => next(e))
         },
         function (tickets: any[], next: (err: Error | null, tickets?: any) => void) {
           const t = _.map(tickets, (i: any) =>
@@ -1064,12 +1053,14 @@ export class TicketClass {
           return next(null, ids)
         },
         function (ids: Types.ObjectId[], next: (err: Error | null, tickets?: any) => void) {
-          return self
+          self
             .find({ _id: { $in: ids } })
             .limit(50)
             .select('_id uid subject updated date')
             .lean()
-            .exec(next)
+            .exec()
+            .then((r: any) => next(null, r))
+            .catch((e: Error) => next(e))
         }
       ],
       function (err: Error | null, tickets: any) {
@@ -1088,17 +1079,24 @@ export class TicketClass {
     if (_.isUndefined(grpId)) return callback('Invalid Group Ids - TicketSchema.GetTicketsByTag()', null)
     if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetTicketsByTag()', null)
 
-    return this.find({ group: { $in: grpId }, tags: tagId, deleted: false }).exec(callback)
+    const p = this.find({ group: { $in: grpId }, tags: tagId, deleted: false }).exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+    return p
   }
 
   public static getAllTicketsByTag(
     this: ReturnModelType<typeof TicketClass>,
     tagId: Types.ObjectId,
-    callback: (err: Error | string | null, tickets?: any) => void
+    callback?: (err: Error | string | null, tickets?: any) => void
   ): any {
-    if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetAllTicketsByTag()', null)
+    if (_.isUndefined(tagId)) {
+      if (typeof callback === 'function') return callback('Invalid Tag Id - TicketSchema.GetAllTicketsByTag()', null)
+      return Promise.reject(new Error('Invalid Tag Id - TicketSchema.GetAllTicketsByTag()'))
+    }
 
-    return this.find({ tags: tagId, deleted: false }).exec(callback)
+    const p = this.find({ tags: tagId, deleted: false }).exec()
+    if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+    return p
   }
 
   public static getTicketsByType(
@@ -1114,7 +1112,8 @@ export class TicketClass {
     const q = this.find({ group: { $in: grpId }, type: typeId, deleted: false })
     if (limit) q.limit(1000)
 
-    return q.lean().exec(callback)
+    const p = q.lean().exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static getAllTicketsByType(
@@ -1124,7 +1123,8 @@ export class TicketClass {
   ): any {
     if (_.isUndefined(typeId)) return callback('Invalid Ticket Type Id - TicketSchema.GetAllTicketsByType()', null)
 
-    return this.find({ type: typeId }).lean().exec(callback)
+    const p = this.find({ type: typeId }).lean().exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static updateType(
@@ -1140,13 +1140,12 @@ export class TicketClass {
           return reject('Invalid IDs - TicketSchema.UpdateType()')
         }
 
-        const query = this.updateMany({ type: oldTypeId }, { $set: { type: newTypeId } })
-        if (typeof callback === 'function') return query.exec(callback)
-
         try {
-          const res = await query.exec()
+          const res = await this.updateMany({ type: oldTypeId }, { $set: { type: newTypeId } }).exec()
+          if (typeof callback === 'function') return callback(null, res)
           return resolve(res)
         } catch (e) {
+          if (typeof callback === 'function') return callback(e)
           return reject(e)
         }
       })()
@@ -1160,10 +1159,11 @@ export class TicketClass {
   ): any {
     if (_.isUndefined(userId)) return callback('Invalid Id - TicketSchema.GetAssigned()', null)
 
-    return this.find({ assignee: userId, deleted: false })
+    const p = this.find({ assignee: userId, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
       .populate('type tags group status')
-      .exec(callback)
+      .exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static async getTopTicketGroups(
@@ -1223,7 +1223,8 @@ export class TicketClass {
     callback: (err: Error | string | null, count?: number) => void
   ): any {
     if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetTagCount()')
-    return this.countDocuments({ tags: tagId, deleted: false }).exec(callback)
+    const p = this.countDocuments({ tags: tagId, deleted: false }).exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static getTypeCount(
@@ -1232,45 +1233,72 @@ export class TicketClass {
     callback: (err: Error | string | null, count?: number) => void
   ): any {
     if (_.isUndefined(typeId)) return callback('Invalid Type Id - TicketSchema.GetTypeCount()')
-    return this.countDocuments({ type: typeId, deleted: false }).exec(callback)
+    const p = this.countDocuments({ type: typeId, deleted: false }).exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
   public static getCount(
     this: ReturnModelType<typeof TicketClass>,
     callback: (err: Error | null, count?: number) => void
   ): any {
-    return this.countDocuments({ deleted: false }).lean().exec(callback)
+    const p = this.countDocuments({ deleted: false }).exec()
+    return p.then(r => callback(null, r)).catch(e => callback(e))
   }
 
-  public static softDelete(
+  public static async softDelete(
     this: ReturnModelType<typeof TicketClass>,
     oId: Types.ObjectId,
     callback: (err: Error | string | null, ticket?: any) => void
-  ): any {
+  ): Promise<any> {
     if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.SoftDelete()', null)
-    return this.findOneAndUpdate({ _id: oId }, { deleted: true }, { new: true }, callback)
+    try {
+      const ticket = await this.findOneAndUpdate({ _id: oId }, { deleted: true }, { returnDocument: 'after' })
+      return callback(null, ticket)
+    } catch (err: any) {
+      return callback(err, null)
+    }
   }
 
-  public static softDeleteUid(
+  public static async softDeleteUid(
     this: ReturnModelType<typeof TicketClass>,
     uid: number,
     callback: (err: any, ticket?: any) => void
-  ): any {
+  ): Promise<any> {
     if (_.isUndefined(uid)) return callback({ message: 'Invalid UID - TicketSchema.SoftDeleteUid()' })
-    return this.findOneAndUpdate({ uid }, { deleted: true }, { new: true }, callback)
+    try {
+      const ticket = await this.findOneAndUpdate({ uid }, { deleted: true }, { returnDocument: 'after' })
+      return callback(null, ticket)
+    } catch (err: any) {
+      return callback(err, null)
+    }
   }
 
-  public static restoreDeleted(
+  public static async restoreDeleted(
     this: ReturnModelType<typeof TicketClass>,
     oId: Types.ObjectId,
-    callback: (err: Error | string | null, ticket?: any) => void
-  ): any {
-    if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.RestoreDeleted()', null)
-    return this.findOneAndUpdate({ _id: oId }, { deleted: false }, { new: true }, callback)
+    callback?: (err: Error | string | null, ticket?: any) => void
+  ): Promise<any> {
+    if (_.isUndefined(oId)) {
+      if (typeof callback === 'function') return callback('Invalid ObjectID - TicketSchema.RestoreDeleted()', null)
+      throw new Error('Invalid ObjectID - TicketSchema.RestoreDeleted()')
+    }
+    try {
+      const ticket = await this.findOneAndUpdate({ _id: oId }, { deleted: false }, { returnDocument: 'after' })
+      if (typeof callback === 'function') return callback(null, ticket)
+      return ticket
+    } catch (err: any) {
+      if (typeof callback === 'function') return callback(err, null)
+      throw err
+    }
   }
 
-  public static getDeleted(this: ReturnModelType<typeof TicketClass>, callback: any): any {
-    return this.find({ deleted: true }).populate('group').sort({ uid: -1 }).limit(1000).exec(callback)
+  public static async getDeleted(this: ReturnModelType<typeof TicketClass>, callback: any): Promise<any> {
+    try {
+      const tickets = await this.find({ deleted: true }).populate('group').sort({ uid: -1 }).limit(1000)
+      return callback(null, tickets)
+    } catch (err: any) {
+      return callback(err, null)
+    }
   }
 
   public static async getTicketsPastDays(

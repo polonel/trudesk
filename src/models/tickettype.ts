@@ -21,10 +21,8 @@ import { TicketPriorityClass } from "./ticketpriority"
 
 const COLLECTION = 'tickettypes'
 
-@pre('save', function(this: DocumentType<TicketTypeClass>, next) {
+@pre('save', async function(this: DocumentType<TicketTypeClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
-
-  return next()
 })
 @plugin(mongooseAutoPopulate as any)
 @modelOptions({options: {customName: COLLECTION}})
@@ -41,10 +39,9 @@ export class TicketTypeClass {
   }
 
   public static async getType(this: ReturnModelType<typeof TicketTypeClass>, id: string | Types.ObjectId, callback?: any) {
-    const query = this.findOne({_id: id})
-    if (typeof callback === 'function') return query.exec(callback)
-
-    return query.exec()
+    const p = this.findOne({_id: id}).exec()
+    if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
+    return p
   }
 
   public static async getTypeByName(this: ReturnModelType<typeof TicketTypeClass>, name: string) {

@@ -85,7 +85,7 @@ apiTags.deleteTag = async (req: any, res: any) => {
       await ticket.save()
     }
 
-    await TicketTagModel.findByIdAndRemove(id)
+    await TicketTagModel.findByIdAndDelete(id)
 
     return apiUtils.sendApiSuccess(res)
   } catch (e: any) {

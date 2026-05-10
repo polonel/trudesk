@@ -165,9 +165,7 @@ installController.install = function (req: any, res: any) {
           value: require('../../package.json').version
         })
 
-        return s.save(function (err: any) {
-          return next(err)
-        })
+        return s.save().then(function () { return next() }).catch(next)
       },
       function (next: any) {
         async.parallel(
@@ -213,9 +211,7 @@ installController.install = function (req: any, res: any) {
           next: 1001
         })
 
-        Counter.save(function (err: any) {
-          return next(err)
-        })
+        Counter.save().then(function () { return next() }).catch(next)
       },
       function (next: any) {
         const Counter = new Counters({
@@ -223,27 +219,21 @@ installController.install = function (req: any, res: any) {
           next: 1001
         })
 
-        Counter.save(function (err: any) {
-          return next(err)
-        })
+        Counter.save().then(function () { return next() }).catch(next)
       },
       function (next: any) {
         const type = new TicketTypeSchema({
           name: 'Issue'
         })
 
-        type.save(function (err: any) {
-          return next(err)
-        })
+        type.save().then(function () { return next() }).catch(next)
       },
       function (next: any) {
         const type = new TicketTypeSchema({
           name: 'Task'
         })
 
-        type.save(function (err: any) {
-          return next(err)
-        })
+        type.save().then(function () { return next() }).catch(next)
       },
       function (next: any) {
         const defaults = require('../settings/defaults')
@@ -388,13 +378,9 @@ installController.install = function (req: any, res: any) {
           value: true
         })
 
-        installed.save(function (err: any) {
-          if (err) {
-            winston.error('DB Error: ' + err.message)
-            return done('DB Error: ' + err.message)
-          }
-
-          return done()
+        installed.save().then(function () { return done() }).catch(function (err: any) {
+          winston.error('DB Error: ' + err.message)
+          return done('DB Error: ' + err.message)
         })
       },
       function (next: any) {

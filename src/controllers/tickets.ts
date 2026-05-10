@@ -699,18 +699,12 @@ ticketsController.uploadAttachment = function (req: any, res: any) {
         ticket.history.push(historyItem)
 
         ticket.updated = Date.now()
-        ticket.save(function (err: any, t: any) {
-          if (err) {
-            fs.unlinkSync(object.filePath)
-            winston.warn(err)
-            return res.status(500).send(err.message)
-          }
-
-          const returnData = {
-            ticket: t
-          }
-
-          return res.json(returnData)
+        ticket.save().then(function (t: any) {
+          return res.json({ ticket: t })
+        }).catch(function (err: any) {
+          fs.unlinkSync(object.filePath)
+          winston.warn(err)
+          return res.status(500).send(err.message)
         })
       })
     })

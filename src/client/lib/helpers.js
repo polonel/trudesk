@@ -410,8 +410,11 @@ helpers.UI.matchHeight = function () {
   })
 }
 
+helpers.UI._disconnectedOverlayTimer = null
+
 helpers.UI.showDisconnectedOverlay = function () {
-  setTimeout(function () {
+  helpers.UI._disconnectedOverlayTimer = setTimeout(function () {
+    helpers.UI._disconnectedOverlayTimer = null
     var $disconnected = $('.disconnected')
 
     if ($disconnected.css('display') === 'block') {
@@ -432,6 +435,11 @@ helpers.UI.showDisconnectedOverlay = function () {
 }
 
 helpers.UI.hideDisconnectedOverlay = function () {
+  if (helpers.UI._disconnectedOverlayTimer) {
+    clearTimeout(helpers.UI._disconnectedOverlayTimer)
+    helpers.UI._disconnectedOverlayTimer = null
+  }
+
   var $disconnected = $('.disconnected')
 
   if ($disconnected.css('display') === 'none') {

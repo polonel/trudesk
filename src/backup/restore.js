@@ -110,7 +110,7 @@ function initDatabase (uri, opts) {
   }
 
   try {
-    await initDatabase(CONNECTION_URI, { keepAlive: true, connectTimeoutMS: 5000 })
+    await initDatabase(CONNECTION_URI, { connectTimeoutMS: 5000 })
 
     databaseName = trudeskDatabase.connection.db.databaseName
     if (!databaseName) throw new Error('Unable to get database name')

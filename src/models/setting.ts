@@ -24,17 +24,15 @@ export class SettingModelClass {
   public value!: string | number | boolean | object
 
   public static async getSettings(this: ReturnModelType<typeof SettingModelClass>, callback?: any) {
-    const query = this.find({}).select('name value')
-    if (typeof callback === 'function') return query.exec(callback)
-
-    return query.exec()
+    const p = this.find({}).select('name value').exec()
+    if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
+    return p
   }
 
   public static async getSettingByName(this: ReturnModelType<typeof SettingModelClass>, name: string, callback?: any) {
-    const query = this.findOne({ name })
-    if (typeof callback === 'function') return query.exec(callback)
-
-    return query.exec()
+    const p = this.findOne({ name }).exec()
+    if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
+    return p
   }
 
   public static async getSettingsByName(
@@ -45,9 +43,9 @@ export class SettingModelClass {
   ) {
     const query = this.find({ name })
     if (select) query.select(select)
-    if (typeof callback === 'function') return query.exec(callback)
-
-    return query.exec()
+    const p = query.exec()
+    if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
+    return p
   }
 }
 

@@ -87,7 +87,6 @@ export function getConnectionUri(): string {
 
 export async function init(callback: DBCallback, connectionString?: string, opts?: mongoose.ConnectOptions) {
   let options: mongoose.ConnectOptions = {
-    keepAlive: true,
     connectTimeoutMS: 30000,
     serverSelectionTimeoutMS: 5000
   }
@@ -111,9 +110,6 @@ export async function init(callback: DBCallback, connectionString?: string, opts
 
   global.CONNECTION_URI = CONNECTION_URI
 
-  mongoose.Promise = global.Promise
-  mongoose.set('strictQuery', true)
-
   mongoose
     .connect(CONNECTION_URI, options)
     .then(function () {
@@ -124,9 +120,13 @@ export async function init(callback: DBCallback, connectionString?: string, opts
       db.connection = mongoose.connection
       global.dbConnection = db.connection
       mongoose.connection.db.admin()
-        .command({ buildInfo: 1 }, function (err, result): void {
-          if (err) winston.warn(err.message)
+        .command({ buildInfo: 1 })
+        .then(function (result) {
           db.version = result ? result["version"] : 'unknown'
+          return callback(null, db)
+        })
+        .catch(function (err) {
+          winston.warn(err.message)
           return callback(null, db)
         })
     })

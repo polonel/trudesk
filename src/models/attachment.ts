@@ -16,9 +16,8 @@ import { DocumentType, pre, prop, Ref } from '@typegoose/typegoose'
 import type { UserModelClass } from './user'
 import utils from '../helpers/utils'
 
-@pre<AttachmentClass>('save', function (this: DocumentType<AttachmentClass>, next) {
+@pre<AttachmentClass>('save', async function (this: DocumentType<AttachmentClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
-  return next()
 })
 export class AttachmentClass {
   @prop({ ref: 'accounts' })

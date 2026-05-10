@@ -55,14 +55,15 @@ apiTeams.create = function (req: any, res: any) {
   const postData = req.body
   if (!postData) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Team.create(postData, function (err: any, team: any) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-    team.populate('members', function (err: any, team: any) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res, { team: team })
-    })
+  Team.create(postData).then(async function (team: any) {
+    try {
+      const populated = await team.populate('members')
+      return apiUtils.sendApiSuccess(res, { team: populated })
+    } catch (err: any) {
+      return apiUtils.sendApiError(res, 500, err.message)
+    }
+  }).catch(function (err: any) {
+    return apiUtils.sendApiError(res, 500, err.message)
   })
 }
 
@@ -73,21 +74,21 @@ apiTeams.update = function (req: any, res: any) {
   const putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Team.findOne({ _id: id }, function (err: any, team: any) {
-    if (err || !team) return apiUtils.sendApiError(res, 400, 'Invalid Team')
+  Team.findOne({ _id: id }).then(async function (team: any) {
+    if (!team) return apiUtils.sendApiError(res, 400, 'Invalid Team')
 
     if (putData.name) team.name = putData.name
     if (putData.members) team.members = putData.members
 
-    team.save(function (err: any, team: any) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      team.populate('members', function (err: any, team: any) {
-        if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-        return apiUtils.sendApiSuccess(res, { team: team })
-      })
-    })
+    try {
+      const saved = await team.save()
+      const populated = await saved.populate('members')
+      return apiUtils.sendApiSuccess(res, { team: populated })
+    } catch (err: any) {
+      return apiUtils.sendApiError(res, 500, err.message)
+    }
+  }).catch(function (err: any) {
+    return apiUtils.sendApiError(res, 400, err.message)
   })
 }
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'rea
 import PropTypes from 'prop-types'
 
 import helpers from '../install-helpers'
-import anime from 'animejs'
+import { animate } from 'animejs'
 
 const Slides = forwardRef(({ children }, ref) => {
   const [activeSlide, setActiveSlide] = useState(0)
@@ -26,21 +26,21 @@ const Slides = forwardRef(({ children }, ref) => {
   }))
 
   const transitionSlide = (active, next) => {
-    anime({
+    animate({
       targets: active,
       opacity: [1, 0],
       duration: 300,
       easing: 'easeOutExpo',
-      complete: () => {
+      onComplete: () => {
         active.classList.remove('activeSlide')
         active.classList.add('hide')
         next.classList.remove('hide')
-        anime({
+        animate({
           targets: next,
           opacity: [0, 1],
           duration: 300,
           easing: 'easeOutExpo',
-          complete: () => {
+          onComplete: () => {
             next.classList.add('activeSlide')
           }
         })

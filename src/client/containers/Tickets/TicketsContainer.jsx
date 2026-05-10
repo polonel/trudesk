@@ -46,7 +46,7 @@ import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
 
 import history from 'lib/lib-history'
 import helpers from 'lib/helpers'
-import anime from 'animejs'
+import { remove as animeRemove, createTimeline } from 'animejs'
 import moment from 'moment-timezone'
 import SearchResults from 'components/SearchResults'
 import TitleContext from 'app/TitleContext'
@@ -82,19 +82,17 @@ class TicketsContainer extends React.Component {
       this.timeline.seek(0)
     }
 
-    anime.remove('tr.overdue td')
+    animeRemove('tr.overdue td')
 
-    this.timeline = anime.timeline({
+    this.timeline = createTimeline({
       direction: 'alternate',
       duration: 800,
-      autoPlay: false,
+      autoplay: false,
       easing: 'steps(1)',
-      loop: true,
-      backgroundColor: 'blue'
+      loop: true
     })
 
-    this.timeline.add({
-      targets: 'tr.overdue td',
+    this.timeline.add('tr.overdue td', {
       backgroundColor: '#b71c1c',
       color: '#ffffff'
     })
@@ -103,7 +101,7 @@ class TicketsContainer extends React.Component {
   }
 
   componentWillUnmount () {
-    anime.remove('tr.overdue td')
+    animeRemove('tr.overdue td')
     this.timeline = null
     this.props.unloadTickets()
     this.props.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)

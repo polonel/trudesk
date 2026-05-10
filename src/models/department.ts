@@ -10,11 +10,9 @@ import { TeamModelClass } from './team'
 const COLLECTION = 'departments'
 
 @plugin(mongooseAutoPopulate as any)
-@pre('save', function (this: DocumentType<DepartmentModelClass>, next) {
+@pre('save', async function (this: DocumentType<DepartmentModelClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
   this.normalized = utils.sanitizeFieldPlainText(this.name.trim().toLowerCase())
-
-  return next()
 })
 @modelOptions({ options: { customName: COLLECTION } })
 export class DepartmentModelClass {

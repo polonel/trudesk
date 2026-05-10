@@ -57,7 +57,7 @@ apiDepartments.update = async (req: any, res: any) => {
   if (putData.allGroups) putData.groups = []
 
   try {
-    const department = await DepartmentModel.findOneAndUpdate({ _id: id }, putData, { new: true })
+    const department = await DepartmentModel.findOneAndUpdate({ _id: id }, putData, { returnDocument: 'after' })
 
     return apiUtils.sendApiSuccess(res, { department })
   } catch (e: any) {

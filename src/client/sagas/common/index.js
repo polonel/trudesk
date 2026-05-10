@@ -34,7 +34,7 @@ function * initSocket ({ meta }) {
     const socketInitialized = yield select(state => state.shared.socketInitialized)
     if (socketInitialized) return
     const s = io.connect({
-      transports: ['polling', 'websocket']
+      transports: ['websocket']
     })
 
     yield put({ type: INIT_SOCKET.SUCCESS, payload: { socket: s }, meta })

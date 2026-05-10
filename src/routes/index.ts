@@ -81,7 +81,7 @@ function mainRoutes (router: Router, middleware: RouteMiddlewareType, controller
     })
   }
 
-  router.get('*', (_req: Request, res: Response) => {
+  router.get('*path', (_req: Request, res: Response) => {
     res.sendFile(path.resolve(trudeskRoot(), 'dist/index.html'))
   })
 }

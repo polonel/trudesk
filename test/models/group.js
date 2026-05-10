@@ -4,27 +4,21 @@ var m = require('mongoose')
 var { GroupModel } = require('../../src/models')
 
 describe('group.js', function () {
-  var groupId = m.Types.ObjectId()
-  var memberId1 = m.Types.ObjectId()
-  var memberId2 = m.Types.ObjectId()
-  var memberId3 = m.Types.ObjectId()
-  var nonMember1 = m.Types.ObjectId()
+  var groupId = new m.Types.ObjectId()
+  var memberId1 = new m.Types.ObjectId()
+  var memberId2 = new m.Types.ObjectId()
+  var memberId3 = new m.Types.ObjectId()
+  var nonMember1 = new m.Types.ObjectId()
 
-  it('should create a group', function (done) {
-    GroupModel.create(
-      {
-        _id: groupId,
-        name: 'Test Group',
-        members: [memberId1, memberId2, memberId3],
-        sendMailTo: []
-      },
-      function (err, group) {
-        expect(err).to.not.exist
-        expect(group).to.be.a('object')
-        expect(group._doc).to.include.keys('_id', 'name', 'members', 'sendMailTo')
-        done()
-      }
-    )
+  it('should create a group', async function () {
+    const group = await GroupModel.create({
+      _id: groupId,
+      name: 'Test Group',
+      members: [memberId1, memberId2, memberId3],
+      sendMailTo: []
+    })
+    expect(group).to.be.a('object')
+    expect(group._doc).to.include.keys('_id', 'name', 'members', 'sendMailTo')
   })
 
   it('should get all groups', async function () {

@@ -20,10 +20,8 @@ import utils from '../helpers/utils'
 
 const COLLECTION = 'priorities'
 
-@pre('save', function(this: DocumentType<TicketPriorityClass>, next) {
+@pre('save', async function(this: DocumentType<TicketPriorityClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
-
-  return next()
 })
 @modelOptions({options: {customName: COLLECTION}, schemaOptions: { toJSON: {virtuals: true}}})
 export class TicketPriorityClass {

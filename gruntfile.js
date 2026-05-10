@@ -37,7 +37,7 @@ module.exports = function (grunt) {
         },
         tasks: [
           {
-            grunt: false,
+            grunt: true,
             args: ['shell:mobileBuild']
           },
           {
@@ -136,7 +136,16 @@ module.exports = function (grunt) {
       tsbuild: 'yarn tsc -p .',
       tsDev: 'nodemon --watch "src/**" --ext "ts,js" --ignore "src/client/**/*" --ignore "public/**/*" src/app.ts',
       remove_dev_js: 'rimraf dist/public/js/**/*.js',
-      mobileBuild: 'yarn run mobile:build'
+      mobileBuild: {
+        command: 'npm run build',
+        options: {
+          preferLocal: false,
+          execOptions: {
+            cwd: require('path').join(__dirname, 'mobile-pwa'),
+            shell: true
+          }
+        }
+      }
     },
 
     copy: {

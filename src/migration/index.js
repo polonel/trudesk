@@ -92,24 +92,17 @@ function saveVersion (callback) {
         name: 'gen:version',
         value: version
       })
-      s.save(function (err) {
-        if (err) {
-          if (_.isFunction(callback)) return callback(err)
-          return false
-        }
-
+      s.save().then(function () {
         if (_.isFunction(callback)) return callback()
+      }).catch(function (err) {
+        if (_.isFunction(callback)) return callback(err)
       })
     } else {
       if (setting.value) setting.value = require('../../package').version
-      setting.save(function (err) {
-        if (err) {
-          if (_.isFunction(callback)) return callback(err)
-          return false
-        }
-
+      setting.save().then(function () {
         if (_.isFunction(callback)) return callback()
-        return true
+      }).catch(function (err) {
+        if (_.isFunction(callback)) return callback(err)
       })
     }
   })
@@ -249,7 +242,7 @@ function removeAgentsFromGroups (callback) {
           return !member.role.isAdmin && !member.role.isAgent
         })
 
-        group.save(next)
+        group.save().then(function () { next() }).catch(next)
       },
       callback
     )
@@ -336,10 +329,7 @@ async function createTicketStatus () {
 
         Promise.allSettled([newPromise, openPromise, pendingPromise, closedPromise]).then(_res => {
           winston.info('Completed updating ticket status.')
-          counterSchema.setCounter('status', 4, function (err) {
-            if (err) throw err
-            return resolve()
-          })
+          counterSchema.setCounter('status', 4).then(resolve).catch(reject)
         })
       } catch (e) {
         return reject(e)

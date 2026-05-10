@@ -16,7 +16,7 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import $ from 'jquery'
 
-const DotLoader = ({ active, animate }) => {
+const DotLoader = ({ active = false, animate = true }) => {
   const loaderRef = createRef()
 
   useEffect(() => {
@@ -95,9 +95,5 @@ DotLoader.propTypes = {
   animate: PropTypes.bool.isRequired
 }
 
-DotLoader.defaultProps = {
-  active: false,
-  animate: true
-}
 
 export default DotLoader

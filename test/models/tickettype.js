@@ -3,14 +3,10 @@ var expect = require('chai').expect
 var { TicketTypeModel } = require('../../src/models')
 
 describe('ticketType.js', function () {
-  it('should create a ticket type', function (done) {
-    TicketTypeModel.create({ name: 'Test Ticket Type' }, function (err, tt) {
-      expect(err).to.not.exist
-      expect(tt).to.be.a('object')
-      expect(tt._doc).to.include.keys('_id', 'name')
-
-      done()
-    })
+  it('should create a ticket type', async function () {
+    const tt = await TicketTypeModel.create({ name: 'Test Ticket Type' })
+    expect(tt).to.be.a('object')
+    expect(tt._doc).to.include.keys('_id', 'name')
   })
 
   it('should get all ticket types', async function () {

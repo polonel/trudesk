@@ -173,9 +173,7 @@ const eventTicketCreated = require('./events/event_ticket_created')
               unread: true
             })
 
-            notification.save(function (err) {
-              return cb(err)
-            })
+            notification.save().then(function () { return cb() }).catch(cb)
           },
           function (cb) {
             if (_.isUndefined(ticket.assignee)) return cb()
@@ -191,9 +189,7 @@ const eventTicketCreated = require('./events/event_ticket_created')
               unread: true
             })
 
-            notification.save(function (err) {
-              return cb(err)
-            })
+            notification.save().then(function () { return cb() }).catch(cb)
           },
           function (cb) {
             sendPushNotification(
@@ -242,10 +238,7 @@ const eventTicketCreated = require('./events/event_ticket_created')
                   }
                 })
 
-                ticket.populate('comments.owner', function (err, ticket) {
-                  if (err) winston.warn(err)
-                  if (err) return c()
-
+                ticket.populate('comments.owner').then(function (ticket) {
                   ticket = ticket.toJSON()
 
                   email
@@ -273,6 +266,9 @@ const eventTicketCreated = require('./events/event_ticket_created')
                       winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
                       return c(err)
                     })
+                }).catch(function (err) {
+                  winston.warn(err)
+                  return c()
                 })
               }
             )

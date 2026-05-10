@@ -28,10 +28,10 @@ export class CounterClass {
     this: ReturnModelType<typeof CounterClass>,
     counter: string
   ): Promise<any> {
-    return this.collection.findOneAndUpdate(
+    return this.findOneAndUpdate(
       { _id: counter },
       { $inc: { next: 1 } },
-      { upsert: true }
+      { upsert: true, returnDocument: 'after' }
     )
   }
 
@@ -40,10 +40,10 @@ export class CounterClass {
     counter: string,
     count: number
   ): Promise<any> {
-    return this.collection.findOneAndUpdate(
+    return this.findOneAndUpdate(
       { _id: counter },
       { $set: { next: count } },
-      { upsert: true }
+      { upsert: true, returnDocument: 'after' }
     )
   }
 }

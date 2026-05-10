@@ -17,10 +17,8 @@ type GroupQueryObject = {
     '_id username fullname email role preferences image title deleted'
   )
 })
-@pre<GroupModelClass>('save', function (this: DocumentType<GroupModelClass>, next) {
+@pre<GroupModelClass>('save', async function (this: DocumentType<GroupModelClass>) {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
-
-  return next()
 })
 @modelOptions({ options: { customName: COLLECTION } })
 export class GroupModelClass {

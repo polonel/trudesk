@@ -50,8 +50,7 @@ class UserPreferences {
 @pre<UserModelClass>(['findOne', 'find'], function () {
   this.populate('role', 'name description normalized _id grants')
 })
-@pre<UserModelClass>('save', function (this: DocumentType<UserModelClass>, next) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
+@pre<UserModelClass>('save', async function (this: DocumentType<UserModelClass>) {
   const user = this
 
   user.username = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.username.toLowerCase().trim()))
@@ -60,22 +59,12 @@ class UserPreferences {
   if (user.fullname) user.fullname = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.fullname.trim()))
   if (user.title) user.title = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.title.trim()))
 
-  if (!user.isModified('password')) {
-    return next()
-  }
+  if (!user.isModified('password')) return
 
   if (user.password.toString().length > 255) user.password = utils.applyMaxTextLength(user.password)
 
-  bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
-    if (err) return next(err)
-
-    bcrypt.hash(user.password, salt, function (err, hash) {
-      if (err) return next(err)
-
-      user.password = hash
-      return next()
-    })
-  })
+  const salt = await bcrypt.genSalt(SALT_FACTOR)
+  user.password = await bcrypt.hash(user.password, salt)
 })
 @modelOptions({ options: { customName: COLLECTION } })
 export class UserModelClass {

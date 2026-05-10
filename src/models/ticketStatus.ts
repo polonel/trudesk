@@ -27,7 +27,7 @@ const COLLECTION = 'statuses'
     return
 
   const res = await Counters.increment('status')
-  this.uid = res.value.next
+  this.uid = res.next
   if (!this.uid)
     throw new Error('Invalid UID')
 })

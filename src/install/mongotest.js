@@ -19,7 +19,6 @@ global.env = process.env.NODE_ENV || 'production'
   const CONNECTION_URI = process.env.MONGOTESTURI
   if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
   const options = {
-    keepAlive: false,
     connectTimeoutMS: 5000,
     serverSelectionTimeoutMS: 5000
   }

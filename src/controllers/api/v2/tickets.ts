@@ -330,23 +330,21 @@ ticketsV2.batchUpdate = function (req, res) {
 
   async.each(
     batch,
-    function (batchTicket, next) {
-      TicketModel.getTicketById(batchTicket.id, function (err, ticket) {
-        if (err) return next(err)
+    async function (batchTicket) {
+      const ticket = await TicketModel.getTicketById(batchTicket.id)
 
-        if (!_.isUndefined(batchTicket.status)) {
-          ticket.status = batchTicket.status
-          const HistoryItem = {
-            action: 'ticket:set:status',
-            description: 'status set to: ' + batchTicket.status,
-            owner: req.user._id,
-          }
-
-          ticket.history.push(HistoryItem)
+      if (!_.isUndefined(batchTicket.status)) {
+        ticket.status = batchTicket.status
+        const HistoryItem = {
+          action: 'ticket:set:status',
+          description: 'status set to: ' + batchTicket.status,
+          owner: req.user._id,
         }
 
-        return ticket.save(next)
-      })
+        ticket.history.push(HistoryItem)
+      }
+
+      return ticket.save()
     },
     function (err) {
       if (err) return apiUtils.sendApiError(res, 400, err.message)
@@ -372,11 +370,11 @@ ticketsV2.permDelete = function (req, res) {
   const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
-  TicketModel.deleteOne({ _id: id }, function (err, success) {
-    if (err) return apiUtils.sendApiError(res, 400, err.message)
+  TicketModel.deleteOne({ _id: id }).then(success => {
     if (!success) return apiUtils.sendApiError(res, 400, 'Unable to delete ticket')
-
     return apiUtils.sendApiSuccess(res, { deleted: true })
+  }).catch((err: any) => {
+    return apiUtils.sendApiError(res, 400, err.message)
   })
 }
 

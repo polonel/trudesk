@@ -92,11 +92,9 @@ events.markNotificationRead = function (socket: Socket): void {
       if (err) return
 
       notification.markRead(function () {
-        notification.save(function (err: Error | null) {
-          if (err) return
-
+        notification.save().then(function () {
           updateNotifications()
-        })
+        }).catch(function () {})
       })
     })
   })

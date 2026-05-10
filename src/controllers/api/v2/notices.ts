@@ -53,7 +53,7 @@ apiNotices.update = async function (req: any, res: any) {
     return apiUtils.sendApiError_InvalidPostData(res)
 
   try {
-    const updatedNotice = await Notice.findOneAndUpdate({ _id: id }, payload, { new: true })
+    const updatedNotice = await Notice.findOneAndUpdate({ _id: id }, payload, { returnDocument: 'after' })
 
     return apiUtils.sendApiSuccess(res, { notice: updatedNotice })
   } catch (err: any) {

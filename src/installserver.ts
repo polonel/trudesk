@@ -72,7 +72,7 @@ export const installServer = function (callback: (err?: Error) => void) {
   // @ts-ignore
   router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart)
 
-  router.get('*', (_req, res) => {
+  router.get('*path', (_req, res) => {
     return res.redirect('/install')
   })
 

@@ -4,7 +4,7 @@ import $ from 'jquery'
 import 'peity'
 import PropTypes from 'prop-types'
 
-export default function PeityLine ({ height, width, fill, stroke, values }) {
+export default function PeityLine ({ height = 28, width = 64, fill = '#d1e4f6', stroke = '#0288d1', values }) {
   const lineRef = useRef()
   useEffect(() => {
     if (lineRef.current) {
@@ -32,9 +32,3 @@ PeityLine.propTypes = {
   stroke: PropTypes.string
 }
 
-PeityLine.defaultProps = {
-  height: 28,
-  width: 64,
-  fill: '#d1e4f6',
-  stroke: '#0288d1'
-}

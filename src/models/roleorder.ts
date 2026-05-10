@@ -54,10 +54,10 @@ schema.static('getOrder', function (callback?: (err?: CallbackError, result?: Hy
   })
 })
 
-schema.static('getOrderLean', function (callback) {
-  return this.findOne({})
-    .lean()
-    .exec(callback)
+schema.static('getOrderLean', function (callback?: any) {
+  const p = this.findOne({}).lean().exec()
+  if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
+  return p
 })
 
 schema.method('updateOrder', function (order: Array<Types.ObjectId>, callback?: (err?: CallbackError, result?: HydratedDocument<IRoleOrder>) => void) {

@@ -14,12 +14,24 @@ class SocketGlobal extends React.Component {
     this.refreshSocketState = this.refreshSocketState.bind(this)
     this.onReconnect = this.onReconnect.bind(this)
     this.onDisconnect = this.onDisconnect.bind(this)
+    this._socketReady = false
 
-    this.props.initSocket().then(this.onSocketInitialized)
+    this.props.initSocket()
   }
 
   componentDidMount () {
-    if (this.props.socket) {
+    if (this.props.socket && !this._socketReady) {
+      this._socketReady = true
+      this.onSocketInitialized()
+      if (!this.props.socket.connected) {
+        this.props.socket.connect()
+      }
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.socket && !prevProps.socket && !this._socketReady) {
+      this._socketReady = true
       this.onSocketInitialized()
       if (!this.props.socket.connected) {
         this.props.socket.connect()
@@ -44,7 +56,9 @@ class SocketGlobal extends React.Component {
     this.props.socket.io.on('reconnect', this.onReconnect)
     this.props.socket.on('disconnect', this.onDisconnect)
 
-    // Load any initial socket stuff
+    if (this.props.socket.connected) {
+      helpers.UI.hideDisconnectedOverlay()
+    }
   }
 
   onDisconnect (socket) {

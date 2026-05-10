@@ -100,58 +100,57 @@ roleSchema.virtual('isAgent').get(function () {
 
 roleSchema.plugin(mongooseLeanVirtuals)
 
-roleSchema.pre('save', function (next) {
+roleSchema.pre('save', async function () {
   this.name = utils.sanitizeFieldPlainText(this.name.trim())
   this.normalized = utils.sanitizeFieldPlainText(this.name.toLowerCase().trim())
-
-  return next()
 })
 
 roleSchema.method('updateGrants', function (grants, callback) {
   this.grants = grants
-  this.save(callback)
+  this.save().then(r => callback(null, r)).catch(e => callback(e))
 })
 
 roleSchema.method('updateGrantsAndHierarchy', function (grants, hierarchy, callback) {
   this.grants = grants
   this.hierarchy = hierarchy
   if (typeof callback === 'function') {
-    return this.save(callback)
+    return this.save().then(r => callback(null, r)).catch(e => callback(e))
   }
   return this.save()
 })
 
-roleSchema.static('getRoles', function getRoles(callback) {
-  return this.find({}).exec(callback)
+roleSchema.static('getRoles', function getRoles(callback?) {
+  const p = this.find({}).exec()
+  if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+  return p
 })
 
-roleSchema.static('getRolesLean', function (callback): void {
-  return this.find({}).lean({ virtuals: true }).exec(callback)
+roleSchema.static('getRolesLean', function (callback?): void {
+  const p = this.find({}).lean({ virtuals: true }).exec()
+  if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+  return p
 })
 
-roleSchema.static('getRole', function getRole(id, callback) {
-  const q = this.findOne({ _id: id })
-
-  return q.exec(callback)
+roleSchema.static('getRole', function getRole(id, callback?) {
+  const p = this.findOne({ _id: id }).exec()
+  if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+  return p
 })
 
-roleSchema.static('getRoleByName', function getRoleByName(name, callback) {
-  const q = this.findOne({ normalized: new RegExp('^' + name.trim() + '$', 'i') })
-
-  return q.exec(callback)
+roleSchema.static('getRoleByName', function getRoleByName(name, callback?) {
+  const p = this.findOne({ normalized: new RegExp('^' + name.trim() + '$', 'i') }).exec()
+  if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+  return p
 })
 
-roleSchema.static('getAgentRoles', function getAgentRoles(callback) {
-  const q = this.find({})
-  q.exec(function (err, roles) {
-    if (err) return callback(err)
-
-    const rolesWithAgent = _.filter(roles, function (role) {
+roleSchema.static('getAgentRoles', function getAgentRoles(callback?) {
+  const p = this.find({}).exec().then(function (roles) {
+    return _.filter(roles, function (role) {
       return _.indexOf(role.grants, 'agent:*') !== -1
     })
-
-    return callback(null, rolesWithAgent)
   })
+  if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
+  return p
 })
 
 export const RoleModel = model<IRole, IRoleModel>(COLLECTION, roleSchema)

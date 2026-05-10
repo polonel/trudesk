@@ -266,11 +266,9 @@ events.onSetTicketDueDate = function (socket: Socket): void {
       ticket.setTicketDueDate(ownerId, dueDate, function (err: Error | null, t: any) {
         if (err) return
 
-        t.save(function (err: Error | null, tt: any) {
-          if (err) return
-
+        t.save().then(function (tt: any) {
           utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_DUEDATE_UPDATE, tt)
-        })
+        }).catch(function () {})
       })
     })
   })

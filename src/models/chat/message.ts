@@ -28,9 +28,8 @@ interface ConversationWithObject {
   userMeta?: Array<{ userId: Types.ObjectId; deletedAt?: Date }>
 }
 
-@pre<MessageClass>('save', function (this: DocumentType<MessageClass>, next) {
+@pre<MessageClass>('save', async function (this: DocumentType<MessageClass>) {
   this.body = utils.sanitizeFieldPlainText(utils.applyExtremeTextLength(this.body))
-  return next()
 })
 @modelOptions({ options: { customName: COLLECTION }, schemaOptions: { timestamps: true } })
 export class MessageClass {

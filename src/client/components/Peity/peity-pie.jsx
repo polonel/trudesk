@@ -4,7 +4,7 @@ import $ from 'jquery'
 import 'peity'
 import PropTypes from 'prop-types'
 
-export default function PeityPie ({ type, height, width, fill, value }) {
+export default function PeityPie ({ type = 'pie', height = 24, width = 24, fill = ['#29b955', '#ccc'], value }) {
   const pieRef = useRef()
 
   useEffect(() => {
@@ -40,9 +40,4 @@ PeityPie.propTypes = {
   fill: PropTypes.arrayOf(PropTypes.string)
 }
 
-PeityPie.defaultProps = {
-  type: 'pie',
-  height: 24,
-  width: 24,
-  fill: ['#29b955', '#ccc']
-}
+

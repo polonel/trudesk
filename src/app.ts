@@ -46,7 +46,7 @@ if (!process.env['FORK']) {
   winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.')
   winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o')
   winston.info('==========================================================================')
-  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2024 Trudesk Inc. (POLONEL)')
+  winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2026 Trudesk Inc. (POLONEL)')
   winston.info('')
   winston.info('                         COMMUNITY EDITION')
   winston.info('')

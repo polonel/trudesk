@@ -397,10 +397,10 @@ accountsApi.verifyMFA = async (req: any, res: any) => {
       user.tOTPPeriod = 30
       user.hasL2Auth = true
 
-      user.save(function (err: any) {
-        if (err) return apiUtil.sendApiError(res, 500, err.message)
-
+      user.save().then(function () {
         return apiUtil.sendApiSuccess(res)
+      }).catch(function (err: any) {
+        return apiUtil.sendApiError(res, 500, err.message)
       })
     })
   })(req, res)

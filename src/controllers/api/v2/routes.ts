@@ -159,7 +159,7 @@ module.exports = function (middleware: any, router: any, controllers: any) {
 
   router.get('/api/v2/mailer/check', apiv2Auth, isAdmin, apiv2.mailer.check)
 
-  router.get('/api/v2/*', (req: any, res: any) => {
+  router.get('/api/v2/*path', (req: any, res: any) => {
     res.status(404).send('Not Found')
   })
 }

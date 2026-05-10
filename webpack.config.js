@@ -118,7 +118,15 @@ module.exports = {
           },
           'css-loader',
           'postcss-loader',
-          'sass-loader'
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                silenceDeprecations: ['import', 'global-builtin', 'color-functions'],
+                quietDeps: true
+              }
+            }
+          }
         ]
       },
       {

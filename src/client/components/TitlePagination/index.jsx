@@ -62,7 +62,7 @@ class TitlePagination extends React.Component {
               title={'Previous Page'}
               className={'btn md-btn-wave-light' + (!prevEnabled ? ' no-ajaxy' : '')}
             >
-              <i className='fa-solid fa-large fa-chevron-left'></i>
+              <i className='fa-solid fa-chevron-left'></i>
             </Link>
           </li>
           <li className='pagination'>
@@ -71,7 +71,7 @@ class TitlePagination extends React.Component {
               title={'Next Page'}
               className={'btn md-btn-wave-light' + (!nextEnabled ? ' no-ajaxy' : '')}
             >
-              <i className='fa-solid fa-large fa-chevron-right' />
+              <i className='fa-solid fa-chevron-right' />
             </Link>
           </li>
         </ul>

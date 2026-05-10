@@ -244,11 +244,7 @@ mainController.forgotL2Auth = function (req: any, res: any) {
     expireDate.setDate(expireDate.getDate() + 2)
     user.resetL2AuthExpire = expireDate
 
-    user.save(function (err: any, savedUser: any) {
-      if (err) {
-        return res.status(400).send(err.message)
-      }
-
+    user.save().then(function (savedUser: any) {
       const mailer = require('../mailer')
       const Email = require('email-templates')
       const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
@@ -292,6 +288,8 @@ mainController.forgotL2Auth = function (req: any, res: any) {
           winston.warn(err)
           return res.status(400).send(err.message)
         })
+    }).catch(function (err: any) {
+      return res.status(400).send(err.message)
     })
   }).catch(function (err: any) {
     return res.status(400).send(err.message)
@@ -407,11 +405,7 @@ mainController.resetl2auth = function (req: any, res: any) {
       user.resetL2AuthHash = undefined
       user.resetL2AuthExpire = undefined
 
-      user.save(function (err: any, updated: any) {
-        if (err) {
-          return res.status(500).send(err.message)
-        }
-
+      user.save().then(function (updated: any) {
         const mailer = require('../mailer')
         const Email = require('email-templates')
         const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
@@ -441,7 +435,7 @@ mainController.resetl2auth = function (req: any, res: any) {
               if (err) {
                 winston.warn(err)
                 req.flash('loginMessage', err.message)
-                return res.redirect(307, '/')
+                return res.status(307).redirect('/')
               }
 
               req.flash('loginMessage', 'Account Recovery Email Sent.')
@@ -453,6 +447,8 @@ mainController.resetl2auth = function (req: any, res: any) {
             req.flash('loginMessage', err.message)
             return res.status(400).send(err.message)
           })
+      }).catch(function (err: any) {
+        return res.status(500).send(err.message)
       })
     } else {
       return res.status(400).send('Invalid Link!')

@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import { TICKETS_STATUS_SET, TICKETS_UI_STATUS_UPDATE } from 'serverSocket/socketEventConsts'
 import { fetchTicketStatus } from 'actions/tickets'
 
-function StatusSelector ({ ticketId, status: statusProp, onStatusChange, hasPerm, socket, fetchTicketStatus, ticketStatuses }) {
+function StatusSelector ({ ticketId, status: statusProp, onStatusChange, hasPerm = false, socket, fetchTicketStatus, ticketStatuses }) {
   const [status, setStatus] = useState(statusProp)
   const [isOpen, setIsOpen] = useState(false)
   const selectorRef = useRef(null)
@@ -117,9 +117,6 @@ StatusSelector.propTypes = {
   ticketStatuses: PropTypes.object.isRequired
 }
 
-StatusSelector.defaultProps = {
-  hasPerm: false
-}
 
 const mapStateToProps = state => ({
   ticketStatuses: state.ticketsState.ticketStatuses
