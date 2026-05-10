@@ -29,6 +29,7 @@ jobs:
     docker:
     - image: cimg/node:20.20
     working_directory: ~/trudesk
+    resource_class: medium+
     steps:
     - checkout
     - yarninstall
