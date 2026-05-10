@@ -83,3 +83,5 @@ mobile-pwa/dist/
 .clinerules
 .clineignore
 .kilo/
+
+.nyc_output/
