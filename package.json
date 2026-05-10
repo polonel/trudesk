@@ -19,7 +19,7 @@
     "codacy": "npm run coverage && bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./coverage/lcov.info && rm -rf ./coverage",
     "webpackwatch": "webpack --config webpack.config.js --watch --progress",
     "webpackdev": "webpack --config webpack.config.js --progress",
-    "webpackdist": "rimraf dist/public && cross-env NODE_ENV=production webpack --env production --config webpack.config.js",
+    "webpackdist": "rimraf dist/public && NODE_ENV=production webpack --env production --config webpack.config.js",
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
