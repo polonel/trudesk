@@ -19,7 +19,7 @@
     "axios": "^1.13.0",
     "jwt-decode": "^4.0.0",
     "dayjs": "^1.11.20",
-    "dompurify": "^3.5.0",
+    "dompurify": "^3.2.0",
     "clsx": "^2.1.1",
     "@headlessui/react": "^1.7.19",
     "@heroicons/react": "^2.2.0"
