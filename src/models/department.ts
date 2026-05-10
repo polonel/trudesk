@@ -70,7 +70,7 @@ export class DepartmentModelClass {
       const publicGroups = await GroupModel.getAllPublicGroups()
       const mapped = _.flatMapDeep(departments, (department) => department.groups)
 
-      let merged = _.concat(publicGroups as GroupModelClass[], mapped)
+      let merged = _.concat(publicGroups as GroupModelClass[], mapped as any[])
       merged = _.flattenDeep(merged)
       merged = _.uniqBy(merged, (i) => i?._id)
 

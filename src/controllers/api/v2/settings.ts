@@ -192,6 +192,8 @@ apiSettings.uploadLogo = async (req: any, res: any) => {
       .catch(() => {
         return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
       })
+
+    return undefined
   })
 
   req.pipe(busboy)
@@ -266,6 +268,8 @@ apiSettings.uploadPageLogo = async (req: any, res: any) => {
       .catch(() => {
         return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
       })
+
+    return undefined
   })
 
   req.pipe(busboy)
@@ -340,6 +344,8 @@ apiSettings.uploadFavicon = async (req: any, res: any) => {
       .catch(() => {
         return apiUtils.sendApiError(res, 400, 'Failed to save setting to database')
       })
+
+    return undefined
   })
 
   req.pipe(busboy)

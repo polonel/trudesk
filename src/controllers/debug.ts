@@ -336,7 +336,7 @@ debugController.populatedatabase = function (_req: any, res: any) {
           users.push(user)
         }
 
-        userSchema.collection.insert(users, {}, done)
+        userSchema.collection.insertMany(users).then(() => done()).catch(done)
       },
       function (done: any) {
         groupSchema.remove({}, done)

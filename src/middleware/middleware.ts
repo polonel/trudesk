@@ -156,7 +156,7 @@ middleware.redirectIfUser = function (req, res, next) {
 
 // Common
 middleware.loadCommonData = function (req, _res, next) {
-  viewdata.getData(req, function (data: { csrfToken: any }) {
+  viewdata.getData(req, function (data: any) {
     data.csrfToken = req.csrfToken
     req.viewdata = data
 
@@ -279,7 +279,7 @@ middleware.hasAuth = async (req, res, next) => {
       return res.status(401)
     }
 
-    const user = await UserModel.findOne({_id: session.user})
+    const user = await UserModel.findOne({_id: session.user as any})
     if (!user) {
       await SessionModel.deleteOne({_id: sessionId})
       res.cookie('_rft_', null, { maxAge: 0 })

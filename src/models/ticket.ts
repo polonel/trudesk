@@ -24,7 +24,17 @@ import type { Types } from 'mongoose'
 import xss from 'xss'
 import winston from '../logger'
 import utils from '../helpers/utils'
-import { GroupModel, TicketTypeModel, UserModel, TicketStatusModel } from '../models'
+// Lazy import to break circular dependency: ticket.ts <-> models/index.ts
+function getModels() {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const m = require('../models')
+  return {
+    GroupModel: m.GroupModel as typeof import('../models').GroupModel,
+    UserModel: m.UserModel as typeof import('../models').UserModel,
+    TicketTypeModel: m.TicketTypeModel as typeof import('../models').TicketTypeModel,
+    TicketStatusModel: m.TicketStatusModel as typeof import('../models').TicketStatusModel,
+  }
+}
 import permissions from '../permissions'
 import { UserModelClass } from './user'
 import { CommentClass } from './comment'
@@ -91,9 +101,8 @@ function buildQueryWithObject(SELF: any, grpId: any[], object: TicketQueryObject
   if (count) query = SELF.countDocuments({ groups: { $in: grpId }, deleted: false })
   else {
     query = SELF.find({ group: { $in: grpId }, deleted: false })
-      .populate('owner assignee subscribers comments.owner notes.owner history.owner', 'username fullname email role image title')
-      .populate('assignee', 'username fullname email role image title')
-      .populate('type tags group status')
+      .populate('owner assignee subscribers', 'username fullname email role image title')
+      .populate('type tags group status priority')
       .sort({ uid: -1 })
   }
 
@@ -134,9 +143,6 @@ function buildQueryWithObject(SELF: any, grpId: any[], object: TicketQueryObject
 }
 
 @plugin(mongooseAutoPopulate as any)
-@pre<TicketClass>(['findOne', 'find'], function () {
-  this.populate('priority')
-})
 @pre<TicketClass>('save', async function (this: DocumentType<TicketClass>) {
   this.subject = utils.sanitizeFieldPlainText(this.subject.trim())
   this.wasNew = this.isNew
@@ -152,6 +158,7 @@ function buildQueryWithObject(SELF: any, grpId: any[], object: TicketQueryObject
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const emitter = require('../emitter')
     try {
+      const { GroupModel, UserModel } = getModels()
       const savedTicket = await doc.populate([
         {
           path: 'owner assignee comments.owner notes.owner subscribers history.owner',
@@ -244,7 +251,7 @@ export class TicketClass {
     return new Promise((resolve, reject) => {
       ;(async () => {
         try {
-          const status = await TicketStatusModel.getStatusById(this.status as Types.ObjectId)
+          const status = await getModels().TicketStatusModel.getStatusById(this.status as Types.ObjectId)
           if (!status) return reject(new Error('Invalid Status Id: ' + this.status))
           return resolve(status.name)
         } catch (e) {
@@ -280,7 +287,7 @@ export class TicketClass {
         }
 
         try {
-          const statusModel = await TicketStatusModel.getStatusById(status as Types.ObjectId)
+          const statusModel = await getModels().TicketStatusModel.getStatusById(status as Types.ObjectId)
           if (!statusModel) {
             if (typeof callback === 'function') return callback('Invalid Status')
             return reject(new Error('Invalid Status'))
@@ -325,7 +332,7 @@ export class TicketClass {
 
           self.assignee = userId as any
 
-          const user = await UserModel.findOne({ _id: userId })
+          const user = await getModels().UserModel.findOne({ _id: userId })
           if (!user) {
             const err = new Error('Unable to get user with id: ' + userId)
             if (typeof callback === 'function') callback(err)
@@ -363,7 +370,7 @@ export class TicketClass {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     return new Promise(resolve => {
-      self.assignee = undefined
+      self.assignee = undefined as any
       const historyItem = {
         action: 'ticket:set:assignee',
         description: 'Assignee was cleared',
@@ -386,7 +393,7 @@ export class TicketClass {
       ;(async () => {
         this.type = typeId as any
         try {
-          const type = await TicketTypeModel.findOne({ _id: typeId })
+          const type = await getModels().TicketTypeModel.findOne({ _id: typeId })
           if (!type) {
             if (typeof callback === 'function') return callback('Invalid Type Id: ' + typeId)
             return reject(new Error('Invalid Type Id: ' + typeId))
@@ -494,7 +501,7 @@ export class TicketClass {
     return new Promise(resolve => {
       issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
       issue = sanitizeHtml(issue).trim()
-      self.issue = xss(marked.parse(issue))
+      self.issue = xss(marked.parse(issue) as string)
 
       const historyItem = {
         action: 'ticket:update:issue',
@@ -679,7 +686,7 @@ export class TicketClass {
   ): Promise<DocumentType<TicketClass>> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const hasSub = _.some(self.subscribers, (i: any) => i._id.toString() === userId.toString())
 
       if (!hasSub) {
@@ -698,7 +705,7 @@ export class TicketClass {
   ): Promise<DocumentType<TicketClass>> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const user = _.find(self.subscribers, (i: any) => i._id.toString() === userId.toString())
 
       if (_.isUndefined(user) || _.isEmpty(user) || _.isNull(user)) {
@@ -718,7 +725,7 @@ export class TicketClass {
   public static getAll(this: ReturnModelType<typeof TicketClass>, callback?: any): any {
     const p = this.find({ deleted: false })
       .populate('owner assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-      .populate('type tags group')
+      .populate('type tags group priority')
       .sort({ status: 1 })
       .lean()
       .exec()
@@ -747,7 +754,7 @@ export class TicketClass {
 
     const p = this.find({ status: { $in: status }, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-      .populate('type tags group')
+      .populate('type tags group priority')
       .sort({ status: 1 })
       .lean()
       .exec()
@@ -765,7 +772,7 @@ export class TicketClass {
 
     const p = this.find({ group: { $in: grpIds }, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-      .populate('type tags group')
+      .populate('type tags group priority')
       .sort({ status: 1 })
       .exec()
     return p.then(r => callback(null, r)).catch(e => callback(e))
@@ -784,7 +791,7 @@ export class TicketClass {
     const self = this
 
     if (_.some(departments, { allGroups: true })) {
-      GroupModel.find({}).exec().then((groups: any) => {
+      getModels().GroupModel.find({}).exec().then((groups: any) => {
         return self.getTicketsWithObject(groups, object, callback)
       }).catch((err: Error) => callback({ error: err }))
     } else {
@@ -858,7 +865,7 @@ export class TicketClass {
 
     const p = this.find({ group: { $in: grpId }, status, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-      .populate('type tags group status')
+      .populate('type tags group status priority')
       .sort({ uid: -1 })
       .exec()
     return p.then(r => callback(null, r)).catch(e => callback(e))
@@ -876,7 +883,7 @@ export class TicketClass {
 
     const p = this.findOne({ uid, deleted: false })
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-      .populate('type tags group status')
+      .populate('type tags group status priority')
       .exec()
     if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
     return p
@@ -895,9 +902,10 @@ export class TicketClass {
           return reject(error)
         }
 
+        const { GroupModel, UserModel } = getModels()
         const q = this.findOne({ _id: id, deleted: false })
           .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-          .populate('type tags status')
+          .populate('type tags status priority')
           .populate({
             path: 'group',
             model: GroupModel,
@@ -927,10 +935,11 @@ export class TicketClass {
   ): any {
     if (_.isUndefined(userId)) return callback('Invalid Requester Id - TicketSchema.GetTicketsByRequester()', null)
 
+    const { GroupModel, UserModel } = getModels()
     const p = this.find({ owner: userId, deleted: false })
       .limit(10000)
       .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-      .populate('type tags status')
+      .populate('type tags status priority')
       .populate({
         path: 'group',
         model: GroupModel,
@@ -961,7 +970,7 @@ export class TicketClass {
         function (cb: (err?: Error | null) => void) {
           self.find({ group: { $in: grps }, deleted: false, $where: '/^' + search + '.*/.test(this.uid)' })
             .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-            .populate('type tags group status')
+            .populate('type tags group status priority')
             .limit(100)
             .exec()
             .then((results: any) => { tickets.push(results); cb(null) })
@@ -970,7 +979,7 @@ export class TicketClass {
         function (cb: (err?: Error | null) => void) {
           self.find({ group: { $in: grps }, deleted: false, subject: { $regex: search, $options: 'i' } })
             .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-            .populate('type tags group status')
+            .populate('type tags group status priority')
             .limit(100)
             .exec()
             .then((results: any) => { tickets.push(results); cb(null) })
@@ -979,7 +988,7 @@ export class TicketClass {
         function (cb: (err?: Error | null) => void) {
           self.find({ group: { $in: grps }, deleted: false, issue: { $regex: search, $options: 'i' } })
             .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-            .populate('type tags group status')
+            .populate('type tags group status priority')
             .limit(100)
             .exec()
             .then((results: any) => { tickets.push(results); cb(null) })
@@ -1008,7 +1017,7 @@ export class TicketClass {
       [
         function (next: (err: Error | null, tickets?: any) => void) {
           self
-            .find({ group: { $in: grpId }, status: { $in: [0, 1] }, deleted: false })
+            .find({ group: { $in: grpId }, status: { $in: [0, 1] } as any, deleted: false })
             .select('_id date updated')
             .lean()
             .exec()
@@ -1131,7 +1140,7 @@ export class TicketClass {
     this: ReturnModelType<typeof TicketClass>,
     oldTypeId: Types.ObjectId,
     newTypeId: Types.ObjectId,
-    callback?: (err: any) => void
+    callback?: (err: any, res?: any) => void
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       ;(async () => {

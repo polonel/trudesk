@@ -36,7 +36,7 @@ export const applyExtremeTextLength = function (text: string | number): string {
 
 export const sanitizeFieldPlainText = function (text: string): string {
   return xss(text, {
-    whileList: {},
+    whiteList: {},
     stripIgnoreTag: true,
     stripIgnoreTagBody: ['script']
   })
@@ -52,11 +52,11 @@ export const stripExifData = function (path: string): void {
   }
 }
 
-export const sendToSelf = function (socket: any, method: string, data: any): void {
+export const sendToSelf = function (socket: any, method: string, data?: any): void {
   socket.emit(method, data)
 }
 
-export const _sendToSelf = function (io: any, socketId: string, method: string, data: any): void {
+export const _sendToSelf = function (io: any, socketId: string, method: string, data?: any): void {
   _.each(io.sockets.sockets, function (socket) {
     if (socket.id === socketId) {
       socket.emit(method, data)
@@ -64,7 +64,7 @@ export const _sendToSelf = function (io: any, socketId: string, method: string, 
   })
 }
 
-export const sendToAllConnectedClients = function (io: any, method: string, data: any): void {
+export const sendToAllConnectedClients = function (io: any, method: string, data?: any): void {
   io.sockets.emit(method, data)
 }
 
@@ -72,21 +72,22 @@ export const sendToAllClientsInRoom = function (io: any, room: string, method: s
   io.sockets.in(room).emit(method, data)
 }
 
-export const sendToUser = function (socketList: any[], userList: any, username: string, method: string, data: any): void {
-  let userOnline = null
+export const sendToUser = function (socketList: any[], userList: any, username: string, method: string, data?: any): void {
+  let userOnline: any = null
 
-  _.forEach(userList, function (v, k) {
+  _.forEach(userList, function (v: any, k: any): false | void {
     if (k.toLowerCase() === username.toLowerCase()) {
       userOnline = v
-      return true
+      return false
     }
   })
 
   if (_.isNull(userOnline)) return
 
-  _.forEach(userOnline.sockets, function (socket: any) {
+  _.forEach((userOnline as any).sockets, function (socket: any) {
     const o = _.findKey(socketList, { id: socket })
-    const i = socketList[o]
+    if (_.isUndefined(o)) return
+    const i = socketList[o as any]
     if (_.isUndefined(i)) return
     i.emit(method, data)
   })

@@ -109,14 +109,14 @@ commonV2.token = async (req: any, res: any) => {
        return apiUtils.sendApiError(res, 401, 'Session expired')
     }
 
-    const user = await UserModel.findOne({ _id: session.user })
+    const user = await UserModel.findOne({ _id: session.user as any })
     if (!user) {
       res.cookie('_rft_', null, { maxAge: 0 })
       await SessionModel.deleteOne({ _id: sessionId })
        return apiUtils.sendApiError(res, 401, 'User not found')
     }
 
-    const tokens = await apiUtils.generateJWTToken(user, session)
+    const tokens = await apiUtils.generateJWTToken(user as any, session)
 
     return apiUtils.sendApiSuccess(res, {
       token: tokens.token

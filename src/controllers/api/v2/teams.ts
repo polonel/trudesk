@@ -65,6 +65,8 @@ apiTeams.create = function (req: any, res: any) {
   }).catch(function (err: any) {
     return apiUtils.sendApiError(res, 500, err.message)
   })
+
+  return undefined
 }
 
 apiTeams.update = function (req: any, res: any) {
@@ -90,6 +92,8 @@ apiTeams.update = function (req: any, res: any) {
   }).catch(function (err: any) {
     return apiUtils.sendApiError(res, 400, err.message)
   })
+
+  return undefined
 }
 
 apiTeams.delete = function (req: any, res: any) {
@@ -102,6 +106,8 @@ apiTeams.delete = function (req: any, res: any) {
 
     return apiUtils.sendApiSuccess(res, { _id: id })
   })
+
+  return undefined
 }
 
 module.exports = apiTeams

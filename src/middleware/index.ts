@@ -98,12 +98,12 @@ export default function (
       store: sessionStore,
       saveUninitialized: false,
       resave: false
-    })
+    }) as unknown as RequestHandler
   )
 
-  app.use(passportConfig.initialize())
-  app.use(passportConfig.session())
-  app.use(flash())
+  app.use(passportConfig.initialize() as unknown as RequestHandler)
+  app.use(passportConfig.session() as unknown as RequestHandler)
+  app.use(flash() as unknown as RequestHandler)
   app.use(allowCrossDomain)
 
   csrf.init()

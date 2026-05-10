@@ -119,7 +119,7 @@ export async function init(callback: DBCallback, connectionString?: string, opts
 
       db.connection = mongoose.connection
       global.dbConnection = db.connection
-      mongoose.connection.db.admin()
+      mongoose.connection.db!.admin()
         .command({ buildInfo: 1 })
         .then(function (result) {
           db.version = result ? result["version"] : 'unknown'

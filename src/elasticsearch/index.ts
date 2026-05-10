@@ -91,7 +91,7 @@ ES.testConnection = async (callback?: (error?: any) => void): Promise<void> => {
 
 ES.setupHooks = (): void => {
   emitter.on('ticket:deleted', async (_id: any) => {
-    if (_.isUndefined(_id)) return false
+    if (_.isUndefined(_id)) return
 
     try {
       await ES.esclient!.delete({
@@ -144,19 +144,18 @@ ES.setupHooks = (): void => {
         index: ES.indexName,
         id: ticket._id.toString(),
         refresh: 'true',
-        body: cleanedTicket
+        ...cleanedTicket
       })
     } catch (e) {
       winston.warn('Elasticsearch Error: ' + e)
-      return false
     }
   })
 
-  emitter.on('ticket:created', (data: any) => {
+  emitter.on('ticket:created', (data: any): void => {
     ticketSchema.getTicketById(data.ticket._id, function (err: any, ticket: any) {
       if (err) {
         winston.warn('Elasticsearch Error: ' + err)
-        return false
+        return
       }
 
       const _id = ticket._id.toString()
@@ -168,7 +167,7 @@ ES.setupHooks = (): void => {
         date: ticket.date,
         dateFormatted: moment
           .utc(ticket.date)
-          .tz(ES.timezone)
+          .tz(ES.timezone ?? 'America/New_York')
           .format('MMMM D YYYY'),
         owner: ticket.owner,
         assignee: ticket.assignee,
@@ -194,16 +193,13 @@ ES.setupHooks = (): void => {
         tags: ticket.tags
       }
 
-      ES.esclient!.index(
-        {
-          index: ES.indexName,
-          id: _id,
-          body: cleanedTicket
-        },
-        function (err: any) {
-          if (err) winston.warn('Elasticsearch Error: ' + err)
-        }
-      )
+      ES.esclient!.index({
+        index: ES.indexName,
+        id: _id,
+        ...cleanedTicket
+      }).catch((err: any) => {
+        if (err) winston.warn('Elasticsearch Error: ' + err)
+      })
     })
   })
 }
@@ -226,11 +222,11 @@ ES.rebuildIndex = async (): Promise<boolean | undefined> => {
   try {
     const settings = await settingUtil.getSettings()
 
-    if (!settings.settings.elasticSearchConfigured.value) return false
+    if (!settings.settings?.elasticSearchConfigured?.value) return false
 
-    const s = settings.settings
+    const s = settings.settings!
 
-    const ELASTICSEARCH_URI = s.elasticSearchHost.value + ':' + s.elasticSearchPort.value
+    const ELASTICSEARCH_URI = s.elasticSearchHost!.value + ':' + s.elasticSearchPort!.value
 
     ES.buildClient(ELASTICSEARCH_URI)
 
@@ -262,6 +258,8 @@ ES.rebuildIndex = async (): Promise<boolean | undefined> => {
         return i.name !== 'elasticsearchRebuild'
       })
     })
+
+    return undefined
   } catch (e) {
     winston.error(e)
     return false
@@ -291,8 +289,8 @@ ES.init = async (callback?: (error?: any) => void): Promise<void> => {
     ;(global as any).esRebuilding = false
 
     const s = await settingUtil.getSettings()
-    const settings = s.settings
-    const ENABLED = settings.elasticSearchConfigured.value
+    const settings = s.settings!
+    const ENABLED = settings.elasticSearchConfigured?.value
 
     if (!ENABLED) {
       if (typeof callback === 'function') return callback()
@@ -302,12 +300,12 @@ ES.init = async (callback?: (error?: any) => void): Promise<void> => {
 
     winston.debug('Initializing Elasticsearch...')
     ;(global as any).esStatus = 'Initializing'
-    ES.timezone = settings.timezone.value
+    if (settings.timezone?.value) ES.timezone = settings.timezone.value
 
     ES.setupHooks()
 
     if (process.env.ELATICSEARCH_URI) ES.host = process.env.ELATICSEARCH_URI
-    else ES.host = settings.elasticSearchHost.value + ':' + settings.elasticSearchPort.value
+    else ES.host = settings.elasticSearchHost?.value + ':' + settings.elasticSearchPort?.value
 
     ES.buildClient(ES.host)
 

@@ -125,7 +125,7 @@ roleSchema.static('getRoles', function getRoles(callback?) {
   return p
 })
 
-roleSchema.static('getRolesLean', function (callback?): void {
+roleSchema.static('getRolesLean', function (callback?) {
   const p = this.find({}).lean({ virtuals: true }).exec()
   if (typeof callback === 'function') return p.then(r => callback(null, r)).catch(e => callback(e))
   return p

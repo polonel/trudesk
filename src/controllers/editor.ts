@@ -126,7 +126,7 @@ editor.assetsUpload = function (req: any, res: any) {
     if (!fs.existsSync(object.filePath))
       return res.status(500).json({ success: false, error: { message: 'File Failed to Save to Disk' } })
 
-    const includePort = (global as any).TRUDESK_PORT && (global as any).TRUDESK_PORT !== (80 || 443)
+    const includePort = (global as any).TRUDESK_PORT && (global as any).TRUDESK_PORT !== 80 && (global as any).TRUDESK_PORT !== 443
 
     const fileUrl =
       req.protocol +

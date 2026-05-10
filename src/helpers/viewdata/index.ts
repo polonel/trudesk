@@ -170,7 +170,7 @@ async function getData(request: ViewdataRequest, cb: (data: ViewData) => void): 
         const s = await SettingModel.getSettingByName('gen:siteurl') as any
         if (!s) {
           const created = await SettingModel.create({ name: 'gen:siteurl', value: viewdata.hosturl }) as any
-          if (!global.TRUDESK_BASEURL) global.TRUDESK_BASEURL = created.value
+          if (!(global as any).TRUDESK_BASEURL) (global as any).TRUDESK_BASEURL = created.value
         }
       }),
 

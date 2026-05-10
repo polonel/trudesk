@@ -56,7 +56,7 @@ class SocketGlobal extends React.Component {
     this.props.socket.io.on('reconnect', this.onReconnect)
     this.props.socket.on('disconnect', this.onDisconnect)
 
-    if (this.props.socket.connected) {
+    if (this.props.socket.connected) { 
       helpers.UI.hideDisconnectedOverlay()
     }
   }

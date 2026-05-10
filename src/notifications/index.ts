@@ -28,7 +28,7 @@ interface Notification {
   data: NotificationData
 }
 
-export function pushNotification(tpsUsername: string, tpsApiKey: string, notification: Notification): void {
+export function pushNotification(_tpsUsername: string, tpsApiKey: string, notification: Notification): void {
   const body = {
     title: notification.title,
     content: notification.content,

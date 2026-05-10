@@ -39,7 +39,7 @@ const apiUtils = {
     return res.json(resObject)
   },
 
-  sendApiError(res: Response, errorNum: number, error: string) {
+  sendApiError(res: Response, errorNum: number, error?: unknown) {
     return res.status(errorNum).json({ success: false, error })
   },
 

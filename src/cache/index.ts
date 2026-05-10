@@ -25,7 +25,7 @@ let cache: NodeCache
 
 global.env = process.env['NODE_ENV'] || 'production'
 
-let refreshTimer: NodeJS.Timer
+let refreshTimer: ReturnType<typeof setInterval>
 let lastUpdated = moment.utc().tz(process.env['TIMEZONE'] || 'America/New_York')
 
 export const init = function () {
@@ -59,12 +59,12 @@ function restartRefreshClock() {
   }, 55 * 60 * 1000)
 }
 
-const refreshCache = function (callback?) {
+const refreshCache = function (callback?: (err?: any) => void) {
     async.waterfall(
       [
-        function (done) {
+        function (done: any) {
           const ticketSchema = require('../models/ticket')
-          ticketSchema.getForCache(function (e, tickets) {
+          ticketSchema.getForCache(function (e: any, tickets: any) {
             if (e) return done(e)
             winston.debug('Pulled ' + tickets.length)
 
@@ -72,12 +72,12 @@ const refreshCache = function (callback?) {
           })
         },
 
-        function (tickets, cb) {
+        function (tickets: any, cb: any) {
           async.parallel(
             [
-              function (done) {
+              function (done: any) {
                 const ticketStats = require('./ticketStats')
-                ticketStats(tickets, function (err, stats) {
+                ticketStats(tickets, function (err: any, stats: any) {
                   if (err) return done(err)
                   const expire = 3600 // 1 hour
                   cache.set('tickets:overview:lastUpdated', stats.lastUpdated, expire)
@@ -110,12 +110,12 @@ const refreshCache = function (callback?) {
                   return done()
                 })
               },
-              function (done) {
+              function (done: any) {
                 const tagStats = require('./tagStats')
                 async.parallel(
                   [
-                    function (c) {
-                      tagStats(tickets, 30, function (err, stats) {
+                    function (c: any) {
+                      tagStats(tickets, 30, function (err: any, stats: any) {
                         if (err) return c(err)
 
                         cache.set('tags:30:usage', stats, 3600)
@@ -123,8 +123,8 @@ const refreshCache = function (callback?) {
                         return c()
                       })
                     },
-                    function (c) {
-                      tagStats(tickets, 60, function (err, stats) {
+                    function (c: any) {
+                      tagStats(tickets, 60, function (err: any, stats: any) {
                         if (err) return c(err)
 
                         cache.set('tags:60:usage', stats, 3600)
@@ -132,8 +132,8 @@ const refreshCache = function (callback?) {
                         return c()
                       })
                     },
-                    function (c) {
-                      tagStats(tickets, 90, function (err, stats) {
+                    function (c: any) {
+                      tagStats(tickets, 90, function (err: any, stats: any) {
                         if (err) return c(err)
 
                         cache.set('tags:90:usage', stats, 3600)
@@ -141,8 +141,8 @@ const refreshCache = function (callback?) {
                         return c()
                       })
                     },
-                    function (c) {
-                      tagStats(tickets, 180, function (err, stats) {
+                    function (c: any) {
+                      tagStats(tickets, 180, function (err: any, stats: any) {
                         if (err) return c(err)
 
                         cache.set('tags:180:usage', stats, 3600)
@@ -150,8 +150,8 @@ const refreshCache = function (callback?) {
                         return c()
                       })
                     },
-                    function (c) {
-                      tagStats(tickets, 365, function (err, stats) {
+                    function (c: any) {
+                      tagStats(tickets, 365, function (err: any, stats: any) {
                         if (err) return c(err)
 
                         cache.set('tags:365:usage', stats, 3600)
@@ -159,8 +159,8 @@ const refreshCache = function (callback?) {
                         return c()
                       })
                     },
-                    function (c) {
-                      tagStats(tickets, 0, function (err, stats) {
+                    function (c: any) {
+                      tagStats(tickets, 0, function (err: any, stats: any) {
                         if (err) return c(err)
 
                         cache.set('tags:0:usage', stats, 3600)
@@ -174,9 +174,9 @@ const refreshCache = function (callback?) {
                   }
                 )
               },
-              function (done) {
+              function (done: any) {
                 const quickStats = require('./quickStats')
-                quickStats(tickets, function (err, stats) {
+                quickStats(tickets, function (err: any, stats: any) {
                   if (err) return done(err)
 
                   cache.set('quickstats:mostRequester', stats.mostRequester, 3600)
@@ -198,7 +198,7 @@ const refreshCache = function (callback?) {
       function (err) {
         if (err) return winston.warn(err)
         // Send to parent
-        process.send({ cache })
+        if (process.send) process.send({ cache })
 
         cache.flushAll()
 
@@ -211,7 +211,7 @@ const refreshCache = function (callback?) {
 
 // Fork of Main
 ;(function () {
-  process.on('message', function (message) {
+  process.on('message', function (message: any) {
     if (message.name === 'cache:refresh') {
       winston.debug('Refreshing Cache....')
       const now = moment()
@@ -236,6 +236,8 @@ const refreshCache = function (callback?) {
         restartRefreshClock()
       })
     }
+
+    return undefined
   })
 
   loadConfig()

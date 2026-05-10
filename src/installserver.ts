@@ -13,7 +13,7 @@
  */
 
 import bodyParser from "body-parser";
-import express from "express";
+import express, { RequestHandler } from "express";
 import expressStaticGzip from "express-static-gzip"
 import path from "path";
 import serveFavicon from 'serve-favicon'
@@ -37,7 +37,7 @@ export const installServer = function (callback: (err?: Error) => void) {
     )
   } else ExpressApp.use(express.static(path.resolve(config.trudeskRoot(), 'dist/public')))
 
-  ExpressApp.use(serveFavicon(path.join(__dirname, '../public/img/favicon.ico')))
+  ExpressApp.use(serveFavicon(path.join(__dirname, '../public/img/favicon.ico')) as unknown as RequestHandler)
   ExpressApp.use(bodyParser.urlencoded({ extended: false }))
   ExpressApp.use(bodyParser.json())
 

@@ -120,7 +120,7 @@ async function rolesDefault(): Promise<void> {
     _.find(roles, { name: 'Support' })?._id,
     _.find(roles, { name: 'User' })?._id,
   ]
-  await RoleOrderModel.create({ order })
+  await RoleOrderModel.create({ order: order.filter((id): id is Types.ObjectId => id != null) })
 }
 
 async function defaultUserRole(): Promise<void> {

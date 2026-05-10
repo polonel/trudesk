@@ -42,7 +42,7 @@ export class ConversationModelClass {
     return new Promise<Array<ConversationModelClass>>((resolve, reject) => {
       ;(async () => {
         try {
-          const conversations = await this.find({ participants: { $size: 2, $all: userId}}).sort('-updatedAt').populate({
+          const conversations = await this.find({ participants: { $size: 2, $all: userId } as any}).sort('-updatedAt').populate({
             path: 'participants',
             select: 'username fullname email title image lastOnline'
           }).exec()
@@ -64,7 +64,7 @@ export class ConversationModelClass {
      ;(async () => {
        try {
          const l = limit || 1000000
-         const conversations = await this.find({ participants: userId })
+         const conversations = await this.find({ participants: userId as any })
            .sort('-updatedAt')
            .limit(l)
            .populate({

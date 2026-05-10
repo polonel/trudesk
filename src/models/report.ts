@@ -69,7 +69,7 @@ reportSchema.pre('save', async function () {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 reportSchema.statics.getReports = function (callback: (err: Error | null, results?: any[]) => void) {
-  const p = this.model(COLLECTION).find({}).exec()
+  const p = this.find({}).exec()
   if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
   return p
 }
@@ -104,18 +104,18 @@ reportSchema.statics.getReports = function (callback: (err: Error | null, result
 
 reportSchema.statics.getReportByType = function (type: number, callback: (err: Error | null, results?: any[]) => void) {
   if (_.isUndefined(type) || _.isNull(type))
-    return callback('Invalid Report Type - ReportSchema.GetReportByType();', null)
+    return callback(new Error('Invalid Report Type - ReportSchema.GetReportByType();'))
 
-  const p = this.model(COLLECTION).find({ type: type }).exec()
+  const p = this.find({ type: type }).exec()
   if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
   return p
 }
 
 reportSchema.statics.getReportByStatus = function (status: number, callback: (err: Error | null, results?: any[]) => void) {
   if (_.isUndefined(status) || _.isNull(status))
-    return callback('Invalid Report Status - ReportSchema.GetReportByStatus();', null)
+    return callback(new Error('Invalid Report Status - ReportSchema.GetReportByStatus();'))
 
-  const p = this.model(COLLECTION).find({ status: status }).exec()
+  const p = this.find({ status: status }).exec()
   if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
   return p
 }

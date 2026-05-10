@@ -307,7 +307,7 @@ accountsApi.update = async function (req: any, res: any) {
     const teams = await updateUserTeams(postData._id, postData.teams)
     const departments = await Department.getUserDepartments(postData._id)
 
-    const userObj: any = resUser.toJSON()
+    const userObj: any = (resUser as any).toJSON()
     userObj.groups = groups.map((g: any) => ({ _id: g._id, name: g.name }))
 
     const userRole = userObj.role as IRoleModel
@@ -402,8 +402,14 @@ accountsApi.verifyMFA = async (req: any, res: any) => {
       }).catch(function (err: any) {
         return apiUtil.sendApiError(res, 500, err.message)
       })
+
+      return undefined
     })
+
+    return undefined
   })(req, res)
+
+  return undefined
 }
 
 accountsApi.disableMFA = async (req: any, res: any) => {

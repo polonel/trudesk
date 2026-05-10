@@ -26,11 +26,11 @@ export const buildGraphData = (arr: Array<{ date: string }>, days: number): Grap
     timespanArray.push(i)
   }
 
-  arr = _.map(arr, function (i) {
+  const mapped = _.map(arr, function (i) {
     return moment(i.date).format('YYYY-MM-DD')
   })
 
-  let counted = _.countBy(arr)
+  const counted = _.countBy(mapped)
 
   for (let k = 0; k < timespanArray.length; k++) {
     const obj: GraphDataItem = { date: '', value: 0 }
@@ -38,12 +38,10 @@ export const buildGraphData = (arr: Array<{ date: string }>, days: number): Grap
     const d = today.clone().subtract(day, 'd')
     obj.date = d.format('YYYY-MM-DD')
 
-    obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date]
+    obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date]!
 
     graphData.push(obj)
   }
-
-  counted = null
 
   return graphData
 }
@@ -52,10 +50,10 @@ export const buildAvgResponse = (ticketArray: Array<{ date: string; comments?: A
   const $ticketAvg: number[] = []
   for (let i = 0; i < ticketArray.length; i++) {
     const ticket = ticketArray[i]
-    if (ticket.comments === undefined || ticket.comments.length < 1) continue
+    if (!ticket || ticket.comments === undefined || ticket.comments.length < 1) continue
 
     const ticketDate = moment(ticket.date)
-    const firstCommentDate = moment(ticket.comments[0].date)
+    const firstCommentDate = moment(ticket.comments[0]!.date)
 
     const diff = firstCommentDate.diff(ticketDate, 'seconds')
     $ticketAvg.push(diff)
@@ -74,23 +72,13 @@ export const buildAvgResponse = (ticketArray: Array<{ date: string; comments?: A
 }
 
 export const buildMostRequester = (ticketArray: Array<{ owner?: { fullname: string } }>): TicketStatsItem | null => {
-  let requesters = ticketArray.map(ticket => (ticket.owner ? ticket.owner.fullname : null))
-  requesters = _.compact(requesters)
+  const requesters = _.compact(ticketArray.map(ticket => (ticket.owner ? ticket.owner.fullname : null)))
 
-  let r = _.countBy(requesters, function (k) {
-    return k
-  })
-  r = _(r).value()
+  let r: any = _.countBy(requesters, function (k) { return k })
+  r = _.map(r, function (v: number, k: string) { return { name: k, value: v } })
+  r = _.sortBy(r, function (o: TicketStatsItem) { return -o.value })
 
-  r = _.map(r, function (v, k) {
-    return { name: k, value: v }
-  })
-
-  r = _.sortBy(r, function (o) {
-    return -o.value
-  })
-
-  return _.first(r)
+  return _.first(r) ?? null
 }
 
 function flatten(arr: any[]): any[] {
@@ -100,50 +88,27 @@ function flatten(arr: any[]): any[] {
 }
 
 export const buildMostComments = (ticketArray: Array<{ comments?: Array<{ owner?: { fullname: string } }> }>): TicketStatsItem | null => {
-  let commenters = ticketArray.map(ticket => {
+  const commenters = flatten(ticketArray.map(ticket => {
     return ticket.comments?.map(comment => (comment.owner ? comment.owner.fullname : null))
-  })
-  commenters = flatten(commenters)
+  }))
 
-  let c = _.countBy(commenters, function (k) {
-    return k
-  })
+  let c: any = _.countBy(commenters, function (k: string) { return k })
+  c = _.map(c, function (v: number, k: string) { return { name: k, value: v } })
+  c = _.sortBy(c, function (o: TicketStatsItem) { return -o.value })
 
-  c = _(c).value()
-
-  c = _.map(c, function (v, k) {
-    return { name: k, value: v }
-  })
-
-  c = _.sortBy(c, function (o) {
-    return -o.value
-  })
-
-  return _.first(c)
+  return _.first(c) ?? null
 }
 
 export const buildMostAssignee = (ticketArray: Array<{ assignee?: { fullname: string } }>): TicketStatsItem | null => {
-  ticketArray = _.reject(ticketArray, function (v) {
+  const filtered = _.reject(ticketArray, function (v) {
     return _.isUndefined(v.assignee) || _.isNull(v.assignee)
   })
 
-  const assignees = _.map(ticketArray, function (m) {
-    return m.assignee?.fullname
-  })
+  const assignees = _.map(filtered, function (m) { return m.assignee?.fullname })
 
-  let a = _.countBy(assignees, function (k) {
-    return k
-  })
+  let a: any = _.countBy(assignees, function (k: string) { return k })
+  a = _.map(a, function (v: number, k: string) { return { name: k, value: v } })
+  a = _.sortBy(a, function (o: TicketStatsItem) { return -o.value })
 
-  a = _(a).value()
-
-  a = _.map(a, function (v, k) {
-    return { name: k, value: v }
-  })
-
-  a = _.sortBy(a, function (o) {
-    return -o.value
-  })
-
-  return _.first(a)
+  return _.first(a) ?? null
 }

@@ -37,7 +37,7 @@ templateSchema.pre('save', async function () {
 })
 
 templateSchema.statics.get = function (name: string, callback?: (err: Error | null, result?: any) => void) {
-  const p = this.model(COLLECTION).findOne({ name: name }).exec()
+  const p = this.findOne({ name: name }).exec()
   if (typeof callback === 'function') return p.then((r: any) => callback(null, r)).catch((e: any) => callback(e))
   return p
 }

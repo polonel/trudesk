@@ -76,7 +76,9 @@ function mainRoutes (router: Router, middleware: RouteMiddlewareType, controller
           }
           pm2.disconnect()
           res.send('OK')
+          return undefined
         })
+        return undefined
       })
     })
   }

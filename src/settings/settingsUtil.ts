@@ -29,7 +29,7 @@ import type { SettingsObjectType, SettingsObjectType_Base } from './settings'
 
 export interface ISettingsUtil {
   setSetting: (setting: string, value: string | object | boolean | number) => Promise<void>
-  getSettings: (callback: (err?: Error | null | undefined, settings?: ContentData) => void) => Promise<ContentData>
+  getSettings: (callback?: (err?: Error | null | undefined, settings?: ContentData) => void) => Promise<ContentData>
 }
 
 function parseSetting(
@@ -75,7 +75,7 @@ interface ContentData {
 }
 
 async function getSettings(
-  callback: (err?: Error | null | undefined, data?: ContentData) => void
+  callback?: (err?: Error | null | undefined, data?: ContentData) => void
 ): Promise<ContentData> {
   return new Promise<ContentData>((resolve, reject) => {
     ;(async () => {

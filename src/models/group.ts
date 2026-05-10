@@ -1,5 +1,5 @@
 import { DocumentType, modelOptions, pre, prop, Ref, ReturnModelType } from '@typegoose/typegoose'
-import type { Types } from 'mongoose'
+import type { Query, Types } from 'mongoose'
 import utils from '../helpers/utils'
 import { UserModelClass } from './user'
 
@@ -11,7 +11,7 @@ type GroupQueryObject = {
   userId?: Types.ObjectId | string
 }
 
-@pre<GroupModelClass>(['find', 'findOne'], function () {
+@pre<GroupModelClass>(['find', 'findOne'], function (this: Query<any, any>) {
   this.populate('members', '_id username fullname email role preferences image title deleted').populate(
     'sendMailTo',
     '_id username fullname email role preferences image title deleted'
@@ -97,6 +97,6 @@ export class GroupModelClass {
   ) {
     if (!groupIds) throw new Error('Invalid Array of Group IDs')
 
-    return this.find({ _id: { $in: { groupIds } } }).sort('name')
+    return this.find({ _id: { $in: groupIds } }).sort('name')
   }
 }

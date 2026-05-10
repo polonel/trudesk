@@ -92,38 +92,36 @@ apiElasticSearch.search = async (req: any, res: any) => {
 
     const obj = {
       index: es.indexName,
-      body: {
-        size: limit,
-        from: 0,
-        query: {
-          bool: {
-            must: {
-              multi_match: {
-                query: req.query['q'],
-                type: 'cross_fields',
-                operator: 'and',
-                fields: [
-                  'uid^5',
-                  'subject^4',
-                  'issue^4',
-                  'owner.fullname',
-                  'owner.username',
-                  'owner.email',
-                  'comments.owner.email',
-                  'tags.normalized',
-                  'priority.name',
-                  'type.name',
-                  'group.name',
-                  'comments.comment^3',
-                  'notes.note^3',
-                  'dateFormatted'
-                ],
-                tie_breaker: 0.3
-              }
-            },
-            filter: {
-              terms: { 'group._id': g }
+      size: limit,
+      from: 0,
+      query: {
+        bool: {
+          must: {
+            multi_match: {
+              query: req.query['q'],
+              type: 'cross_fields',
+              operator: 'and',
+              fields: [
+                'uid^5',
+                'subject^4',
+                'issue^4',
+                'owner.fullname',
+                'owner.username',
+                'owner.email',
+                'comments.owner.email',
+                'tags.normalized',
+                'priority.name',
+                'type.name',
+                'group.name',
+                'comments.comment^3',
+                'notes.note^3',
+                'dateFormatted'
+              ],
+              tie_breaker: 0.3
             }
+          },
+          filter: {
+            terms: { 'group._id': g }
           }
         }
       }
@@ -131,7 +129,7 @@ apiElasticSearch.search = async (req: any, res: any) => {
 
     if (!es || !es.esclient) return apiUtils.sendApiError(res, 400, 'Elasticsearch is not configured')
 
-    const r = await es.esclient.search(obj)
+    const r = await es.esclient.search(obj as any)
     return res.send(r)
   } catch (e: any) {
     logger.debug(e)
