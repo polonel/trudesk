@@ -259,6 +259,7 @@ async function updateUserTeams(userId: string, requestedTeams: string[] | undefi
   return teams
 }
 
+// eslint-disable-next-line complexity
 accountsApi.update = async function (req: any, res: any) {
   const username = req.params.username
   const postData = req.body

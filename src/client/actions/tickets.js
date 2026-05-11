@@ -69,7 +69,7 @@ export const updatePriority = createAction(
 )
 export const deletePriority = createAction(DELETE_PRIORITY.ACTION, ({ id, newPriority }) => ({ id, newPriority }))
 
-export const createStatus = createAction(CREATE_STATUS.ACTION, ({ name, htmlColor, slatimer, isResolved }) => ({
+export const createStatus = createAction(CREATE_STATUS.ACTION, ({ name, htmlColor, slatimer: _slatimer, isResolved: _isResolved }) => ({
   name,
   htmlColor
 }))

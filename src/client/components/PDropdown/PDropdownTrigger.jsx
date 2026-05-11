@@ -24,7 +24,7 @@ class PDropdownTrigger extends React.Component {
 
   componentDidMount () {}
 
-  componentDidUpdate (prevProps, prevState, snapshot) {}
+  componentDidUpdate (_prevProps, _prevState, _snapshot) {}
 
   componentWillUnmount () {}
 

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import Slides from '../Slides/Slides'
-import Slide from '../Slides/Slide'
+import _Slide from '../Slides/Slide'
 import WelcomeSlide from '../Slides/partials/WelcomeSlide'
 import ElasticSearchSlide from '../Slides/partials/ElasticSearchSlide'
 import MongoSlide from '../Slides/partials/MongoSlide'

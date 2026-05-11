@@ -12,20 +12,20 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var userSchema = require('../../../models').UserModel
-var permissions = require('../../../permissions')
+const _ = require('lodash')
+const async = require('async')
+const userSchema = require('../../../models').UserModel
+const permissions = require('../../../permissions')
 const socketEventConsts = require('../../../socketio/socketEventConsts')
 
-var rolesV1 = {}
+const rolesV1 = {}
 
 rolesV1.get = function (req, res) {
-  var roleSchmea = require('../../../models/role')
-  var roleOrderSchema = require('../../../models/roleorder')
+  const roleSchmea = require('../../../models/role')
+  const roleOrderSchema = require('../../../models/roleorder')
 
-  var roles = []
-  var roleOrder = {}
+  let roles = []
+  let roleOrder = {}
 
   async.parallel(
     [
@@ -57,11 +57,11 @@ rolesV1.get = function (req, res) {
 }
 
 rolesV1.create = function (req, res) {
-  var name = req.body.name
+  const name = req.body.name
   if (!name) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-  var roleSchema = require('../../../models/role')
-  var roleOrder = require('../../../models/roleorder')
+  const roleSchema = require('../../../models/role')
+  const roleOrder = require('../../../models/roleorder')
 
   async.waterfall(
     [
@@ -121,12 +121,12 @@ rolesV1.update = async (req, res) => {
 }
 
 rolesV1.delete = function (req, res) {
-  var _id = req.params.id
-  var newRoleId = req.body.newRoleId
+  const _id = req.params.id
+  const newRoleId = req.body.newRoleId
   if (!_id || !newRoleId) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-  var roleSchema = require('../../../models/role')
-  var roleOrderSchema = require('../../../models/roleorder')
+  const roleSchema = require('../../../models/role')
+  const roleOrderSchema = require('../../../models/roleorder')
 
   async.series(
     [

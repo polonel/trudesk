@@ -23,15 +23,17 @@ import { fetchViewData, showModal, hideModal, showNotice, clearNotice } from 'ac
 
 import Avatar from 'components/Avatar/Avatar'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger'
 import NoticeBanner from 'components/NoticeBanner'
 import NotificationsDropdownPartial from './notificationsDropdown'
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import DefaultLogoImageLight from '../../../../public/img/defaultLogoLight.png'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import DefaultLogoImageDark from '../../../../public/img/defaultLogoDark.png'
 import ProfileDropdownPartial from 'containers/Topbar/profileDropdown'
 import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown'
 import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
-import DefaultLogoImageLight from '../../../../public/img/defaultLogoLight.png'
-import DefaultLogoImageDark from '../../../../public/img/defaultLogoDark.png'
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
 import { NOTIFICATIONS_UPDATE, USERS_UPDATE, NOTICE_UI_SHOW, NOTICE_UI_CLEAR } from 'serverSocket/socketEventConsts'

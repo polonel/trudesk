@@ -27,7 +27,7 @@
     // the head. Instead, detection happens on DOM-ready, or when any of the functions is invoked for the first time.
     // Given the purpose of the functions, they won't be called until after the opening body tag has been parsed.
 
-    var _scrollbarWidth,
+    let _scrollbarWidth,
       _supportsWindowInnerWidth,
       _supportsSubpixelAccuracy,
       elementNameForDocSizeQuery,
@@ -39,7 +39,7 @@
      * @returns {number}
      */
     $.documentWidth = function (_document) {
-      var width
+      let width
 
       _document || (_document = document)
 
@@ -59,7 +59,7 @@
      * @returns {number}
      */
     $.documentHeight = function (_document) {
-      var height
+      let height
 
       _document || (_document = document)
 
@@ -83,7 +83,7 @@
      * @returns {number}
      */
     $.windowWidth = function (options, _window) {
-      var config = getWindowQueryConfig(arguments)
+      const config = getWindowQueryConfig(arguments)
       return getWindowSize('Width', config)
     }
 
@@ -96,7 +96,7 @@
      * @returns {number}
      */
     $.windowHeight = function (options, _window) {
-      var config = getWindowQueryConfig(arguments)
+      const config = getWindowQueryConfig(arguments)
       return getWindowSize('Height', config)
     }
 
@@ -141,7 +141,7 @@
      * @returns {number}
      */
     function getWindowSize (dimension, config) {
-      var ddeClientHeight,
+      let ddeClientHeight,
         visualSize,
         zoomFactor,
         snapToKnownHeight,
@@ -219,7 +219,7 @@
      * @returns {number|ZoomAccuracyRange}
      */
     function getPinchZoomFactor (_window, options) {
-      var ddeClientWidth,
+      let ddeClientWidth,
         windowInnerWidth,
         asRange = options && options.asRange,
         factors = {
@@ -266,7 +266,7 @@
      * @returns {WindowQueryConfig}
      */
     function getWindowQueryConfig (args) {
-      var isWindowArg0,
+      let isWindowArg0,
         isOptionArg0,
         isOptionArg1,
         // Defaults
@@ -323,7 +323,7 @@
      * @returns {boolean}
      */
     function isVisualViewport (name) {
-      var viewport = isString(name) && name.toLowerCase()
+      const viewport = isString(name) && name.toLowerCase()
 
       if (name && !viewport) throw new Error('Invalid viewport option: ' + name)
       if (viewport && viewport !== 'visual' && viewport !== 'layout') throw new Error('Invalid viewport name: ' + name)
@@ -373,7 +373,7 @@
      * @returns {number}
      */
     function browserScrollbarWidth () {
-      var testEl
+      let testEl
 
       if (_scrollbarWidth === undefined) {
         testEl = document.createElement('div')
@@ -425,7 +425,7 @@
      * The function does not return anything. It sets the elementNameForDocSizeQuery in the closure instead.
      */
     function testDocumentScroll () {
-      var initialDocumentState,
+      let initialDocumentState,
         _testEl,
         initialScrollWidth,
         responds,
@@ -468,7 +468,7 @@
      * @returns {HTMLIFrameElement|undefined}
      */
     function createTestIframe () {
-      var iframe = document.createElement('iframe'),
+      const iframe = document.createElement('iframe'),
         body = document.body
 
       iframe.style.cssText =
@@ -494,7 +494,7 @@
      * Used only if iframe creation or access has failed for some reason.
      */
     function prepareGlobalDocument () {
-      var ddEStyle,
+      let ddEStyle,
         bodyStyle,
         ddE = document.documentElement,
         body = document.body,
@@ -553,7 +553,7 @@
      * @param {Document} [_document]
      */
     function guessDocumentSize (dimension, _document) {
-      var ddE = _document.documentElement
+      const ddE = _document.documentElement
 
       return Math.max(
         ddE.body['scroll' + dimension],
@@ -601,7 +601,7 @@
      * @returns {number}
      */
     function getWindowInnerSize (dimension, _window) {
-      var size = (_window || window)['inner' + dimension]
+      const size = (_window || window)['inner' + dimension]
 
       // Check for fractions. Exclude undefined return values in browsers which don't support window.innerWidth/Height.
       if (size) checkForFractions(size)
@@ -668,7 +668,7 @@
      */
     function isNumber (value) {
       // Done as in the Lodash compatibility build, but rejecting NaN as a number.
-      var isNumeric =
+      const isNumeric =
         typeof value === 'number' ||
         (value && typeof value === 'object' && Object.prototype.toString.call(value) === '[object Number]') ||
         false
@@ -709,7 +709,7 @@
      * @returns {number|boolean}
      */
     function getIEVersion () {
-      var userAgent, userAgentTestRx
+      let userAgent, userAgentTestRx
 
       if (ieVersion === undefined) {
         ieVersion = false
@@ -733,7 +733,7 @@
      * @returns {boolean}
      */
     function isAncientIE () {
-      var ieVersion = getIEVersion()
+      const ieVersion = getIEVersion()
       return ieVersion && ieVersion < 8
     }
 

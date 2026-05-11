@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import helpers from 'lib/helpers'
 import SpinLoader from 'components/SpinLoader'
-import Avatar from 'components/Avatar/Avatar'
+import _Avatar from 'components/Avatar/Avatar'
 
 const MessageThread = ({
   currentConversation,

@@ -14,10 +14,10 @@
   '$:nomunge' // Used by YUI compressor.
 
   $.fn.serializeObject = function () {
-    var obj = {}
+    const obj = {}
 
     $.each(this.serializeArray(), function (i, o) {
-      var n = o.name,
+      const n = o.name,
         v = o.value
 
       obj[n] = obj[n] === undefined ? v : $.isArray(obj[n]) ? obj[n].concat(v) : [obj[n], v]
@@ -34,7 +34,7 @@
    @module $.fn.DivResizer
    **/
 
-  var div,
+  let div,
     endDrag,
     grip,
     lastMousePos,
@@ -81,12 +81,12 @@
   performDrag = function (e, opts) {
     $(div).trigger('div-resizing')
 
-    var size, sizePx, thisMousePos
+    let size, sizePx, thisMousePos
     thisMousePos = mousePosition(e).y
     size = originalDivHeight + (originalPos - thisMousePos)
     lastMousePos = thisMousePos
 
-    var maxHeight = $(window).height()
+    let maxHeight = $(window).height()
     if (opts.maxHeight) {
       maxHeight = opts.maxHeight(maxHeight)
     }
@@ -125,7 +125,7 @@
 
   $.fn.DivResizer = function (opts) {
     return this.each(function () {
-      var grippie, start, staticOffset
+      let grippie, start, staticOffset
       div = $(this)
       if (div.hasClass('processed')) return
       div.addClass('processed')

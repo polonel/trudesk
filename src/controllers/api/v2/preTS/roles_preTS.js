@@ -78,7 +78,7 @@ apiRoles.updateOrder = async (req, res) => {
   }
 }
 
-apiRoles.delete = async (req, res) => {}
+apiRoles.delete = async (_req, _res) => {}
 
 export default apiRoles
 module.exports = apiRoles

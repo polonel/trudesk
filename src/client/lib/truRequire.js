@@ -12,9 +12,8 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-/* eslint-disable node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require */
 // This gets loaded for accessing require from outside Webpack bundle.
-var allMods = {
+const allMods = {
   jquery: function () {
     return require('jquery')
   },
@@ -42,7 +41,7 @@ var allMods = {
 }
 
 module.exports = function (modules, cb) {
-  var loadedModules = modules.map(function (x) {
+  const loadedModules = modules.map(function (x) {
     return allMods[x]()
   })
 

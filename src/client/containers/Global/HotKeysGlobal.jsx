@@ -6,7 +6,7 @@ import ReactHotkeys from 'react-hot-keys'
 class HotKeysGlobal extends React.Component {
   keyList = ['g+d', 'g+t', 'shift+/']
 
-  onKeyDown (keyName, e, handle) {
+  onKeyDown (keyName, _e, _handle) {
     // Route Change
     if (keyName === 'g+d') History.pushState(null, null, '/dashboard')
     if (keyName === 'g+t') History.pushState(null, null, '/tickets/active')

@@ -45,22 +45,22 @@ function mainRoutes (router, middleware, controllers) {
     router.get('/debug/populatedb', controllers.debug.populatedatabase)
     router.get('/debug/sendmail', controllers.debug.sendmail)
     router.get('/debug/mailcheck/refetch', function (req, res) {
-      var mailCheck = require('../mailer/mailCheck')
+      const mailCheck = require('../mailer/mailCheck')
       mailCheck.refetch()
       res.send('OK')
     })
 
     router.get('/debug/cache/refresh', function (req, res) {
-      var _ = require('lodash')
+      const _ = require('lodash')
 
-      var forkProcess = _.find(global.forks, { name: 'cache' })
+      const forkProcess = _.find(global.forks, { name: 'cache' })
       forkProcess.fork.send({ name: 'cache:refresh' })
 
       res.send('OK')
     })
 
     router.get('/debug/restart', function (req, res) {
-      var pm2 = require('pm2')
+      const pm2 = require('pm2')
       pm2.connect(function (err) {
         if (err) {
           winston.error(err)

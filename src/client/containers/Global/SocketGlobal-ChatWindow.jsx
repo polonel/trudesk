@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 
 import { MESSAGES_UI_SPAWN_CHAT_WINDOW } from 'serverSocket/socketEventConsts'
 
-export default function SpawnChatWindowSocket (props) {
+export default function SpawnChatWindowSocket (_props) {
   const socket = useSelector(state => state.shared.socket)
 
   useEffect(() => {

@@ -12,16 +12,16 @@
 
  **/
 
-var _ = require('lodash')
-var async = require('async')
-var emitter = require('../../../emitter')
-var winston = require('winston')
-var sanitizeHtml = require('sanitize-html')
-var SettingsSchema = require('../../../models/setting')
-var settingsUtil = require('../../../settings/settingsUtil')
+const _ = require('lodash')
+const async = require('async')
+const emitter = require('../../../emitter')
+const winston = require('winston')
+const sanitizeHtml = require('sanitize-html')
+const SettingsSchema = require('../../../models/setting')
+const settingsUtil = require('../../../settings/settingsUtil')
 const socketEventConsts = require('../../../socketio/socketEventConsts')
 
-var apiSettings = {}
+const apiSettings = {}
 
 function defaultApiResponse (err, res) {
   if (err) return res.status(400).json({ success: false, error: err })
@@ -62,7 +62,7 @@ apiSettings.getSingleSetting = function (req, res) {
   settingsUtil.getSettings(function (err, settings) {
     if (err) return res.status(400).json({ success: false, error: err })
 
-    var setting = settings.settings[req.params.name]
+    const setting = settings.settings[req.params.name]
     if (!setting) return res.status(400).json({ success: false, error: 'invalid setting' })
 
     return res.json({ success: true, setting: setting })
@@ -99,12 +99,12 @@ apiSettings.getSingleSetting = function (req, res) {
  }
  */
 apiSettings.updateSetting = function (req, res) {
-  var postData = req.body
+  let postData = req.body
   if (_.isUndefined(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   if (!_.isArray(postData)) postData = [postData]
 
-  var updatedSettings = []
+  const updatedSettings = []
 
   //
   async.each(
@@ -144,7 +144,7 @@ apiSettings.updateSetting = function (req, res) {
 }
 
 apiSettings.testMailer = function (req, res) {
-  var mailer = require('../../../mailer')
+  const mailer = require('../../../mailer')
   mailer.verify(function (err) {
     if (err) {
       winston.debug(err)
@@ -156,9 +156,9 @@ apiSettings.testMailer = function (req, res) {
 }
 
 apiSettings.updateTemplateSubject = function (req, res) {
-  var templateSchema = require('../../../models/template')
-  var id = req.params.id
-  var subject = req.body.subject
+  const templateSchema = require('../../../models/template')
+  const id = req.params.id
+  let subject = req.body.subject
   if (!subject) return res.status(400).json({ sucess: false, error: 'Invalid PUT data' })
   subject = subject.trim()
 
@@ -175,7 +175,7 @@ apiSettings.updateTemplateSubject = function (req, res) {
 }
 
 apiSettings.buildsass = function (req, res) {
-  var buildsass = require('../../../sass/buildsass')
+  const buildsass = require('../../../sass/buildsass')
   buildsass.build(function (err) {
     return defaultApiResponse(err, res)
   })
@@ -183,7 +183,7 @@ apiSettings.buildsass = function (req, res) {
 
 apiSettings.updateRoleOrder = function (req, res) {
   if (!req.body.roleOrder) return res.status(400).json({ success: false, error: 'Invalid PUT Data' })
-  var RoleOrderSchema = require('../../../models/roleorder')
+  const RoleOrderSchema = require('../../../models/roleorder')
   RoleOrderSchema.getOrder(function (err, order) {
     if (err) return res.status(500).json({ success: false, error: err.message })
     if (!order) {

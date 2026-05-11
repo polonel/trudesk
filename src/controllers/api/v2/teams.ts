@@ -23,7 +23,7 @@ apiTeams.get = async (req: any, res: any) => {
   if (!_.isUndefined(req.query.limit)) {
     try {
       limit = parseInt(req.query.limit)
-    } catch (err) {
+    } catch (_err) {
       limit = 10
     }
   }
@@ -32,7 +32,7 @@ apiTeams.get = async (req: any, res: any) => {
   if (req.query.page) {
     try {
       page = parseInt(req.query.page)
-    } catch (err) {
+    } catch (_err) {
       page = 0
     }
   }

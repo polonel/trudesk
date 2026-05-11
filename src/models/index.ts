@@ -15,7 +15,7 @@ import { DepartmentModelClass } from './department'
 import { MessageClass } from './chat/message'
 import { ConversationModelClass } from './chat/conversation'
 import { NoticeClass } from './notice'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import Template from './template'
 import { NotificationModelClass } from './notification'

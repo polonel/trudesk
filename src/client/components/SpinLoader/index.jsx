@@ -25,7 +25,7 @@ class SpinLoader extends React.Component {
     this.spinnerRef = createRef()
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, _prevState, _snapshot) {
     if (this.spinnerRef.current && this.props.animate) {
       const $spinnerRef = $(this.spinnerRef.current)
 

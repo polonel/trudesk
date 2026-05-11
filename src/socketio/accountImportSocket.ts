@@ -251,7 +251,7 @@ events.onImportLDAP = (socket: Socket) => {
         })
       })
       defaultUserRole = setting.value
-    } catch (err) {
+    } catch (_err) {
       utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
         error: 'Default user role not set. Please contact an Administrator.'
       })

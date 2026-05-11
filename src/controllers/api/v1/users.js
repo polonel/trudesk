@@ -16,7 +16,7 @@ const async = require('async')
 const _ = require('lodash')
 const winston = require('../../../logger')
 const permissions = require('../../../permissions')
-const emitter = require('../../../emitter')
+const _emitter = require('../../../emitter')
 const UserSchema = require('../../../models').UserModel
 const groupSchema = require('../../../models').GroupModel
 const DepartmentModel = require('../../../models').DepartmentModel
@@ -543,10 +543,10 @@ apiUsers.update = function (req, res) {
   async.series(
     {
       settings: function (done) {
-        var SettingUtil = require('../../../settings/settingsUtil')
+        const SettingUtil = require('../../../settings/settingsUtil')
         SettingUtil.getSettings(function (err, content) {
           if (err) return done(err)
-          var settings = content.settings
+          const settings = content.settings
           passwordComplexityEnabled = settings.accountsPasswordComplexity.value
 
           return done()

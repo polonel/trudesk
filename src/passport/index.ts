@@ -13,16 +13,16 @@
  */
 
 import passport from 'passport'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import { Strategy as LocalStrategy } from 'passport-local'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import TotpStrategy from 'passport-totp'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import base32 from 'thirty-two'
 import { UserModel } from '../models'

@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Slide from 'containers/Install/Slides/Slide'
 
 const InstallingSlide = () => {

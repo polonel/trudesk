@@ -12,17 +12,17 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose')
-var _ = require('lodash')
+const mongoose = require('mongoose')
+const _ = require('lodash')
 
-var COLLECTION = 'notification'
+const COLLECTION = 'notification'
 
 // Types
 // Type 0 : Green Check
 // Type 1 : Warning
 // Type 2 : Red Exclamation
 
-var notificationSchema = mongoose.Schema({
+const notificationSchema = mongoose.Schema({
   created: { type: Date, default: Date.now },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
   title: { type: String, required: true },
@@ -51,7 +51,7 @@ notificationSchema.statics.findAllForUser = function (oId, callback) {
     return callback('Invalid ObjectId - NotificationSchema.FindAllForUser()', null)
   }
 
-  var q = this.model(COLLECTION)
+  const q = this.model(COLLECTION)
     .find({ owner: oId })
     .sort({ created: -1 })
     .limit(100)

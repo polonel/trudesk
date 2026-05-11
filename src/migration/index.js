@@ -12,26 +12,22 @@
 
  **/
 
-import counterSchema from '../models/counters'
-
-var _ = require('lodash')
-var async = require('async')
+const _ = require('lodash')
+const async = require('async')
 import * as child_process from 'child_process'
-var winston = require('../logger')
-var semver = require('semver')
-var moment = require('moment')
-var version = require('../../package.json').version
+const winston = require('../logger')
+const semver = require('semver')
+const moment = require('moment')
+const version = require('../../package.json').version
 
 import { TicketStatusModel } from '../models'
 
-var SettingsSchema = require('../models/setting')
-var userSchema = require('../models/user')
-var roleSchema = require('../models/role')
+const SettingsSchema = require('../models/setting')
 import * as database from '../database'
 import { trudeskDatabase } from '../database'
 const path = require('path')
 
-var migrations = {}
+const migrations = {}
 
 function performBackup (dbVersion) {
   return new Promise((resolve, reject) => {
@@ -88,7 +84,7 @@ function saveVersion (callback) {
     }
 
     if (!setting) {
-      var s = new SettingsSchema({
+      const s = new SettingsSchema({
         name: 'gen:version',
         value: version
       })
@@ -120,75 +116,6 @@ function getDatabaseVersion (callback) {
 
     return callback(null, setting.value)
   })
-}
-
-function migrateUserRoles (callback) {
-  winston.debug('Migrating Roles...')
-  async.waterfall(
-    [
-      function (next) {
-        roleSchema.getRoles(next)
-      },
-      function (roles, next) {
-        var adminRole = _.find(roles, { normalized: 'admin' })
-        userSchema.collection
-          .updateMany({ role: 'admin' }, { $set: { role: adminRole._id } })
-          .then(function (res) {
-            if (res && res.result) {
-              if (res.result.ok === 1) return next(null, roles)
-              else {
-                winston.warn(res.message)
-                return next(res.message)
-              }
-            } else {
-              return next('Unknown Error Occurred')
-            }
-          })
-          .catch(function (err) {
-            return next(err)
-          })
-      },
-      function (roles, next) {
-        var supportRole = _.find(roles, { normalized: 'support' })
-        userSchema.collection
-          .updateMany({ $or: [{ role: 'support' }, { role: 'mod' }] }, { $set: { role: supportRole._id } })
-          .then(function (res) {
-            if (res && res.result) {
-              if (res.result.ok === 1) return next(null, roles)
-              else {
-                winston.warn(res.message)
-                return next(res.message)
-              }
-            } else {
-              return next('Unknown Error Occurred')
-            }
-          })
-          .catch(function (err) {
-            return next(err)
-          })
-      },
-      function (roles, next) {
-        var userRole = _.find(roles, { normalized: 'user' })
-        userSchema.collection
-          .updateMany({ role: 'user' }, { $set: { role: userRole._id } })
-          .then(function (res) {
-            if (res && res.result) {
-              if (res.result.ok === 1) return next(null, roles)
-              else {
-                winston.warn(res.message)
-                return next(res.message)
-              }
-            } else {
-              return next('Unknown Error Occurred')
-            }
-          })
-          .catch(function (err) {
-            return next(err)
-          })
-      }
-    ],
-    callback
-  )
 }
 
 function createAdminTeamDepartment (callback) {
@@ -232,7 +159,7 @@ function createAdminTeamDepartment (callback) {
 
 function removeAgentsFromGroups (callback) {
   // winston.debug('Migrating Agents from Groups...')
-  var groupSchema = require('../models/group')
+  const groupSchema = require('../models/group')
   groupSchema.getAllGroups(function (err, groups) {
     if (err) return callback(err)
     async.eachSeries(
@@ -339,7 +266,7 @@ async function createTicketStatus () {
 }
 
 migrations.run = function (callback) {
-  var databaseVersion
+  let databaseVersion
 
   async.series(
     [

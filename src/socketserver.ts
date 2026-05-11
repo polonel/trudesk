@@ -34,9 +34,8 @@ interface ServerToClientEvents {
   unauthorized: () => void
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ClientToServerEvents {
-}
+ 
+type ClientToServerEvents = Record<string, never>
 
 interface InterServerEvents {
   ping: () => void

@@ -7,7 +7,6 @@ import SessionContext, { getSession, saveSession } from './SessionContext'
 import RolesContext, { getRoles } from 'app/RolesContext'
 import Routes from './Routes'
 import Layout from 'containers/Layout'
-import ThemeWrapper from 'containers/Layout/ThemeWrapper'
 
 import 'lib/vendor/normalize/normalize.min.css'
 import 'lib/vendor/chosen/chosen.css'
@@ -26,11 +25,9 @@ import 'sass/app.sass'
 
 import 'pace'
 import axios from 'api/axios'
-import SpinLoader from 'components/SpinLoader'
 import useTrudeskReady from 'lib/useTrudeskReady'
 import helpers from 'lib/helpers'
 import DotLoader from 'components/DotLoader'
-import { Helmet } from 'react-helmet-async'
 
 const App = ({ store }) => {
   const [session, setSession] = useState(getSession())

@@ -29,7 +29,7 @@ import { updateNavChange } from 'actions/nav'
 import Helpers from 'lib/helpers'
 
 function Location ({ children }) {
-  let location = useLocation()
+  const location = useLocation()
   return <>{children({ location })}</>
 }
 

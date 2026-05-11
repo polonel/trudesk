@@ -129,7 +129,7 @@ events.onImportCSV = socket => {
 
 events.onImportJSON = function (socket) {
   socket.on('$trudesk:accounts:import:json', function (data) {
-    var authUser = socket.request.user
+    const authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {
       // Send Error Socket Emit
       winston.warn('[$trudesk:accounts:import:json] - Error: Invalid permissions.')
@@ -139,17 +139,17 @@ events.onImportJSON = function (socket) {
       return
     }
 
-    var addedUsers = data.addedUsers
-    var updatedUsers = data.updatedUsers
+    const addedUsers = data.addedUsers
+    const updatedUsers = data.updatedUsers
 
-    var completedCount = 0
+    let completedCount = 0
     async.series(
       [
         function (next) {
           async.eachSeries(
             addedUsers,
             function (cu, done) {
-              var data = {
+              const data = {
                 type: 'json',
                 totalCount: addedUsers.length + updatedUsers.length,
                 completedCount: completedCount,
@@ -161,7 +161,7 @@ events.onImportJSON = function (socket) {
 
               utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
-              var user = new UserSchema({
+              const user = new UserSchema({
                 username: cu.username,
                 fullname: cu.fullname,
                 email: cu.email,
@@ -203,7 +203,7 @@ events.onImportJSON = function (socket) {
         },
         function (next) {
           _.each(updatedUsers, function (uu) {
-            var data = {
+            const data = {
               type: 'json',
               totalCount: addedUsers.length + updatedUsers.length,
               completedCount: completedCount,
@@ -215,7 +215,7 @@ events.onImportJSON = function (socket) {
             utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
             UserSchema.getUserByUsername(uu.username, function (err, user) {
               if (err) {
-                console.log(err)
+                winston.warn(err)
               } else {
                 user.fullname = uu.fullname
                 user.title = uu.title
@@ -226,7 +226,7 @@ events.onImportJSON = function (socket) {
 
                 user.save(function (err) {
                   if (err) {
-                    console.log(err)
+                    winston.warn(err)
                     data.item.state = 3
                     utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                   } else {
@@ -270,7 +270,7 @@ events.onImportLDAP = function (socket) {
     async.series(
       [
         function (next) {
-          var settingSchema = require('../models/setting')
+          const settingSchema = require('../models/setting')
           settingSchema.getSettingByName('role:user:default', function (err, setting) {
             if (err || !setting) {
               utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
@@ -288,7 +288,7 @@ events.onImportLDAP = function (socket) {
           async.eachSeries(
             addedUsers,
             function (lu, done) {
-              var data = {
+              const data = {
                 type: 'ldap',
                 totalCount: addedUsers.length + updatedUsers.length,
                 completedCount: completedCount,
@@ -300,7 +300,7 @@ events.onImportLDAP = function (socket) {
 
               utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
-              var user = new UserSchema({
+              const user = new UserSchema({
                 username: lu.sAMAccountName,
                 fullname: lu.displayName,
                 email: lu.mail,
@@ -334,7 +334,7 @@ events.onImportLDAP = function (socket) {
         },
         function (next) {
           _.each(updatedUsers, function (uu) {
-            var data = {
+            const data = {
               type: 'ldap',
               totalCount: addedUsers.length + updatedUsers.length,
               completedCount: completedCount,
@@ -346,7 +346,7 @@ events.onImportLDAP = function (socket) {
             utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
             UserSchema.getUser(uu._id, function (err, user) {
               if (err) {
-                console.log(err)
+                winston.warn(err)
               } else {
                 user.fullname = uu.fullname
                 user.title = uu.title
@@ -354,7 +354,7 @@ events.onImportLDAP = function (socket) {
 
                 user.save(function (err) {
                   if (err) {
-                    console.log(err)
+                    winston.warn(err)
                     data.item.state = 3
                     utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                   } else {

@@ -12,10 +12,10 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var ldap = require('ldapjs')
+const _ = require('lodash')
+const ldap = require('ldapjs')
 
-var ldapClient = {}
+const ldapClient = {}
 ldapClient.client = null
 
 ldapClient.bind = function (url, userDN, password, callback) {
@@ -37,7 +37,7 @@ ldapClient.bind = function (url, userDN, password, callback) {
 ldapClient.search = function (base, filter, callback) {
   if (ldapClient.client === null) return callback('Client is not initialized.')
 
-  var entries = []
+  const entries = []
 
   ldapClient.client.on('error', function (err) {
     if (_.isFunction(callback)) {

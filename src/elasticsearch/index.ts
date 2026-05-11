@@ -55,7 +55,7 @@ const checkConnection = (callback?: (error?: string) => void): Promise<void> => 
         if (typeof callback === 'function') callback()
 
         return resolve()
-      } catch (e) {
+      } catch (_e) {
         if (typeof callback === 'function') callback(errorText)
 
         return reject(errorText)

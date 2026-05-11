@@ -3,7 +3,7 @@ import http, { Server } from 'http'
 import path from 'path'
 import _ from 'lodash'
 import _nconf from 'nconf'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const hbs = require('express-hbs')
 import type { TrudeskDatabase } from './database'
 import winston from './logger'

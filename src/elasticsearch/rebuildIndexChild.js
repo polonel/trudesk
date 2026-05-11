@@ -3,7 +3,7 @@ import winston from '../logger'
 import moment from 'moment-timezone'
 import { init as dbInit } from '../database'
 import settingSchema from '../models/setting'
-import { UserModel, TicketModel } from '../models'
+import { UserModel as _UserModel, TicketModel } from '../models'
 
 global.env = process.env.NODE_ENV || 'production'
 
@@ -108,39 +108,6 @@ function buildPersonShape (doc) {
     role: doc.role,
     title: doc.title
   }
-}
-
-function crawlUsers () {
-  let count = 0
-  const startTime = Date.now()
-  const stream = UserModel.find({ deleted: false }).lean().cursor()
-  let bulk = []
-
-  return new Promise((resolve, reject) => {
-    stream
-      .on('data', async (doc) => {
-        stream.pause()
-        count += 1
-        bulk.push({ index: { _index: ES.indexName, _id: doc._id } })
-        bulk.push({
-          datatype: 'user',
-          username: doc.username,
-          email: doc.email,
-          fullname: doc.fullname,
-          title: doc.title,
-          role: doc.role
-        })
-        if (count % 200 === 0) bulk = await flushBulk(bulk)
-        stream.resume()
-      })
-      .on('error', reject)
-      .on('close', async () => {
-        await flushBulk(bulk)
-        winston.debug(`Document Count: ${count}`)
-        winston.debug(`Duration: ${Date.now() - startTime}ms`)
-        resolve()
-      })
-  })
 }
 
 function crawlTickets () {

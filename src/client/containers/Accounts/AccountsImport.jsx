@@ -13,7 +13,6 @@
  */
 
 import React, { createRef } from 'react'
-import PropTypes from 'prop-types'
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
 import StepWizard from 'components/StepWizard'

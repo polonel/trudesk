@@ -29,9 +29,8 @@ import TitleContext from 'app/TitleContext'
 import LoginBackground from '../../components/LoginBackground'
 import $ from 'jquery'
 import clsx from 'clsx'
-import axios from 'api/axios'
 
-const ForgotPasswordContainer = props => {
+const ForgotPasswordContainer = _props => {
   const [email, setEmail] = useState('')
   const [buttonText, setButtonText] = useState('Send Reset Password')
   const [pending, setPending] = useState(false)
@@ -131,7 +130,7 @@ const ForgotPasswordContainer = props => {
 
                   return true
                 }}
-                onCompleted={({ data }) => {
+                onCompleted={({ data: _data }) => {
                   setError('')
                   setPending(false)
                   setSuccess(true)

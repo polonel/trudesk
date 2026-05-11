@@ -194,11 +194,11 @@ apiSettings.uploadLogo = async (req, res) => {
           .then(() => {
             return apiUtils.sendApiSuccess(res, {})
           })
-          .catch(err => {
+          .catch(_err => {
             return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
           })
       })
-      .catch(err => {
+      .catch(_err => {
         return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
       })
   })
@@ -268,11 +268,11 @@ apiSettings.uploadPageLogo = async (req, res) => {
           .then(() => {
             return apiUtils.sendApiSuccess(res, {})
           })
-          .catch(err => {
+          .catch(_err => {
             return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
           })
       })
-      .catch(err => {
+      .catch(_err => {
         return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
       })
   })
@@ -342,11 +342,11 @@ apiSettings.uploadFavicon = async (req, res) => {
           .then(() => {
             return apiUtils.sendApiSuccess(res, {})
           })
-          .catch(err => {
+          .catch(_err => {
             return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
           })
       })
-      .catch(err => {
+      .catch(_err => {
         return apiUtils.sendApiError(res, 400, { message: 'Failed to save setting to database' })
       })
   })

@@ -86,8 +86,8 @@ redisCache.getCache = async function (key) {
   }
 }
 
-function rake () {
-  return Array.prototype.slice.call(arguments).join(':')
+function rake (...args) {
+  return args.join(':')
 }
 
 module.exports = redisCache

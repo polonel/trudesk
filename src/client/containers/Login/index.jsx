@@ -11,7 +11,7 @@
  *  Copyright (c) 2014-2019 Trudesk, Inc. All rights reserved.
  */
 
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useNavigate } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -30,7 +30,7 @@ import TitleContext from 'app/TitleContext'
 import LoginBackground from '../../components/LoginBackground'
 import $ from 'jquery'
 
-const Login = ({ theme, common }) => {
+const Login = ({ theme: _theme, common }) => {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')

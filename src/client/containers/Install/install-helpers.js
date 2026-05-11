@@ -1,4 +1,3 @@
-import UIkit from 'uikit'
 import Snackbar from 'snackbar'
 import $ from 'jquery'
 
@@ -17,16 +16,16 @@ const helpers = {
 }
 
 helpers.validateEmail = function (email) {
-  var mailFormat = /^\w+([.-]\w+)*@\w+([.-]\w+)*(\.\w+)+$/
+  const mailFormat = /^\w+([.-]\w+)*@\w+([.-]\w+)*(\.\w+)+$/
   return email.match(mailFormat)
 }
 
 helpers.UI = {}
 helpers.UI.inputs = function (parent) {
-  var $mdInput = typeof parent === 'undefined' ? $('.md-input') : $(parent).find('.md-input')
+  const $mdInput = typeof parent === 'undefined' ? $('.md-input') : $(parent).find('.md-input')
   $mdInput.each(function () {
     if (!$(this).closest('.md-input-wrapper').length) {
-      var $this = $(this)
+      const $this = $(this)
 
       if ($this.prev('label').length) {
         $this

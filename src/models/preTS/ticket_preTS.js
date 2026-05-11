@@ -232,7 +232,6 @@ ticketSchema.virtual('commentsAndNotes').get(function () {
  * @param {function} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setStatus = function (ownerId, status, callback) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this
   return new Promise((resolve, reject) => {
     ;(async () => {
@@ -1172,7 +1171,7 @@ ticketSchema.statics.getTicketById = async function (id, callback) {
         return resolve(result)
       } catch (e) {
         if (typeof callback === 'function') callback(e)
-        console.log(e)
+        winston.error(e)
         return reject(e)
       }
     })()

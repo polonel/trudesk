@@ -29,14 +29,14 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
 
     socket.removeAllListeners('updateUsers1')
     socket.on('updateUsers1', function (data) {
-      var html = ''
-      var onlineList = $('.online-list-wrapper').find('ul.online-list')
-      var username = loggedInAccount.username
-      var isUserRole = loggedInAccount.role === 'user'
-      var filteredData = _.filter(data, function (item) {
+      let html = ''
+      const onlineList = $('.online-list-wrapper').find('ul.online-list')
+      const username = loggedInAccount.username
+      const isUserRole = loggedInAccount.role === 'user'
+      const filteredData = _.filter(data, function (item) {
         return item.user.username !== username
       })
-      var activeNow = $('.active-now')
+      const activeNow = $('.active-now')
       if (_.size(filteredData) < 1) {
         activeNow.hide()
       } else {
@@ -44,13 +44,13 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
       }
 
       onlineList.html('')
-      var activeCount = 0
+      let activeCount = 0
       _.each(filteredData, function (v) {
-        var onlineUser = v.user
+        const onlineUser = v.user
         if (onlineUser.username === username) return true
         // This hides all other users from the active online list.
         if (isUserRole && onlineUser.role === 'user') return true
-        var imageUrl = onlineUser.image
+        let imageUrl = onlineUser.image
         if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg'
         html += '<li>'
         html +=
@@ -63,8 +63,8 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
         html += '</a>'
         html += '</li>'
 
-        var allUserList = $('ul.user-list')
-        var userStatus = allUserList.find('li[data-user-id="' + onlineUser._id + '"]').find('.online-status-offline')
+        const allUserList = $('ul.user-list')
+        const userStatus = allUserList.find('li[data-user-id="' + onlineUser._id + '"]').find('.online-status-offline')
         userStatus.removeClass('online-status-offline').addClass('online-status')
         userStatus.text('')
         activeCount++
@@ -72,9 +72,9 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
 
       onlineList.append(html)
 
-      var onlineUserCount = $('.online-user-count')
+      const onlineUserCount = $('.online-user-count')
       if (onlineUserCount.length > 0) {
-        var size = _.size(filteredData)
+        const size = _.size(filteredData)
         if (size < 1) onlineUserCount.addClass('hide')
         else {
           onlineUserCount.text(activeCount)
@@ -87,7 +87,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
 
     socket.removeAllListeners('$trudesk:chat:updateOnlineBubbles')
     socket.on('$trudesk:chat:updateOnlineBubbles', function (data) {
-      var $u = _.throttle(
+      const $u = _.throttle(
         function () {
           updateOnlineBubbles(data)
         },
@@ -100,16 +100,16 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
 
     socket.removeAllListeners('spawnChatWindow')
     socket.on('spawnChatWindow', function (data) {
-      var messageContent = $('#message-content[data-conversation-id]')
+      const messageContent = $('#message-content[data-conversation-id]')
       if (messageContent.length > 0) {
-        var loggedInAccountId = loggedInAccount._id
+        const loggedInAccountId = loggedInAccount._id
         startConversation(loggedInAccountId, data._id, function (err, convo) {
           if (err) {
             console.log('[trudesk:chat:openChatWindow] - Error')
             console.error(err)
             helpers.UI.showSnackbar('Unable to start chat', true)
           } else {
-            var splitPath = window.location.pathname.split('/')
+            const splitPath = window.location.pathname.split('/')
             if (splitPath.length > 1) {
               if (splitPath[0].toString().toLowerCase() === 'messages') {
                 return true
@@ -168,10 +168,10 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
     socket.removeAllListeners('$trudesk:messages:ui:user_typing')
     socket.on('$trudesk:messages:ui:user_typing', function (data) {
       $.event.trigger('$trudesk:chat:typing', data)
-      var chatBox = $('div[data-conversation-id="' + data.cid + '"]')
-      var isTypingDiv = chatBox.find('.user-is-typing-wrapper')
+      const chatBox = $('div[data-conversation-id="' + data.cid + '"]')
+      const isTypingDiv = chatBox.find('.user-is-typing-wrapper')
       isTypingDiv.removeClass('hide')
-      var scroller = chatBox.find('.chat-box-messages')
+      let scroller = chatBox.find('.chat-box-messages')
       if (scroller.length > 0) {
         // Only scroll if the scroller is on bottom
         if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight) {
@@ -199,11 +199,11 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
     })
 
     $(window).on('$trudesk:chat:stoptyping.chatSystem', function (event, data) {
-      var chatBox = []
-      var scroller
+      const chatBox = []
+      let scroller
       chatBox[0] = $('#message-content[data-conversation-id="' + data.cid + '"]')
       chatBox[1] = $('.chat-box[data-conversation-id="' + data.cid + '"]')
-      for (var i = 0; i < chatBox.length; i++) {
+      for (let i = 0; i < chatBox.length; i++) {
         chatBox[i].find('.user-is-typing-wrapper').addClass('hide')
         scroller = chatBox[i].find('.chat-box-messages')
         if (scroller.length > 0) {
@@ -223,12 +223,12 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
     })
   }
 
-  var typingTimeout = {}
-  var isTyping = {}
+  const typingTimeout = {}
+  const isTyping = {}
   function stopTyping (cid, to) {
     isTyping[cid] = false
     typingTimeout[cid] = undefined
-    var loggedInAccountId = loggedInAccount._id
+    const loggedInAccountId = loggedInAccount._id
     socket.emit('chatStopTyping', {
       cid: cid,
       to: to,
@@ -273,10 +273,10 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   chatClient.bindActions = function () {
     $(document).ready(function () {
       $('*[data-action="startChat"]').each(function () {
-        var self = $(this)
+        const self = $(this)
         self.off('click')
         self.click(function (e) {
-          var userId = self.attr('data-chatUser')
+          const userId = self.attr('data-chatUser')
           socket.emit('spawnChatWindow', userId)
           UIKit.offcanvas.hide()
           e.preventDefault()
@@ -286,15 +286,15 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   }
 
   function bindChatWindowActions (convoId) {
-    var $chatBox = $('.chat-box[data-conversation-id="' + convoId + '"]')
+    const $chatBox = $('.chat-box[data-conversation-id="' + convoId + '"]')
     if ($chatBox.length < 1) {
       return false
     }
 
-    var $textarea = $chatBox.find('textarea.textAreaAutogrow')
-    var $chatBoxText = $chatBox.find('.chat-box-text')
-    var $chatCloseButton = $chatBox.find('.chatCloseBtn')
-    var $chatTitleBar = $chatBox.find('.chat-box-title')
+    const $textarea = $chatBox.find('textarea.textAreaAutogrow')
+    const $chatBoxText = $chatBox.find('.chat-box-text')
+    const $chatCloseButton = $chatBox.find('.chatCloseBtn')
+    const $chatTitleBar = $chatBox.find('.chat-box-title')
 
     $textarea.off('keyup')
     $textarea.off('keydown')
@@ -303,12 +303,12 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
         return
       }
 
-      var self = $(this)
-      var cid = self
+      const self = $(this)
+      const cid = self
         .parent()
         .parent()
         .attr('data-conversation-id')
-      var user = self
+      const user = self
         .parent()
         .parent()
         .attr('data-chat-userid')
@@ -324,12 +324,12 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
     $textarea.autogrow({
       postGrowCallback: chatBoxTextAreaGrowCallback,
       enterPressed: function (self, v) {
-        var messages = self.parent().siblings('.chat-box-messages')
-        var cid = self
+        const messages = self.parent().siblings('.chat-box-messages')
+        const cid = self
           .parent()
           .parent()
           .attr('data-conversation-id')
-        var userId = self.parents('.chat-box').attr('data-chat-userid')
+        const userId = self.parents('.chat-box').attr('data-chat-userid')
         helpers.scrollToBottom(messages)
         if (v.length < 1) return
 
@@ -355,7 +355,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
       $(this)
         .children('textarea')
         .focus()
-      var val = $(this)
+      const val = $(this)
         .children('textarea')
         .val()
       $(this)
@@ -372,8 +372,8 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
         .parent()
         .remove()
 
-      var $loggedInAccountId = loggedInAccount._id
-      var cid = $chatCloseButton.parents('.chat-box[data-conversation-id]').attr('data-conversation-id')
+      const $loggedInAccountId = loggedInAccount._id
+      const cid = $chatCloseButton.parents('.chat-box[data-conversation-id]').attr('data-conversation-id')
       socket.emit('saveChatWindow', {
         userId: $loggedInAccountId,
         convoId: cid,
@@ -383,7 +383,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
 
     $chatTitleBar.off('click')
     $chatTitleBar.click(function () {
-      var p = $(this).parents('.chat-box-position')
+      const p = $(this).parents('.chat-box-position')
       if (p.css('top') === '-280px') {
         p.animate(
           {
@@ -422,7 +422,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
           url: '/api/v1/messages/conversation/' + data.conversation._id,
           type: 'GET',
           success: function (d) {
-            var userMeta =
+            const userMeta =
               data.conversation.userMeta[
                 _.findIndex(data.conversation.userMeta, function (item) {
                   return item.userId.toString() === owner.toString()
@@ -448,9 +448,9 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   }
 
   function loadChatMessages (chatBox, messageArray) {
-    var to = chatBox.attr('data-chat-userid')
+    const to = chatBox.attr('data-chat-userid')
 
-    var chatMessage, chatMessageList, scroller
+    let chatMessage, chatMessageList, scroller
 
     messageArray.reverse()
 
@@ -475,7 +475,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   }
 
   chatClient.sendChatMessage = function (cid, toUserId, message, complete) {
-    var loggedInAccountId = loggedInAccount._id
+    const loggedInAccountId = loggedInAccount._id
     $.ajax({
       url: '/api/v1/messages/send',
       type: 'POST',
@@ -516,7 +516,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   }
 
   chatClient.openChatWindow = function (user, complete) {
-    var isOnMessagesPage =
+    const isOnMessagesPage =
       $('#__page')
         .text()
         .toLowerCase() === 'messages'
@@ -526,7 +526,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
       }
       return true
     }
-    var loggedInAccountId = loggedInAccount._id
+    const loggedInAccountId = loggedInAccount._id
     if (_.isUndefined(loggedInAccountId)) {
       return helpers.UI.showSnackbar('Unable to start chat', true)
     }
@@ -538,10 +538,10 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
         // return helpers.UI.showSnackbar('Unable to start chat', true);
       }
 
-      var username = loggedInAccount.username
+      const username = loggedInAccount.username
       if (user.username === username) return true
 
-      var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]')
+      const cWindow = $('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]')
       if (cWindow.length > 0) {
         // loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
         cWindow.find('textarea').focus()
@@ -549,16 +549,16 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
         return true
       }
 
-      var imageUrl = user.image
+      let imageUrl = user.image
       if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg'
 
-      var userMeta =
+      const userMeta =
         convo.userMeta[
           _.findIndex(convo.userMeta, function (item) {
             return item.userId.toString() === loggedInAccountId.toString()
           })
         ]
-      var html = '<div class="chat-box-position">'
+      let html = '<div class="chat-box-position">'
       html += '<div class="chat-box" data-conversation-id="' + convo._id + '" data-chat-userid="' + user._id + '">'
       html += '<div class="chat-box-title">'
       html += '<div class="chat-box-title-buttons right">'
@@ -633,22 +633,22 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
         .addClass('user-offline')
     })
 
-    var onlineUserList = usersOnline.sortedUserList
-    var idleUserList = usersOnline.sortedIdleList
+    const onlineUserList = usersOnline.sortedUserList
+    const idleUserList = usersOnline.sortedIdleList
 
     _.each(onlineUserList, function (v) {
-      var $bubble = $('span[data-user-status-id="' + v.user._id + '"]')
+      const $bubble = $('span[data-user-status-id="' + v.user._id + '"]')
       $bubble.each(function () {
-        var self = $(this)
+        const self = $(this)
 
         self.removeClass('user-offline user-idle').addClass('user-online')
       })
     })
 
     _.each(idleUserList, function (v) {
-      var $bubble = $('span[data-user-status-id="' + v.user._id + '"]')
+      const $bubble = $('span[data-user-status-id="' + v.user._id + '"]')
       $bubble.each(function () {
-        var self = $(this)
+        const self = $(this)
 
         self.removeClass('user-offline user-online').addClass('user-idle')
       })
@@ -656,7 +656,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   }
 
   function createChatMessageDiv (message) {
-    var html = '<div class="chat-message chat-message-user uk-clearfix" data-chat-messageId="">'
+    let html = '<div class="chat-message chat-message-user uk-clearfix" data-chat-messageId="">'
     html += '<div class="chat-text-wrapper">'
     html += '<div class="chat-text chat-text-user">'
     html += '<div class="chat-text-inner"><span>' + message.replace(/\n\r?/g, '<br>') + '</span>'
@@ -666,9 +666,9 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
   }
 
   function createChatMessageFromUser (user, message) {
-    var imageUrl = user.image
+    let imageUrl = user.image
     if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg'
-    var html = '<div class="chat-message uk-clearfix">'
+    let html = '<div class="chat-message uk-clearfix">'
     html +=
       '<div class="chat-user-profile"><a href="#"><img src="/uploads/users/' +
       imageUrl +
@@ -693,7 +693,7 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'helpers', 'uikit', 'a
     }
 
     // var textAreaHeight = self.parent().outerHeight();
-    var messages = self.parent().siblings('.chat-box-messages')
+    const messages = self.parent().siblings('.chat-box-messages')
     messages.css({ 'min-height': '170px', 'max-height': '220px' })
     self.parent().css({ 'max-height': '77px', 'min-height': '16px' })
 

@@ -47,7 +47,7 @@ class MailerSettings_Mailer extends React.Component {
 
   static getDerivedStateFromProps (nextProps, state) {
     if (nextProps.settings) {
-      let stateObj = { ...state }
+      const stateObj = { ...state }
       if (state.mailerSSL === '')
         stateObj.mailerSSL = nextProps.settings.getIn(['settings', 'mailerSSL', 'value']) || ''
       if (!state.mailerHost) stateObj.mailerHost = nextProps.settings.getIn(['settings', 'mailerHost', 'value']) || ''

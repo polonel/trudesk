@@ -21,7 +21,7 @@ import elasticsearch from './elasticsearch'
 import { installServer } from './installserver'
 import winston from './logger'
 import mailCheck from './mailer/mailCheck'
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const migration = require('./migration')
 import Models from './models'
 import type { SettingModelClass } from "./models/setting"

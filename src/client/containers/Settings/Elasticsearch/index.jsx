@@ -54,7 +54,7 @@ class ElasticsearchSettingsContainer extends React.Component {
 
   static getDerivedStateFromProps (nextProps, state) {
     if (nextProps.settings) {
-      let stateObj = { ...state }
+      const stateObj = { ...state }
       if (state.host === false)
         stateObj.host = nextProps.settings.getIn(['settings', 'elasticSearchHost', 'value']) || false
       if (!state.port) stateObj.port = nextProps.settings.getIn(['settings', 'elasticSearchPort', 'value']) || ''

@@ -41,7 +41,7 @@ const checkConnection = callback => {
         if (typeof callback === 'function') callback()
 
         return resolve()
-      } catch (e) {
+      } catch (_e) {
         if (typeof callback === 'function') callback(errorText)
 
         return reject(errorText)

@@ -20,10 +20,10 @@
     root.Snackbar = factory()
   }
 })(this, function () {
-  var Snackbar = {}
+  const Snackbar = {}
 
   Snackbar.current = null
-  var $defaults = {
+  const $defaults = {
     text: 'Default Text',
     textColor: '#ffffff',
 
@@ -47,13 +47,13 @@
   }
 
   Snackbar.show = function ($options) {
-    var options = extend(true, $defaults, $options)
+    const options = extend(true, $defaults, $options)
 
     if (Snackbar.current) {
       Snackbar.current.style.opacity = 0
       setTimeout(
         function () {
-          var $parent = this.parentElement
+          const $parent = this.parentElement
           if ($parent)
             // possible null if too many/fast Snackbars
             $parent.removeChild(this)
@@ -65,7 +65,7 @@
     Snackbar.snackbar = document.createElement('div')
     Snackbar.snackbar.className = 'snackbar-container ' + options.customClass
     Snackbar.snackbar.style.width = options.width
-    var $p = document.createElement('p')
+    const $p = document.createElement('p')
     $p.style.margin = 0
     $p.style.padding = 0
     $p.style.color = options.textColor
@@ -76,7 +76,7 @@
     Snackbar.snackbar.appendChild($p)
     Snackbar.snackbar.style.background = options.backgroundColor
     if (options.showAction) {
-      var actionButton = document.createElement('button')
+      const actionButton = document.createElement('button')
       actionButton.className = 'action'
       actionButton.innerHTML = options.actionText
       actionButton.style.color = options.actionTextColor
@@ -120,8 +120,8 @@
       Snackbar.snackbar.style.top = '-100px'
 
     document.body.appendChild(Snackbar.snackbar)
-    var $bottom = getComputedStyle(Snackbar.snackbar).bottom
-    var $top = getComputedStyle(Snackbar.snackbar).top
+    const $bottom = getComputedStyle(Snackbar.snackbar).bottom
+    const $top = getComputedStyle(Snackbar.snackbar).top
     Snackbar.snackbar.style.opacity = 1
     Snackbar.snackbar.className = 'snackbar-container ' + options.customClass + ' snackbar-pos ' + options.pos
     if (options.pos === 'top-left' || options.pos === 'top-right') Snackbar.snackbar.style.top = 0
@@ -140,18 +140,18 @@
   // Pure JS Extend
   // http://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
   var extend = function () {
-    var extended = {}
-    var deep = false
-    var i = 0
-    var length = arguments.length
+    const extended = {}
+    let deep = false
+    let i = 0
+    const length = arguments.length
 
     if (Object.prototype.toString.call(arguments[0]) === '[object Boolean]') {
       deep = arguments[0]
       i++
     }
 
-    var merge = function (obj) {
-      for (var prop in obj) {
+    const merge = function (obj) {
+      for (const prop in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, prop)) {
           if (deep && Object.prototype.toString.call(obj[prop]) === '[object Object]') {
             extended[prop] = extend(true, extended[prop], obj[prop])
@@ -163,7 +163,7 @@
     }
 
     for (; i < length; i++) {
-      var obj = arguments[i]
+      const obj = arguments[i]
       merge(obj)
     }
 

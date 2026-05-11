@@ -27,7 +27,7 @@ const commonV2 = {}
 commonV2.login = async (req, res) => {
   const username = req.body.username
   const password = req.body.password
-  const mfa = req.body.mfa
+  const _mfa = req.body.mfa
 
   if (!username || !password) return apiUtils.sendApiError_InvalidPostData(res)
 
@@ -105,7 +105,7 @@ commonV2.token = async (req, res) => {
     if (!decoded || !decoded.s) return apiUtils.sendApiError(res, 401)
     const sessionId = decoded.s
 
-    let session = await SessionModel.findOne({ _id: sessionId })
+    const session = await SessionModel.findOne({ _id: sessionId })
     if (!session) {
       res.cookie('_rft_', null, { maxAge: 0 })
       return apiUtils.sendApiError(res, 401)

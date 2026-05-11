@@ -12,7 +12,7 @@ export const buildGraphData = (arr, days) => {
     .minute(59)
     .second(59)
   const timespanArray = []
-  for (var i = days; i--; ) {
+  for (let i = days; i--; ) {
     timespanArray.push(i)
   }
 

@@ -17,7 +17,7 @@ import bcrypt from 'bcrypt'
 import Chance from 'chance'
 import _ from 'lodash'
 import type { Types } from 'mongoose'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import base32 from 'thirty-two'
 import utils from '../helpers/utils'
@@ -51,20 +51,18 @@ class UserPreferences {
   this.populate('role', 'name description normalized _id grants')
 })
 @pre<UserModelClass>('save', async function (this: DocumentType<UserModelClass>) {
-  const user = this
+  this.username = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(this.username.toLowerCase().trim()))
+  this.email = utils.sanitizeFieldPlainText(this.email.trim())
 
-  user.username = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.username.toLowerCase().trim()))
-  user.email = utils.sanitizeFieldPlainText(user.email.trim())
+  if (this.fullname) this.fullname = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(this.fullname.trim()))
+  if (this.title) this.title = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(this.title.trim()))
 
-  if (user.fullname) user.fullname = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.fullname.trim()))
-  if (user.title) user.title = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText(user.title.trim()))
+  if (!this.isModified('password')) return
 
-  if (!user.isModified('password')) return
-
-  if (user.password.toString().length > 255) user.password = utils.applyMaxTextLength(user.password)
+  if (this.password.toString().length > 255) this.password = utils.applyMaxTextLength(this.password)
 
   const salt = await bcrypt.genSalt(SALT_FACTOR)
-  user.password = await bcrypt.hash(user.password, salt)
+  this.password = await bcrypt.hash(this.password, salt)
 })
 @modelOptions({ options: { customName: COLLECTION } })
 export class UserModelClass {
@@ -267,7 +265,7 @@ export class UserModelClass {
           this.deleted = true
           await this.save()
           return resolve(true)
-        } catch (error) {
+        } catch (_error) {
           return reject(false)
         }
       })()

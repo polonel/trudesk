@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
@@ -32,7 +31,7 @@ class ReportsContainer extends React.Component {
     helpers.resizeFullHeight()
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (_prevProps, _prevState, _snapshot) {
     helpers.resizeFullHeight()
   }
 
@@ -142,6 +141,6 @@ class ReportsContainer extends React.Component {
 
 ReportsContainer.propTypes = {}
 
-const mapStateToProps = state => ({})
+const mapStateToProps = _state => ({})
 
 export default connect(mapStateToProps, {})(ReportsContainer)

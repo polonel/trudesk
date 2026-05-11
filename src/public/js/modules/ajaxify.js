@@ -227,7 +227,7 @@ define('modules/ajaxify', ['jquery', 'lodash', 'helpers', 'history'], function (
                 .replace('<', '&lt;')
                 .replace('>', '&gt;')
                 .replace(' & ', ' &amp; ')
-            } catch (Exception) {
+            } catch (_Exception) {
               // Should be an empty block
               console.log('[AJAXIFY] ERROR: SHOULD HAVE NOT HAPPENED!')
             }

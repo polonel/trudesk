@@ -162,7 +162,7 @@ backupRestore.restoreBackup = function (req: any, res: any) {
         cache.fork.send({ name: 'cache:refresh:force' })
       }
 
-      require('../permissions').flushRoles(function () {}) // eslint-disable-line @typescript-eslint/no-empty-function
+      require('../permissions').flushRoles(function () {})  
 
       result = { success: true }
     } else {

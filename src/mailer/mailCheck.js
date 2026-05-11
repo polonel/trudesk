@@ -29,7 +29,7 @@ const mailCheck = {}
 mailCheck.inbox = []
 
 mailCheck.init = function (settings) {
-  var s = {}
+  const s = {}
   s.mailerCheckEnabled = _.find(settings, function (x) {
     return x.name === 'mailer:check:enable'
   })
@@ -159,20 +159,20 @@ function bindImapReady () {
 
                 winston.debug('Processing %s Mail', _.size(results))
 
-                var flag = '\\Seen'
+                let flag = '\\Seen'
                 if (mailCheck.fetchMailOptions.deleteMessage) {
                   flag = '\\Deleted'
                 }
 
-                var message = {}
+                const message = {}
 
-                var f = mailCheck.Imap.fetch(results, {
+                const f = mailCheck.Imap.fetch(results, {
                   bodies: ''
                 })
 
                 f.on('message', function (msg) {
                   msg.on('body', function (stream) {
-                    var buffer = ''
+                    let buffer = ''
                     stream.on('data', function (chunk) {
                       buffer += chunk.toString('utf8')
                     })
@@ -192,8 +192,8 @@ function bindImapReady () {
                         }
 
                         if (_.isUndefined(mail.textAsHtml)) {
-                          var $ = cheerio.load(mail.html)
-                          var $body = $('body')
+                          const $ = cheerio.load(mail.html)
+                          const $body = $('body')
                           message.body = $body.length > 0 ? $body.html() : mail.html
                         } else {
                           message.body = mail.textAsHtml
@@ -248,7 +248,7 @@ mailCheck.fetchMail = function () {
 }
 
 function handleMessages (messages, done) {
-  var count = 0
+  let count = 0
   messages.forEach(function (message) {
     if (
       !_.isUndefined(message.from) &&
@@ -343,13 +343,13 @@ function handleMessages (messages, done) {
           handlePriority: [
             'handleTicketType',
             function (result, callback) {
-              var type = result.handleTicketType
+              const type = result.handleTicketType
 
               if (mailCheck.fetchMailOptions.defaultPriority !== '') {
                 return callback(null, mailCheck.fetchMailOptions.defaultPriority)
               }
 
-              var firstPriority = _.first(type.priorities)
+              const firstPriority = _.first(type.priorities)
               if (!_.isUndefined(firstPriority)) {
                 mailCheck.fetchMailOptions.defaultPriority = firstPriority._id
               } else {
@@ -363,7 +363,7 @@ function handleMessages (messages, done) {
             'handleGroup',
             'handlePriority',
             function (results, callback) {
-              var HistoryItem = {
+              const HistoryItem = {
                 action: 'ticket:created',
                 description: 'Ticket was created.',
                 owner: message.owner._id

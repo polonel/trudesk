@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var commentsSchema = mongoose.Schema({
+const commentsSchema = mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
   date: { type: Date, required: true },
   comment: { type: String, required: true },

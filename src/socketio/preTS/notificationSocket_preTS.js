@@ -11,13 +11,13 @@
  *  Updated:    1/20/19 4:43 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
-var _ = require('lodash')
-var async = require('async')
-var winston = require('../logger')
-var utils = require('../helpers/utils')
-var socketEvents = require('./socketEventConsts')
-var Models = require('../models')
-var events = {}
+const _ = require('lodash')
+const _async = require('async')
+const winston = require('../logger')
+const utils = require('../helpers/utils')
+const socketEvents = require('./socketEventConsts')
+const Models = require('../models')
+const events = {}
 
 function register (socket) {
   events.updateNotifications(socket)
@@ -31,8 +31,8 @@ function eventLoop () {
 }
 
 async function updateNotifications () {
-  var notificationSchema = Models.NotificationModel
-  // eslint-disable-next-line no-unused-vars
+  const notificationSchema = Models.NotificationModel
+   
   for (const [_, socket] of io.of('/').sockets) {
     const notifications = {}
     const notificationsPromise = new Promise((resolve, reject) => {
@@ -62,7 +62,7 @@ async function updateNotifications () {
     })
 
     try {
-      const [items, count] = await Promise.all([notificationsPromise, unreadCountPromise])
+      const [_items, _count] = await Promise.all([notificationsPromise, unreadCountPromise])
 
       utils.sendToSelf(socket, socketEvents.NOTIFICATIONS_UPDATE, notifications)
     } catch (err) {
@@ -73,8 +73,8 @@ async function updateNotifications () {
 }
 
 function updateAllNotifications (socket) {
-  var notifications = {}
-  var notificationSchema = Models.NotificationModel
+  const notifications = {}
+  const notificationSchema = Models.NotificationModel
   notificationSchema.findAllForUser(socket.request.user._id, function (err, items) {
     if (err) return false
 
@@ -99,7 +99,7 @@ events.updateAllNotifications = function (socket) {
 events.markNotificationRead = function (socket) {
   socket.on(socketEvents.NOTIFICATIONS_MARK_READ, function (_id) {
     if (_.isUndefined(_id)) return true
-    var notificationSchema = Models.NotificationModel
+    const notificationSchema = Models.NotificationModel
     notificationSchema.getNotification(_id, function (err, notification) {
       if (err) return true
 
@@ -116,12 +116,12 @@ events.markNotificationRead = function (socket) {
 
 events.clearNotifications = function (socket) {
   socket.on(socketEvents.NOTIFICATIONS_CLEAR, function () {
-    var userId = socket.request.user._id
+    const userId = socket.request.user._id
     if (_.isUndefined(userId)) return true
-    var notifications = {}
+    const notifications = {}
     notifications.items = []
     notifications.count = 0
-    var notificationSchema = Models.NotificationModel
+    const notificationSchema = Models.NotificationModel
     notificationSchema.clearNotifications(userId, function (err) {
       if (err) return true
 

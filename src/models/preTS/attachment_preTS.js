@@ -12,10 +12,10 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose')
-var utils = require('../helpers/utils')
+const mongoose = require('mongoose')
+const utils = require('../helpers/utils')
 
-var attachmentSchema = mongoose.Schema({
+const attachmentSchema = mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
   name: { type: String, required: true },
   date: { type: Date, required: true, default: Date.now },

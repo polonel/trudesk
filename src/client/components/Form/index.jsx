@@ -47,7 +47,7 @@ class Form extends React.Component {
 
   render () {
     // We need to extract all the props that are not valid for an HTML Form
-    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, onBeforeSend, onValidate, onCompleted, onError, url, method, data, headers, ...rest } = this.props
 
     return (

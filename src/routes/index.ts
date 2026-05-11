@@ -17,7 +17,7 @@ import packagejson from '../../package.json'
 import { trudeskRoot } from '../config'
 import { RouteMiddlewareType } from '../middleware/middleware'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const controllers = require('../controllers')
 
 const router: Router = express.Router()
@@ -39,7 +39,7 @@ function mainRoutes (router: Router, middleware: RouteMiddlewareType, controller
   // v1
   // require('../controllers/api/v1/routes')(middleware, router, controllers)
   // v2
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   require('../controllers/api/v2/routes')(middleware, router, controllers)
 
   if (global.env === 'development') {
@@ -47,14 +47,14 @@ function mainRoutes (router: Router, middleware: RouteMiddlewareType, controller
     router.get('/debug/sendmail', controllers.debug.sendmail)
 
     router.get('/debug/mailcheck/refetch', (_req: Request, res: Response) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const mailCheck = require('../mailer/mailCheck')
       mailCheck.refetch()
       res.send('OK')
     })
 
     router.get('/debug/cache/refresh', (_req: Request, res: Response) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const _ = require('lodash')
       const forkProcess = _.find(global.forks, { name: 'cache' })
       forkProcess.fork.send({ name: 'cache:refresh' })
@@ -62,7 +62,7 @@ function mainRoutes (router: Router, middleware: RouteMiddlewareType, controller
     })
 
     router.get('/debug/restart', (_req: Request, res: Response) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const pm2 = require('pm2')
       pm2.connect(function (err: Error) {
         if (err) {
@@ -109,7 +109,7 @@ export default function (app: Application, middleware: RouteMiddlewareType): voi
   app.use('/', router)
 
   // Load Plugin routes
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const dive = require('dive')
   const pluginDir = path.join(trudeskRoot(), 'plugins')
   if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir)
@@ -119,7 +119,7 @@ export default function (app: Application, middleware: RouteMiddlewareType): voi
     { directories: true, files: false, recursive: false },
     function (err: Error, dir: string) {
       if (err) throw err
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const pluginRoutes = require(path.join(dir, '/routes'))
       if (pluginRoutes) {
         pluginRoutes(router, middleware)

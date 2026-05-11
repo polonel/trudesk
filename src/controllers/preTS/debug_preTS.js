@@ -466,7 +466,6 @@ function randomDate (start, end) {
 
 debugController.sendmail = function (req, res) {
   const mailer = require('../mailer')
-  const templateSchema = require('../models/template')
   const Email = require('email-templates')
   const templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
@@ -529,7 +528,7 @@ debugController.sendmail = function (req, res) {
       })
     })
     .catch(function (err) {
-      console.log(err)
+      winston.error(err)
       res.status(400).json({ error: err })
     })
 }
@@ -554,7 +553,7 @@ debugController.uploadPlugin = function (req, res) {
   })
 
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-    console.log(mimetype)
+    winston.debug(mimetype)
     if (mimetype.indexOf('x-zip-compressed') === -1) {
       error = {
         status: 500,
@@ -571,7 +570,7 @@ debugController.uploadPlugin = function (req, res) {
     object.filePath = path.join(savePath, object.plugin)
     object.mimetype = mimetype
 
-    console.log(object)
+    winston.debug(object)
 
     file.on('limit', function () {
       error = {

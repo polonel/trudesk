@@ -12,15 +12,15 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var apiUtils = require('../apiUtils')
-var Ticket = require('../../../models/ticket')
-var GroupModel = require('../../../models').GroupModel
-var DepartmentModel = require('../../../models').DepartmentModel
+const apiUtils = require('../apiUtils')
+const Ticket = require('../../../models/ticket')
+const GroupModel = require('../../../models').GroupModel
+const DepartmentModel = require('../../../models').DepartmentModel
 
-var apiGroupModels = {}
+const apiGroupModels = {}
 
 apiGroupModels.create = function (req, res) {
-  var postGroupModel = req.body
+  const postGroupModel = req.body
   if (!postGroupModel) return apiUtils.sendApiError_InvalidPostData(res)
 
   GroupModel.create(postGroupModel, function (err, GroupModel) {
@@ -59,10 +59,10 @@ apiGroupModels.get = async function (req, res) {
 }
 
 apiGroupModels.update = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid GroupModel Id')
 
-  var putData = req.body
+  const putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
   GroupModel.findOne({ _id: id }, function (err, GroupModel) {
@@ -85,7 +85,7 @@ apiGroupModels.update = function (req, res) {
 }
 
 apiGroupModels.delete = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
   Ticket.countDocuments({ group: { $in: [id] } }, function (err, tickets) {

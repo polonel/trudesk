@@ -12,11 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var mongoose = require('mongoose')
-var utils = require('../helpers/utils')
+const _ = require('lodash')
+const mongoose = require('mongoose')
+const utils = require('../helpers/utils')
 
-var COLLECTION = 'groups'
+const COLLECTION = 'groups'
 
 /**
  * Group Schema
@@ -29,7 +29,7 @@ var COLLECTION = 'groups'
  * @property {Array} members Members in this group
  * @property {Array} sendMailTo Members to email when a new / updated ticket has triggered
  */
-var groupSchema = mongoose.Schema({
+const groupSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   members: [
     {
@@ -134,7 +134,7 @@ groupSchema.methods.removeSendMailTo = function (memberId, callback) {
 groupSchema.statics.getGroupByName = function (name, callback) {
   if (_.isUndefined(name) || name.length < 1) return callback('Invalid Group Name - GroupSchema.GetGroupByName()')
 
-  var q = this.model(COLLECTION)
+  const q = this.model(COLLECTION)
     .findOne({ name: name })
     .populate('members', '_id username fullname email role preferences image title deleted')
     .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
@@ -143,9 +143,9 @@ groupSchema.statics.getGroupByName = function (name, callback) {
 }
 
 groupSchema.statics.getWithObject = function (obj, callback) {
-  var limit = obj.limit ? Number(obj.limit) : 100
-  var page = obj.page ? Number(obj.page) : 0
-  var userId = obj.userId
+  const limit = obj.limit ? Number(obj.limit) : 100
+  const page = obj.page ? Number(obj.page) : 0
+  const userId = obj.userId
 
   if (userId) {
     return this.model(COLLECTION)
@@ -170,7 +170,7 @@ groupSchema.statics.getWithObject = function (obj, callback) {
 
 groupSchema.statics.getAllGroups = async function (callback) {
   const self = this
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     ;(async () => {
       const q = self
         .model(COLLECTION)
@@ -189,7 +189,7 @@ groupSchema.statics.getAllGroups = async function (callback) {
 }
 
 groupSchema.statics.getAllGroupsNoPopulate = function (callback) {
-  var q = this.model(COLLECTION)
+  const q = this.model(COLLECTION)
     .find({})
     .sort('name')
 
@@ -271,7 +271,7 @@ groupSchema.statics.getAllGroupsOfUser = async function (userId, callback) {
 groupSchema.statics.getAllGroupsOfUserNoPopulate = function (userId, callback) {
   if (_.isUndefined(userId)) return callback('Invalid UserId - GroupSchema.GetAllGroupsOfUserNoPopulate()')
 
-  var q = this.model(COLLECTION)
+  const q = this.model(COLLECTION)
     .find({ members: userId })
     .sort('name')
 
@@ -281,7 +281,7 @@ groupSchema.statics.getAllGroupsOfUserNoPopulate = function (userId, callback) {
 groupSchema.statics.getGroupById = function (gId, callback) {
   if (_.isUndefined(gId)) return callback('Invalid GroupId - GroupSchema.GetGroupById()')
 
-  var q = this.model(COLLECTION)
+  const q = this.model(COLLECTION)
     .findOne({ _id: gId })
     .populate('members', '_id username fullname email role preferences image title')
     .populate('sendMailTo', '_id username fullname email role preferences image title')
@@ -290,7 +290,7 @@ groupSchema.statics.getGroupById = function (gId, callback) {
 }
 
 function isMember (arr, id) {
-  var matches = _.filter(arr, function (value) {
+  const matches = _.filter(arr, function (value) {
     if (value._id.toString() === id.toString()) {
       return value
     }

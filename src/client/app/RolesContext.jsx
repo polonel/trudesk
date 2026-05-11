@@ -34,7 +34,7 @@ export const roleOrder = memory.roleOrder
 const RolesContext = createContext({
   roles: memory.roles,
   roleOrder: memory.roleOrder,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+   
   setRoles: () => {}
 })
 

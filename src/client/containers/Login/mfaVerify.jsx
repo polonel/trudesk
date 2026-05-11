@@ -31,11 +31,10 @@ import SessionContext, { saveSession } from 'app/SessionContext'
 import LoginBackground from '../../components/LoginBackground'
 import $ from 'jquery'
 import clsx from 'clsx'
-import axios from 'api/axios'
 
-const MFAVerify = props => {
+const MFAVerify = _props => {
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, _setSearchParams] = useSearchParams()
   const [auth, setAuth] = useState('')
   const [code, setCode] = useState('')
   const [buttonText, setButtonText] = useState('Verify MFA Code')
@@ -63,7 +62,7 @@ const MFAVerify = props => {
       if (!decoded.exp || !decoded.uid || !decoded.hash) return navigate('/')
       if (Date.now() >= decoded.exp * 1000) return navigate('/')
       setAuth(authToken)
-    } catch (e) {
+    } catch (_e) {
       return navigate('/')
     }
   }

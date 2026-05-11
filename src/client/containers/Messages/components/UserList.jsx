@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
-import helpers from 'lib/helpers'
+import _helpers from 'lib/helpers'
 import Avatar from 'components/Avatar/Avatar'
 
 const UserList = ({

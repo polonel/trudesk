@@ -13,7 +13,6 @@
 
 import { clearSession, getSession, saveSession } from 'app/SessionContext'
 import { jwtDecode } from 'jwt-decode'
-// eslint-disable-next-line import/no-named-as-default
 import history from 'lib/lib-history'
 
 import axios from 'axios'
@@ -43,7 +42,7 @@ customAxios.interceptors.request.use(
 
           token = data.token
           saveSession(data)
-        } catch (e) {
+        } catch (_e) {
           // We couldn't get a new token. Lets logout.
           history.push('/logout')
           return {

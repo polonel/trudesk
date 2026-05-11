@@ -15,9 +15,9 @@
 import _ from 'lodash'
 import type { Socket } from 'socket.io'
 import winston from '../logger'
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+ 
 const marked = require('marked')
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import sanitizeHtml from 'sanitize-html'
 import utils from '../helpers/utils'
@@ -94,7 +94,7 @@ events.onUpdateTicketStatus = (socket: Socket) => {
         owner: ticket.owner,
         status: ticket.status
       })
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -106,7 +106,7 @@ events.onUpdateTicket = function (socket: Socket): void {
       const ticket = await ticketSchema.getTicketById(data._id)
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (error) {
+    } catch (_error) {
       // Blank
     }
   })
@@ -173,7 +173,7 @@ events.onSetTicketType = (socket: Socket) => {
       ticket = await ticket.save()
       ticket = await ticket.populate('type')
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TYPE_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -188,7 +188,7 @@ events.onUpdateTicketTags = (socket: Socket) => {
       const ticket = await ticketSchema.findOne({ _id: ticketId }).populate('tags')
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TAGS_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -227,7 +227,7 @@ events.onClearAssignee = (socket: Socket) => {
       const savedTicket = await updatedTicket.save()
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, savedTicket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -246,7 +246,7 @@ events.onSetTicketGroup = (socket: Socket) => {
       ticket = await ticket.save()
       ticket = await ticket.populate('group')
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_GROUP_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -290,7 +290,7 @@ events.onSetTicketIssue = (socket: Socket) => {
       ticket = await ticket.save()
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -337,7 +337,7 @@ events.onRemoveCommentNote = (socket: Socket) => {
       ticket = await ticket.save()
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -362,7 +362,7 @@ events.onAttachmentsUIUpdate = (socket: Socket) => {
       }
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, attachmentData)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })

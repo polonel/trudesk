@@ -41,10 +41,10 @@ const apiTags = {}
  * @apiError InvalidPostData Invalid Post Data
  */
 apiTags.createTag = function (req, res) {
-  var data = req.body
+  const data = req.body
   if (_.isUndefined(data.tag)) return res.status(400).json({ error: 'Invalid Post Data' })
 
-  var Tag = new TagSchema({
+  const Tag = new TagSchema({
     name: data.tag
   })
 
@@ -128,13 +128,13 @@ apiTags.updateTag = async function (req, res) {
  *
  */
 apiTags.deleteTag = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ success: false, error: 'Invalid Tag Id' })
 
   async.series(
     [
       function (next) {
-        var ticketModel = require('../../../models/ticket')
+        const ticketModel = require('../../../models/ticket')
         ticketModel.getAllTicketsByTag(id, function (err, tickets) {
           if (err) return next(err)
           async.each(
@@ -157,7 +157,7 @@ apiTags.deleteTag = function (req, res) {
         })
       },
       function (next) {
-        var tagSchema = require('../../../models/tag')
+        const tagSchema = require('../../../models/tag')
         tagSchema.findByIdAndRemove(id, function (err) {
           return next(err)
         })

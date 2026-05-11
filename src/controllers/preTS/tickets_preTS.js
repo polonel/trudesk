@@ -386,7 +386,7 @@ ticketsController.print = function (req, res) {
             } else {
               return next()
             }
-          } catch (e) {
+          } catch (_e) {
             return res.redirect('/tickets')
           }
         },
@@ -698,7 +698,6 @@ ticketsController.uploadAttachment = function (req, res) {
       '.ai',
       '.psd'
     ]
-    const badExts = ['.html', '.htm', '.js', '.svg']
 
     if (!allowedExts.includes(ext)) {
       error = {

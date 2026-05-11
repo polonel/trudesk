@@ -17,12 +17,10 @@ import axios from 'api/axios'
 
 import { store } from 'app'
 
-const SESSIONKEY = 'trudesk/session'
-
 const memory = { data: null }
 const defaultData = {}
 
-export let sessionMemory = memory.data || {}
+export const sessionMemory = memory.data || {}
 
 export function getSession () {
   // if (!memory.data) {

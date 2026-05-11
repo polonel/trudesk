@@ -13,14 +13,14 @@
  */
 
 // var _               = require('lodash');
-var mongoose = require('mongoose')
-var moment = require('moment')
+const mongoose = require('mongoose')
+const moment = require('moment')
 require('moment-duration-format')
-var utils = require('../helpers/utils')
+const utils = require('../helpers/utils')
 
-var COLLECTION = 'priorities'
+const COLLECTION = 'priorities'
 
-var prioritySchema = mongoose.Schema(
+const prioritySchema = mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
     overdueIn: { type: Number, required: true, default: 2880 }, // Minutes until overdue (48 Hours)
@@ -43,7 +43,7 @@ prioritySchema.pre('save', function (next) {
 })
 
 prioritySchema.virtual('durationFormatted').get(function () {
-  var priority = this
+  const priority = this
   return moment
     .duration(priority.overdueIn, 'minutes')
     .format('Y [year], M [month], d [day], h [hour], m [min]', { trim: 'both' })
@@ -62,7 +62,7 @@ prioritySchema.statics.getPriorities = function (callback) {
 }
 
 prioritySchema.statics.getByMigrationNum = function (num, callback) {
-  var q = this.model(COLLECTION).findOne({ migrationNum: num })
+  const q = this.model(COLLECTION).findOne({ migrationNum: num })
 
   return q.exec(callback)
 }

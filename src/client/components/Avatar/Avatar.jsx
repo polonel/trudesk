@@ -39,7 +39,7 @@ class Avatar extends React.Component {
       this.props.socket.on(UI_ONLINE_STATUS_UPDATE, this.onOnlineStatusUpdate)
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, _prevState, _snapshot) {
     if (!prevProps.showOnlineBubble && this.props.showOnlineBubble && this.props.userId) {
       // Let's release the event just in case, so we don't double bind.
       this.props.socket.off(UI_ONLINE_STATUS_UPDATE, this.onOnlineStatusUpdate)
@@ -108,7 +108,7 @@ class Avatar extends React.Component {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(res => {
+      .then(_res => {
         if (this.props.socket) this.props.socket.emit(ACCOUNTS_UI_PROFILE_IMAGE_UPDATE, { _id: this.props.userId })
 
         this.imageUploadInput.current.value = ''

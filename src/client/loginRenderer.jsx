@@ -2,7 +2,6 @@ import { createRoot } from 'react-dom/client'
 import React from 'react'
 
 import LoginContainer from 'containers/Login'
-import { Provider } from 'react-redux'
 
 export default function init() {
   if (document.getElementById('login-container')) {

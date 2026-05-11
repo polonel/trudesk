@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react'
-import PropTypes from 'prop-types'
-import ReactFlow, { Controls, Background, applyNodeChanges, applyEdgeChanges, addEdge, useStore } from 'reactflow'
+import React, { useState, useCallback } from 'react'
+import ReactFlow, { Controls, Background, applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow'
 import 'reactflow/dist/style.css'
 import PageContent from 'components/PageContent'
 import CustomNodeOne from './CustomNodeOne'
@@ -27,7 +26,7 @@ const initialEdges = []
 
 const nodeTypes = { customNodeOne: CustomNodeOne }
 
-const TestFlow = props => {
+const TestFlow = _props => {
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
 

@@ -12,16 +12,16 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var utils = require('../helpers/utils')
-var path = require('path')
-var AnsiUp = require('ansi_up')
-var ansiUp = new AnsiUp.default()
-var Tail = require('tail').Tail
-var fs = require('fs-extra')
+const utils = require('../helpers/utils')
+const path = require('path')
+const AnsiUp = require('ansi_up')
+const ansiUp = new AnsiUp.default()
+const Tail = require('tail').Tail
+const fs = require('fs-extra')
 
-var logFile = path.join(__dirname, '../../logs/error.log')
+const logFile = path.join(__dirname, '../../logs/error.log')
 
-var events = {}
+const events = {}
 
 function register (socket) {
   events.onLogsFetch(socket)
@@ -32,10 +32,10 @@ events.onLogsFetch = function (socket) {
   socket.on('logs:fetch', function () {
     fs.exists(logFile, function (exists) {
       if (exists) {
-        var contents = fs.readFileSync(logFile, 'utf8')
+        const contents = fs.readFileSync(logFile, 'utf8')
         utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(contents))
 
-        var tail = new Tail(logFile)
+        const tail = new Tail(logFile)
 
         tail.on('line', function (data) {
           utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(data))

@@ -25,7 +25,6 @@ import TruAccordion from 'components/TruAccordion'
 import SingleSelect from 'components/SingleSelect'
 
 import helpers from 'lib/helpers'
-import RGrid from 'components/RGrid'
 import { Helmet } from 'react-helmet-async'
 import TitleContext from 'app/TitleContext'
 
@@ -69,7 +68,7 @@ class ProfileContainer extends React.Component {
     this.props.setSessionUser()
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, _prevState, _snapshot) {
     // This should load initial state values
     if (prevProps.sessionUser !== this.props.sessionUser) {
       this.fullname = this.props.sessionUser.fullname

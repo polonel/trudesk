@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2022. Trudesk, Inc (Chris Brame) All rights reserved.
  */
 
-import { fromJS, Map, List } from 'immutable'
+import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 import { sortBy, map } from 'lodash'
 import {

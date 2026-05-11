@@ -17,7 +17,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateSetting, updateMultipleSettings } from 'actions/settings'
 
-import Button from 'components/Button'
 import SettingItem from 'components/Settings/SettingItem'
 
 import helpers from 'lib/helpers'
@@ -26,7 +25,6 @@ import Log from '../../../logger'
 import EnableSwitch from 'components/Settings/EnableSwitch'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
-import UIKit from 'uikit'
 
 @observer
 class AccountsSettingsContainer extends React.Component {

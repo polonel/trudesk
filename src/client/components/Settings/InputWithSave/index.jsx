@@ -37,7 +37,7 @@ class InputWithSave extends React.Component {
     helpers.UI.inputs()
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, _prevState, _snapshot) {
     if (typeof this.props.initialValue !== 'undefined') {
       if (prevProps.initialValue !== this.props.initialValue) {
         this.value = this.props.initialValue

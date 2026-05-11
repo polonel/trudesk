@@ -69,13 +69,14 @@ class TicketPDFGenerator {
     const converted = convert(markedIssue, {
       wordwrap: 200,
       formatters: {
-        image: function (elm, walk, builder, formatOptions) {
+        image: function (elm, _walk, _builder, _formatOptions) {
           images.push({
             elm
           })
         }
       }
     })
+
 
     doc.fontSize(10).text(converted, 50, doc.y)
 
@@ -134,7 +135,7 @@ class TicketPDFGenerator {
         const converted = convert(markedComment, {
           wordwrap: 200,
           formatters: {
-            image: function (elm, walk, builder, formatOptions) {
+            image: function (elm, _walk, _builder, _formatOptions) {
               images.push({
                 elm
               })

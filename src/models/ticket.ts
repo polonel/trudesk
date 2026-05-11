@@ -17,7 +17,7 @@ import async from 'async'
 import _ from 'lodash'
 import moment from 'moment'
 import mongooseAutoPopulate from 'mongoose-autopopulate'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import sanitizeHtml from 'sanitize-html'
 import type { Types } from 'mongoose'
@@ -26,7 +26,7 @@ import winston from '../logger'
 import utils from '../helpers/utils'
 // Lazy import to break circular dependency: ticket.ts <-> models/index.ts
 function getModels() {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const m = require('../models')
   return {
     GroupModel: m.GroupModel as typeof import('../models').GroupModel,
@@ -47,7 +47,7 @@ import type { TicketTypeClass } from './tickettype'
 import type { TicketStatusClass } from './ticketStatus'
 import type { GroupModelClass } from './group'
 import Counters from './counters'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore
 import { marked } from 'marked'
 
@@ -155,7 +155,7 @@ function buildQueryWithObject(SELF: any, grpId: any[], object: TicketQueryObject
 })
 @post<TicketClass>('save', async function (doc: DocumentType<TicketClass>) {
   if (!(doc as any).wasNew) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+     
     const emitter = require('../emitter')
     try {
       const { GroupModel, UserModel } = getModels()

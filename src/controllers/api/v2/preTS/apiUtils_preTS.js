@@ -50,7 +50,7 @@ apiUtils.generateJWTToken = async function (dbUser, session, callback) {
     if (!dbUser || !session) return reject(new Error('Invalid Args'))
     ;(async () => {
       const resUser = _.clone(dbUser._doc)
-      const refreshToken = resUser.accessToken
+      const _refreshToken = resUser.accessToken
       delete resUser.resetPassExpire
       delete resUser.resetPassHash
       delete resUser.password

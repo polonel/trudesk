@@ -16,7 +16,7 @@
   ;(function ($) {
     'use strict'
 
-    var _useGetComputedStyle = !!window.getComputedStyle, // IE8, my dear, this is for you
+    let _useGetComputedStyle = !!window.getComputedStyle, // IE8, my dear, this is for you
       _isIOS,
       root = window,
       $root = $(window)
@@ -110,7 +110,7 @@
 
     $.expr.setFilters.inviewport = $.expr.createPseudo(function () {
       return $.expr.createPseudo(function (elems, matches) {
-        var i,
+        let i,
           config,
           length = elems.length
 
@@ -138,7 +138,7 @@
      * @returns {boolean|Object|undefined}
      */
     function hasScrollbar ($elem, axis) {
-      var $body,
+      let $body,
         elemProps,
         bodyProps,
         innerWidth,
@@ -257,7 +257,7 @@
      * @returns {number|Object}
      */
     function effectiveScrollbarWith ($elem, axis) {
-      var queryHorizontal,
+      let queryHorizontal,
         queryVertical,
         queryBoth,
         elemHasScrollbar,
@@ -297,7 +297,7 @@
      * @returns {Window|undefined}
      */
     function ownerWindow ($elem) {
-      var elem = $elem[0],
+      const elem = $elem[0],
         ownerDocument = elem && (elem.nodeType === 9 ? elem : elem.ownerDocument)
 
       return (
@@ -322,7 +322,7 @@
      * @returns {jQuery}
      */
     function inView ($elems, container, opts) {
-      var config,
+      let config,
         elemsInView = []
 
       if (!$elems.length) return $()
@@ -355,7 +355,7 @@
      * @returns {boolean}
      */
     function isInView ($elem, container, opts) {
-      var config,
+      let config,
         elem = $elem[0]
 
       if (!$elem.length) return false
@@ -382,7 +382,7 @@
      * @returns {Object}
      */
     function _prepareConfig ($elem, container, opts) {
-      var $container,
+      let $container,
         direction,
         config = {}
 
@@ -440,7 +440,7 @@
      * @returns {boolean}
      */
     function _isInView (elem, config) {
-      var containerWidth,
+      let containerWidth,
         containerHeight,
         hTolerance,
         vTolerance,
@@ -517,7 +517,7 @@
      * Do not call if the container is a window (redundant) or a document. Both calls would fail.
      */
     function getRelativeRect (rect, $container, cache) {
-      var containerPaddingRectRoot
+      let containerPaddingRectRoot
 
       if (cache && cache.containerPaddingRectRoot) {
         containerPaddingRectRoot = cache.containerPaddingRectRoot
@@ -553,7 +553,7 @@
      * @returns {ClientRect}
      */
     function getContentRect (elem) {
-      var rect = elem.getBoundingClientRect(),
+      const rect = elem.getBoundingClientRect(),
         props = getCss(
           elem,
           [
@@ -588,7 +588,7 @@
      * @returns {{ top: number, left: number }}
      */
     function getPaddingRectRoot (elem) {
-      var rect = elem.getBoundingClientRect(),
+      const rect = elem.getBoundingClientRect(),
         props = getCss(elem, ['borderTopWidth', 'borderLeftWidth'], { toFloat: true })
 
       return {
@@ -606,7 +606,7 @@
      * @returns {{vertical: boolean, horizontal: boolean}}
      */
     function _windowHasScrollbar (query, context) {
-      var windowInnerHeight,
+      let windowInnerHeight,
         windowInnerWidth,
         windowProps,
         scrollbarWidth = $.scrollbarWidth(),
@@ -683,7 +683,7 @@
      * @returns {{window: AppliedOverflow, body: AppliedOverflow}}
      */
     function _getViewportOverflows (query, context) {
-      var windowProps,
+      let windowProps,
         bodyProps,
         overflowPropNames = ['overflow'],
         bodyOverflowPropNames = ['overflow']
@@ -732,7 +732,7 @@
      *                                         status properties
      */
     function getAppliedOverflows (props, createBooleans) {
-      var status = {}
+      const status = {}
 
       // Establish the applied overflow (e.g. overflowX: "scroll")
       status.overflowX = props.overflowX || props.overflow || 'visible'
@@ -741,7 +741,7 @@
       // Create the derived boolean status properties (e.g overflowScrollX: true)
       if (createBooleans) {
         $.each(['Visible', 'Auto', 'Scroll', 'Hidden'], function (index, type) {
-          var lcType = type.toLowerCase()
+          const lcType = type.toLowerCase()
           status['overflow' + type + 'X'] = status.overflowX === lcType
           status['overflow' + type + 'Y'] = status.overflowY === lcType
         })
@@ -792,7 +792,7 @@
      * @returns {{window: AppliedOverflow, body: AppliedOverflow}}
      */
     function getAppliedViewportOverflows (documentElementProps, bodyProps) {
-      var _window = getAppliedOverflows(documentElementProps, false),
+      const _window = getAppliedOverflows(documentElementProps, false),
         body = getAppliedOverflows(bodyProps, false),
         consolidated = { window: {}, body: {} }
 
@@ -846,7 +846,7 @@
      * @returns {jQuery}
      */
     function wrapContainer (container) {
-      var $container,
+      let $container,
         isJquery = container instanceof $
 
       if (!isJquery && !$.isWindow(container) && !container.nodeType && !isString(container))
@@ -885,7 +885,7 @@
      * @param {Window|Document|HTMLElement} container
      */
     function checkHierarchy (elem, container) {
-      var elemIsContained
+      let elemIsContained
 
       if (elem.nodeType !== 1) throw new Error('Invalid node: is not an element')
 
@@ -908,7 +908,7 @@
      * @param {Object} opts
      */
     function checkOptions (opts) {
-      var isNum, isNumWithUnit
+      let isNum, isNumWithUnit
 
       if (
         opts.direction &&
@@ -938,7 +938,7 @@
      * @returns {number}
      */
     function getNetContainerWidth ($container, isWindow, cache) {
-      var width
+      let width
 
       if (cache && cache.netContainerWidth !== undefined) {
         width = cache.netContainerWidth
@@ -963,7 +963,7 @@
      * @returns {number}
      */
     function getNetContainerHeight ($container, isWindow, cache) {
-      var height
+      let height
 
       if (cache && cache.netContainerHeight !== undefined) {
         height = cache.netContainerHeight
@@ -986,7 +986,7 @@
      * @returns {Object}
      */
     function getContainerScrollbarWidths ($container, cache) {
-      var containerScrollbarWidths
+      let containerScrollbarWidths
 
       if (cache && cache.containerScrollbarWidths) {
         containerScrollbarWidths = cache.containerScrollbarWidths
@@ -1010,7 +1010,7 @@
      * @returns {number}
      */
     function getWindowDimension ($window, dimension) {
-      var doc = $window[0].document,
+      const doc = $window[0].document,
         property = 'client' + dimension
 
       return doc.compatMode === 'BackCompat' ? doc.body[property] : doc.documentElement[property]
@@ -1040,7 +1040,7 @@
      * @returns {Object}        property names and their values
      */
     function getCss (elem, properties, opts) {
-      var i,
+      let i,
         length,
         name,
         props = {},
@@ -1074,7 +1074,7 @@
      * @returns {ClientRect}
      */
     function getBoundingClientRectCompat (elem) {
-      var elemRect = elem.getBoundingClientRect()
+      let elemRect = elem.getBoundingClientRect()
 
       if (elemRect.width === undefined || elemRect.height === undefined) {
         // Fix for IE8
@@ -1110,7 +1110,7 @@
      * @returns {Object}
      */
     function toFloat (object) {
-      var transformed = {}
+      const transformed = {}
 
       $.map(object, function (value, key) {
         transformed[key] = parseFloat(value)
@@ -1129,7 +1129,7 @@
      */
     function isNumber (value) {
       // Done as in the Lodash compatibility build, but rejecting NaN as a number.
-      var isNumeric =
+      const isNumeric =
         typeof value === 'number' ||
         (value && typeof value === 'object' && Object.prototype.toString.call(value) === '[object Number]') ||
         false

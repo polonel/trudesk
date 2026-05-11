@@ -168,11 +168,11 @@ class TicketsContainer extends React.Component {
     }
   }
 
-  _onSearchFocus (e) {
+  _onSearchFocus (_e) {
     if (this.searchTerm.length > 3) SearchResults.toggleAnimation(true, true)
   }
 
-  onSearchKeypress (e) {
+  onSearchKeypress (_e) {
     if (this.searchTerm.length > 3) this.props.fetchSearchResults({ term: this.searchTerm })
   }
 

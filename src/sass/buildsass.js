@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var fs = require('fs')
-var path = require('path')
+const fs = require('fs')
+const path = require('path')
 const sass = require('sass')
-var settingUtil = require('../settings/settingsUtil')
-var config = require('../config')
+const settingUtil = require('../settings/settingsUtil')
+const config = require('../config')
 
-var buildsass = {}
+const buildsass = {}
 
 const sassDir = path.resolve(config.trudeskRoot(), 'src/sass')
 
@@ -43,7 +43,7 @@ function sassImport(entryPath) {
  * Uses the legacy API's `data` option (equivalent to node-sass) for in-memory compilation.
  */
 function callDynamicSass(entry, vars, success, error) {
-  var dataString = sassVariables(vars) + sassImport(entry)
+  const dataString = sassVariables(vars) + sassImport(entry)
 
   const options = {
     style: 'compressed',
@@ -63,7 +63,7 @@ function callDynamicSass(entry, vars, success, error) {
     }
   } else {
     // No dynamic variables — compile the entry file directly.
-    var entryFile = path.join(sassDir, entry)
+    const entryFile = path.join(sassDir, entry)
     sass.compileAsync(entryFile, options).then(
       function (result) {
         try {
@@ -79,7 +79,7 @@ function callDynamicSass(entry, vars, success, error) {
 }
 
 function save(result) {
-  var themeCss = path.resolve(config.trudeskRoot(), 'public/css/app.min.css')
+  const themeCss = path.resolve(config.trudeskRoot(), 'public/css/app.min.css')
   fs.writeFileSync(themeCss, result)
 }
 
@@ -98,7 +98,7 @@ buildsass.buildDefault = function (callback) {
 buildsass.build = function (callback) {
   settingUtil.getSettings(function (err, s) {
     if (!err && s) {
-      var settings = s.settings
+      const settings = s.settings
 
       callDynamicSass(
         'app.sass',

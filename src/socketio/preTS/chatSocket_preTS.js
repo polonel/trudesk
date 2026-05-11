@@ -21,7 +21,7 @@ const GroupModel = require('../models').GroupModel
 const sharedVars = require('./index').shared
 const sharedUtils = require('./index').utils
 const socketEventConst = require('./socketEventConsts')
-const { UserModel: User } = require('../models')
+const { UserModel: _User } = require('../models')
 
 const events = {}
 
@@ -398,7 +398,7 @@ events.onChatMessage = function (socket) {
     })
 
     try {
-      const [toUser, fromUser] = await Promise.all([toUserPromise, fromUserPromise])
+      const [_toUser, _fromUser] = await Promise.all([toUserPromise, fromUserPromise])
 
       utils.sendToUser(
         sharedVars.sockets,

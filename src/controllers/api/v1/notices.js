@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
+const _ = require('lodash')
 
-var winston = require('../../../logger')
+const winston = require('../../../logger')
 
-var NoticeSchema = require('../../../models/notice')
+const NoticeSchema = require('../../../models/notice')
 
-var apiNotices = {}
+const apiNotices = {}
 
 /**
  * @api {post} /api/v1/notices/create Create Notice
@@ -50,8 +50,8 @@ var apiNotices = {}
  }
  */
 apiNotices.create = function (req, res) {
-  var postData = req.body
-  var notice = new NoticeSchema(postData)
+  const postData = req.body
+  const notice = new NoticeSchema(postData)
   notice.save(function (err, notice) {
     if (err) {
       winston.debug(err)
@@ -95,7 +95,7 @@ apiNotices.create = function (req, res) {
  }
  */
 apiNotices.updateNotice = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   NoticeSchema.getNotice(id, function (err, notice) {
     if (err) return res.status(400).json({ success: false, error: err })
     notice.update(req.body, function (err) {
@@ -163,7 +163,7 @@ apiNotices.clearActive = function (req, res) {
  }
  */
 apiNotices.deleteNotice = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   NoticeSchema.getNotice(id, function (err, notice) {
     if (err) return res.status(400).json({ success: false, error: err })
 

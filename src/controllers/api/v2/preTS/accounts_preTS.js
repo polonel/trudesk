@@ -13,7 +13,6 @@
  */
 
 const _ = require('lodash')
-const async = require('async')
 const winston = require('../../../logger')
 const Chance = require('chance')
 const apiUtil = require('../apiUtils')
@@ -147,7 +146,7 @@ accountsApi.get = async function (req, res) {
         const accounts = await User.getWithObject(obj)
         return apiUtil.sendApiSuccess(res, { accounts, count: accounts.length })
       } catch (err) {
-        console.log(err)
+        winston.error(err)
         return apiUtil.sendApiError(res, 500, err)
       }
     case 'requesters':
@@ -210,6 +209,7 @@ accountsApi.get = async function (req, res) {
   }
 }
 
+// eslint-disable-next-line complexity
 accountsApi.update = async function (req, res) {
   const username = req.params.username
   const postData = req.body

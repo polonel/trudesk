@@ -12,14 +12,14 @@
 
  **/
 
-var _ = require('lodash'),
+const _ = require('lodash'),
     async = require('async'),
-    winston = require('winston'),
+    _winston = require('winston'),
     es = require('../../../elasticsearch'),
     ticketSchema = require('../../../models/ticket'),
     groupSchema = require('../../../models/group');
 
-var apiElasticSearch = {};
+const apiElasticSearch = {};
 
 apiElasticSearch.rebuild = function(req, res) {
     es.rebuildIndex();
@@ -28,7 +28,7 @@ apiElasticSearch.rebuild = function(req, res) {
 };
 
 apiElasticSearch.status = function(req, res) {
-    var response = {
+    const response = {
         esStatus: global.esStatus
     };
 
@@ -57,19 +57,19 @@ apiElasticSearch.status = function(req, res) {
 };
 
 apiElasticSearch.search = function(req, res) {
-    var limit = (!_.isUndefined(req.query['limit']) ? req.query.limit : 100);
+    let limit = (!_.isUndefined(req.query['limit']) ? req.query.limit : 100);
     try {
         limit = parseInt(limit);
-    } catch (e) {
+    } catch (_e) {
         limit = 100;
     }
 
     groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, groups) {
         if (err) return res.status(400).json({success: false, error: err});
 
-        var g = _.map(groups, function(i) { return i._id; });
+        const g = _.map(groups, function(i) { return i._id; });
 
-        var obj = {
+        const obj = {
             index: 'trudesk',
             body: {
                 size: limit,

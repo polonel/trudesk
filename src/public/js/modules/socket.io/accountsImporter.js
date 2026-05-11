@@ -13,12 +13,12 @@
  */
 
 define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], function ($, helpers) {
-  var accountsImporter = {}
+  const accountsImporter = {}
 
-  var socket
+  let socket
 
   function onStatusChange (type, item, percent) {
-    var $statusBox = $('#' + type + '-import-status-box > ul')
+    const $statusBox = $('#' + type + '-import-status-box > ul')
     if (item) {
       if (item.state === 1) {
         $statusBox.append(
@@ -29,7 +29,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
             '<span>...</span></div></li>'
         )
       } else if (item.state === 2) {
-        var span = $statusBox.find('div[data-import-username="' + item.username + '"] > span')
+        const span = $statusBox.find('div[data-import-username="' + item.username + '"] > span')
         if (span.length > 0) {
           span.css({ display: 'inline-flex', marginLeft: '5px' })
           span.html(
@@ -37,7 +37,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
           )
         }
       } else if (item.state === 3) {
-        var span1 = $statusBox.find('div[data-import-username="' + item.username + '"] > span')
+        const span1 = $statusBox.find('div[data-import-username="' + item.username + '"] > span')
         if (span1.length > 0) {
           span1.css({ display: 'inline-flex', marginLeft: '5px' })
           span1.html(
@@ -55,7 +55,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
   }
 
   function finishImport (type, completedCount) {
-    var $statusBox = $('#' + type + '-import-status-box')
+    const $statusBox = $('#' + type + '-import-status-box')
     if (completedCount === 1) {
       $statusBox.find('ul').append('<li>Imported ' + completedCount + ' account</li>')
     } else {
@@ -64,7 +64,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
 
     scrollStatusBox()
 
-    var $wizard = $('#wizard_' + type)
+    const $wizard = $('#wizard_' + type)
     $wizard.find('.button_finish').removeClass('disabled')
   }
 
@@ -73,7 +73,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
 
     socket.removeAllListeners('$trudesk:accounts:import:error')
     socket.on('$trudesk:accounts:import:error', function (data) {
-      var error = data.error
+      const error = data.error
 
       console.error(error)
       helpers.showSnackbar(error, true)
@@ -81,11 +81,11 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
 
     socket.removeAllListeners('$trudesk:accounts:import:onStatusChange')
     socket.on('$trudesk:accounts:import:onStatusChange', function (data) {
-      var type = data.type
-      var item = data.item
-      var totalCount = data.totalCount
-      var completedCount = data.completedCount
-      var percent = Math.floor((completedCount / totalCount) * 100)
+      const type = data.type
+      const item = data.item
+      const totalCount = data.totalCount
+      const completedCount = data.completedCount
+      const percent = Math.floor((completedCount / totalCount) * 100)
 
       onStatusChange(type, item, percent)
 
@@ -106,7 +106,7 @@ define('modules/socket.io/accountsImporter', ['jquery', 'helpers', 'history'], f
   }
 
   function scrollStatusBox () {
-    var e = $('#ldap-import-status-box')
+    let e = $('#ldap-import-status-box')
     if (e.length > 0) {
       e = e[0]
       e.scrollTop = e.scrollHeight - e.getBoundingClientRect().height

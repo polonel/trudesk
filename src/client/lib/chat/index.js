@@ -31,7 +31,7 @@ export const createChatWindow = async function (ownerId, receiverId, callback) {
       .then(conversation => {
         axios
           .get(`/api/v2/messages/conversations/${conversation._id}`)
-          .then(res => {})
+          .then(_res => {})
           .catch(error => {
             if (typeof callback === 'function') return callback(error)
 

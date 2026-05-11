@@ -43,7 +43,7 @@ class ChatWindow extends React.Component {
     this.props.socket.on(MESSAGES_SAVE_CHAT_WINDOW_COMPLETE, this.onSaveChatWindowComplete)
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (_prevProps, _prevState, _snapshot) {
     helpers.setupScrollers()
     if (this.messagesRef.current) {
       helpers.scrollToBottom(this.messagesRef.current)
@@ -65,7 +65,7 @@ class ChatWindow extends React.Component {
     this.props.socket.off(MESSAGES_SAVE_CHAT_WINDOW_COMPLETE, this.onSaveChatWindowComplete)
   }
 
-  onUserTyping (data) {
+  onUserTyping (_data) {
     // console.log(data)
   }
 

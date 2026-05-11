@@ -1,9 +1,8 @@
-var elasticsearch = require('../elasticsearch')
-var winston = require('../logger')
+const elasticsearch = require('../elasticsearch')
 
 global.env = process.env.NODE_ENV || 'production'
 ;(function () {
-  var ELASTICSEARCH_URI = process.env.ELASTICSEARCH_URI
+  const ELASTICSEARCH_URI = process.env.ELASTICSEARCH_URI
   if (!ELASTICSEARCH_URI) return process.send({ error: { message: 'Invalid connection uri' } })
 
   elasticsearch.testConnection(function (err) {

@@ -9,6 +9,9 @@ module.exports = [
       'dist/**',
       'src/public/js/vendor/**',
       'src/public/js/plugins/**',
+      'src/client/lib/vendor/**',
+      'src/client/lib/plugins/**',
+      'src/client/lib/**/*.min.js',
       'mobile-pwa/**',
       'mobile/**',
       'public/**',
@@ -69,6 +72,23 @@ module.exports = [
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-var-requires': 0,
       '@typescript-eslint/no-require-imports': 0,
+      'import/no-named-as-default': 'off',
+      'node/no-missing-require': 'off',
+      'node/no-unpublished-require': 'off',
+      'node/exports-style': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    files: ['src/**/*.{js,jsx}'],
+    rules: {
+      '@typescript-eslint/no-this-alias': 'off',
+    },
+  },
+  {
+    files: ['src/client/**/*.{js,jsx}', 'src/public/**/*.{js,jsx}'],
+    rules: {
+      'no-console': 'off',
     },
   },
   prettierConfig,

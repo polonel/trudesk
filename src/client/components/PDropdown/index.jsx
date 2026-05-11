@@ -103,14 +103,14 @@ class PDropDown extends React.Component {
         top = top + 'px'
 
         const aLinks = ref.querySelectorAll('a')
-        // eslint-disable-next-line no-unused-vars
+         
         for (const link of aLinks) {
           link.removeEventListener('click', this.closeOnClick)
           link.addEventListener('click', this.closeOnClick)
         }
 
         const closeOnClick = ref.querySelectorAll('.close-on-click')
-        // eslint-disable-next-line no-unused-vars
+         
         for (const link of closeOnClick) {
           link.removeEventListener('click', this.closeOnClick)
           link.addEventListener('click', this.closeOnClick)

@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var historySchema = mongoose.Schema({
+const historySchema = mongoose.Schema({
   action: { type: String, required: true },
   date: { type: Date, default: Date.now, required: true },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },

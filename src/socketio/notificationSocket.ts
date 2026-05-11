@@ -43,7 +43,7 @@ function eventLoop(): void {
 
 async function updateNotifications(): Promise<void> {
   const notificationSchema = (Models as any).NotificationModel
-  // eslint-disable-next-line no-unused-vars
+   
   for (const [_, socket] of (io as any).of('/').sockets) {
     const userId = (socket as Socket).request && (socket.request as any).user._id
     try {

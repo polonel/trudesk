@@ -13,7 +13,7 @@
  */
 
 import { handleActions } from 'redux-actions'
-import { fromJS, List, Map } from 'immutable'
+import { fromJS, List } from 'immutable'
 
 import { FETCH_RELEASES } from 'actions/types'
 

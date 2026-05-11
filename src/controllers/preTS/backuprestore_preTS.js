@@ -19,7 +19,6 @@ const async = require('async')
 const moment = require('moment')
 const logger = require('../logger')
 const config = require('../config')
-const database = require('../database')
 
 const backupRestore = {}
 

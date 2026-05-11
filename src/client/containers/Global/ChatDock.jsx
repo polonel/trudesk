@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
+import _PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { MESSAGES_UI_SPAWN_CHAT_WINDOW } from 'serverSocket/socketEventConsts'
@@ -7,7 +7,7 @@ import { setSessionUser } from 'actions/common'
 
 import ChatWindow from 'containers/Global/ChatWindow'
 
-export default function ChatDock (props) {
+export default function ChatDock (_props) {
   const sessionUser = useSelector(state => state.shared.sessionUser)
   const socket = useSelector(state => state.shared.socket)
   const dispatch = useDispatch()
@@ -31,7 +31,7 @@ export default function ChatDock (props) {
 
   useEffect(() => {}, [openChatWindows])
 
-  const onSpawnChatWindow = data => {
+  const onSpawnChatWindow = _data => {
     dispatch(setSessionUser())
   }
 

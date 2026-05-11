@@ -12,11 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var winston = require('winston')
-var request = require('request')
+const winston = require('winston')
+const request = require('request')
 
 module.exports.pushNotification = function (tpsUsername, tpsApiKey, notification) {
-  var body = {
+  const body = {
     title: notification.title,
     content: notification.content,
     data: {

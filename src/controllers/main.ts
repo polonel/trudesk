@@ -209,7 +209,7 @@ mainController.verifymfa = async function (req: any, res: any, next: any) {
 
       return apiUtils.sendApiSuccess(res, tokens)
     })(req, res, next)
-  } catch (e) {
+  } catch (_e) {
     return res.status(401).json({ success: false })
   }
 }

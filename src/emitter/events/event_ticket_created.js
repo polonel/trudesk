@@ -178,7 +178,7 @@ const saveNotification = async (user, ticket) => {
 
 module.exports = async data => {
   const ticketObject = data.ticket
-  const hostname = data.hostname
+  const _hostname = data.hostname
 
   try {
     const ticket = await Ticket.getTicketById(ticketObject._id)
@@ -198,7 +198,6 @@ module.exports = async data => {
 
     util.sendToAllConnectedClients(io, socketEvents.TICKETS_CREATED, ticket)
   } catch (e) {
-    console.log(e)
     logger.warn(`[trudesk:events:ticket:created] - Error: ${e}`)
   }
 }

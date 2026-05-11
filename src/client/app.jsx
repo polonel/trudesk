@@ -27,18 +27,16 @@ import ModalRoot from './containers/Modals'
 
 import SocketGlobal from 'containers/Global/SocketGlobal'
 import SessionLoader from 'lib/sessionLoader'
-import HotKeysGlobal from 'containers/Global/HotKeysGlobal'
 import BackupRestoreOverlay from 'containers/Global/BackupRestoreOverlay'
-import ChatDock from 'containers/Global/ChatDock'
 
 const sagaMiddleware = createSagaMiddleware()
 
-/*eslint-disable */
+ 
 const composeSetup =
   process.env.NODE_ENV !== 'production' && typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     : compose
-/*eslint-enable */
+ 
 
 // if (process.env.NODE_ENV !== 'production') {
 localStorage.debug = 'trudesk:*'
@@ -57,7 +55,7 @@ sagaMiddleware.run(IndexSagas)
 
 // Mount Globals
 if (document.getElementById('globals')) {
-  const GlobalsRoot = (
+  const _GlobalsRoot = (
     <Provider store={store}>
       <>
         <SingletonHooksContainer />

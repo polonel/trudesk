@@ -9,7 +9,7 @@ const initialState = {
 
 const reducer = handleActions(
   {
-    [FETCH_NOTICES.PENDING]: (state, action) => {
+    [FETCH_NOTICES.PENDING]: (state, _action) => {
       return {
         ...state,
         loading: true

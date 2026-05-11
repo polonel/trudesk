@@ -41,7 +41,7 @@ class FormWithAuth extends React.Component {
   }
 
   render () {
-    const { children, onCompleted, onError, url, method, data, headers, ...rest } = this.props
+    const { children, onCompleted: _onCompleted, onError: _onError, url: _url, method: _method, data: _data, headers: _headers, ...rest } = this.props
 
     return (
       <form onSubmit={e => this.onSubmit(e)} {...rest}>

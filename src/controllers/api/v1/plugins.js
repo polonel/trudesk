@@ -12,28 +12,28 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var winston = require('winston')
+const winston = require('winston')
 
-var path = require('path')
+const path = require('path')
 
-var fs = require('fs')
+const fs = require('fs')
 
-var axios = require('axios').default
+const axios = require('axios').default
 
-var rimraf = require('rimraf')
+const rimraf = require('rimraf')
 
-var mkdirp = require('mkdirp')
+const mkdirp = require('mkdirp')
 
-var tar = require('tar')
+const tar = require('tar')
 
-var apiPlugins = {}
+const apiPlugins = {}
 
-var pluginPath = path.join(__dirname, '../../../../plugins')
+const pluginPath = path.join(__dirname, '../../../../plugins')
 
-var pluginServerUrl = 'http://plugins.trudesk.io'
+const pluginServerUrl = 'http://plugins.trudesk.io'
 
 apiPlugins.installPlugin = async function (req, res) {
-  var packageid = req.params.packageid
+  const packageid = req.params.packageid
 
   let pluginRes
   try {
@@ -42,7 +42,7 @@ apiPlugins.installPlugin = async function (req, res) {
     return res.status(400).json({ success: false, error: err.message || err })
   }
 
-  var plugin = pluginRes.data.plugin
+  const plugin = pluginRes.data.plugin
 
   if (!plugin || !plugin.url) {
     return res.status(400).json({
@@ -52,10 +52,10 @@ apiPlugins.installPlugin = async function (req, res) {
   }
 
   // Download the tarball as a stream and pipe to disk
-  var downloadPromise = new Promise((resolve, reject) => {
+  const downloadPromise = new Promise((resolve, reject) => {
     axios.get(pluginServerUrl + '/plugin/download/' + plugin.url, { responseType: 'stream' })
       .then(response => {
-        var fws = fs.createWriteStream(path.join(pluginPath, plugin.url))
+        const fws = fs.createWriteStream(path.join(pluginPath, plugin.url))
         response.data.pipe(fws)
 
         response.data.on('end', resolve)
@@ -71,12 +71,12 @@ apiPlugins.installPlugin = async function (req, res) {
   }
 
   // Extract plugin
-  var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase())
+  const pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase())
   try {
     await new Promise((resolve, reject) => rimraf(pluginExtractFolder, reject))
     mkdirp.sync(pluginExtractFolder)
 
-    var fileFullPath = path.join(pluginPath, plugin.url)
+    const fileFullPath = path.join(pluginPath, plugin.url)
     await tar.extract({ C: pluginExtractFolder, file: path.join(pluginPath, plugin.url) })
     await new Promise((resolve, reject) => rimraf(fileFullPath, reject))
   } catch (err) {
@@ -91,7 +91,7 @@ apiPlugins.installPlugin = async function (req, res) {
 }
 
 apiPlugins.removePlugin = async function (req, res) {
-  var packageid = req.params.packageid
+  const packageid = req.params.packageid
 
   let pluginRes
   try {
@@ -100,7 +100,7 @@ apiPlugins.removePlugin = async function (req, res) {
     return res.status(400).json({ success: false, error: err.message || err })
   }
 
-  var plugin = pluginRes.data.plugin
+  const plugin = pluginRes.data.plugin
 
   if (plugin === null) {
     return res.json({ success: false, error: 'Invalid Plugin' })
@@ -117,7 +117,7 @@ apiPlugins.removePlugin = async function (req, res) {
 }
 
 function restartServer () {
-  var pm2 = require('pm2')
+  const pm2 = require('pm2')
   pm2.connect(function (err) {
     if (err) {
       winston.error(err)

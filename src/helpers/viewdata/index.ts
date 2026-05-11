@@ -488,7 +488,7 @@ async function getShowTourSetting(request: ViewdataRequest, callback: NodeCallba
 }
 
 function getPluginsInfo(_request: ViewdataRequest, callback: NodeCallback<any[]>): void {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const dive = require('dive')
   const pluginDir = path.resolve(trudeskRoot(), 'plugins')
   if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir)
@@ -500,7 +500,7 @@ function getPluginsInfo(_request: ViewdataRequest, callback: NodeCallback<any[]>
     function (err: Error, dir: string) {
       if (err) throw err
       delete require.cache[require.resolve(path.join(dir, '/plugin.json'))]
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       plugins.push(require(path.join(dir, '/plugin.json')))
     },
     function () {

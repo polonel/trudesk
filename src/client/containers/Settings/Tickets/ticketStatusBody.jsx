@@ -45,14 +45,14 @@ class TicketStatusBody extends React.Component {
     this.slatimer = this.props.status.get('slatimer') || false
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (_prevProps, _prevState, _snapshot) {
     if (this.statusName === '') this.statusName = this.props.status.get('name') || ''
     if (this.htmlColor === '') this.htmlColor = this.props.status.get('htmlColor') || ''
     if (this.isResolved === '') this.isResolved = this.props.status.get('isResolved') || false
     if (this.slatimer === '') this.slatimer = this.props.status.get('slatimer') || false
   }
 
-  onSaveClicked (e) {
+  onSaveClicked (_e) {
     const id = this.props.status.get('_id')
     const name = this.statusName
     const htmlColor = this.htmlColor

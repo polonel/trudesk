@@ -45,8 +45,8 @@ apiNotices.get = function (req, res) {
 }
 
 apiNotices.update = function (req, res) {
-  var id = req.params.id
-  var payload = req.body
+  const id = req.params.id
+  const payload = req.body
   if (!id || !payload || !payload.name || !payload.message || !payload.color || !payload.fontColor)
     return apiUtils.sendApiError_InvalidPostData(res)
 
@@ -58,7 +58,7 @@ apiNotices.update = function (req, res) {
 }
 
 apiNotices.activate = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
   Notice.updateMany({}, { active: false }, function (err) {
@@ -81,7 +81,7 @@ apiNotices.clear = function (req, res) {
 }
 
 apiNotices.delete = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
   Notice.findOneAndDelete({ _id: id }, function (err) {

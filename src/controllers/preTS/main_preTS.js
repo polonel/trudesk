@@ -212,7 +212,7 @@ mainController.verifymfa = async function (req, res, next) {
 
       return apiUtils.sendApiSuccess(res, tokens)
     })(req, res, next)
-  } catch (e) {
+  } catch (_e) {
     // winston.debug(e)
     return res.status(401).json({ success: false })
   }
@@ -523,7 +523,7 @@ mainController.resetPass = async (req, res) => {
       const Email = require('email-templates')
       const templateDir = path.resolve(trudeskRoot(), 'src/mailer/templates')
 
-      let email = new Email({
+      const email = new Email({
         views: {
           root: templateDir,
           options: {

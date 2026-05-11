@@ -31,19 +31,6 @@ function automaticTextColor (bgColor, primary, muted) {
   }
 }
 
-function automaticLinkColor (bgColor, tertiary) {
-  if (color(bgColor).isLight() && color(tertiary).isLight())
-    return color(tertiary)
-      .darken(0.3)
-      .hex()
-      .toString()
-
-  return color(tertiary)
-    .lighten(0.1)
-    .hex()
-    .toString()
-}
-
 const setTheme = colorScheme => {
   if (!colorScheme) return
   const html = document.getElementsByTagName('html')[0]
@@ -78,7 +65,7 @@ const setTheme = colorScheme => {
   const sidebarItemHover = (color(quaternary).isDark() ? color(quaternary).lighten(0.2) : color(quaternary).darken(0.1))
     .hex()
     .toString()
-  const sidebarBorderColor = (color(quaternary).isDark()
+  const _sidebarBorderColor = (color(quaternary).isDark()
     ? color(quaternary).lighten(0.15)
     : color(quaternary).darken(0.15)
   )

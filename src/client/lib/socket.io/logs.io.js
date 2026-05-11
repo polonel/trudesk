@@ -18,14 +18,14 @@ define('modules/socket.io/logs.io', ['jquery', 'underscore', 'moment', 'helpers'
   moment,
   helpers
 ) {
-  var logsIO = {}
+  const logsIO = {}
 
   cleanPreTags()
 
   logsIO.getLogData = function (socket) {
     socket.removeAllListeners('logs:data')
     socket.on('logs:data', function (data) {
-      var $sLogs = $('#serverlogs')
+      const $sLogs = $('#serverlogs')
       if ($sLogs.length > 0) {
         $sLogs.append(data)
         $sLogs.append('\n<br />')
@@ -37,12 +37,12 @@ define('modules/socket.io/logs.io', ['jquery', 'underscore', 'moment', 'helpers'
 
   function cleanPreTags () {
     ;[].forEach.call(document.querySelectorAll('pre'), function ($pre) {
-      var lines = $($pre)
+      const lines = $($pre)
         .html()
         .split('\n')
-      var matches
-      for (var i = 0; i < lines.length; i++) {
-        var indentation = (matches = /^\s+/.exec(lines[i])) !== null ? matches[0] : null
+      let matches
+      for (let i = 0; i < lines.length; i++) {
+        const indentation = (matches = /^\s+/.exec(lines[i])) !== null ? matches[0] : null
         if (indentation) {
           // lines = lines.map(function(line) {
           //     return line.replace(indentation, '');

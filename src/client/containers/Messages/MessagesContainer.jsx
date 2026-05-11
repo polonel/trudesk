@@ -1,9 +1,8 @@
-import React, { createRef, useEffect, useState } from 'react'
+import React, { createRef } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { makeObservable, observable } from 'mobx'
-import clsx from 'clsx'
 import history from 'lib/lib-history'
 
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
@@ -24,8 +23,6 @@ import {
   MESSAGES_UI_RECEIVE
 } from 'serverSocket/socketEventConsts'
 
-import Avatar from 'components/Avatar/Avatar'
-import SpinLoader from 'components/SpinLoader'
 import PageTitle from 'components/PageTitle'
 import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
@@ -91,7 +88,7 @@ class MessagesContainer extends React.Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, _prevState, _snapshot) {
     helpers.resizeAll()
     helpers.setupScrollers()
     this.setupContextMenu()
@@ -164,7 +161,7 @@ class MessagesContainer extends React.Component {
     }
   }
 
-  onUserStopTyping (data) {
+  onUserStopTyping (_data) {
     // console.log(data)
   }
 

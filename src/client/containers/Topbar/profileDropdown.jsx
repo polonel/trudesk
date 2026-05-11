@@ -9,7 +9,6 @@ import { setSessionUser, showModal } from 'actions/common'
 import { saveEditAccount } from 'actions/accounts'
 
 import Avatar from 'components/Avatar/Avatar'
-import EnableSwitch from 'components/Settings/EnableSwitch'
 import PDropdown from 'components/PDropdown'
 import Spacer from 'components/Spacer'
 
@@ -32,7 +31,7 @@ class ProfileDropdownPartial extends React.Component {
       this.keyboardShortcutsChecked = this.props.sessionUser.preferences.keyboardShortcuts
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, _prevState, _snapshot) {
     if (prevProps.sessionUser !== this.props.sessionUser && this.props.sessionUser.preferences) {
       this.keyboardShortcutsChecked = this.props.sessionUser.preferences.keyboardShortcuts
     }

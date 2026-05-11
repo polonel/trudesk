@@ -15,8 +15,6 @@ const $ = require('jquery')
 const _ = require('underscore')
 const without = require('lodash/without')
 const merge = require('lodash/merge')
-const hasIn = require('lodash/hasIn')
-const find = require('lodash/find')
 const moment = require('moment-timezone')
 const UIkit = require('uikit')
 const CountUp = require('countup')
@@ -29,10 +27,7 @@ require('chosen')
 require('multiselect')
 require('formvalidator')
 require('peity')
-const { store } = require('app')
-
 const history = require('lib/lib-history').history
-const reduxStore = require('../app').store
 const getSession = require('app/SessionContext').getSession
 const forceRefreshSession = require('app/SessionContext').forceRefreshSession
 
@@ -99,9 +94,9 @@ helpers.forceSessionUpdate = () => {
 
 helpers.countUpMe = function () {
   $('.countUpMe').each(function () {
-    var self = this
-    var countTo = $(self).text()
-    var theAnimation = new CountUp(self, 0, countTo, 0, 2)
+    const self = this
+    const countTo = $(self).text()
+    const theAnimation = new CountUp(self, 0, countTo, 0, 2)
     theAnimation.start()
   })
 }
@@ -112,13 +107,13 @@ helpers.util.options = function (string) {
 
   if (string.indexOf(':') !== -1 && string.trim().substr(-1) !== '}') string = '{' + string + '}'
 
-  var start = string ? string.indexOf('{') : -1,
-    options = {}
+  const start = string ? string.indexOf('{') : -1
+  let options = {}
 
   if (start !== -1) {
     try {
       options = helpers.util.str2json(string.substr(start))
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   return options
@@ -139,16 +134,16 @@ helpers.util.str2json = function (str, notevil) {
           })
       )
     } else return new Function('', 'var json = ' + str + '; return JSON.parse(JSON.stringify(json));')()
-  } catch (e) {
+  } catch (_e) {
     return false
   }
 }
 
 helpers.countUpMe = function () {
   $('.countUpMe').each(function () {
-    var self = this
-    var countTo = $(self).text()
-    var theAnimation = new CountUp(self, 0, countTo, 0, 2)
+    const self = this
+    const countTo = $(self).text()
+    const theAnimation = new CountUp(self, 0, countTo, 0, 2)
     theAnimation.start()
   })
 }
@@ -175,7 +170,7 @@ helpers.UI.bindAccordion = function () {
   $('li[data-nav-accordion]').each(function () {
     // Remove hasSubMenuOpen from LI and subMenuOpen from submenu UL to prevent menu from staying open after page load
     $(this).removeClass('hasSubMenuOpen')
-    var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'))
+    const subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'))
     if (subMenu.length > 0) {
       if (subMenu.attr('id') !== 'side-nav-accordion-plugins') subMenu.removeClass('subMenuOpen')
     }
@@ -188,7 +183,7 @@ helpers.UI.bindAccordion = function () {
       $(this).addClass('hasSubMenuOpen')
       if (subMenu.length > 0) subMenu.addClass('subMenuOpen')
     }
-    var $this = $(this).find('> a')
+    const $this = $(this).find('> a')
     $this.off('click')
     $this.on('click', function (e) {
       e.preventDefault()
@@ -198,19 +193,19 @@ helpers.UI.bindAccordion = function () {
           .parents('.sidebar')
           .hasClass('expand')
       ) {
-        var href = $(this).attr('href')
+        const href = $(this).attr('href')
         if (href !== '#') history.push(href)
         return true
       }
 
       // Shut all other sidebars...
       $('li[data-nav-accordion].hasSubMenuOpen').each(function () {
-        var $tTarget = $('#' + $(this).attr('data-nav-accordion-target'))
+        const $tTarget = $('#' + $(this).attr('data-nav-accordion-target'))
         $tTarget.removeClass('subMenuOpen')
         $(this).removeClass('hasSubMenuOpen')
       })
 
-      var $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'))
+      const $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'))
 
       if ($target.length > 0) {
         $target.toggleClass('subMenuOpen')
@@ -223,7 +218,7 @@ helpers.UI.bindAccordion = function () {
 }
 
 helpers.UI.expandSidebar = function () {
-  var $sidebar = $('.sidebar')
+  const $sidebar = $('.sidebar')
   $sidebar.addClass('no-animation expand')
   $('#page-content').addClass('no-animation expanded-sidebar')
   setTimeout(function () {
@@ -233,7 +228,7 @@ helpers.UI.expandSidebar = function () {
 }
 
 helpers.UI.toggleSidebar = function () {
-  var $sidebar = $('.sidebar')
+  const $sidebar = $('.sidebar')
   $sidebar.toggleClass('expand')
   $('#page-content').toggleClass('expanded-sidebar')
   if ($sidebar.hasClass('expand')) {
@@ -255,7 +250,7 @@ helpers.UI.toggleSidebar = function () {
 }
 
 helpers.UI.bindExpand = function () {
-  var menuButton = $('#expand-menu')
+  const menuButton = $('#expand-menu')
   if (menuButton.length > 0) {
     menuButton.off('click')
     menuButton.on('click', function (e) {
@@ -285,13 +280,13 @@ helpers.UI.tooltipSidebar = function () {
 }
 
 helpers.UI.setupDataTethers = function () {
-  var $elements = $('*[data-tether]')
+  const $elements = $('*[data-tether]')
 
   $elements.each(function () {
-    var $this = $(this)
-    var obj = helpers.util.options($this.attr('data-tether'))
+    const $this = $(this)
+    const obj = helpers.util.options($this.attr('data-tether'))
     if (_.isObject(obj)) {
-      var $target = $(obj.target)
+      const $target = $(obj.target)
 
       if ($target.length > 0) {
         new Tether({
@@ -307,7 +302,7 @@ helpers.UI.setupDataTethers = function () {
 }
 
 helpers.UI.setupSidebarTether = function () {
-  var sidebarElements = [
+  const sidebarElements = [
     { element: '#side-nav-sub-tickets', target: 'tickets' },
     { element: '#side-nav-sub-accounts', target: 'accounts' },
     { element: '#side-nav-sub-reports', target: 'reports' },
@@ -315,13 +310,13 @@ helpers.UI.setupSidebarTether = function () {
   ]
 
   _.each(sidebarElements, function (item) {
-    var element = $('.sidebar-to-right').find(item.element)
+    const element = $('.sidebar-to-right').find(item.element)
     if (element.length < 1) return
-    var sidebar = $('.sidebar')
-    var target = sidebar.find('li[data-nav-id="' + item.target + '"]')
+    const sidebar = $('.sidebar')
+    const target = sidebar.find('li[data-nav-id="' + item.target + '"]')
     if (target.length < 1) return
     helpers.UI.sidebarTether(element, target)
-    var isInside = false
+    let isInside = false
     target.on('mouseover', function () {
       if (sidebar.hasClass('expand')) {
         element.removeClass('sub-menu-right-open')
@@ -358,7 +353,7 @@ helpers.UI.sidebarTether = function (element, target) {
     return
   }
 
-  // eslint-disable-next-line
+   
   new Tether({
     element: element,
     target: target,
@@ -369,7 +364,7 @@ helpers.UI.sidebarTether = function (element, target) {
 }
 
 helpers.UI.setNavItem = function (id) {
-  var $sidebar = $('.sidebar')
+  const $sidebar = $('.sidebar')
   $sidebar.find('li.active').removeClass('active')
   $sidebar.find('li[data-nav-id="' + id.toLowerCase() + '"]').addClass('active')
 }
@@ -385,8 +380,8 @@ helpers.UI.onlineUserSearch = function () {
   $(document).on('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp)
 
   function onSearchKeyUp () {
-    var $searchBox = $('.online-list-search-box').find('input')
-    var searchTerm = $searchBox.val().toLowerCase()
+    const $searchBox = $('.online-list-search-box').find('input')
+    const searchTerm = $searchBox.val().toLowerCase()
 
     $('.user-list li').each(function () {
       if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
@@ -399,13 +394,13 @@ helpers.UI.onlineUserSearch = function () {
 }
 
 helpers.UI.matchHeight = function () {
-  var $d = $('div[data-match-height]')
+  const $d = $('div[data-match-height]')
   $d.each(function () {
-    var self = $(this)
-    var target = self.attr('data-match-height')
+    const self = $(this)
+    const target = self.attr('data-match-height')
 
-    var $target = $(target)
-    var $targetHeight = $target.height()
+    const $target = $(target)
+    const $targetHeight = $target.height()
     self.height($targetHeight)
   })
 }
@@ -415,7 +410,7 @@ helpers.UI._disconnectedOverlayTimer = null
 helpers.UI.showDisconnectedOverlay = function () {
   helpers.UI._disconnectedOverlayTimer = setTimeout(function () {
     helpers.UI._disconnectedOverlayTimer = null
-    var $disconnected = $('.disconnected')
+    const $disconnected = $('.disconnected')
 
     if ($disconnected.css('display') === 'block') {
       return true
@@ -440,7 +435,7 @@ helpers.UI.hideDisconnectedOverlay = function () {
     helpers.UI._disconnectedOverlayTimer = null
   }
 
-  var $disconnected = $('.disconnected')
+  const $disconnected = $('.disconnected')
 
   if ($disconnected.css('display') === 'none') {
     return true
@@ -458,12 +453,12 @@ helpers.UI.hideDisconnectedOverlay = function () {
   })
 }
 
-helpers.UI.showSnackbar = function () {
-  if (arguments.length === 1 && _.isObject(arguments[0])) {
-    return helpers.UI.showSnackbar_.apply(this, arguments)
+helpers.UI.showSnackbar = function (...args) {
+  if (args.length === 1 && _.isObject(args[0])) {
+    return helpers.UI.showSnackbar_.apply(this, args)
   }
 
-  return helpers.UI.showSnackbar_.apply(this, arguments)
+  return helpers.UI.showSnackbar_.apply(this, args)
 }
 
 helpers.UI.showSnackbar_ = function (options) {
@@ -475,7 +470,7 @@ helpers.UI.showSnackbar_ = function (text, error) {
     error = false
   }
 
-  var actionText = '#4CAF50'
+  let actionText = '#4CAF50'
   if (error) {
     actionText = '#FF4835'
   }
@@ -491,10 +486,10 @@ helpers.UI.closeSnackbar = function () {
 }
 
 helpers.UI.inputs = function (parent) {
-  var $mdInput = typeof parent === 'undefined' ? $('.md-input') : $(parent).find('.md-input')
+  const $mdInput = typeof parent === 'undefined' ? $('.md-input') : $(parent).find('.md-input')
   $mdInput.each(function () {
     if (!$(this).closest('.md-input-wrapper').length) {
-      var $this = $(this)
+      const $this = $(this)
 
       if ($this.prev('label').length) {
         $this
@@ -602,19 +597,19 @@ function updateInput (object) {
 }
 
 helpers.UI.fabToolbar = function () {
-  var $fabToolbar = $('.md-fab-toolbar')
+  const $fabToolbar = $('.md-fab-toolbar')
 
   if ($fabToolbar) {
     $fabToolbar.children('i').on('click', function (e) {
       e.preventDefault()
 
-      var toolbarItems = $fabToolbar.children('.md-fab-toolbar-actions').children().length
+      const toolbarItems = $fabToolbar.children('.md-fab-toolbar-actions').children().length
 
       $fabToolbar.addClass('md-fab-animated')
 
-      var fabPadding = !$fabToolbar.hasClass('md-fab-small') ? 16 : 24
+      const fabPadding = !$fabToolbar.hasClass('md-fab-small') ? 16 : 24
 
-      var fabSize = !$fabToolbar.hasClass('md-fab-small') ? 64 : 44
+      const fabSize = !$fabToolbar.hasClass('md-fab-small') ? 64 : 44
 
       setTimeout(function () {
         $fabToolbar.width(toolbarItems * fabSize + fabPadding)
@@ -652,13 +647,13 @@ helpers.UI.fabToolbar = function () {
 }
 
 helpers.UI.fabSheet = function () {
-  var $fabSheet = $('.md-fab-sheet')
+  const $fabSheet = $('.md-fab-sheet')
 
   if ($fabSheet) {
     $fabSheet.children('i').on('click', function (e) {
       e.preventDefault()
 
-      var sheetItems = $fabSheet.children('.md-fab-sheet-actions').children('a').length
+      const sheetItems = $fabSheet.children('.md-fab-sheet-actions').children('a').length
       $fabSheet.addClass('md-fab-animated')
 
       setTimeout(function () {
@@ -721,8 +716,8 @@ helpers.UI.waves = function () {
 helpers.UI.selectize = function (parent) {
   // selectize plugins
   if (typeof $.fn.selectize !== 'undefined') {
-    Selectize.define('hidden_textbox', function (options) {
-      var self = this
+    Selectize.define('hidden_textbox', function (_options) {
+      const self = this
       this.showInput = function () {
         this.$control.css({ cursor: 'pointer' })
         this.$control_input.css({ opacity: 0, position: 'relative', left: self.rtl ? 10000 : -10000 })
@@ -738,12 +733,12 @@ helpers.UI.selectize = function (parent) {
     })
 
     Selectize.define('dropdown_after', function () {
-      var self = this
+      const self = this
       self.positionDropdown = function () {
-        var $control = this.$control
-        var position = $control.position()
-        var paddingLeft = position.left
-        var paddingTop = position.top + $control.outerHeight(true) + 32
+        const $control = this.$control
+        const position = $control.position()
+        const paddingLeft = position.left
+        const paddingTop = position.top + $control.outerHeight(true) + 32
         this.$dropdown.css({
           width: $control.outerWidth(),
           top: paddingTop,
@@ -753,21 +748,21 @@ helpers.UI.selectize = function (parent) {
     })
   }
 
-  var $selectize = parent ? $(parent).find('select') : $('[data-md-selectize],.data-md-selectize')
+  const $selectize = parent ? $(parent).find('select') : $('[data-md-selectize],.data-md-selectize')
 
   $selectize.each(function () {
-    var $this = $(this)
+    const $this = $(this)
     if (!$this.hasClass('selectized')) {
-      var thisPosBottom = $this.attr('data-md-selectize-bottom')
-      var posTopOffset = $this.attr('data-md-selectize-top-offset')
-      var closeOnSelect =
+      const thisPosBottom = $this.attr('data-md-selectize-bottom')
+      const posTopOffset = $this.attr('data-md-selectize-top-offset')
+      const closeOnSelect =
         $this.attr('data-md-selectize-closeOnSelect') !== 'undefined'
           ? $this.attr('data-md-selectize-closeOnSelect')
           : false
 
-      var showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
+      const showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
 
-      var plugins = ['remove_button']
+      const plugins = ['remove_button']
       if (!showTextBox) plugins.push('hidden_textbox')
 
       $this.after('<div class="selectize_fix"></div>').selectize({
@@ -812,22 +807,22 @@ helpers.UI.selectize = function (parent) {
   })
 
   // dropdowns
-  var $selectizeInline = $('[data-md-selectize-inline]')
+  const $selectizeInline = $('[data-md-selectize-inline]')
 
   $selectizeInline.each(function () {
-    var $this = $(this)
+    const $this = $(this)
     if (!$this.hasClass('selectized')) {
-      var thisPosBottom = $this.attr('data-md-selectize-bottom')
-      var posTopOffset = $this.attr('data-md-selectize-top-offset')
-      var closeOnSelect =
+      const thisPosBottom = $this.attr('data-md-selectize-bottom')
+      const posTopOffset = $this.attr('data-md-selectize-top-offset')
+      const closeOnSelect =
         $this.attr('data-md-selectize-closeOnSelect') !== 'undefined'
           ? $this.attr('data-md-selectize-closeOnSelect')
           : false
-      var maxOptions =
+      const maxOptions =
         $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000
-      var showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
+      const showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
 
-      var plugins = ['dropdown_after', 'remove_button']
+      const plugins = ['dropdown_after', 'remove_button']
       if (!showTextBox) plugins.push('hidden_textbox')
 
       $this
@@ -886,14 +881,14 @@ helpers.UI.selectize = function (parent) {
 
 helpers.UI.multiSelect = function (options) {
   $('.multiselect').each(function () {
-    var self = $(this)
+    const self = $(this)
     self.multiSelect(options)
   })
 }
 
 helpers.UI.cardShow = function () {
   $('.tru-card-intro').each(function () {
-    var self = $(this)
+    const self = $(this)
     self.velocity(
       {
         scale: 0.99999999,
@@ -908,11 +903,11 @@ helpers.UI.cardShow = function () {
 }
 
 helpers.UI.cardOverlay = function () {
-  var $truCard = $('.tru-card')
+  const $truCard = $('.tru-card')
 
   // replace toggler icon (x) when overlay is active
   $truCard.each(function () {
-    var $this = $(this)
+    const $this = $(this)
     if ($this.hasClass('tru-card-overlay-active')) {
       $this.find('.tru-card-overlay-toggler').html('close')
     }
@@ -981,7 +976,7 @@ helpers.UI.getPlugins = function (callback) {
 }
 
 helpers.UI.refreshTicketGrid = function () {
-  var $aRefreshTicketGrid = $('a#refreshTicketGrid')
+  const $aRefreshTicketGrid = $('a#refreshTicketGrid')
   if ($aRefreshTicketGrid.length() > 0) $aRefreshTicketGrid.trigger('click')
 }
 
@@ -990,14 +985,14 @@ helpers.closeNotificationsWindow = function () {
 }
 
 helpers.showFlash = function (message, error, sticky) {
-  var flash = $('.flash-message')
+  const flash = $('.flash-message')
   if (flash.length < 1) return true
 
-  var e = !!error
-  var s = !!sticky
+  const e = !!error
+  const s = !!sticky
 
-  var flashTO
-  var flashText = flash.find('.flash-text')
+  let flashTO
+  const flashText = flash.find('.flash-text')
   flashText.html(message)
 
   if (e) {
@@ -1021,7 +1016,7 @@ helpers.showFlash = function (message, error, sticky) {
     })
   }
 
-  var isShown = flashText.is(':visible')
+  const isShown = flashText.is(':visible')
   if (isShown) return true
 
   flashText.css('top', '-50px')
@@ -1039,7 +1034,7 @@ helpers.clearFlash = function () {
 }
 
 function flashTimeout () {
-  var flashText = $('.flash-message').find('.flash-text')
+  const flashText = $('.flash-message').find('.flash-text')
   if (flashText.length < 1) return
   flashText.stop().animate({ top: '-50px' }, 500, function () {
     $('.flash-message').hide()
@@ -1068,29 +1063,29 @@ helpers.formvalidator = function () {
 }
 
 helpers.bindKeys = function () {
-  var ticketIssue = $('#createTicketForm').find('textarea#issue')
+  const ticketIssue = $('#createTicketForm').find('textarea#issue')
   if (ticketIssue.length > 0) {
     ticketIssue.off('keydown')
     ticketIssue.on('keydown', function (e) {
-      var keyCode = e.which ? e.which : e.keyCode
+      const keyCode = e.which ? e.which : e.keyCode
       if (keyCode === 10 || (keyCode === 13 && e.ctrlKey)) {
         $('#saveTicketBtn').trigger('click')
       }
     })
   }
 
-  var keyBindEnter = $('*[data-keyBindSubmit]')
+  const keyBindEnter = $('*[data-keyBindSubmit]')
   if (keyBindEnter.length > 0) {
     $.each(keyBindEnter, function (k, val) {
-      var item = $(val)
+      const item = $(val)
       if (item.length < 1) return
       item.off('keydown')
-      var actionItem = item.attr('data-keyBindSubmit')
+      const actionItem = item.attr('data-keyBindSubmit')
       if (actionItem.length > 0) {
-        var itemObj = $(actionItem)
+        const itemObj = $(actionItem)
         if (itemObj.length > 0) {
           item.on('keydown', function (e) {
-            var keyCode = e.which ? e.which : e.keyCode
+            const keyCode = e.which ? e.which : e.keyCode
             if (keyCode === 10 || (keyCode === 13 && e.ctrlKey)) {
               itemObj.trigger('click')
             }
@@ -1102,7 +1097,7 @@ helpers.bindKeys = function () {
 }
 
 helpers.onWindowResize = function () {
-  var self = this
+  const self = this
   return _.debounce(function () {
     $('body > .side-nav-sub.tether-element').each(function () {
       $(this).remove()
@@ -1139,8 +1134,8 @@ helpers.scrollToBottom = function (jqueryObject, animate) {
 }
 
 helpers.resizeAll = function () {
-  var self = this
-  var l = _.debounce(function () {
+  const self = this
+  const l = _.debounce(function () {
     self.resizeFullHeight()
     self.UI.matchHeight()
     self.hideAllpDropDowns()
@@ -1153,16 +1148,16 @@ helpers.resizeAll = function () {
 }
 
 helpers.resizeFullHeight = function () {
-  var ele = $('.full-height')
+  const ele = $('.full-height')
   $.each(ele, function () {
-    var self = $(this)
+    const self = $(this)
     ele.ready(function () {
-      var h = $(window).height()
+      let h = $(window).height()
       if (self.css('borderTopStyle') === 'solid') {
         h = h - 1
       }
 
-      var dataOffset = self.attr('data-offset')
+      const dataOffset = self.attr('data-offset')
       if (!_.isUndefined(dataOffset)) {
         h = h - dataOffset
       }
@@ -1183,19 +1178,19 @@ helpers.resizeDataTables = function (selector, hasFooter) {
   }
 
   $(document).ready(function () {
-    var $selector = $(selector)
-    var scroller = $selector.find('.dataTables_scrollBody')
+    const $selector = $(selector)
+    const scroller = $selector.find('.dataTables_scrollBody')
     if (scroller.length !== 0) {
-      var tableHead = $selector.find('.dataTables_scrollHead')
-      var optionsHead = $selector.find('.table-options')
-      var hasFilter = $selector.find('.dataTables_filter')
-      var headHeight = 0
+      const tableHead = $selector.find('.dataTables_scrollHead')
+      const optionsHead = $selector.find('.table-options')
+      const hasFilter = $selector.find('.dataTables_filter')
+      let headHeight = 0
       if (optionsHead.length !== 0) {
         headHeight = optionsHead.height()
       } else if (hasFilter.length !== 0) {
         headHeight = hasFilter.height()
       }
-      var footerHeight = 0
+      let footerHeight = 0
       if (hasFooter) {
         footerHeight = tableHead.height()
       }
@@ -1214,9 +1209,9 @@ helpers.hideAllpDropDowns = function () {
 }
 
 helpers.hideAllUiKitDropdowns = function () {
-  var dropdowns = $('.uk-dropdown')
+  const dropdowns = $('.uk-dropdown')
   dropdowns.each(function () {
-    var thisDropdown = $(this)
+    const thisDropdown = $(this)
     thisDropdown.removeClass('uk-dropdown-shown')
 
     setTimeout(function () {
@@ -1231,19 +1226,19 @@ helpers.hideAllUiKitDropdowns = function () {
 
 helpers.pToolTip = function () {
   $(document).ready(function () {
-    var pToolTip = $('span[data-ptooltip]')
+    const pToolTip = $('span[data-ptooltip]')
     pToolTip.each(function () {
-      var title = $(this).attr('data-title')
-      var type = $(this).attr('data-ptooltip-type')
-      var html =
+      const title = $(this).attr('data-title')
+      const type = $(this).attr('data-ptooltip-type')
+      let html =
         "<div class='ptooltip-box-wrap' data-ptooltip-id='" +
         $(this).attr('id') +
         "'><div class='ptooltip-box'><span>" +
         title +
         '</span>'
       if (type.toLowerCase() === 'service') {
-        var status = $(this).attr('data-service-status')
-        var color = '#fff'
+        const status = $(this).attr('data-service-status')
+        let color = '#fff'
         if (status.toLowerCase() === 'starting' || status.toLowerCase() === 'stopping') {
           color = '#e77c3c'
         }
@@ -1256,8 +1251,8 @@ helpers.pToolTip = function () {
 
         html += "<span>Status: <span style='color: " + color + ";'>" + status + '</span>'
       } else if (type.toLowerCase() === 'dailyticket') {
-        var n = $(this).attr('data-new-count')
-        var c = $(this).attr('data-closed-count')
+        const n = $(this).attr('data-new-count')
+        const c = $(this).attr('data-closed-count')
 
         html +=
           "<span><span style='color: #e74c3c'>" +
@@ -1268,7 +1263,7 @@ helpers.pToolTip = function () {
       }
 
       html += '</div></div>'
-      var k = $('<div></div>').css({ position: 'relative' })
+      const k = $('<div></div>').css({ position: 'relative' })
       k.append(html)
 
       $(this).append(k)
@@ -1276,11 +1271,11 @@ helpers.pToolTip = function () {
 
     pToolTip.hover(
       function () {
-        var id = $(this).attr('id')
+        const id = $(this).attr('id')
         $('div.ptooltip-box-wrap[data-ptooltip-id="' + id + '"]').show()
       },
       function () {
-        var id = $(this).attr('id')
+        const id = $(this).attr('id')
         $('div.ptooltip-box-wrap[data-ptooltip-id="' + id + '"]').hide()
       }
     )
@@ -1290,15 +1285,15 @@ helpers.pToolTip = function () {
 helpers.setupDonutchart = function () {
   $(document).ready(function () {
     $('.donutchart').each(function () {
-      var trackColor = $(this).attr('data-trackColor')
+      let trackColor = $(this).attr('data-trackColor')
       if (trackColor === null || trackColor.length <= 0) {
         trackColor = '#e74c3c'
       }
-      var numCount = $(this).attr('data-numcount')
+      let numCount = $(this).attr('data-numcount')
       if (numCount === null || numCount.length <= 0) {
         numCount = false
       }
-      var $size = $(this).attr('data-size')
+      let $size = $(this).attr('data-size')
       if ($size === null || $size.length <= 0) {
         $size = 150
       }
@@ -1319,7 +1314,7 @@ helpers.setupDonutchart = function () {
         },
         onStop: function (value, to) {
           if (numCount) {
-            var totalNum = parseInt($(this.el).attr('data-totalNumCount'))
+            const totalNum = parseInt($(this.el).attr('data-totalNumCount'))
             if (totalNum <= 0) return false
             $(this.el)
               .find('.chart-value')
@@ -1334,17 +1329,17 @@ helpers.setupDonutchart = function () {
         },
         onStep: function (from, to, percent) {
           if (numCount) {
-            var countVal = parseInt($(this.el).attr('data-totalNumCount'))
+            const countVal = parseInt($(this.el).attr('data-totalNumCount'))
             if (countVal <= 0) return false
-            var current = parseInt(
+            const current = parseInt(
               $(this.el)
                 .find('.chart-value')
                 .text()
             )
             if (countVal !== null && countVal > 0 && current !== null) {
-              var totalCount = Math.round(countVal * (100 / Math.round(to)))
-              var val = totalCount * (0.01 * Math.round(percent))
-              var final = Math.round(val)
+              const totalCount = Math.round(countVal * (100 / Math.round(to)))
+              const val = totalCount * (0.01 * Math.round(percent))
+              const final = Math.round(val)
               if (isNaN(final)) return true
               $(this.el)
                 .find('.chart-value')
@@ -1366,9 +1361,9 @@ helpers.setupDonutchart = function () {
 helpers.setupBarChart = function () {
   $(document).ready(function () {
     $('.bar-chart > .bar').each(function () {
-      var $this = $(this)
-      var val = $this.attr('data-percent')
-      var i = 170 * (0.01 * val)
+      const $this = $(this)
+      const val = $this.attr('data-percent')
+      const i = 170 * (0.01 * val)
       $this
         .find('span.bar-track')
         .height(0)
@@ -1385,17 +1380,17 @@ helpers.setupBarChart = function () {
 helpers.actionButtons = function () {
   $(document).ready(function () {
     $('*[data-action]').each(function () {
-      var self = $(this)
-      var action = self.attr('data-action')
+      const self = $(this)
+      const action = self.attr('data-action')
       if (action.toLowerCase() === 'submit') {
-        var formId = self.attr('data-form')
+        const formId = self.attr('data-form')
         if (!_.isUndefined(formId)) {
-          var form = $('#' + formId)
+          const form = $('#' + formId)
           if (form.length !== 0) {
             self.click(function (e) {
               form.submit()
 
-              var preventDefault = self.attr('data-preventDefault')
+              const preventDefault = self.attr('data-preventDefault')
               if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
                 e.preventDefault()
               } else if (preventDefault.toLowerCase() === 'true') {
@@ -1405,19 +1400,19 @@ helpers.actionButtons = function () {
           }
         }
       } else if (action.toLowerCase() === 'scrolltobottom') {
-        var targetScroll = self.attr('data-targetScroll')
+        const targetScroll = self.attr('data-targetScroll')
         if (!_.isUndefined(targetScroll)) {
-          var target = $(targetScroll)
+          const target = $(targetScroll)
           if (target.length !== 0) {
             self.click(function (e) {
-              var animation = self.attr('data-action-animation')
+              const animation = self.attr('data-action-animation')
               if (!_.isUndefined(animation) && animation.toLowerCase() === 'false') {
                 target.animate({ scrollTop: target[0].scrollHeight }, 0)
               } else {
                 target.animate({ scrollTop: target[0].scrollHeight }, 1000)
               }
 
-              var preventDefault = self.attr('data-preventDefault')
+              const preventDefault = self.attr('data-preventDefault')
               if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
                 e.preventDefault()
               } else if (preventDefault.toLowerCase() === 'true') {
@@ -1456,7 +1451,7 @@ helpers.showLoader = function (opacity) {
     opacity = 1
   }
 
-  var $loader = $('#loader-wrapper')
+  const $loader = $('#loader-wrapper')
   $loader.css({ opacity: 0, display: 'block' })
   $loader.animate({ opacity: opacity }, 500)
 }
@@ -1464,7 +1459,7 @@ helpers.showLoader = function (opacity) {
 helpers.ajaxFormSubmit = function () {
   // Bind to forms
   $('form.ajaxSubmit').each(function () {
-    var self = $(this)
+    const self = $(this)
     self.submit(function (e) {
       $.ajax({
         type: self.attr('method'),
@@ -1579,13 +1574,13 @@ helpers.formatDate = function (date, format, isUTC) {
 
 helpers.setupChosen = function () {
   $('.chosen-select').each(function () {
-    var self = $(this)
-    var nosearch = $(this).attr('data-nosearch')
-    var placeholder = ''
-    var elePlaceHolder = $(this).attr('data-placeholder')
-    var noResults = 'No Results Found For '
-    var eleNoResults = $(this).attr('data-noresults')
-    var searchNum = 10
+    const self = $(this)
+    const nosearch = $(this).attr('data-nosearch')
+    let placeholder = ''
+    const elePlaceHolder = $(this).attr('data-placeholder')
+    let noResults = 'No Results Found For '
+    const eleNoResults = $(this).attr('data-noresults')
+    let searchNum = 10
     if (nosearch) searchNum = 90000
     if (!_.isUndefined(elePlaceHolder) && elePlaceHolder.length > 0) {
       placeholder = elePlaceHolder
@@ -1605,7 +1600,7 @@ helpers.setupChosen = function () {
 }
 
 helpers.clearMessageContent = function () {
-  var contentDiv = $('#message-content')
+  const contentDiv = $('#message-content')
   if (contentDiv.length > 0) {
     contentDiv.html('')
   }
@@ -1615,7 +1610,7 @@ helpers.closeMessageWindow = function () {
   // Close reveal and refresh page.
   UIkit.modal('#newMessageModal').hide()
   // Clear Fields
-  var $newMessageTo = $('#newMessageTo')
+  const $newMessageTo = $('#newMessageTo')
   $newMessageTo.find('option').prop('selected', false)
   $newMessageTo.trigger('chosen:updated')
   $('#newMessageSubject').val('')
@@ -1623,7 +1618,7 @@ helpers.closeMessageWindow = function () {
 }
 
 helpers.bindNewMessageSubmit = function () {
-  var messageForm = $('#newMessageForm')
+  const messageForm = $('#newMessageForm')
   if (messageForm.length < 1) return
 
   messageForm.unbind('submit', newMessageSubmit)
@@ -1632,14 +1627,14 @@ helpers.bindNewMessageSubmit = function () {
 
 function newMessageSubmit (e) {
   e.preventDefault()
-  var form = $('#newMessageForm')
-  var formData = form.serializeObject()
+  const form = $('#newMessageForm')
+  const formData = form.serializeObject()
 
   if (!form.isValid(null, null, false)) {
     return true
   }
 
-  var data = {
+  const data = {
     to: formData.newMessageTo,
     from: formData.from,
     subject: formData.newMessageSubject,
@@ -1870,20 +1865,20 @@ helpers.flushRoles = function () {
 }
 
 helpers.setupContextMenu = function (selector, complete) {
-  var $selector = $(selector)
+  const $selector = $(selector)
   if ($selector.length < 1) return false
 
   $(document).off('mousedown')
   $(document).on('mousedown', function (e) {
     if ($(e.target).parents('.context-menu').length < 1) {
-      var cm = $('.context-menu')
+      const cm = $('.context-menu')
       if (cm.length > 0) {
         cm.hide(100)
       }
     }
   })
 
-  var menuOpenFor
+  let menuOpenFor
   $selector.off('contextmenu')
   $selector.on('contextmenu', function (event) {
     event.preventDefault()
@@ -1904,9 +1899,9 @@ helpers.setupContextMenu = function (selector, complete) {
     }
   })
 
-  var $contextMenuLi = $('.context-menu li')
+  const $contextMenuLi = $('.context-menu li')
   $contextMenuLi.each(function () {
-    var $item = $(this)
+    const $item = $(this)
     $item.off('click')
     $item.on('click', function () {
       $('.context-menu').hide(100)
@@ -1920,7 +1915,7 @@ helpers.setupContextMenu = function (selector, complete) {
 }
 
 helpers.setupTruTabs = function (tabs) {
-  var toggleTab = function (element) {
+  const toggleTab = function (element) {
     if ($(element).hasClass('active')) {
       $(element)
         .parent()
@@ -1933,7 +1928,7 @@ helpers.setupTruTabs = function (tabs) {
       event.preventDefault()
       if ($(this).hasClass('active')) return true
 
-      var $highlighter = $(this)
+      const $highlighter = $(this)
         .parent()
         .find('.tru-tab-highlighter')
 
@@ -1947,7 +1942,7 @@ helpers.setupTruTabs = function (tabs) {
       $(this).addClass('active')
       $highlighter.css({ width: $(this).outerWidth() })
 
-      var tabId = $(this).attr('data-tabid')
+      const tabId = $(this).attr('data-tabid')
 
       $(this)
         .parents('.tru-tabs')
@@ -1964,7 +1959,7 @@ helpers.setupTruTabs = function (tabs) {
         .addClass('visible')
         .removeClass('hidden')
 
-      var highlighterPos = $(this).position().left + 'px'
+      const highlighterPos = $(this).position().left + 'px'
       $highlighter.css('transform', 'translateX(' + highlighterPos + ')')
     })
 
@@ -1983,20 +1978,16 @@ helpers.setupTruTabs = function (tabs) {
   })
 }
 
-function stringStartsWith (string, prefix) {
-  return string.slice(0, prefix.length) === prefix
-}
-
 helpers.prototypes = function () {
-  // eslint-disable-next-line
+   
   String.prototype.formatUnicorn =
     String.prototype.formatUnicorn ||
-    function () {
-      var str = this.toString()
-      if (arguments.length) {
-        var t = typeof arguments[0]
-        var key
-        var args = t === 'string' || t === 'number' ? Array.prototype.slice.call(arguments) : arguments[0]
+    function (...fmtArgs) {
+      let str = this.toString()
+      if (fmtArgs.length) {
+        const t = typeof fmtArgs[0]
+        let key
+        const args = t === 'string' || t === 'number' ? fmtArgs : fmtArgs[0]
 
         for (key in args) {
           str = str.replace(new RegExp('\\{' + key + '\\}', 'gi'), args[key])
@@ -2008,9 +1999,9 @@ helpers.prototypes = function () {
 }
 
 helpers.arrayIsEqual = function (value, other) {
-  var isEqual = function (value, other) {
+  const isEqual = function (value, other) {
     // Get the value type
-    var type = Object.prototype.toString.call(value)
+    const type = Object.prototype.toString.call(value)
 
     // If the two objects are not the same type, return false
     if (type !== Object.prototype.toString.call(other)) return false
@@ -2019,14 +2010,14 @@ helpers.arrayIsEqual = function (value, other) {
     if (['[object Array]', '[object Object]'].indexOf(type) < 0) return false
 
     // Compare the length of the length of the two items
-    var valueLen = type === '[object Array]' ? value.length : Object.keys(value).length
-    var otherLen = type === '[object Array]' ? other.length : Object.keys(other).length
+    const valueLen = type === '[object Array]' ? value.length : Object.keys(value).length
+    const otherLen = type === '[object Array]' ? other.length : Object.keys(other).length
     if (valueLen !== otherLen) return false
 
     // Compare two items
-    var compare = function (item1, item2) {
+    const compare = function (item1, item2) {
       // Get the object type
-      var itemType = Object.prototype.toString.call(item1)
+      const itemType = Object.prototype.toString.call(item1)
 
       // If an object or array, compare recursively
       if (['[object Array]', '[object Object]'].indexOf(itemType) >= 0) {
@@ -2050,11 +2041,11 @@ helpers.arrayIsEqual = function (value, other) {
 
     // Compare properties
     if (type === '[object Array]') {
-      for (var i = 0; i < valueLen; i++) {
+      for (let i = 0; i < valueLen; i++) {
         if (compare(value[i], other[i]) === false) return false
       }
     } else {
-      for (var key in value) {
+      for (const key in value) {
         if (value.hasOwnProperty(key)) {
           if (compare(value[key], other[key]) === false) return false
         }
@@ -2069,14 +2060,14 @@ helpers.arrayIsEqual = function (value, other) {
 }
 
 helpers.UI.hierarchicalShow = function (element) {
-  var $hierarchicalShow = $('.hierarchical_show')
+  const $hierarchicalShow = $('.hierarchical_show')
 
   if ($hierarchicalShow.length) {
     $hierarchicalShow.each(function () {
-      var timeout = $(this).attr('data-show-delay') ? parseInt($(this).attr('data-show-delay')) : 0
-      var $this = $(this)
-      var thisChildrenLength = $this.children().length
-      var baseDelay = 100
+      const timeout = $(this).attr('data-show-delay') ? parseInt($(this).attr('data-show-delay')) : 0
+      const $this = $(this)
+      const thisChildrenLength = $this.children().length
+      const baseDelay = 100
 
       $this.children().each(function (index) {
         $(this).css({
@@ -2107,9 +2098,9 @@ helpers.UI.hierarchicalShow = function (element) {
     })
   }
   if (element) {
-    var $this = $(element).addClass('hierarchical_show hierarchical_show_inView')
-    var thisChildrenLength = $this.children().length
-    var baseDelay = 100
+    const $this = $(element).addClass('hierarchical_show hierarchical_show_inView')
+    const thisChildrenLength = $this.children().length
+    const baseDelay = 100
 
     $this.children().each(function (index) {
       $(this).css({
@@ -2132,17 +2123,17 @@ helpers.UI.hierarchicalShow = function (element) {
 }
 
 helpers.UI.hierarchicalSlide = function (element) {
-  var $hierarchicalSlide = $('.hierarchical_slide')
+  const $hierarchicalSlide = $('.hierarchical_slide')
   if ($hierarchicalSlide.length) {
     $hierarchicalSlide.each(function () {
-      var $this = $(this)
-      var $thisChildren = $this.attr('data-slide-children')
+      const $this = $(this)
+      const $thisChildren = $this.attr('data-slide-children')
         ? $this.children($this.attr('data-slide-children'))
         : $this.children()
-      var thisChildrenLength = $thisChildren.length
-      var thisContext = $this.attr('data-slide-context') ? $this.closest($this.attr('data-slide-context'))[0] : 'window'
-      var delay = $this.attr('data-delay') ? parseInt($this.attr('data-delay')) : 0
-      var baseDelay = 100
+      const thisChildrenLength = $thisChildren.length
+      const thisContext = $this.attr('data-slide-context') ? $this.closest($this.attr('data-slide-context'))[0] : 'window'
+      const delay = $this.attr('data-delay') ? parseInt($this.attr('data-delay')) : 0
+      const baseDelay = 100
 
       if (thisChildrenLength >= 1) {
         $thisChildren.each(function (index) {
@@ -2174,13 +2165,13 @@ helpers.UI.hierarchicalSlide = function (element) {
   }
 
   if (element) {
-    var $this = $(element).addClass('hierarchical_slide hierarchical_slide_inView')
-    var $thisChildren = $this.attr('data-slide-children')
+    const $this = $(element).addClass('hierarchical_slide hierarchical_slide_inView')
+    const $thisChildren = $this.attr('data-slide-children')
       ? $this.children($this.attr('data-slide-children'))
       : $this.children()
-    var thisChildrenLength = $thisChildren.length
+    const thisChildrenLength = $thisChildren.length
     // var thisContext = $this.attr('data-slide-context') ? $this.closest($this.attr('data-slide-context'))[0] : 'window'
-    var baseDelay = 100
+    const baseDelay = 100
 
     if (thisChildrenLength >= 1) {
       $thisChildren.each(function (index) {
@@ -2202,8 +2193,8 @@ helpers.UI.hierarchicalSlide = function (element) {
 }
 
 helpers.setupImageLink = function (el) {
-  var $this = $(el)
-  var src = $this.attr('src')
+  const $this = $(el)
+  const src = $this.attr('src')
   $this.addClass('hasLinked')
   $this.css({ cursor: 'pointer' })
   $this.on('click', e => {
@@ -2269,8 +2260,8 @@ helpers.UI.showLinkWarning = function (el) {
   })
 }
 
-function get (path, obj) {
-  const fb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '${'.concat(path, '}')
+function get (path, obj, fallback) {
+  const fb = fallback !== undefined ? fallback : '${'.concat(path, '}')
   return path.split('.').reduce(function (res, key) {
     return res[key] || fb
   }, obj)

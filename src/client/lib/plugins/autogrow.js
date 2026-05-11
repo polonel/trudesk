@@ -7,12 +7,12 @@
    */
   $.fn.autogrow = function (options) {
     return this.filter('textarea').each(function () {
-      var self = this
-      var $self = $(self)
+      const self = this
+      const $self = $(self)
       //var minHeight    = $self.height();
-      var minHeight = 16
-      var noFlickerPad = $self.hasClass('autogrow-short') ? 0 : parseInt($self.css('lineHeight')) || 0
-      var settings = $.extend(
+      const minHeight = 16
+      const noFlickerPad = $self.hasClass('autogrow-short') ? 0 : parseInt($self.css('lineHeight')) || 0
+      const settings = $.extend(
         {
           preGrowCallback: null,
           postGrowCallback: null,
@@ -22,7 +22,7 @@
         options
       )
 
-      var shadow = $('<div></div>')
+      const shadow = $('<div></div>')
         .css({
           position: 'absolute',
           top: -10000,
@@ -37,13 +37,13 @@
         })
         .appendTo(document.body)
 
-      var update = function (event) {
-        var times = function (string, number) {
+      const update = function (event) {
+        const times = function (string, number) {
           for (var i = 0, r = ''; i < number; i++) r += string
           return r
         }
 
-        var val = self.value
+        let val = self.value
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
           .replace(/&/g, '&amp;')
@@ -61,7 +61,7 @@
             settings.shiftEnterPressed($self)
           }
         } else if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13) {
-          var value = val
+          const value = val
 
           $self.val('')
           val = ''
@@ -77,8 +77,8 @@
         shadow.css('width', $self.width())
         shadow.html(val + (noFlickerPad === 0 ? '...' : '')) // Append '...' to resize pre-emptively.
 
-        var oldHeight = $self.height()
-        var newHeight = Math.max(shadow.height() + noFlickerPad, minHeight)
+        const oldHeight = $self.height()
+        let newHeight = Math.max(shadow.height() + noFlickerPad, minHeight)
         if (settings.preGrowCallback != null) {
           newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight)
         }

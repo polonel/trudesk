@@ -10,10 +10,10 @@
  *  Updated:    1/15/20, 1:23 AM
  *  Copyright (c) 2014-2020 Trudesk, Inc. All rights reserved.
  */
-var mailCheck = require('../../../mailer/mailCheck')
-var apiUtils = require('../apiUtils')
+const mailCheck = require('../../../mailer/mailCheck')
+const apiUtils = require('../apiUtils')
 
-var mailerApi = {}
+const mailerApi = {}
 
 mailerApi.check = function (req, res) {
   mailCheck.refetch()

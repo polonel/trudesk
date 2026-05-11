@@ -56,19 +56,19 @@ export const installServer = function (callback: (err?: Error) => void) {
     res.sendFile(path.resolve(trudeskRoot(), 'dist/index-install.html'))
   })
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+   
   // @ts-ignore
   router.post('/install', routeMiddleware.checkOrigin, controllers.install.install)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+   
   // @ts-ignore
   router.post('/install/elastictest', routeMiddleware.checkOrigin, controllers.install.elastictest)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+   
   // @ts-ignore
   router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+   
   // @ts-ignore
   router.post('/install/existingdb', routeMiddleware.checkOrigin, controllers.install.existingdb)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+   
   // @ts-ignore
   router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart)
 

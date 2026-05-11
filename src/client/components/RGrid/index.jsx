@@ -23,15 +23,6 @@ function RGrid ({ size: { width, height } }) {
     helpers.resizeFullHeight()
   }, [])
 
-  const layouts = {
-    lg: [
-      { i: 'a', x: 0, y: 0, w: 1, h: 2 },
-      { i: 'b', x: 1, y: 0, w: 3, h: 2 },
-      { i: 'c', x: 4, y: 0, w: 1, h: 2 },
-      { i: 'd', x: 0, y: 2, w: 2, h: 2 }
-    ]
-  }
-
   return (
     <ResponsiveGrid
       className='uk-height-1-1'
@@ -63,7 +54,7 @@ RGrid.propTypes = {
   size: PropTypes.object.isRequired
 }
 
-function Widget ({ id, backgroundColor }) {
+function Widget ({ id, backgroundColor: _backgroundColor }) {
   // return <div style={{ backgroundColor }}>{id}</div>
   return <TruCard header={null} content={<div>Testing {id}</div>} fullSize={true} />
 }

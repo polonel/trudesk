@@ -12,33 +12,32 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var async = require('async')
-var Team = require('../../../models').TeamModel
-var apiUtils = require('../apiUtils')
+const _ = require('lodash')
+const Team = require('../../../models').TeamModel
+const apiUtils = require('../apiUtils')
 
-var apiTeams = {}
+const apiTeams = {}
 
 apiTeams.get = async (req, res) => {
-  var limit = 10
+  let limit = 10
   if (!_.isUndefined(req.query.limit)) {
     try {
       limit = parseInt(req.query.limit)
-    } catch (err) {
+    } catch (_err) {
       limit = 10
     }
   }
 
-  var page = 0
+  let page = 0
   if (req.query.page) {
     try {
       page = parseInt(req.query.page)
-    } catch (err) {
+    } catch (_err) {
       page = 0
     }
   }
 
-  var obj = {
+  const obj = {
     limit: limit,
     page: page
   }
@@ -53,7 +52,7 @@ apiTeams.get = async (req, res) => {
 }
 
 apiTeams.create = function (req, res) {
-  var postData = req.body
+  const postData = req.body
   if (!postData) return apiUtils.sendApiError_InvalidPostData(res)
 
   Team.create(postData, function (err, team) {
@@ -68,10 +67,10 @@ apiTeams.create = function (req, res) {
 }
 
 apiTeams.update = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Team Id')
 
-  var putData = req.body
+  const putData = req.body
   if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
 
   Team.findOne({ _id: id }, function (err, team) {
@@ -93,7 +92,7 @@ apiTeams.update = function (req, res) {
 }
 
 apiTeams.delete = function (req, res) {
-  var id = req.params.id
+  const id = req.params.id
   if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Team Id')
 
   Team.deleteOne({ _id: id }, function (err, success) {

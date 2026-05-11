@@ -23,21 +23,21 @@
         throw '$.actual => The jQuery method "' + method + '" you called does not exist'
       }
 
-      var defaults = {
+      const defaults = {
         absolute: false,
         clone: false,
         includeMargin: false,
         display: 'block'
       }
 
-      var configs = $.extend(defaults, options)
+      const configs = $.extend(defaults, options)
 
-      var $target = this.eq(0)
-      var fix, restore
+      let $target = this.eq(0)
+      let fix, restore
 
       if (configs.clone === true) {
         fix = function () {
-          var style = 'position: absolute !important; top: -1000 !important; '
+          const style = 'position: absolute !important; top: -1000 !important; '
 
           // this is useful with css3pie
           $target = $target
@@ -51,9 +51,9 @@
           $target.remove()
         }
       } else {
-        var tmp = []
-        var style = ''
-        var $hidden
+        const tmp = []
+        let style = ''
+        let $hidden
 
         fix = function () {
           // get all hidden parents
@@ -69,8 +69,8 @@
           // set the hidden el css to be got the actual value later
           $hidden.each(function () {
             // Save original style. If no style was set, attr() returns undefined
-            var $this = $(this)
-            var thisStyle = $this.attr('style')
+            const $this = $(this)
+            const thisStyle = $this.attr('style')
 
             tmp.push(thisStyle)
             // Retain as much of the original style as possible, if there is one
@@ -81,8 +81,8 @@
         restore = function () {
           // restore origin style values
           $hidden.each(function (i) {
-            var $this = $(this)
-            var _tmp = tmp[i]
+            const $this = $(this)
+            const _tmp = tmp[i]
 
             if (_tmp === undefined) {
               $this.removeAttr('style')
@@ -97,7 +97,7 @@
       // get the actual value with user specific methed
       // it can be 'width', 'height', 'outerWidth', 'innerWidth'... etc
       // configs.includeMargin only works for 'outerWidth' and 'outerHeight'
-      var actual = /(outer)/.test(method) ? $target[method](configs.includeMargin) : $target[method]()
+      const actual = /(outer)/.test(method) ? $target[method](configs.includeMargin) : $target[method]()
 
       restore()
       // IMPORTANT, this plugin only return the value of the first element

@@ -193,7 +193,7 @@ const helpers = {
       operator = '==='
     }
 
-    var operators = {
+    const operators = {
       '==': function (l, r) {
         return l === r
       },
@@ -219,7 +219,7 @@ const helpers = {
         return l >= r
       },
       typeof: function (l, r) {
-        // eslint-disable-next-line
+         
         return typeof l === r
       }
     }
@@ -228,7 +228,7 @@ const helpers = {
       throw new Error('Handlebars Helper "compare" doesn\'t know the operator ' + operator)
     }
 
-    var result = operators[operator](left, right)
+    const result = operators[operator](left, right)
 
     if (result) {
       return options.fn(this)
@@ -429,13 +429,13 @@ const helpers = {
    *
    * @example: {{ifAny this compare=that}}
    */
-  ifAny: function () {
-    var argLength = arguments.length - 2
-    var content = arguments[argLength + 1]
-    var success = true
-    var i = 0
+  ifAny: function (...args) {
+    const argLength = args.length - 2
+    const content = args[argLength + 1]
+    let success = true
+    let i = 0
     while (i < argLength) {
-      if (!arguments[i]) {
+      if (!args[i]) {
         success = false
         break
       }
@@ -489,14 +489,14 @@ const helpers = {
    *   {{/forEach}}
    */
   forEach: function (array, fn) {
-    var total = array.length
-    var buffer = ''
+    const total = array.length
+    let buffer = ''
     // Better performance: http://jsperf.com/for-vs-forEach/2
-    var i = 0
+    let i = 0
     while (i < total) {
       // stick an index property onto the item, starting
       // with 1, may make configurable later
-      var item = array[i]
+      const item = array[i]
       item.index = i + 1
       item._total = total
       item.isFirst = i === 0
@@ -626,7 +626,7 @@ const helpers = {
   },
 
   split: function (arr, sep) {
-    var str = ''
+    let str = ''
     _.each(arr, function (obj) {
       str += obj + ' ' + sep + ' '
     })
@@ -666,20 +666,20 @@ const helpers = {
       throw new Error('Invalid Type sent to hasPermOverRole. Should be role object')
     }
 
-    var p = require('../../permissions')
+    const p = require('../../permissions')
     if (!p.canThis(userRole, perm)) return options.inverse(this)
     if (ownerRole._id.toString() === userRole._id.toString()) return options.fn(this)
 
     if (userRole.isAdmin) return options.fn(this)
     if (userRole.isAgent) return options.fn(this)
-    var hasHierarchyEnabled = p.hasHierarchyEnabled(userRole._id)
+    const hasHierarchyEnabled = p.hasHierarchyEnabled(userRole._id)
     if (hasHierarchyEnabled && p.hasPermOverRole(ownerRole._id, userRole._id)) return options.fn(this)
 
     return options.inverse(this)
   },
 
   checkPerm: function (user, perm, options) {
-    var P = require('../../permissions')
+    const P = require('../../permissions')
     if (_.isUndefined(user)) return options.inverse(this)
 
     if (P.canThis(user.role, perm)) {
@@ -693,14 +693,14 @@ const helpers = {
     if (_.isUndefined(user)) return options.inverse(this)
     if (user.role.isAdmin) return options.fn(this)
 
-    var p = require('../../permissions')
+    const p = require('../../permissions')
     if (p.canThis(user.role, perm)) return options.fn(this)
 
     return options.inverse(this)
   },
 
   checkRole: function (role, perm, options) {
-    var P = require('../../permissions')
+    const P = require('../../permissions')
     if (P.canThis(role, perm)) {
       return options.fn(this)
     }
@@ -712,9 +712,9 @@ const helpers = {
     if (_.isUndefined(user) || _.isUndefined(permissions)) {
       return options.inverse(this)
     }
-    var pluginPermissions = permissions.split(' ')
-    var result = false
-    for (var i = 0; i < pluginPermissions.length; i++) {
+    const pluginPermissions = permissions.split(' ')
+    let result = false
+    for (let i = 0; i < pluginPermissions.length; i++) {
       if (pluginPermissions[i] === user.role) {
         result = true
       }
@@ -728,7 +728,7 @@ const helpers = {
   },
 
   checkEditSelf: function (user, owner, perm, options) {
-    var P = require('../../permissions')
+    const P = require('../../permissions')
     if (P.canThis(user.role, perm + ':editSelf')) {
       if (user._id.toString() === owner._id.toString()) {
         return options.fn(this)
@@ -741,7 +741,7 @@ const helpers = {
   },
 
   hasGroup: function (arr, value, options) {
-    var result = _.some(arr, function (i) {
+    const result = _.some(arr, function (i) {
       if (_.isUndefined(i) || _.isUndefined(value)) return false
       return i._id.toString() === value.toString()
     })
@@ -760,7 +760,7 @@ const helpers = {
   },
 
   match_id: function (_id1, _id2, options) {
-    var result = _id1.toString() === _id2.toString()
+    const result = _id1.toString() === _id2.toString()
     if (result) {
       return options.fn(this)
     }
@@ -782,15 +782,15 @@ const helpers = {
 
   overdue: function (showOverdue, date, updated, overdueIn, options) {
     if (!showOverdue) return ''
-    var now = moment()
+    const now = moment()
     if (updated) {
       updated = moment(updated)
     } else {
       updated = moment(date)
     }
 
-    var timeout = updated.clone().add(overdueIn, 'm')
-    var result = now.isAfter(timeout)
+    const timeout = updated.clone().add(overdueIn, 'm')
+    const result = now.isAfter(timeout)
 
     if (result) {
       return options.fn(this)
@@ -800,7 +800,7 @@ const helpers = {
   },
 
   statusName: function (status) {
-    var str = ''
+    let str = ''
     switch (status) {
       case 0:
         str = 'New'
@@ -826,9 +826,9 @@ const helpers = {
   },
 
   shouldShowCommentSection: function (user, options) {
-    var p = require('../../permissions')
-    var hasComments = p.canThis(user.role, 'comments:create')
-    var hasNotes = p.canThis(user.role, 'tickets:notes')
+    const p = require('../../permissions')
+    const hasComments = p.canThis(user.role, 'comments:create')
+    const hasNotes = p.canThis(user.role, 'tickets:notes')
 
     if (hasComments || hasNotes) return options.fn(this)
     return options.inverse(this)
@@ -857,7 +857,7 @@ helpers.inArray = helpers.hasGroup
 // Export helpers
 module.exports.helpers = helpers
 module.exports.register = function (Handlebars) {
-  for (var helper in helpers) {
+  for (const helper in helpers) {
     if (helpers.hasOwnProperty(helper)) {
       Handlebars.registerHelper(helper, helpers[helper])
     }

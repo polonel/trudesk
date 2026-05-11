@@ -35,7 +35,7 @@ class DatePicker extends React.Component {
   }
 
   render () {
-    const { value, small, name, validation, readOnly } = this.props
+    const { value, small, name, validation } = this.props
 
     return (
       <Fragment>

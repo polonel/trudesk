@@ -287,7 +287,7 @@ accountsController.uploadCSV = function (req: any, res: any) {
 
   const parser = csv.parse()
 
-  busboy.on('file', function (_name: any, file: any, _info: any) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  busboy.on('file', function (_name: any, file: any, _info: any) {
     object.csv = []
 
     file

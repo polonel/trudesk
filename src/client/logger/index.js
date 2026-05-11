@@ -27,7 +27,6 @@ class Log {
     // Set the prefix which will cause debug to enable the message
     const namespace = `${BASE}:${level}`
     const createDebug = debug(namespace)
-    // eslint-disable-next-line no-console
     createDebug.log = console.log.bind(console)
 
     // Set the colour of the message based on the level

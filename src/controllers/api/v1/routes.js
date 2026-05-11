@@ -18,7 +18,7 @@ module.exports = function (middleware, router, controllers) {
   // Shortenconsts
   const apiv1 = middleware.api
   const isAdmin = middleware.isAdmin
-  const isAgent = middleware.isAgent
+  const _isAgent = middleware.isAgent
   const isAgentOrAdmin = middleware.isAgentOrAdmin
   const canUser = middleware.canUser
   const apiCtrl = controllers.api.v1

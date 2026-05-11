@@ -71,11 +71,6 @@ const AccountsWithParams = props => {
   return <AccountsContainer view={params.view} {...props} />
 }
 
-const GroupsWithParams = props => {
-  const params = useParams()
-
-  return <GroupsContainer {...props} />
-}
 
 const BaseRouter = ({ user, setSession }) => {
   // console.log('User: ', user)

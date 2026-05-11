@@ -18,7 +18,7 @@ const _ = require('lodash')
 const winston = require('../logger')
 const pkg = require('../../package')
 const Chance = require('chance')
-const { GroupModel, DepartmentModel, UserSchema } = require('../models')
+const { GroupModel, DepartmentModel } = require('../models')
 
 const installController = {}
 installController.content = {}
@@ -122,9 +122,7 @@ installController.existingdb = function (req, res) {
 installController.install = function (req, res) {
   const db = require('../database')
   const roleSchema = require('../models/role')
-  const roleOrderSchema = require('../models/roleorder')
   const UserSchema = require('../models').UserModel
-  const GroupSchema = require('../models/group')
   const Counters = require('../models/counters').default
   const TicketTypeSchema = require('../models').TicketTypeModel
   const SettingsSchema = require('../models/setting')
@@ -369,7 +367,6 @@ installController.install = function (req, res) {
 
             next()
           } catch (err) {
-            console.log(err)
             winston.error('Database Error: ' + err.message)
             next(err)
           }

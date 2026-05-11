@@ -27,7 +27,7 @@ import TicketStatusBody from 'containers/Settings/Tickets/ticketStatusBody'
 
 @observer
 class TicketStatusContainer extends React.Component {
-  onCreateStatusClicked (e) {
+  onCreateStatusClicked (_e) {
     this.props.showModal('CREATE_STATUS')
   }
 
@@ -38,7 +38,7 @@ class TicketStatusContainer extends React.Component {
 
     axios
       .put('/api/v2/tickets/status/order', { order: arr })
-      .then(res => {})
+      .then(_res => {})
       .catch(err => {
         console.log(err)
         helpers.UI.showSnackbar(err.message || err.response?.statusText, true)
@@ -100,6 +100,6 @@ TicketStatusContainer.propTypes = {
   hideModal: PropTypes.func.isRequired
 }
 
-const mapStateToProps = state => ({})
+const mapStateToProps = _state => ({})
 
 export default connect(mapStateToProps, { showModal, hideModal })(TicketStatusContainer)

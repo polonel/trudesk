@@ -314,9 +314,11 @@ ticketsV2.single = async function (req, res) {
           // Tickets with no group: allow if the user is the owner
           if (!ticket.group) {
             const isOwner = (ticket.owner as any)?._id.toString() === requestUser._id.toString()
-            isOwner
-              ? apiUtils.sendApiSuccess(res, { ticket })
-              : apiUtils.sendApiError(res, 403, 'Forbidden')
+            if (isOwner) {
+              apiUtils.sendApiSuccess(res, { ticket })
+            } else {
+              apiUtils.sendApiError(res, 403, 'Forbidden')
+            }
             return resolve()
           }
 
@@ -533,7 +535,7 @@ ticketsV2.postNote = async (req, res) => {
 
     return apiUtils.sendApiSuccess(res, { ticket })
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     return apiUtils.sendApiError(res, 500, e)
   }
 }
@@ -826,7 +828,7 @@ ticketsV2.types.delete = async (req, res) => {
 
     return apiUtils.sendApiSuccess(res)
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     return apiUtils.sendApiError(res, 400, e)
   }
 }
@@ -960,7 +962,7 @@ const statusCreate = async (req: TypedRequestBody<any>, res: Response) => {
     return apiUtils.sendApiSuccess(res, { status})
 
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     return apiUtils.sendApiError(res, 500, e)
   }
 }

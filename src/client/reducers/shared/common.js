@@ -13,7 +13,7 @@
  */
 
 import { handleActions } from 'redux-actions'
-import { fromJS, List, Map } from 'immutable'
+import { fromJS, Map } from 'immutable'
 
 import { FETCH_VIEWDATA } from 'actions/types'
 

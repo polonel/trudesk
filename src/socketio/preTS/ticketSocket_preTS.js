@@ -11,23 +11,23 @@
  *  Updated:    1/20/19 4:43 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
-var _ = require('lodash')
-var async = require('async')
-var winston = require('../logger')
-var marked = require('marked')
-var sanitizeHtml = require('sanitize-html')
-var utils = require('../helpers/utils')
-var emitter = require('../emitter')
-var socketEvents = require('./socketEventConsts')
-var ticketSchema = require('../models').TicketModel
-var prioritySchema = require('../models').PriorityModel
-var userSchema = require('../models').UserModel
-var roleSchema = require('../models/role')
-var permissions = require('../permissions')
-var xss = require('xss')
+const _ = require('lodash')
+const async = require('async')
+const winston = require('../logger')
+const marked = require('marked')
+const sanitizeHtml = require('sanitize-html')
+const utils = require('../helpers/utils')
+const emitter = require('../emitter')
+const socketEvents = require('./socketEventConsts')
+const ticketSchema = require('../models').TicketModel
+const _prioritySchema = require('../models').PriorityModel
+const userSchema = require('../models').UserModel
+const roleSchema = require('../models/role')
+const permissions = require('../permissions')
+const xss = require('xss')
 const { PriorityModel } = require('../models')
 
-var events = {}
+const events = {}
 
 function register (socket) {
   events.onUpdateTicketGrid(socket)
@@ -74,7 +74,7 @@ events.onUpdateTicketStatus = socket => {
         owner: ticket.owner,
         status: ticket.status
       })
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -86,7 +86,7 @@ events.onUpdateTicket = function (socket) {
       const ticket = await ticketSchema.getTicketById(data._id)
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (error) {
+    } catch (_error) {
       // Blank
     }
   })
@@ -99,7 +99,7 @@ events.onUpdateAssigneeList = function (socket) {
       userSchema.find({ role: { $in: roles }, deleted: false }, function (err, users) {
         if (err) return true
 
-        var sortedUser = _.sortBy(users, 'fullname')
+        const sortedUser = _.sortBy(users, 'fullname')
 
         utils.sendToSelf(socket, socketEvents.TICKETS_ASSIGNEE_LOAD, sortedUser)
       })
@@ -202,7 +202,7 @@ events.onUpdateTicketTags = socket => {
       const ticket = await ticketSchema.findOne({ _id: ticketId }).populate('tags')
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_TAGS_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -241,7 +241,7 @@ events.onClearAssignee = socket => {
 
       // emitter.emit('ticket:updated', tt)
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_ASSIGNEE_UPDATE, savedTicket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -317,7 +317,7 @@ events.onSetTicketIssue = socket => {
       ticket = await ticket.save()
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -368,7 +368,7 @@ events.onRemoveCommentNote = socket => {
       ticket = await ticket.save()
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UPDATE, ticket)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })
@@ -393,7 +393,7 @@ events.onAttachmentsUIUpdate = socket => {
       }
 
       utils.sendToAllConnectedClients(io, socketEvents.TICKETS_UI_ATTACHMENTS_UPDATE, data)
-    } catch (e) {
+    } catch (_e) {
       // Blank
     }
   })

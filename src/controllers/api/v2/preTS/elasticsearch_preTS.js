@@ -73,10 +73,10 @@ apiElasticSearch.status = async (req, res) => {
 }
 
 apiElasticSearch.search = async (req, res) => {
-  var limit = !_.isUndefined(req.query['limit']) ? req.query.limit : 100
+  let limit = !_.isUndefined(req.query['limit']) ? req.query.limit : 100
   try {
     limit = parseInt(limit)
-  } catch (e) {
+  } catch (_e) {
     limit = 100
   }
 

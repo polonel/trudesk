@@ -55,7 +55,7 @@ class SettingsIncomingMail extends React.Component {
   static getDerivedStateFromProps (nextProps, state) {
     // Load those settings Up to state!
     if (nextProps.settings) {
-      let stateObj = { ...state }
+      const stateObj = { ...state }
       if (!state.mailerCheckHost)
         stateObj.mailerCheckHost = nextProps.settings.getIn(['settings', 'mailerCheckHost', 'value']) || ''
       if (!state.mailerCheckPort)
@@ -204,7 +204,7 @@ class SettingsIncomingMail extends React.Component {
     })
   }
 
-  onCheckNowClicked (e) {
+  onCheckNowClicked (_e) {
     axios
       .get(`/api/v2/mailer/check`)
       .then(function (res) {

@@ -85,7 +85,11 @@ class SingleSelect extends React.Component {
         self.select.selectize.updateOption(i.value, i)
       })
 
-      this.props.disabled ? this.select.selectize.disable() : this.select.selectize.enable()
+      if (this.props.disabled) {
+        this.select.selectize.disable()
+      } else {
+        this.select.selectize.enable()
+      }
     }
   }
 

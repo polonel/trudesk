@@ -19,7 +19,6 @@ const userSchema = require('../models').UserModel
 const permissions = require('../permissions')
 const emitter = require('../emitter')
 const xss = require('xss')
-const path = require('path')
 
 const accountsController = {}
 
@@ -292,7 +291,7 @@ accountsController.uploadCSV = function (req, res) {
 
   const parser = csv.parse()
 
-  busboy.on('file', function (name, file, info) {
+  busboy.on('file', function (name, file, _info) {
     object.csv = []
 
     file

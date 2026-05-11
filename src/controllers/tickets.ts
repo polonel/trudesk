@@ -325,7 +325,7 @@ ticketsController.print = function (req: any, res: any) {
             } else {
               return next()
             }
-          } catch (e) {
+          } catch (_e) {
             return res.redirect('/tickets')
           }
         },

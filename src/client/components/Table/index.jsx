@@ -15,7 +15,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import helpers from 'lib/helpers'
 
 class Table extends React.Component {
   render () {

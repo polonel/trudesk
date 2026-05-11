@@ -247,7 +247,7 @@ viewController.getData = function (request, cb) {
           }
 
           return callback()
-        } catch (e) {
+        } catch (_e) {
           viewdata.favicon = '/img/favicon.ico'
           return callback()
         }
@@ -726,11 +726,11 @@ viewController.getShowTourSetting = async function (request, callback) {
 
 viewController.getPluginsInfo = function (request, callback) {
   // Load Plugin routes
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const dive = require('dive')
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const path = require('path')
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const fs = require('fs')
   const pluginDir = path.resolve(trudeskRoot(), 'plugins')
   if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir)
@@ -741,7 +741,7 @@ viewController.getPluginsInfo = function (request, callback) {
     function (err, dir) {
       if (err) throw err
       delete require.cache[require.resolve(path.join(dir, '/plugin.json'))]
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       const pluginPackage = require(path.join(dir, '/plugin.json'))
       plugins.push(pluginPackage)
     },

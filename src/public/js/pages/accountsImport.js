@@ -24,11 +24,11 @@ define('pages/accountsImport', [
   'jquery_actual',
   'history'
 ], function ($, _, helpers, velocity, UIkit, socket) {
-  var accountsImportPage = {}
-  var state = {}
+  const accountsImportPage = {}
+  const state = {}
   accountsImportPage.init = function (callback) {
     $(document).ready(function () {
-      var testPage = $('#page-content').find('.accountsImport')
+      const testPage = $('#page-content').find('.accountsImport')
       if (testPage.length < 1) {
         if (typeof callback === 'function') {
           return callback()
@@ -57,7 +57,7 @@ define('pages/accountsImport', [
   }
 
   accountsImportPage.wizardCSV = function () {
-    var $wizardCsv = $('#wizard_csv')
+    const $wizardCsv = $('#wizard_csv')
 
     if ($wizardCsv.length) {
       $wizardCsv.steps({
@@ -102,8 +102,8 @@ define('pages/accountsImport', [
               .addClass('disabled')
               .attr('aria-disabled', true)
 
-            var csvStatusBox = $('#csv-import-status-box')
-            var csvStatusUL = csvStatusBox.find('ul')
+            const csvStatusBox = $('#csv-import-status-box')
+            const csvStatusUL = csvStatusBox.find('ul')
             csvStatusUL.append('<li>Starting import...</li>')
             disableUIElements()
 
@@ -129,11 +129,11 @@ define('pages/accountsImport', [
   }
 
   accountsImportPage.csvUpload = function () {
-    var progressbar = $('#progressbar')
+    const progressbar = $('#progressbar')
 
-    var bar = progressbar.find('.uk-progress-bar')
+    const bar = progressbar.find('.uk-progress-bar')
 
-    var settings = {
+    const settings = {
       action: '/accounts/import/csv/upload',
       allow: '*.csv',
       loadstart: function () {
@@ -185,7 +185,7 @@ define('pages/accountsImport', [
   }
 
   accountsImportPage.wizardJson = function () {
-    var $wizardJson = $('#wizard_json')
+    const $wizardJson = $('#wizard_json')
 
     if ($wizardJson.length) {
       $wizardJson.steps({
@@ -230,8 +230,8 @@ define('pages/accountsImport', [
               .addClass('disabled')
               .attr('aria-disabled', true)
 
-            var csvStatusBox = $('#json-import-status-box')
-            var csvStatusUL = csvStatusBox.find('ul')
+            const csvStatusBox = $('#json-import-status-box')
+            const csvStatusUL = csvStatusBox.find('ul')
             csvStatusUL.append('<li>Starting import...</li>')
             disableUIElements()
 
@@ -257,11 +257,11 @@ define('pages/accountsImport', [
   }
 
   accountsImportPage.jsonUpload = function () {
-    var progressbar = $('#json-progressbar')
+    const progressbar = $('#json-progressbar')
 
-    var bar = progressbar.find('.uk-progress-bar')
+    const bar = progressbar.find('.uk-progress-bar')
 
-    var settings = {
+    const settings = {
       action: '/accounts/import/json/upload',
       allow: '*.json',
       loadstart: function () {
@@ -309,14 +309,14 @@ define('pages/accountsImport', [
   }
 
   accountsImportPage.wizardLdap = function () {
-    var $wizardLdap = $('#wizard_ldap')
-    var $connectionForm = $('#wizard_ldap_connection_form')
+    const $wizardLdap = $('#wizard_ldap')
+    const $connectionForm = $('#wizard_ldap_connection_form')
 
-    var ldapSuccess = false
+    let ldapSuccess = false
 
-    var addedUsers = []
+    let addedUsers = []
 
-    var updatedUsers = []
+    let updatedUsers = []
 
     if ($wizardLdap.length) {
       $wizardLdap.steps({
@@ -337,8 +337,8 @@ define('pages/accountsImport', [
         },
         onStepChanging: function (event, currentIndex, newIndex) {
           if (currentIndex === 0 && newIndex === 1) {
-            var verifyStatus = $('#wizard_ldap_verify_text')
-            var data = $connectionForm.serializeObject()
+            const verifyStatus = $('#wizard_ldap_verify_text')
+            const data = $connectionForm.serializeObject()
 
             $wizardLdap.find('#wizard_ldap_verify_spinner').removeClass('uk-hidden')
             $wizardLdap.find('#wizard_ldap_verify_icon').addClass('uk-hidden')
@@ -441,8 +441,8 @@ define('pages/accountsImport', [
               .addClass('disabled')
               .attr('aria-disabled', true)
 
-            var ldapStatusBox = $('#ldap-import-status-box')
-            var ldapStatusUL = ldapStatusBox.find('ul')
+            const ldapStatusBox = $('#ldap-import-status-box')
+            const ldapStatusUL = ldapStatusBox.find('ul')
             ldapStatusUL.append('<li>Starting import...</li>')
             disableUIElements()
 
@@ -483,13 +483,13 @@ define('pages/accountsImport', [
   }
 
   function ldapReviewRender (addedUsers, updatedUsers) {
-    var addedUsersTemplate = []
-    var updatedUsersTemplate = []
+    const addedUsersTemplate = []
+    const updatedUsersTemplate = []
 
     if (addedUsers === null) addedUsers = []
     if (updatedUsers === null) updatedUsers = []
 
-    for (var i = 0; i < addedUsers.length; i++) {
+    for (let i = 0; i < addedUsers.length; i++) {
       addedUsersTemplate.push(
         addedUsers[i].sAMAccountName +
           ' | action=add username=' +
@@ -503,7 +503,7 @@ define('pages/accountsImport', [
       )
     }
 
-    for (var k = 0; k < updatedUsers.length; k++) {
+    for (let k = 0; k < updatedUsers.length; k++) {
       updatedUsersTemplate.push(
         updatedUsers[k].username +
           ' | action=update username=' +
@@ -517,7 +517,7 @@ define('pages/accountsImport', [
       )
     }
 
-    var sep = []
+    const sep = []
 
     if (addedUsersTemplate.length > 0) {
       sep.push('----------------')
@@ -527,13 +527,13 @@ define('pages/accountsImport', [
   }
 
   function csvReviewRender (addedUsers, updatedUsers) {
-    var addedUsersTemplate = []
-    var updatedUsersTemplate = []
+    const addedUsersTemplate = []
+    const updatedUsersTemplate = []
 
     if (addedUsers === null) addedUsers = []
     if (updatedUsers === null) updatedUsers = []
 
-    for (var i = 0; i < addedUsers.length; i++) {
+    for (let i = 0; i < addedUsers.length; i++) {
       addedUsersTemplate.push(
         addedUsers[i].username +
           ' | action=add username=' +
@@ -547,7 +547,7 @@ define('pages/accountsImport', [
       )
     }
 
-    for (var k = 0; k < updatedUsers.length; k++) {
+    for (let k = 0; k < updatedUsers.length; k++) {
       updatedUsersTemplate.push(
         updatedUsers[k].username +
           ' | action=update username=' +
@@ -561,7 +561,7 @@ define('pages/accountsImport', [
       )
     }
 
-    var sep = []
+    const sep = []
 
     if (addedUsersTemplate.length > 0) {
       sep.push('----------------')
@@ -571,7 +571,7 @@ define('pages/accountsImport', [
   }
 
   function contentHeight (thisWizard, step) {
-    var thisHeight = $(thisWizard)
+    const thisHeight = $(thisWizard)
       .find('.step-' + step)
       .actual('outerHeight')
     $(thisWizard)

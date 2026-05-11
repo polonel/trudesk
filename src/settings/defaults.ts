@@ -34,13 +34,13 @@ import {
 import type { TicketTypeClass } from '../models/tickettype'
 import { SettingsUtil } from './settingsUtil'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const nconf = require('nconf')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const Chance = require('chance')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const newTicketTemplate = require('./json/mailer-new-ticket')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const passwordResetTemplate = require('./json/mailer-password-reset')
 
 type AsyncCallback = (err?: Error | null) => void
@@ -142,16 +142,16 @@ async function createDirectories(): Promise<void> {
 }
 
 async function downloadWin32MongoDBTools(): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const os = require('os')
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const semver = require('semver')
   const dbVersion = trudeskDatabase.version || '5.0.6'
   const fileVersion = semver.major(dbVersion) + '.' + semver.minor(dbVersion)
 
   if (os.platform() !== 'win32') return
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const http = require('http')
   winston.debug('MongoDB version ' + fileVersion + ' detected.')
   const filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
@@ -167,7 +167,7 @@ async function downloadWin32MongoDBTools(): Promise<void> {
 
   winston.debug('Windows platform detected. Downloading MongoDB Tools [' + filename + ']')
   await fs.emptyDir(savePath)
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const unzipper = require('unzipper')
   const file = fs.createWriteStream(path.join(savePath, filename))
   http

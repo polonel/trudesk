@@ -22,7 +22,7 @@ export const buildGraphData = (arr: Array<{ date: string }>, days: number): Grap
     .minute(59)
     .second(59)
   const timespanArray: number[] = []
-  for (var i = days; i--; ) {
+  for (let i = days; i--; ) {
     timespanArray.push(i)
   }
 

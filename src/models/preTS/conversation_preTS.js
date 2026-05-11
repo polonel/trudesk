@@ -12,10 +12,10 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose')
-var _ = require('lodash')
+const mongoose = require('mongoose')
+const _ = require('lodash')
 
-var COLLECTION = 'conversations'
+const COLLECTION = 'conversations'
 
 /*
     {

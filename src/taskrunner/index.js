@@ -37,7 +37,7 @@ taskRunner.init = async function (callback) {
 
     await taskRunner.getReleases()
     setInterval(taskRunner.getReleases, 86400000)
-  } catch (err) {
+  } catch (_err) {
     /* empty */
   }
 
@@ -47,7 +47,7 @@ taskRunner.init = async function (callback) {
 taskRunner.getReleases = async () => {
   try {
     const response = await octokit.request('GET /repos/polonel/trudesk/releases')
-    for (let release of response.data) {
+    for (const release of response.data) {
       release.duration_format = dayjs(release.published_at).fromNow()
     }
     if (response.data) setReleases(response.data)
@@ -95,7 +95,7 @@ taskRunner.checkForUpdates = async () => {
     } else {
       const response = await octokit.request('GET /repos/polonel/trudesk/releases/latest')
       if (response.data) {
-        let tagName = response.data.tag_name
+        const tagName = response.data.tag_name
         if (tagName) {
           const latestVersion = semver.parse(tagName)
           const currentVersion = semver.parse(pkg.version)

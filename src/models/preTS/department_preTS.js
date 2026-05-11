@@ -18,9 +18,9 @@ import utils from '../helpers/utils'
 import { TeamModel as Teams } from '../models'
 import { GroupModel as Groups } from '../models'
 
-var COLLECTION = 'departments'
+const COLLECTION = 'departments'
 
-var departmentSchema = mongoose.Schema({
+const departmentSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   normalized: { type: String },
   teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams', autopopulate: true }],
@@ -115,7 +115,7 @@ departmentSchema.statics.getDepartmentGroupsOfUser = function (userId, callback)
 }
 
 departmentSchema.statics.getDepartmentsByGroup = function (groupId, callback) {
-  var self = this
+  const self = this
 
   return self
     .model(COLLECTION)

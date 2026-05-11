@@ -33,7 +33,6 @@ import ServerSettingsController from './Server'
 import LegalSettingsContainer from 'containers/Settings/Legal'
 
 import helpers from 'lib/helpers'
-import history from 'lib/lib-history'
 import { Helmet } from 'react-helmet-async'
 import TitleContext from 'app/TitleContext'
 

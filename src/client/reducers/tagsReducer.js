@@ -36,7 +36,7 @@ const tagsReducer = handleActions(
       }
     },
 
-    [GET_TAGS_WITH_PAGE.ERROR]: (state, action) => {
+    [GET_TAGS_WITH_PAGE.ERROR]: (state, _action) => {
       return {
         ...state,
         loading: false

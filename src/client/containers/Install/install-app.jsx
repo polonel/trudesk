@@ -14,7 +14,6 @@ import './install-styles.sass'
 // import 'sass/app.sass'
 
 // import axios from 'api/axios'
-import helpers from './install-helpers'
 // import * as $ from 'jquery'
 
 const InstallApp = () => {

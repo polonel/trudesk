@@ -250,7 +250,7 @@ const refreshCache = function (callback?: (err?: any) => void) {
 
     try {
       await init()
-    } catch (e) {
+    } catch (_e) {
       winston.error(err)
       process.exit(1)
     }

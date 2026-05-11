@@ -41,7 +41,7 @@ export class TicketPriorityClass {
   // Virtuals
   public get durationFormatted() {
     const momentDuration = moment.duration(this.overdueIn, 'minutes')
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+     
     // @ts-ignore
     return momentDuration.format('Y [year], M [month], d [day], h [hour], m [min]', { trim: 'both' })
   }

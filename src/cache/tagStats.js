@@ -35,7 +35,7 @@ const init = async (tickets, timespan) => {
   if (tickets) {
     $tickets = await TicketModel.populate(tickets, { path: 'tags' })
   } else {
-    let tickets = await TicketModel.getForCache()
+    const tickets = await TicketModel.getForCache()
     $tickets = await TicketModel.populate(tickets, { path: 'tags' })
   }
 
