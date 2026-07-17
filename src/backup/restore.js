@@ -117,7 +117,7 @@ function runRestore (file, callback) {
     if (code === 0) {
       callback(null, 'done')
     } else {
-      callback(new Error('mongorestore falied with code ' + code))
+      callback(new Error('mongorestore failed with code ' + code))
     }
   })
 }
