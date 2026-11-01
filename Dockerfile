@@ -3,7 +3,7 @@
 #ENV GOPATH /go
 #RUN go install github.com/googlecloudplatform/gcsfuse@latest
 
-FROM node:16.14-alpine AS builder
+FROM node:22-alpine AS builder
 
 RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
@@ -19,7 +19,7 @@ RUN yarn build
 RUN rm -rf node_modules && mv prod_node_modules node_modules
 RUN rm -rf .yarn/cache
 
-FROM node:16.14-alpine
+FROM node:22-alpine
 WORKDIR /usr/src/trudesk
 RUN apk add --no-cache ca-certificates bash mongodb-tools && rm -rf /tmp/*
 COPY --from=builder /usr/src/trudesk .
