@@ -270,6 +270,11 @@ apiMessages.getMessagesForConversation = function (req, res) {
 
           response.conversation = convo
 
+          var isParticipant = _.some(convo.participants || [], function (p) {
+            return (p._id || p).toString() === req.user._id.toString()
+          })
+          if (!isParticipant) return done({ message: 'Invalid Conversation' })
+
           return done()
         })
       },

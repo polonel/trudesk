@@ -709,6 +709,10 @@ apiUsers.updatePreferences = function (req, res) {
       return res.status(400).json({ success: false, error: err })
     }
 
+    if (!req.user.role.isAdmin && req.user.username !== username) {
+      return res.status(403).json({ success: false, error: 'Invalid Permissions' })
+    }
+
     if (_.isNull(user.preferences)) {
       user.preferences = {}
     }

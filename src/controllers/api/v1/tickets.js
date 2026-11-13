@@ -23,6 +23,29 @@ var sanitizeHtml = require('sanitize-html')
 
 var apiTickets = {}
 
+// Returns via callback(true) if `user` may access `ticket`: admins/agents always,
+// the ticket owner, members of the ticket's group, or (with tickets:public) a public group.
+function userCanAccessTicket (user, ticket, callback) {
+  if (user.role.isAdmin || user.role.isAgent) return callback(true)
+  var groupModel = require('../../../models/group')
+  var ownerId = ticket.owner && (ticket.owner._id || ticket.owner)
+  if (ownerId && ownerId.toString() === user._id.toString()) return callback(true)
+  var ticketGroupId = ticket.group && (ticket.group._id || ticket.group)
+  if (!ticketGroupId) return callback(false)
+  groupModel.getAllGroupsOfUserNoPopulate(user._id, function (err, grps) {
+    if (err || !grps) return callback(false)
+    var inGroup = _.some(grps, function (g) { return (g._id || g).toString() === ticketGroupId.toString() })
+    if (inGroup) return callback(true)
+    if (permissions.canThis(user.role, 'tickets:public')) {
+      return groupModel.getAllPublicGroups(function (e2, pub) {
+        if (e2 || !pub) return callback(false)
+        return callback(_.some(pub, function (g) { return (g._id || g).toString() === ticketGroupId.toString() }))
+      })
+    }
+    return callback(false)
+  })
+}
+
 function buildGraphData (arr, days, callback) {
   var graphData = []
   var today = moment()
@@ -730,12 +753,16 @@ apiTickets.single = function (req, res) {
       return res.status(200).json({ success: false, error: 'Invalid Ticket' })
     }
 
-    ticket = _.clone(ticket._doc)
-    if (!permissions.canThis(req.user.role, 'tickets:notes')) {
-      delete ticket.notes
-    }
+    userCanAccessTicket(req.user, ticket, function (allowed) {
+      if (!allowed) return res.status(403).json({ success: false, error: 'Invalid Permissions' })
 
-    return res.json({ success: true, ticket: ticket })
+      var t = _.clone(ticket._doc)
+      if (!permissions.canThis(req.user.role, 'tickets:notes')) {
+        delete t.notes
+      }
+
+      return res.json({ success: true, ticket: t })
+    })
   })
 }
 
@@ -778,7 +805,10 @@ apiTickets.update = function (req, res) {
     ticketModel.getTicketById(oId, function (err, ticket) {
       if (err) return res.status(400).json({ success: false, error: err.message })
       if (!ticket) return res.status(400).json({ success: false, error: 'Unable to locate ticket. Aborting...' })
-      async.parallel(
+      userCanAccessTicket(user, ticket, function (allowed) {
+        if (!allowed) return res.status(403).json({ success: false, error: 'Invalid Permissions' })
+
+        async.parallel(
         [
           function (cb) {
             if (!_.isUndefined(reqTicket.status)) {
@@ -875,7 +905,8 @@ apiTickets.update = function (req, res) {
             })
           })
         }
-      )
+        )
+      })
     })
   } else {
     return res.status(403).json({ success: false, error: 'Invalid Access Token' })
